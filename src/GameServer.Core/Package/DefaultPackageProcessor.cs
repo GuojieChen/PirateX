@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using SuperSocket.SocketBase.Logging;
 
 namespace GameServer.Core.Package
 {
@@ -10,8 +12,7 @@ namespace GameServer.Core.Package
     {
         public IZip Zip { get; private set; }
         public ICrypto Crypto { get; set; }
-
-
+        
         public bool ZipEnable { get; set; }
         public bool CryptoEnable { get; set; }
         public IList<byte[]> ClientKeys { get; set; }
@@ -27,7 +28,6 @@ namespace GameServer.Core.Package
             ServerKeys = new List<byte[]>(8);
         }
         
-
         public byte[] Pack(byte[] datas)
         {
             var compress = ZipEnable ? Zip.Compress(datas) : datas;
@@ -87,7 +87,6 @@ namespace GameServer.Core.Package
             }
             return dataBytes;
         }
-
 
         private static int GetbitValue(byte input, int index)
         {

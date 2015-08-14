@@ -87,7 +87,6 @@
     <Compile Include="Filters\SeedCreatingFilter.cs" />
     <Compile Include="Filters\SystemAuthorizedFilter.cs" />
     <Compile Include="Filters\SystemLoginFilter.cs" />
-    <Compile Include="IMqPackage.cs" />
     <Compile Include="IGameServer.cs" />
     <Compile Include="IGameSession.cs" />
     <Compile Include="Logging\NLogLog.cs" />

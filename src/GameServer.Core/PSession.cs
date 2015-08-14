@@ -12,15 +12,18 @@ using IGameSession = GameServer.Core.IGameSession;
 
 namespace GameServer.Core
 {
-
     public class PSession : PSession<PSession>
     {
-        public PSession(IPackageProcessor packageProcessor) : base(packageProcessor)
+        public PSession(IPackageProcessor packageProcessor) 
+            : base(packageProcessor)
         {
+
         }
 
-        public PSession():base()
+        public PSession()
+            : base()
         {
+
         }
     }
 
@@ -152,7 +155,7 @@ namespace GameServer.Core
 
             data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, JsonSettings));
 
-            SendJson(data);
+            SendData(data);
         }
         
         public virtual void ProcessedRequest(string name,object args, long pms, long sms, long ms,DateTime start,DateTime end,string o)
@@ -174,7 +177,7 @@ namespace GameServer.Core
             return false; 
         }
 
-        public virtual void SendJson(byte[] sendData)
+        public virtual void SendData(byte[] sendData)
         {
             var data = PackageProcessor.Pack(sendData);
 
