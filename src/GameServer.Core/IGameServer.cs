@@ -1,9 +1,16 @@
-﻿using SuperSocket.SocketBase;
+﻿using System.Collections.Generic;
+using System.Linq;
+using SuperSocket.SocketBase;
 
 namespace GameServer.Core
 {
-    public interface IGameServer : IAppServer
+    public interface IGameServer : IGameServer<long>
     {
-        void Broadcast<TMessage>(TMessage message, params long[] rids); 
+        
+    }
+
+    public interface IGameServer<TRidKey> : IAppServer
+    {
+        void Broadcast<TMessage>(TMessage message, IQueryable<TRidKey> rids); 
     }
 }

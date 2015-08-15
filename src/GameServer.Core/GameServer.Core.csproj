@@ -69,16 +69,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Command\NewSeed.cs" />
-    <Compile Include="Command\Ping.cs" />
+    <Compile Include="GException\FreezeException.cs" />
+    <Compile Include="GException\LogoutException.cs" />
+    <Compile Include="GException\PreconditionException.cs" />
     <Compile Include="Json\DoubleConverter.cs" />
+    <Compile Include="Localization\LocalizationString.cs" />
+    <Compile Include="Localization\LocalizationStringExtensions.cs" />
     <Compile Include="Package\ICrypto.cs" />
+    <Compile Include="Protocol\KeyGenerator.cs" />
     <Compile Include="Package\NoneCrypto.cs" />
     <Compile Include="Package\NoneZip.cs" />
     <Compile Include="Package\XXTea.cs" />
-    <Compile Include="Ex\IGameError.cs" />
-    <Compile Include="Ex\PException.cs" />
-    <Compile Include="Ex\PExceptionMessageAttribute.cs" />
+    <Compile Include="GException\AbstactGameException.cs" />
+    <Compile Include="GException\GameExceptionMessageAttribute.cs" />
     <Compile Include="Filters\AuthorizedFilter.cs" />
     <Compile Include="Filters\IPConnectionFilter.cs" />
     <Compile Include="Filters\ItemsConst.cs" />
@@ -95,19 +98,24 @@
     <Compile Include="Package\IPackageProcessor.cs" />
     <Compile Include="Package\TransitPackageProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PkProtocol\ISocketRequestInfo.cs" />
-    <Compile Include="PkProtocol\JsonSubCommand.cs" />
-    <Compile Include="PkProtocol\JsonSubCommandBase.cs" />
-    <Compile Include="PkProtocol\NoneRequest.cs" />
-    <Compile Include="PkProtocol\NoneResponse.cs" />
-    <Compile Include="PkProtocol\PRequestInfo.cs" />
-    <Compile Include="PkProtocol\PSocketHeaderReceiveFilter.cs" />
-    <Compile Include="PkProtocol\PSocketProtocol.cs" />
+    <Compile Include="Protocol\PokemonX\IPokemonXRequestInfo.cs" />
+    <Compile Include="Protocol\PokemonX\PokemonXPing.cs" />
+    <Compile Include="Protocol\PokemonX\PokemonXNewSeed.cs" />
+    <Compile Include="Protocol\PokemonX\PokemonXCommand.cs" />
+    <Compile Include="Protocol\PokemonX\PokemonXCommandBase.cs" />
+    <Compile Include="Protocol\PokemonX\NoneRequest.cs" />
+    <Compile Include="Protocol\PokemonX\NoneResponse.cs" />
+    <Compile Include="Protocol\PokemonX\PokemonXException.cs" />
+    <Compile Include="Protocol\PokemonX\PokemonXRequestInfo.cs" />
+    <Compile Include="Protocol\PokemonX\PokemonXReceiveFilter.cs" />
+    <Compile Include="Protocol\PokemonX\PokemonXProtocol.cs" />
     <Compile Include="PServer.cs" />
     <Compile Include="PSession.cs" />
     <Compile Include="ShareConfig.cs" />
     <Compile Include="Package\GZip.cs" />
     <Compile Include="Package\IZip.cs" />
+    <Compile Include="Utils\RandomUtil.cs" />
+    <Compile Include="Utils\TimeUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -118,8 +126,10 @@
     <None Include="supersocket.sh" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Receive\" />
-    <Folder Include="Utils\" />
+    <Folder Include="Command\" />
+    <Folder Include="Domain\" />
+    <Folder Include="Protocol\PirateX\" />
+    <Folder Include="Service\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

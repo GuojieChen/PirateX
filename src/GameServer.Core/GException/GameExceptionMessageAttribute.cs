@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GameServer.Core.Ex
+namespace GameServer.Core.GException
 {
      [AttributeUsage(AttributeTargets.Field)]
     public class PExceptionMessageAttribute:Attribute

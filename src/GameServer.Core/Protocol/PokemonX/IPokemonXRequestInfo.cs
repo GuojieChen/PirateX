@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
 using SuperSocket.SocketBase.Protocol;
 
-namespace GameServer.Core.PkProtocol
+namespace GameServer.Core.Protocol.PokemonX
 {
-    public interface ISocketRequestInfo: IRequestInfo
+    public interface IPokemonXRequestInfo: IRequestInfo
     {
         JToken Body { get;  }
 

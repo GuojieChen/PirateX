@@ -2,16 +2,17 @@
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Command;
 using SuperSocket.SocketBase.Logging;
+using SuperSocket.SocketBase.Protocol;
 
-namespace GameServer.Core.PkProtocol
+namespace GameServer.Core.Protocol.PokemonX
 {
     /// <summary>
     /// Json SubCommand base
     /// </summary>
     /// <typeparam name="TSession">The type of the web socket session.</typeparam>
     /// <typeparam name="TJsonCommandInfo">The type of the json command info.</typeparam>
-    public abstract class JsonSubCommandBase<TSession, TJsonCommandInfo> : CommandBase<TSession, ISocketRequestInfo>
-        where TSession : IGameSession, IAppSession<TSession, ISocketRequestInfo>, new()
+    public abstract class JsonSubCommandBase<TSession, TJsonCommandInfo> : CommandBase<TSession, IRequestInfo>
+        where TSession : IGameSession, IAppSession<TSession, IRequestInfo>, new()
     {
         //protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -34,7 +35,7 @@ namespace GameServer.Core.PkProtocol
         /// </summary>
         /// <param name="session">The session.</param>
         /// <param name="requestInfo">The request info.</param>
-        public override void ExecuteCommand(TSession session, ISocketRequestInfo requestInfo)
+        public override void ExecuteCommand(TSession session, IRequestInfo requestInfo2)
         {
             Logger = session.AppServer.Logger;
 
@@ -58,13 +59,15 @@ namespace GameServer.Core.PkProtocol
             //{
             //    //设置失败 请求过高
             //    if (!session.SetLastRequest(session.Rid, Name, RequstInterval.Value))
-            //        throw new PException(ServerCode.RepeatedRequest);
+            //        throw new AbstactGameException(ServerCode.RepeatedRequest);
             //}
 
             //var defaultCulture = session.AppServer.Config.Options.GetValue("defaultCulture");
             //if (!string.IsNullOrEmpty(defaultCulture))
             //    Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture(defaultCulture); 
-            
+
+            var requestInfo = (IPokemonXRequestInfo)requestInfo2;
+
             if (requestInfo.R)
             { //客户端请求失败 
                 var cacheName = Convert.ToString(session.CurrentO);

@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json.Linq;
 using SuperSocket.SocketBase.Protocol;
 
-namespace GameServer.Core.PkProtocol
+namespace GameServer.Core.Protocol.PokemonX
 {
-    public class PRequestInfo : RequestInfo<JToken>, ISocketRequestInfo
+    public class PokemonXRequestInfo : RequestInfo<JToken>, IPokemonXRequestInfo
     {
 
-        public PRequestInfo(string key, JToken body, JToken ex,bool r)
+        public PokemonXRequestInfo(string key, JToken body, JToken ex,bool r)
             : base(key, body)
         {
             Ex = ex; 

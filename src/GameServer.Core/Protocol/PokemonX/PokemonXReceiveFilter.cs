@@ -8,20 +8,20 @@ using SuperSocket.Facility.Protocol;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Logging;
 
-namespace GameServer.Core.PkProtocol
+namespace GameServer.Core.Protocol.PokemonX
 {
     /*
      4字节表示整体数据的长度
      1字节表示是否启用压缩
      1字节表示加密方式 128表示XXTea
     */
-    public class PSocketHeaderReceiveFilter : FixedHeaderReceiveFilter<ISocketRequestInfo>
+    public class PokemonXReceiveFilter : FixedHeaderReceiveFilter<IPokemonXRequestInfo>
     {
         private ILog Logger { get; set; }
 
         private IGameSession _session;
 
-        public PSocketHeaderReceiveFilter(IGameSession session)
+        public PokemonXReceiveFilter(IGameSession session)
             : base(0)
         {
             this._session = session;
@@ -60,7 +60,7 @@ namespace GameServer.Core.PkProtocol
             }
         }
 
-        protected override ISocketRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
+        protected override IPokemonXRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
         {
 #if DEBUG
             if (_session.PackageProcessor.ClientKeys.Any() && _session.PackageProcessor.ServerKeys.Any())
@@ -77,7 +77,7 @@ namespace GameServer.Core.PkProtocol
             var jObject = JObject.Parse(body);
             var c = jObject["C"];
             if (c == null)
-                //throw new PException(ServerCode.NotFound, "C");
+                //throw new AbstactGameException(ServerCode.NotFound, "C");
                 return null; 
 
             var r = false;
@@ -92,11 +92,11 @@ namespace GameServer.Core.PkProtocol
 
             if (_session.MyLastO > o)
             {
-                Logger.Error(string.Format("RequestError\t#{0}#\t{1}\t{2}\t{3}", _session.Rid, _session.RemoteEndPoint, _session.SessionID, body));
+                Logger.Error($"RequestError\t#{_session.Rid}#\t{_session.RemoteEndPoint}\t{_session.SessionID}\t{body}");
                 _session.Close(CloseReason.SocketError);
 
                 return null;
-                //throw new PException(ServerCode.RequestError);
+                //throw new AbstactGameException(ServerCode.RequestError);
             }
             if (!r) //retry的情况下O会被改大
                 _session.MyLastO = o; 
@@ -106,7 +106,7 @@ namespace GameServer.Core.PkProtocol
             if (Logger.IsDebugEnabled)
                 Logger.Debug($"Client[{_session.SessionID}]'s O is {_session.CurrentO}");
 
-            return new PRequestInfo(c.ToString(), jObject["D"], jObject["Ex"], r);
+            return new PokemonXRequestInfo(c.ToString(), jObject["D"], jObject["Ex"], r);
         }
 
         private void LogHead(byte[] bodyBuffer, int offset, int length)

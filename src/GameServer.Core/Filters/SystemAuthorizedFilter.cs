@@ -1,4 +1,5 @@
-﻿using SuperSocket.Common;
+﻿using System.Security.Authentication;
+using SuperSocket.Common;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Metadata;
 
@@ -12,7 +13,8 @@ namespace GameServer.Core.Filters
         {
             var islogin = commandContext.Session.Items.GetValue<bool>(ItemsConst.IsSystem);
             if (!islogin)
-                throw new PException(ServerCode.Unauthorized);
+                //throw new PException(ServerCode.Unauthorized);
+                throw new AuthenticationException("未授权");
         }
 
         public override void OnCommandExecuted(CommandExecutingContext commandContext)

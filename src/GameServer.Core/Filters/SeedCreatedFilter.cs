@@ -1,4 +1,5 @@
-﻿using SuperSocket.Common;
+﻿using System;
+using SuperSocket.Common;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Metadata;
 
@@ -13,7 +14,8 @@ namespace GameServer.Core.Filters
         {
             var seedCreated = commandContext.Session.Items.GetValue<bool>(ItemsConst.SeedCreated);
             if (seedCreated)
-                throw new PException(ServerCode.SeedReCreate);
+                //throw new PException(ServerCode.SeedReCreate);
+                throw new ArgumentException("种子已经创建");
         }
 
         public override void OnCommandExecuted(CommandExecutingContext commandContext)

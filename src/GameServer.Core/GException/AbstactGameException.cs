@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Resources;
-using System.Threading;
 
-namespace GameServer.Core.Ex
+namespace GameServer.Core.GException
 {
     /// <summary> 异常类型 </summary>
     [Serializable]
-    public class PException : System.Exception
+    public class AbstactGameException<TCodeKey> : System.Exception
     {
-        public Enum Code { get; private set; }
+        public virtual object CodeValue
+        {
+            get { return Code;  }
+        }
+
+        public TCodeKey Code { get; private set; }
         /// <summary>
         /// 附带的参数值列表
         /// </summary>
@@ -17,7 +21,7 @@ namespace GameServer.Core.Ex
         /// 异常构造函数
         /// </summary>
         /// <param name="code"></param>
-        public PException(Enum code)
+        public AbstactGameException(TCodeKey code)
         {
             Code = code;
         }
@@ -26,7 +30,7 @@ namespace GameServer.Core.Ex
         /// </summary>
         /// <param name="code"></param>
         /// <param name="strs"></param>
-        public PException(Enum code, params object[] strs)
+        public AbstactGameException(TCodeKey code, params object[] strs)
         {
             Code = code;
             Params = strs;
@@ -84,9 +88,7 @@ namespace GameServer.Core.Ex
             string des = null;
             try
             {
-                Console.WriteLine(Thread.CurrentThread.CurrentCulture);
-
-                rm = new ResourceManager(String.Format("{0}.Resources.Resource", enumeratedType.GetType().Assembly.GetName().Name), enumeratedType.GetType().Assembly);
+                rm = new ResourceManager($"{enumeratedType.GetType().Assembly.GetName().Name}.Resources.Resource", enumeratedType.GetType().Assembly);
                 des = rm.GetString(description);
             }
             catch (System.Exception)

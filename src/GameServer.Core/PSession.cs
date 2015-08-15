@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Net;
 using System.Text;
-using GameServer.Core.Ex;
+using GameServer.Core.GException;
 using GameServer.Core.Json;
 using GameServer.Core.Package;
-using GameServer.Core.PkProtocol;
+using GameServer.Core.Protocol.PokemonX;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SuperSocket.SocketBase;
+using SuperSocket.SocketBase.Protocol;
 using IGameSession = GameServer.Core.IGameSession;
 
 namespace GameServer.Core
 {
-    public class PSession : PSession<PSession>
+    public class PSession : PSession<PSession,Enum>, IAppSession<PSession, IRequestInfo>
     {
         public PSession(IPackageProcessor packageProcessor) 
             : base(packageProcessor)
@@ -25,9 +26,16 @@ namespace GameServer.Core
         {
 
         }
+
+        public override void Initialize(IAppServer<PSession, IRequestInfo> server, ISocketSession socketSession)
+        {
+            base.Initialize(server,socketSession);
+        }
     }
 
-    public class PSession<TSession> : AppSession<TSession, ISocketRequestInfo>, IGameSession where TSession : AppSession<TSession, ISocketRequestInfo>, new()
+    public class PSession<TSession,TErrorCode> : AppSession<TSession, IRequestInfo>, IGameSession where 
+        TSession : AppSession<TSession, IRequestInfo>, new()
+        
     {
         public bool IsClosed { get; set; }
         public long Rid { get; set; }
@@ -64,7 +72,7 @@ namespace GameServer.Core
 
         protected override void HandleException(System.Exception e)
         {
-            if (!(e is PException))
+            if (!(e is AbstactGameException<TErrorCode> ))
             {
                 if (Logger.IsErrorEnabled)
                     Logger.Error(e.Message, e);
@@ -75,16 +83,14 @@ namespace GameServer.Core
                 SendError(CurrentCommand, e);
         }
 
-
         private void SendError(string cmdName, System.Exception e)
         {
-            short code = 400;
+            object code = null;
             string msg = null;
 
-
-            if (e is PException)
+            if (e is AbstactGameException<TErrorCode>)
             {
-                code = Convert.ToInt16(((PException)e).Code);
+                code = (e as AbstactGameException<TErrorCode>).CodeValue;
                 msg = e.ToString();
             }
             else if (e is WebException)
@@ -104,7 +110,7 @@ namespace GameServer.Core
                 msg = "ServerError"; //e.Message;
             }
 
-            if (!(e is PException))
+            if (!(e is AbstactGameException<TErrorCode>))
             {
                 if (Logger.IsErrorEnabled)
                     Logger.Error($"Exception [{ServerId}:{Rid}] - {e.Message} ", e);
@@ -127,9 +133,9 @@ namespace GameServer.Core
             }
         }
 
-        protected override void HandleUnknownRequest(ISocketRequestInfo requestInfo)
+        protected override void HandleUnknownRequest(IRequestInfo requestInfo)
         {
-            //SendError(requestInfo.Key, new PException(ServerCode.NotFound, requestInfo.Key));
+            //SendError(requestInfo.Key, new AbstactGameException(ServerCode.NotFound, requestInfo.Key));
         }
 
         #region Send Json Data

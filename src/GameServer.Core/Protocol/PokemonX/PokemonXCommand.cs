@@ -2,8 +2,9 @@
 using System.Diagnostics;
 using System.Linq;
 using SuperSocket.SocketBase;
+using SuperSocket.SocketBase.Protocol;
 
-namespace GameServer.Core.PkProtocol
+namespace GameServer.Core.Protocol.PokemonX
 {
     public abstract class JsonSubCommand<TRequest, TResponse> : JsonSubCommand<PSession, TRequest, TResponse>
     {
@@ -17,7 +18,7 @@ namespace GameServer.Core.PkProtocol
     /// <typeparam name="TRequest">The type of the json command info.</typeparam>
     /// <typeparam name="TResponse">The type of the response info.</typeparam>
     public abstract class JsonSubCommand<TSession, TRequest, TResponse> : JsonSubCommandBase<TSession, TRequest>
-        where TSession : IGameSession, IAppSession<TSession, ISocketRequestInfo>, new()
+        where TSession : IGameSession, IAppSession<TSession, IRequestInfo>, new()
     {
         //protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
         private static string[] IgnoreCmds = new[] { "Pluse", "NewSeed", "RoleLoginV2", "Ping", "Pluse" };

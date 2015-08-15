@@ -12,7 +12,7 @@ namespace GameServer.Core.Filters
         {
             //var isLogin = commandContext.Session.Items.GetValue<bool>(ItemsConst.IsLogin);
             //if (isLogin)
-            //    throw new PException(ServerCode.ReLogin);
+            //    throw new AbstactGameException(ServerCode.ReLogin);
         }
 
         public override void OnCommandExecuted(CommandExecutingContext commandContext)
