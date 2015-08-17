@@ -148,16 +148,6 @@ namespace GameServer.Core
         public void SendMessage<TMessage>(TMessage message)
         {
             byte[] data = null;
-            //try
-            //{
-            //}
-            //catch (Exception exception)
-            //{
-            //    data = Settings.CharSet.GetBytes(JsonConvert.SerializeObject(new ResponseBase(500, "SerializeObject error!"), JsonSettings));
-            //    if (NLogger.IsErrorEnabled)
-            //        NLogger.Error(exception.Message, exception);
-            //}
-
 
             data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, JsonSettings));
 
@@ -186,19 +176,7 @@ namespace GameServer.Core
         public virtual void SendData(byte[] sendData)
         {
             var data = PackageProcessor.Pack(sendData);
-
-            //if (Logger.IsDebugEnabled)
-            //{
-            //    var dataLen = data.Length;
-            //    Logger.Debug(string.Format("Response.Length:{0}", dataLen));
-
-            //    var headBytes = data.CloneRange(0, 6);
-            //    Logger.Debug(string.Format("Response.Head:{0}", string.Join(",", headBytes)));
-            //    Logger.Debug(">>>>>>>>>>>>>>>Send message to client>>>>>>>>>>>>>>>");
-            //}
-
-            //var len = data.Length; 
-            //Send(data,0,len);
+            
             var result = TrySend(data, 0, data.Length);
 
             if (Logger.IsDebugEnabled)
