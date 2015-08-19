@@ -1,29 +1,27 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using GameServer.Core.Protocol.V1;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Protocol;
 
-namespace GameServer.Core.Protocol.PokemonX
+namespace GameServer.Core.Protocol
 {
-    public abstract class JsonSubCommand<TRequest, TResponse> : JsonSubCommand<PSession, TRequest, TResponse>
+    public abstract class GameCommand<TRequest, TResponse> : GameCommand<PSession, TRequest, TResponse>
     {
 
     }
 
     /// <summary>
-    /// JsonSubCommand
+    /// GameCommand
     /// </summary>
     /// <typeparam name="TSession">The type of the socket session.</typeparam>
-    /// <typeparam name="TRequest">The type of the json command info.</typeparam>
+    /// <typeparam name="TRequest">The type of the request info.</typeparam>
     /// <typeparam name="TResponse">The type of the response info.</typeparam>
-    public abstract class JsonSubCommand<TSession, TRequest, TResponse> : JsonSubCommandBase<TSession, TRequest>
-        where TSession : IGameSession, IAppSession<TSession, IRequestInfo>, new()
+    public abstract class GameCommand<TSession, TRequest, TResponse> : GameCommandBase<TSession, TRequest,TResponse>
+        where TSession : IGameSession, IAppSession<TSession, IGameRequestInfo>, new()
     {
-        //protected static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private static string[] IgnoreCmds = new[] { "Pluse", "NewSeed", "RoleLoginV2", "Ping", "Pluse" };
-
-        protected override void ExecuteJsonCommand(TSession session, TRequest data)
+        protected override void ExecuteGameCommand(TSession session, TRequest data)
         {
             var sw = Stopwatch.StartNew();
             long pms = 0; //逻辑处理耗时
@@ -40,15 +38,16 @@ namespace GameServer.Core.Protocol.PokemonX
             if (!Equals(response, default(TResponse)))
             {
                 SendResponse(session, response);
-                if (!IgnoreCmds.Contains(cacheName))
-                    session.SetLastReponse(rid, cacheName, response);
+                //if (!IgnoreCmds.Contains(cacheName))
+                //    session.SetLastReponse(rid, cacheName, response);
                 sms = sw.ElapsedMilliseconds;
             }
             else
             {//返回默认的给客户端
                 SendResponse(session, null);
-                if (!IgnoreCmds.Contains(cacheName))
-                    session.SetLastReponse(rid, cacheName, null);
+
+                //if (!IgnoreCmds.Contains(cacheName))
+                //    session.SetLastReponse(rid, cacheName, null);
                 sms = sw.ElapsedMilliseconds;
             }
 

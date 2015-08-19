@@ -35,6 +35,6 @@ namespace GameServer.Core.Package
         /// </summary>
         /// <param name="datas"></param>
         /// <returns></returns>
-        byte[] Unpack(byte[] datas); 
+        byte[] Unpack(byte[] datas);
     }
 }

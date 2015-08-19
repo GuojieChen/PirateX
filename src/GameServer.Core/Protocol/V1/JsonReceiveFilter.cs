@@ -3,25 +3,27 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using ServiceStack;
 using SuperSocket.Common;
 using SuperSocket.Facility.Protocol;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Logging;
+using SuperSocket.SocketBase.Protocol;
 
-namespace GameServer.Core.Protocol.PokemonX
+namespace GameServer.Core.Protocol.V1
 {
     /*
      4字节表示整体数据的长度
      1字节表示是否启用压缩
      1字节表示加密方式 128表示XXTea
     */
-    public class PokemonXReceiveFilter : FixedHeaderReceiveFilter<IPokemonXRequestInfo>
+    public class JsonReceiveFilter : FixedHeaderReceiveFilter<IRequestInfo>
     {
         private ILog Logger { get; set; }
 
         private IGameSession _session;
 
-        public PokemonXReceiveFilter(IGameSession session)
+        public JsonReceiveFilter(IGameSession session)
             : base(0)
         {
             this._session = session;
@@ -60,53 +62,34 @@ namespace GameServer.Core.Protocol.PokemonX
             }
         }
 
-        protected override IPokemonXRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
+        protected override IRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
         {
-#if DEBUG
-            if (_session.PackageProcessor.ClientKeys.Any() && _session.PackageProcessor.ServerKeys.Any())
-                PrintKeys(new[] { "ClientKey", "ServerKey" }, _session.PackageProcessor.ClientKeys[0], _session.PackageProcessor.ServerKeys[0]);
+#if TRACE
+            if (_session.ProtocolPackage.PackageProcessor.ClientKeys.Any() && _session.ProtocolPackage.PackageProcessor.ServerKeys.Any())
+                PrintKeys(new[] { "ClientKey", "ServerKey" }, _session.ProtocolPackage.PackageProcessor.ClientKeys[0], _session.ProtocolPackage.PackageProcessor.ServerKeys[0]);
 
             LogHead(bodyBuffer, offset, length);
 #endif
-
-            var body = Encoding.UTF8.GetString(_session.PackageProcessor.Unpack(bodyBuffer.CloneRange(offset, length)));
+            var requestinfo = _session.ProtocolPackage.DeObject(bodyBuffer.CloneRange(offset, length));
 
             if (Logger.IsDebugEnabled)
-                Logger.Debug($"Request\t#{_session.Rid}#\t{_session.RemoteEndPoint}\t{_session.SessionID}\t{body}");
+                Logger.Debug($"Request\t#{_session.Rid}#\t{_session.RemoteEndPoint}\t{_session.SessionID}\t{requestinfo?.ToJsv()}");
 
-            var jObject = JObject.Parse(body);
-            var c = jObject["C"];
-            if (c == null)
-                //throw new AbstactGameException(ServerCode.NotFound, "C");
-                return null; 
-
-            var r = false;
-            var rjson = jObject["R"];
-            if (rjson != null)
-                r = Convert.ToBoolean(rjson);
-
-            var o = 0;
-            var ojson = jObject["O"];
-            if (ojson != null)
-                o = Convert.ToInt32(ojson);
-
-            if (_session.MyLastO > o)
+            if (string.IsNullOrEmpty(requestinfo?.Key) || _session.MyLastO > requestinfo.OrderId)
             {
-                Logger.Error($"RequestError\t#{_session.Rid}#\t{_session.RemoteEndPoint}\t{_session.SessionID}\t{body}");
                 _session.Close(CloseReason.SocketError);
-
                 return null;
                 //throw new AbstactGameException(ServerCode.RequestError);
             }
-            if (!r) //retry的情况下O会被改大
-                _session.MyLastO = o; 
+            if (!requestinfo.IsRetry) //retry的情况下O会被改大
+                _session.MyLastO = requestinfo.OrderId; 
 
-            _session.CurrentO = o;
+            _session.CurrentO = requestinfo.OrderId;
             
             if (Logger.IsDebugEnabled)
                 Logger.Debug($"Client[{_session.SessionID}]'s O is {_session.CurrentO}");
-
-            return new PokemonXRequestInfo(c.ToString(), jObject["D"], jObject["Ex"], r);
+            
+            return requestinfo;
         }
 
         private void LogHead(byte[] bodyBuffer, int offset, int length)

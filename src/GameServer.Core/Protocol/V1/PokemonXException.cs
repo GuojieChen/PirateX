@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GameServer.Core.GException;
 
-namespace GameServer.Core.Protocol.PokemonX
+namespace GameServer.Core.Protocol.V1
 {
     public class PokemonXException : AbstactGameException<Enum>
     {

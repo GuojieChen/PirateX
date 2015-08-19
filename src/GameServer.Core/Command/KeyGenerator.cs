@@ -1,4 +1,4 @@
-﻿namespace GameServer.Core.Protocol
+﻿namespace GameServer.Core.Command
 {
     public class KeyGenerator
     {

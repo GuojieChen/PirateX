@@ -1,42 +1,27 @@
 ﻿using System;
 using System.Net;
 using System.Text;
+using Autofac;
 using GameServer.Core.GException;
-using GameServer.Core.Json;
 using GameServer.Core.Package;
-using GameServer.Core.Protocol.PokemonX;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using GameServer.Core.Protocol;
+using ServiceStack;
+using ServiceStack.Redis;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Protocol;
 using IGameSession = GameServer.Core.IGameSession;
 
 namespace GameServer.Core
 {
-    public class PSession : PSession<PSession,Enum>, IAppSession<PSession, IRequestInfo>
+    public class PSession : PSession<PSession, Enum>, IAppSession<PSession, IGameRequestInfo>
     {
-        public PSession(IPackageProcessor packageProcessor) 
-            : base(packageProcessor)
-        {
-
-        }
-
-        public PSession()
-            : base()
-        {
-
-        }
-
-        public override void Initialize(IAppServer<PSession, IRequestInfo> server, ISocketSession socketSession)
-        {
-            base.Initialize(server,socketSession);
-        }
     }
 
-    public class PSession<TSession,TErrorCode> : AppSession<TSession, IRequestInfo>, IGameSession where 
-        TSession : AppSession<TSession, IRequestInfo>, new()
-        
+    public class PSession<TSession, TErrorCode> : AppSession<TSession, IGameRequestInfo>, IGameSession where
+        TSession : AppSession<TSession, IGameRequestInfo>, new()
+
     {
+        public bool IsLogin { get; set; }
         public bool IsClosed { get; set; }
         public long Rid { get; set; }
         public DateTime LastResponseTime { get; set; }
@@ -45,17 +30,28 @@ namespace GameServer.Core
 
         public int ServerId { get; set; }
 
-        public IPackageProcessor PackageProcessor { get; set; }
-
-        public PSession(IPackageProcessor packageProcessor)
+        #region IOC
+        private ILifetimeScope _container;
+        private ILifetimeScope _fContainer;
+        private ILifetimeScope Build
         {
-            PackageProcessor = packageProcessor;
-        }
+            get
+            {
+                if (_container == null)
+                    return _fContainer;
 
-        public PSession()
-        {
-            PackageProcessor = new DefaultPackageProcessor();
+                return _container;
+            }
+            set
+            {
+                if (_container == null)
+                    _container = value.BeginLifetimeScope();
+                _fContainer = value;
+            }
         }
+        #endregion
+        
+        public IProtocolPackage ProtocolPackage => Build.Resolve<IProtocolPackage>();
 
         protected override void OnSessionStarted()
         {
@@ -72,7 +68,7 @@ namespace GameServer.Core
 
         protected override void HandleException(System.Exception e)
         {
-            if (!(e is AbstactGameException<TErrorCode> ))
+            if (!(e is AbstactGameException<TErrorCode>))
             {
                 if (Logger.IsErrorEnabled)
                     Logger.Error(e.Message, e);
@@ -99,12 +95,12 @@ namespace GameServer.Core
                 //code = (short)ServerCode.RemoteError;
                 msg = e.Message;
             }
-            else if (e is JsonReaderException)
-            {
-                //TODO 
-                //code = (short) ServerCode.BadRequest;
-                msg = e.Message;
-            }
+            //else if (e is JsonReaderException)
+            //{
+            //    //TODO 
+            //    //code = (short) ServerCode.BadRequest;
+            //    msg = e.Message;
+            //}
             else
             {
                 msg = "ServerError"; //e.Message;
@@ -133,12 +129,54 @@ namespace GameServer.Core
             }
         }
 
-        protected override void HandleUnknownRequest(IRequestInfo requestInfo)
+        protected override void HandleUnknownRequest(IGameRequestInfo requestInfo)
         {
             //SendError(requestInfo.Key, new AbstactGameException(ServerCode.NotFound, requestInfo.Key));
         }
 
-        #region Send Json Data
+        #region 请求结果的缓存
+
+        public virtual TResponse GetLastResponse<TResponse>(long rid, string c)
+        {
+            if (rid <= 0)
+                return default(TResponse);
+
+            var rm = Build.Resolve<IRedisClientsManager>();
+            if (rm == null)
+                return default(TResponse);
+
+            var key = $"sys:response:{rid}:{c}";
+
+            using (var redis = rm.GetClient())
+                return redis.Get<TResponse>(key);
+        }
+
+        public virtual void SetLastReponse(long rid, string c, object o)
+        {
+            if (rid <= 0 || string.IsNullOrEmpty(c) || o == null)
+                return;
+
+            var rm = Build.Resolve<IRedisClientsManager>();
+            if (rm == null)
+                return;
+
+            //这里来具体维护 缓存多少条 ~ 
+            var key = $"sys:response:{rid}:{c}";
+            var listkey = $"sys:response:{rid}";
+
+            using (var redis = rm.GetClient())
+            {
+                redis.Set(key, o, new TimeSpan(0, 0, 1, 0));//30秒缓存
+                redis.EnqueueItemOnList(listkey, key);
+
+                if (redis.GetListCount(listkey) >= 4)
+                {
+                    var removekey = redis.DequeueItemFromList(listkey);
+                    redis.Remove(removekey);
+                }
+            }
+        }
+        #endregion
 
         /// <summary>
         /// 发送消息
@@ -147,68 +185,19 @@ namespace GameServer.Core
         /// <param cmdName="message"></param>
         public void SendMessage<TMessage>(TMessage message)
         {
-            byte[] data = null;
+            byte[] data = ProtocolPackage.SerializeObject(message);
 
-            data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, JsonSettings));
-
-            SendData(data);
-        }
-        
-        public virtual void ProcessedRequest(string name,object args, long pms, long sms, long ms,DateTime start,DateTime end,string o)
-        {
-
-        }
-
-        public virtual object GetLastResponse(long rid, string c)
-        {
-            return null;
-        }
-
-        public virtual void SetLastReponse(long rid, string c, object o)
-        {
-        }
-
-        public virtual bool SetLastRequest(long rid, string c,int mill)
-        {
-            return false; 
-        }
-
-        public virtual void SendData(byte[] sendData)
-        {
-            var data = PackageProcessor.Pack(sendData);
-            
             var result = TrySend(data, 0, data.Length);
 
             if (Logger.IsDebugEnabled)
-                Logger.Debug(string.Format("Response[{4}]\t#{0}#\t{1}\t{2}\t{3}", Rid, this.RemoteEndPoint, SessionID, Encoding.UTF8.GetString(sendData), result));
+                Logger.Debug(string.Format("Response[{4}]\t#{0}#\t{1}\t{2}\t{3}", Rid, this.RemoteEndPoint, SessionID, message?.ToJsv(), result));
         }
 
-        /// <summary>
-        /// JSON 序列化配置
-        /// </summary>
-        public static JsonSerializerSettings JsonSettings
+        public virtual void ProcessedRequest(string name, object args, long pms, long sms, long ms, DateTime start, DateTime end, string o)
         {
-            get
-            {
-                var timeConverter = new IsoDateTimeConverter();
-                //这里使用自定义日期格式，如果不使用的话，默认是ISO8601格式     
-                timeConverter.DateTimeFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss";
 
-                var settings = new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore,
-                    DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
-                };
-
-                settings.Converters.Add(timeConverter);
-                settings.Converters.Add(new DoubleConverter());
-
-                return settings;
-            }
         }
-
-        #endregion
     }
 
-    
+
 }

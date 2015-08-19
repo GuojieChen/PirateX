@@ -20,7 +20,9 @@ namespace GameServer.Core.Filters
 
         public override void OnCommandExecuted(CommandExecutingContext commandContext)
         {
-            commandContext.Session.Items[ItemsConst.SeedCreated] = true; 
+            commandContext.Session.Items[ItemsConst.SeedCreated] = true;
+
+            ((PSession)commandContext.Session).ProtocolPackage.PackageProcessor.CryptoEnable = true;
         }
     }
 }

@@ -1,18 +1,20 @@
 ﻿using System;
+using GameServer.Core.Protocol.V1;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Command;
 using SuperSocket.SocketBase.Logging;
 using SuperSocket.SocketBase.Protocol;
 
-namespace GameServer.Core.Protocol.PokemonX
+namespace GameServer.Core.Protocol
 {
     /// <summary>
     /// Json SubCommand base
     /// </summary>
     /// <typeparam name="TSession">The type of the web socket session.</typeparam>
-    /// <typeparam name="TJsonCommandInfo">The type of the json command info.</typeparam>
-    public abstract class JsonSubCommandBase<TSession, TJsonCommandInfo> : CommandBase<TSession, IRequestInfo>
-        where TSession : IGameSession, IAppSession<TSession, IRequestInfo>, new()
+    /// <typeparam name="TRequest">The type of the request info.</typeparam>
+    /// <typeparam name="TResponse">The type of the response info</typeparam>
+    public abstract class GameCommandBase<TSession, TRequest,TResponse> : CommandBase<TSession, IGameRequestInfo>
+        where TSession : IGameSession, IAppSession<TSession, IGameRequestInfo>, new()
     {
         //protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -22,12 +24,9 @@ namespace GameServer.Core.Protocol.PokemonX
 
         protected object Args { get; set; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JsonSubCommandBase&lt;TWebSocketSession, TJsonCommandInfo&gt;"/> class.
-        /// </summary>
-        public JsonSubCommandBase()
+        public GameCommandBase()
         {
-            m_CommandInfoType = typeof(TJsonCommandInfo);
+            m_CommandInfoType = typeof(TRequest);
         }
 
         /// <summary>
@@ -35,7 +34,7 @@ namespace GameServer.Core.Protocol.PokemonX
         /// </summary>
         /// <param name="session">The session.</param>
         /// <param name="requestInfo">The request info.</param>
-        public override void ExecuteCommand(TSession session, IRequestInfo requestInfo2)
+        public override void ExecuteCommand(TSession session, IGameRequestInfo requestInfo)
         {
             Logger = session.AppServer.Logger;
 
@@ -50,28 +49,11 @@ namespace GameServer.Core.Protocol.PokemonX
                 if (Logger.IsDebugEnabled)
                     Logger.Debug($"ExecuteCommand[{DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss ffff")}]\t{session.SessionID}\tSessionID\t{Name}\tRid:{session.Rid}");
             }
-
-            //TODO 如果上一个请求方法相同 但还没有执行完，本次请求返回等待异常
-
-            //请求频率监控
-            //获取相同请求最后一次监控
-            //if (RequstInterval.HasValue)
-            //{
-            //    //设置失败 请求过高
-            //    if (!session.SetLastRequest(session.Rid, Name, RequstInterval.Value))
-            //        throw new AbstactGameException(ServerCode.RepeatedRequest);
-            //}
-
-            //var defaultCulture = session.AppServer.Config.Options.GetValue("defaultCulture");
-            //if (!string.IsNullOrEmpty(defaultCulture))
-            //    Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture(defaultCulture); 
-
-            var requestInfo = (IPokemonXRequestInfo)requestInfo2;
-
-            if (requestInfo.R)
+            
+            if (requestInfo.IsRetry)
             { //客户端请求失败 
                 var cacheName = Convert.ToString(session.CurrentO);
-                var r = session.GetLastResponse(session.Rid, cacheName);
+                var r = session.GetLastResponse<TResponse>(session.Rid, cacheName);
 
                 if (r != null)
                 {
@@ -91,18 +73,20 @@ namespace GameServer.Core.Protocol.PokemonX
                 {
                     if (Logger.IsDebugEnabled)
                         Logger.Debug($"Retry fail,Session [{session.SessionID}]");
+
+                    return;
                 }
             }
 
             if (requestInfo.Body == null)
             {
-                ExecuteJsonCommand(session, default(TJsonCommandInfo));
+                ExecuteGameCommand(session, default(TRequest));
             }
             else
             {
-                var jsonCommandInfo = (TJsonCommandInfo)requestInfo.Body.ToObject(m_CommandInfoType);
+                var jsonCommandInfo = requestInfo.GetTypeBody<TRequest>();
                 Args = jsonCommandInfo;
-                ExecuteJsonCommand(session, jsonCommandInfo);
+                ExecuteGameCommand(session, jsonCommandInfo);
             }
 
             //session.ProcessEx(requestInfo.Ex);
@@ -123,6 +107,6 @@ namespace GameServer.Core.Protocol.PokemonX
         /// </summary>
         /// <param name="session">The session.</param>
         /// <param name="data">The command info.</param>
-        protected abstract void ExecuteJsonCommand(TSession session, TJsonCommandInfo data);
+        protected abstract void ExecuteGameCommand(TSession session, TRequest data);
     }
 }
