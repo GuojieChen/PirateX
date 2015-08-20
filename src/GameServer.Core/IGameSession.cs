@@ -1,4 +1,5 @@
 ﻿using System;
+using Autofac;
 using GameServer.Core.Package;
 using GameServer.Core.Protocol;
 using SuperSocket.SocketBase;

@@ -65,8 +65,8 @@ namespace GameServer.Core.Protocol.V1
         protected override IRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
         {
 #if TRACE
-            if (_session.ProtocolPackage.PackageProcessor.ClientKeys.Any() && _session.ProtocolPackage.PackageProcessor.ServerKeys.Any())
-                PrintKeys(new[] { "ClientKey", "ServerKey" }, _session.ProtocolPackage.PackageProcessor.ClientKeys[0], _session.ProtocolPackage.PackageProcessor.ServerKeys[0]);
+            if (_session.ProtocolPackage.ClientKeys.Any() && _session.ProtocolPackage.ServerKeys.Any())
+                PrintKeys(new[] { "ClientKey", "ServerKey" }, _session.ProtocolPackage.ClientKeys[0], _session.ProtocolPackage.ServerKeys[0]);
 
             LogHead(bodyBuffer, offset, length);
 #endif

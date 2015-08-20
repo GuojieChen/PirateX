@@ -11,14 +11,8 @@ using Newtonsoft.Json.Linq;
 
 namespace GameServer.Core.Protocol.V1
 {
-    public class JsonSerialize:IProtocolPackage<JsonRequestInfo>
+    public class JsonPackage:AbstractProtocolPackag<JsonRequestInfo>
     {
-        public JsonSerialize(IPackageProcessor packageProcessor)
-        {
-            this.PackageProcessor = packageProcessor; 
-        }
-
-
         /// <summary>
         /// JSON 序列化配置
         /// </summary>
@@ -43,16 +37,14 @@ namespace GameServer.Core.Protocol.V1
             }
         }
 
-        public IPackageProcessor PackageProcessor { get; set; }
-
-        public byte[] SerializeObject<TMessage>(TMessage message)
+        public override byte[] SerializeObject<TMessage>(TMessage message)
         {
             return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, JsonSettings));
         }
 
-        public JsonRequestInfo DeObject(byte[] datas)
+        public override JsonRequestInfo DeObject(byte[] datas)
         {
-            var body = Encoding.UTF8.GetString(PackageProcessor.Unpack(datas));
+            var body = Encoding.UTF8.GetString(base.Unpack(datas));
 
             var jObject = JObject.Parse(body);
             

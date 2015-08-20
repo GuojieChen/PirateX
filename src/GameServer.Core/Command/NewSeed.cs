@@ -24,8 +24,8 @@ namespace GameServer.Core.Command
 
             //用客户端的seed生成一个seed
             //保存秘钥
-            session.ProtocolPackage.PackageProcessor.ClientKeys.Add(clientKey.MakeKey());
-            session.ProtocolPackage.PackageProcessor.ServerKeys.Add(serverKey.MakeKey());
+            session.ProtocolPackage.ClientKeys.Add(clientKey.MakeKey());
+            session.ProtocolPackage.ServerKeys.Add(serverKey.MakeKey());
 
             return new NewSeedResponse()
             {

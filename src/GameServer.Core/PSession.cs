@@ -31,6 +31,7 @@ namespace GameServer.Core
         public int ServerId { get; set; }
 
         #region IOC
+
         private ILifetimeScope _container;
         private ILifetimeScope _fContainer;
         private ILifetimeScope Build
@@ -51,7 +52,7 @@ namespace GameServer.Core
         }
         #endregion
         
-        public IProtocolPackage ProtocolPackage => Build.Resolve<IProtocolPackage>();
+        public IProtocolPackage ProtocolPackage { get; private set;  }
 
         protected override void OnSessionStarted()
         {
@@ -132,6 +133,13 @@ namespace GameServer.Core
         protected override void HandleUnknownRequest(IGameRequestInfo requestInfo)
         {
             //SendError(requestInfo.Key, new AbstactGameException(ServerCode.NotFound, requestInfo.Key));
+        }
+
+        protected override void OnInit()
+        {
+            base.OnInit();
+            // 实例化一个 协议包处理器
+            ProtocolPackage = Build.Resolve<IProtocolPackage>(); 
         }
 
         #region 请求结果的缓存

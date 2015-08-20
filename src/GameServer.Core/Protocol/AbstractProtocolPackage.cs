@@ -1,34 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
-using SuperSocket.SocketBase.Logging;
+using System.Threading.Tasks;
+using GameServer.Core.Package;
 
-namespace GameServer.Core.Package
+namespace GameServer.Core.Protocol
 {
-    /// <summary> 默认的数据包处理器
-    /// </summary>
-    public class DefaultPackageProcessor:IPackageProcessor
+    public abstract class AbstractProtocolPackag : AbstractProtocolPackag<IGameRequestInfo>
     {
+        
+    }
+
+    public abstract class AbstractProtocolPackag<TRequestInfo> : IProtocolPackage<TRequestInfo> where TRequestInfo : IGameRequestInfo
+
+    {
+
         public IZip Zip { get; private set; }
         public ICrypto Crypto { get; set; }
-        
+
         public bool ZipEnable { get; set; }
         public bool CryptoEnable { get; set; }
         public IList<byte[]> ClientKeys { get; set; }
         public IList<byte[]> ServerKeys { get; set; }
 
-        public DefaultPackageProcessor()
-        {
-            ZipEnable = true;
-            Zip = new GZip();
-            Crypto = new XXTea();
+        public abstract byte[] SerializeObject<TMessage>(TMessage message);
 
-            ClientKeys = new List<byte[]>(8); //用一个字节来表示加密算法的开关，这里用8个长度来存储秘钥
-            ServerKeys = new List<byte[]>(8);
-        }
-        
-        public byte[] Pack(byte[] datas)
+        public abstract TRequestInfo DeObject(byte[] datas);
+
+
+        public virtual byte[] Pack(byte[] datas)
         {
             var compress = ZipEnable ? Zip.Compress(datas) : datas;
 
