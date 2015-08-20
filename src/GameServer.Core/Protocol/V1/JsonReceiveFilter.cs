@@ -17,7 +17,7 @@ namespace GameServer.Core.Protocol.V1
      1字节表示是否启用压缩
      1字节表示加密方式 128表示XXTea
     */
-    public class JsonReceiveFilter : FixedHeaderReceiveFilter<IRequestInfo>
+    public class JsonReceiveFilter : FixedHeaderReceiveFilter<IGameRequestInfo>
     {
         private ILog Logger { get; set; }
 
@@ -62,7 +62,7 @@ namespace GameServer.Core.Protocol.V1
             }
         }
 
-        protected override IRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
+        protected override IGameRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
         {
 #if TRACE
             if (_session.ProtocolPackage.ClientKeys.Any() && _session.ProtocolPackage.ServerKeys.Any())

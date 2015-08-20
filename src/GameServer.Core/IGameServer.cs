@@ -6,21 +6,16 @@ using SuperSocket.SocketBase;
 
 namespace GameServer.Core
 {
-    public interface IGameServer : IGameServer<long>
-    {
-        
-    }
-
-    public interface IGameServer<in TRidKey> : IAppServer
+    public interface IGameServer<TGameServerConfig> : IAppServer where TGameServerConfig :IGameServerConfig
     {
 
-        IGameContainer GameContainer { get; set; }
+        IGameContainer<TGameServerConfig> GameContainer { get; set; }
 
         /// <summary> 广播消息 
         /// </summary>
         /// <typeparam name="TMessage"></typeparam>
         /// <param name="message"></param>
         /// <param name="rids"></param>
-        void Broadcast<TMessage>(TMessage message, IQueryable<TRidKey> rids); 
+        void Broadcast<TMessage>(TMessage message, IQueryable<long> rids); 
     }
 }

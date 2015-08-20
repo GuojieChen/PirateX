@@ -10,22 +10,22 @@ using ServiceStack.Redis;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
 using SuperSocket.SocketBase.Protocol;
-using IGameServer = GameServer.Core.IGameServer;
 using IServerConfig = SuperSocket.SocketBase.Config.IServerConfig;
 
 namespace GameServer.Core
 {
-    public abstract class PServer<TSession, TErrorCode> : AppServer<TSession, IGameRequestInfo>, IGameServer
-        where TSession : PSession<TSession, TErrorCode>, new()
+    public abstract class PServer<TSession, TErrorCode,TGameServerConfig> : AppServer<TSession, IGameRequestInfo>, IGameServer<TGameServerConfig>
+        where 
+        TSession : PSession<TSession, TErrorCode>, new() where TGameServerConfig : IGameServerConfig
     {
         /// <summary> 后台工作线程列表
         /// </summary>
         protected static readonly IList<Thread> WorkerList = new List<Thread>();
-        public IGameContainer GameContainer { get; set; }
+        public IGameContainer<TGameServerConfig> GameContainer { get; set; }
 
         protected IContainer Container { get; private set; }
 
-        public PServer(IGameContainer gameContainer)
+        public PServer(IGameContainer<TGameServerConfig> gameContainer,IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) :base (receiveFilterFactory)
         {
             GameContainer = gameContainer;
         }
@@ -48,8 +48,8 @@ namespace GameServer.Core
 
         protected override bool Setup(IRootConfig rootConfig, IServerConfig config)
         {
-            var serversStr = rootConfig.OptionElements["servers"];
-            var redisHost = rootConfig.OptionElements["redisHost"];
+            var serversStr = config.Options.Get("servers");
+            var redisHost = config.Options.Get("redisHost");
 
             if (Logger.IsDebugEnabled)
             {

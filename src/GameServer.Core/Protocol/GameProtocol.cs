@@ -5,9 +5,9 @@ using SuperSocket.SocketBase.Protocol;
 
 namespace GameServer.Core.Protocol
 {
-    public class PokemonXProtocol : IReceiveFilterFactory<IRequestInfo>
+    public class PokemonXProtocol : IReceiveFilterFactory<IGameRequestInfo>
     {
-        public IReceiveFilter<IRequestInfo> CreateFilter(IAppServer appServer, IAppSession appSession, IPEndPoint remoteEndPoint)
+        public IReceiveFilter<IGameRequestInfo> CreateFilter(IAppServer appServer, IAppSession appSession, IPEndPoint remoteEndPoint)
         {
             return new JsonReceiveFilter((IGameSession)appSession);
         }

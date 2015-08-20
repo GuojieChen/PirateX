@@ -10,20 +10,8 @@ namespace GameServer.Container
 {
     /// <summary> 默认的游戏容器实现
     /// </summary>
-    public class GameContainer :IGameContainer
+    public abstract class GameContainer<TGameServerConfig> :IGameContainer<TGameServerConfig> where TGameServerConfig :IGameServerConfig
     {
-        /// <summary> 配置数据加载器
-        /// </summary>
-        private readonly IGameServerConfigLoader _serverConfigLoader;
-
-        public GameContainer(IGameServerConfigLoader serverConfigLoader)
-        {
-            if (serverConfigLoader == null)
-                throw new ArgumentNullException(nameof(serverConfigLoader));
-
-            this._serverConfigLoader = serverConfigLoader;
-        }
-        
         /// <summary>
         /// 本服所负责的游戏ID列表
         /// </summary>
@@ -54,9 +42,9 @@ namespace GameServer.Container
             }
         }
 
-        public IEnumerable<IGameServerConfig> GetServerConfigs()
+        public IEnumerable<TGameServerConfig> GetServerConfigs()
         {
-            var list = _serverConfigLoader.LoadServerConfigs();
+            var list = LoadServerConfigs();
             if (ServerIds == null)
                 return list; 
 
@@ -68,19 +56,19 @@ namespace GameServer.Container
             if (_containers.ContainsKey(serverid))
                 _containers.Remove(serverid);
 
-            return LoadServerContainer(_serverConfigLoader.GetServerConfig(serverid));
+            return LoadServerContainer(GetServerConfig(serverid));
         }
 
-        public IContainer LoadServerContainer(IGameServerConfig serverConfig)
+        public IContainer LoadServerContainer(TGameServerConfig serverConfig)
         {
             if (serverConfig == null)
                 return null;
 
             var builder = new ContainerBuilder();
 
-            builder.Register(c => serverConfig).As<IGameServerConfig>().SingleInstance();
+            builder.Register(c => serverConfig).As<TGameServerConfig>().SingleInstance();
 
-            _serverConfigLoader.SetConfig(builder, serverConfig);
+            SetConfig(builder, serverConfig);
 
             return builder.Build(); 
         }
@@ -102,6 +90,19 @@ namespace GameServer.Container
                 _containers.Add(config.Id, c);
             }
         }
+
+
+        /// <summary> 加载配置列表
+        /// </summary>
+        /// <returns></returns>
+        public abstract IEnumerable<TGameServerConfig> LoadServerConfigs();
+        /// <summary> 获取单个 配置信息 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public abstract TGameServerConfig GetServerConfig(int id);
+
+        public abstract void SetConfig(ContainerBuilder builder, TGameServerConfig config);
 
     }
 }

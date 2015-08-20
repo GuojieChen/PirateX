@@ -47,7 +47,6 @@
   <ItemGroup>
     <Compile Include="GameContainer.cs" />
     <Compile Include="IGameConfig.cs" />
-    <Compile Include="IGameConfigLoader.cs" />
     <Compile Include="IGameContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
