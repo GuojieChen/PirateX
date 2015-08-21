@@ -46,6 +46,9 @@ namespace GameServer.Core
             }
             set
             {
+                if (value == null)
+                    return; 
+
                 if (_container == null)
                     _container = value.BeginLifetimeScope();
                 _fContainer = value;
