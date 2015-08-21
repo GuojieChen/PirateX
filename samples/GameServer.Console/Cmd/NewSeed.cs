@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GameServer.Core;
+using GameServer.Core.Command;
 using GameServer.Core.Protocol.V1;
-using SuperSocket.SocketBase;
 
-namespace GameServer.Console
+namespace GameServer.Console.Cmd
 {
-    public class DemoSession:PSession<DemoSession,Enum>
+    public class NewSeed :NewSeed<DemoSession>
     {
 
     }

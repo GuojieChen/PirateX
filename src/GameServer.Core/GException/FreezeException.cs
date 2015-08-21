@@ -8,6 +8,7 @@ namespace GameServer.Core.GException
 {
     /// <summary> 角色冻结异常
     /// </summary>
+    [Serializable]
     public class FreezeException :Exception
     {
     }

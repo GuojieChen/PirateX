@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GameServer.Core.Package;
+using GameServer.Core.Protocol.Package;
 
 namespace GameServer.Core.Protocol
 {

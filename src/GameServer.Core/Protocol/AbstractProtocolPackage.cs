@@ -4,18 +4,33 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GameServer.Core.Package;
+using GameServer.Core.Protocol.Package;
 
 namespace GameServer.Core.Protocol
 {
     public abstract class AbstractProtocolPackag : AbstractProtocolPackag<IGameRequestInfo>
     {
-        
+        protected AbstractProtocolPackag(IZip zip, ICrypto crypto) : base(zip, crypto)
+        {
+        }
     }
 
     public abstract class AbstractProtocolPackag<TRequestInfo> : IProtocolPackage<TRequestInfo> where TRequestInfo : IGameRequestInfo
 
     {
+        protected AbstractProtocolPackag(IZip zip,ICrypto crypto)
+        {
+            ZipEnable = true;
+            ClientKeys = new List<byte[]>(8); //用一个字节来表示加密算法的开关，这里用8个长度来存储秘钥
+            ServerKeys = new List<byte[]>(8);
+            Zip = zip;
+            Crypto = crypto;
+        }
+
+        protected AbstractProtocolPackag():this(new Zip(),new XXTea())
+        {
+            
+        }
 
         public IZip Zip { get; private set; }
         public ICrypto Crypto { get; set; }

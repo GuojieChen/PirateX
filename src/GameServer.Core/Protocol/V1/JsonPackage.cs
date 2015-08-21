@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GameServer.Core.Json;
-using GameServer.Core.Package;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -13,6 +12,12 @@ namespace GameServer.Core.Protocol.V1
 {
     public class JsonPackage:AbstractProtocolPackag<JsonRequestInfo>
     {
+
+        public JsonPackage()
+        {
+        }
+
+
         /// <summary>
         /// JSON 序列化配置
         /// </summary>
@@ -39,7 +44,7 @@ namespace GameServer.Core.Protocol.V1
 
         public override byte[] SerializeObject<TMessage>(TMessage message)
         {
-            return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, JsonSettings));
+            return base.Pack(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, JsonSettings)));
         }
 
         public override JsonRequestInfo DeObject(byte[] datas)

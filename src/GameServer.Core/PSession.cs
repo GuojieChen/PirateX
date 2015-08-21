@@ -3,7 +3,6 @@ using System.Net;
 using System.Text;
 using Autofac;
 using GameServer.Core.GException;
-using GameServer.Core.Package;
 using GameServer.Core.Protocol;
 using ServiceStack;
 using ServiceStack.Redis;
@@ -52,7 +51,7 @@ namespace GameServer.Core
         }
         #endregion
         
-        public IProtocolPackage ProtocolPackage { get; private set;  }
+        public IProtocolPackage<IGameRequestInfo> ProtocolPackage { get; set;  }
 
         protected override void OnSessionStarted()
         {
@@ -65,6 +64,12 @@ namespace GameServer.Core
             base.OnSessionClosed(reason);
             if (Logger.IsDebugEnabled)
                 Logger.Debug($"Session {reason}:{this.SessionID}");
+
+            if (_container != null)
+            {
+                _container.Dispose();
+                _container = null;
+            }
         }
 
         protected override void HandleException(System.Exception e)
@@ -133,13 +138,13 @@ namespace GameServer.Core
         protected override void HandleUnknownRequest(IGameRequestInfo requestInfo)
         {
             //SendError(requestInfo.Key, new AbstactGameException(ServerCode.NotFound, requestInfo.Key));
+            if(Logger.IsErrorEnabled)
+                Logger.Error($"Unknow request\t:\t{requestInfo.Key}");
         }
 
         protected override void OnInit()
         {
             base.OnInit();
-            // 实例化一个 协议包处理器
-            ProtocolPackage = Build.Resolve<IProtocolPackage>(); 
         }
 
         #region 请求结果的缓存
@@ -197,8 +202,8 @@ namespace GameServer.Core
 
             var result = TrySend(data, 0, data.Length);
 
-            if (Logger.IsDebugEnabled)
-                Logger.Debug(string.Format("Response[{4}]\t#{0}#\t{1}\t{2}\t{3}", Rid, this.RemoteEndPoint, SessionID, message?.ToJsv(), result));
+            if (Logger.IsInfoEnabled)
+                Logger.Info(string.Format("Response[{4}]\t#{0}#\t{1}\t{2}\t{3}", Rid, this.RemoteEndPoint, SessionID, message?.ToJsv(), result));
         }
 
         public virtual void ProcessedRequest(string name, object args, long pms, long sms, long ms, DateTime start, DateTime end, string o)

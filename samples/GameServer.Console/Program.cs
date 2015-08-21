@@ -38,7 +38,10 @@ namespace GameServer.Console
             {
                 foreach (var appServer in bootstrap.AppServers)
                 {
+                    var a = System.Console.ForegroundColor; 
+                    System.Console.ForegroundColor = ConsoleColor.Green;
                     System.Console.WriteLine("{0,20}\t{1,-4}", appServer.Name, appServer.State);
+                    System.Console.ForegroundColor = a;
                 }
             }
 

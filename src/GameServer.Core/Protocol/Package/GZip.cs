@@ -1,31 +1,45 @@
 ﻿using System.IO;
 using System.IO.Compression;
 
-namespace GameServer.Core.Package
+namespace GameServer.Core.Protocol.Package
 {
     public class GZip:IZip
     {
         public byte[] Compress(byte[] datas)
         {
-            using (var outMemoryStream = new MemoryStream())
+            byte[] bytes = null;
 
-            using (var outZStream = new GZipStream(outMemoryStream, CompressionLevel.Fastest,true))
-            using (Stream inMemoryStream = new MemoryStream(datas))
+            var outMemoryStream = new MemoryStream();
+
+            using (var outZStream = new GZipStream(outMemoryStream, CompressionMode.Compress))
             {
-                inMemoryStream.CopyTo(outZStream);
-                return outMemoryStream.ToArray();
+                outZStream.Write(datas,0,datas.Length);
+                bytes = outMemoryStream.ToArray();
             }
+
+            outMemoryStream.Close();
+            outMemoryStream.Dispose();
+
+            return bytes;
         }
 
         public byte[] Decompress(byte[] datas)
         {
-            using (var outMemoryStream = new MemoryStream())
-            using (var outZStream = new GZipStream(outMemoryStream, CompressionMode.Decompress))
-            using (Stream inMemoryStream = new MemoryStream(datas))
+            byte[] bytes = null; 
+            var outMemoryStream = new MemoryStream();
+            var inMemoryStream = new MemoryStream(datas);
+            using (var outZStream = new GZipStream(inMemoryStream, CompressionMode.Decompress))
             {
-                inMemoryStream.CopyTo(outZStream);
-                return  outMemoryStream.ToArray();
+                outZStream.CopyTo(outMemoryStream);
+                bytes = outMemoryStream.ToArray();
             }
+
+            inMemoryStream.Close();
+            inMemoryStream.Dispose();
+            outMemoryStream.Close();
+            outMemoryStream.Dispose();
+
+            return bytes;
         }
     }
 }

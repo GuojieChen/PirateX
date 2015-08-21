@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace GameServer.Core.Package
+namespace GameServer.Core.Protocol.Package
 {
     public class XXTea : ICrypto
     {

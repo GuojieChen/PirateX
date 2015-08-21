@@ -5,6 +5,7 @@ using System.Threading;
 using Autofac;
 using GameServer.Container;
 using GameServer.Core.Protocol;
+using GameServer.Core.Protocol.V1;
 using ServiceStack.Messaging.Redis;
 using ServiceStack.Redis;
 using SuperSocket.SocketBase;
@@ -44,7 +45,13 @@ namespace GameServer.Core
                     session.SendMessage(message);
             }, exception => Logger.Error(exception));
         }
-        
+
+        protected override void OnNewSessionConnected(TSession session)
+        {
+            base.OnNewSessionConnected(session);
+
+            session.ProtocolPackage = Container.Resolve<IProtocolPackage<IGameRequestInfo>>();
+        }
 
         protected override bool Setup(IRootConfig rootConfig, IServerConfig config)
         {
@@ -53,7 +60,7 @@ namespace GameServer.Core
 
             if (Logger.IsDebugEnabled)
             {
-                Logger.Debug($"game Config >>>>>>>>>>>>>>>>>>>>>");
+                Logger.Debug($"Game Config >>>>>>>>>>>>>>>>>>>>>");
                 Logger.Debug($"servers\t:\t{serversStr}");
                 Logger.Debug($"redisHost\t:\t{redisHost}");
             }
@@ -70,6 +77,8 @@ namespace GameServer.Core
             builder.Register(c => new PooledRedisClientManager(redisHost.Split(',')))
                 .As<IRedisClientsManager>()
                 .SingleInstance();
+            //默认的包解析器
+            builder.Register(c => new JsonPackage()).As<IProtocolPackage<IGameRequestInfo>>();
 
             builder.Register(c => rootConfig).As<IRootConfig>().SingleInstance();
             builder.Register(c => redisHost).Named<string>("RedisHost");

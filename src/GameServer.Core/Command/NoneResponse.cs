@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameServer.Core.GException
+namespace GameServer.Core.Command
 {
-    [Serializable]
-    public class PreconditionException : Exception
+    public class NoneResponse
     {
-
     }
 }

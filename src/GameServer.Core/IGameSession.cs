@@ -1,6 +1,5 @@
 ﻿using System;
 using Autofac;
-using GameServer.Core.Package;
 using GameServer.Core.Protocol;
 using SuperSocket.SocketBase;
 
@@ -20,7 +19,7 @@ namespace GameServer.Core
         /// </summary>
         DateTime LastResponseTime { get; set; }
 
-        IProtocolPackage ProtocolPackage { get;  } 
+        IProtocolPackage<IGameRequestInfo> ProtocolPackage { get; set; } 
 
         void SendMessage<TResponse>(TResponse message);
         /*

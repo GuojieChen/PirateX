@@ -1,4 +1,4 @@
-﻿namespace GameServer.Core.Package
+﻿namespace GameServer.Core.Protocol.Package
 {
     public interface IZip
     {

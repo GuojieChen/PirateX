@@ -9,7 +9,6 @@ namespace GameServer.Core
         private static string _onlineRedisHost;
         private static bool? _alterTable;
         private static bool? _single;
-        private static string _mongoDbHost;
 
         /// <summary> 共享数据库连接字符串
         /// </summary>

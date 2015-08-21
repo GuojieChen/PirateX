@@ -89,7 +89,7 @@ namespace GameServer.Core.Logging
         /// <param name="exception">The exception.</param>
         public void Debug(object message, Exception exception)
         {
-            if (message != null) m_Log.Debug(message.ToString(), exception);
+            if (message != null) m_Log.Debug(exception);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace GameServer.Core.Logging
         /// <param name="exception">The exception.</param>
         public void Error(object message, Exception exception)
         {
-            if (message != null) m_Log.Error(message.ToString(), exception);
+            if (message != null) m_Log.Error(exception);
         }
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace GameServer.Core.Logging
         /// <param name="exception">The exception.</param>
         public void Fatal(object message, Exception exception)
         {
-            m_Log?.Fatal(message: message.ToString(), exception: exception);
+            m_Log?.Fatal(exception);
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace GameServer.Core.Logging
         /// <param name="exception">The exception.</param>
         public void Info(object message, Exception exception)
         {
-            m_Log.Info(message.ToString(), exception);
+            m_Log.Info( exception);
         }
 
         /// <summary>
@@ -381,7 +381,7 @@ namespace GameServer.Core.Logging
         /// <param name="exception">The exception.</param>
         public void Warn(object message, Exception exception)
         {
-            m_Log.Warn(message.ToString(), exception);
+            m_Log.Warn(exception);
         }
 
         /// <summary>

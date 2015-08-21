@@ -22,7 +22,7 @@ namespace GameServer.Core.Filters
         {
             commandContext.Session.Items[ItemsConst.SeedCreated] = true;
 
-            ((PSession)commandContext.Session).ProtocolPackage.CryptoEnable = true;
+            ((IGameSession)commandContext.Session).ProtocolPackage.CryptoEnable = true;
         }
     }
 }

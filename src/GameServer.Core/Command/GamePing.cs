@@ -6,16 +6,21 @@ using SuperSocket.SocketBase;
 
 namespace GameServer.Core.Command
 {
-    public class GamePing<TSession>: GameCommand<TSession, PingRequest, PingResponse>
+    public class GamePing<TSession>: GameCommand<TSession, NoneRequest, PingResponse>
         //CommandBase<TSession,GameRequestInfoV1> 
-        where TSession : PSession<TSession, Enum>, IAppSession<TSession, JsonRequestInfo>, new()
+        where TSession : PSession<TSession, Enum>, IAppSession<TSession, IGameRequestInfo>, new()
     {
-        protected override PingResponse ExecuteResponseCommand(TSession session, PingRequest data)
+        protected override PingResponse ExecuteResponseCommand(TSession session, NoneRequest data)
         {
             return new PingResponse()
             {
                 T = TimeUtil.GetTimestamp()
             };
         }
+    }
+
+    public class PingResponse
+    {
+        public long T { get; set; }
     }
 }

@@ -64,7 +64,7 @@ namespace GameServer.Core.Protocol.V1
 
         protected override IGameRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
         {
-#if TRACE
+#if DEBUG
             if (_session.ProtocolPackage.ClientKeys.Any() && _session.ProtocolPackage.ServerKeys.Any())
                 PrintKeys(new[] { "ClientKey", "ServerKey" }, _session.ProtocolPackage.ClientKeys[0], _session.ProtocolPackage.ServerKeys[0]);
 
@@ -72,8 +72,8 @@ namespace GameServer.Core.Protocol.V1
 #endif
             var requestinfo = _session.ProtocolPackage.DeObject(bodyBuffer.CloneRange(offset, length));
 
-            if (Logger.IsDebugEnabled)
-                Logger.Debug($"Request\t#{_session.Rid}#\t{_session.RemoteEndPoint}\t{_session.SessionID}\t{requestinfo?.ToJsv()}");
+            if (Logger.IsInfoEnabled)
+                Logger.Info($"Request\t#{_session.Rid}#\t{_session.RemoteEndPoint}\t{_session.SessionID}\t\r\n{requestinfo?.Body??"NULL"}");
 
             if (string.IsNullOrEmpty(requestinfo?.Key) || _session.MyLastO > requestinfo.OrderId)
             {

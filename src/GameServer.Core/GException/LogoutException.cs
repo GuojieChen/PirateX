@@ -8,6 +8,7 @@ namespace GameServer.Core.GException
 {
     /// <summary> 已经登出
     /// </summary>
+    [Serializable]
     public class LogoutException : Exception
     {
 
