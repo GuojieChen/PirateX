@@ -5,6 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using GameServer.Core.Protocol;
 using SuperSocket.SocketBase;
+using Autofac;
+using GameServer.Core.Cointainer;
+using GameServer.Core.Online;
+using ServiceStack;
 
 namespace GameServer.Core.Command
 {
@@ -13,10 +17,11 @@ namespace GameServer.Core.Command
     /// <typeparam name="TSession"></typeparam>
     /// <typeparam name="TLoginRequest"></typeparam>
     /// <typeparam name="TLoginResponse"></typeparam>
-    public abstract class Login<TSession,TLoginRequest, TLoginResponse> : GameCommand<TSession, TLoginRequest, TLoginResponse>
-        where TSession : PSession<TSession, Enum>, IAppSession<TSession, IGameRequestInfo>, new()
+    public abstract class Login<TSession,TGameServerConfig,TLoginRequest, TLoginResponse> : GameCommand<TSession, TLoginRequest, TLoginResponse>
+        where TSession : PSession<TSession>, IGameSession, new()
         where TLoginRequest :ILoginRequest
         where TLoginResponse :ILoginResponse
+        where TGameServerConfig :IGameServerConfig
     {
         protected override TLoginResponse ExecuteResponseCommand(TSession session, TLoginRequest data)
         {
@@ -28,7 +33,7 @@ namespace GameServer.Core.Command
                 ServerId = data.ServerId
             };
 #else
-            token = UnPackToken(data.Token);
+            token = UnPackToken(data);
             if (token == null)
             {
 
@@ -42,19 +47,47 @@ namespace GameServer.Core.Command
                 session.Close();
             }
 
-            //TODO Server在线统计 
-            //TODO 在线状态
+            var appserver = (IGameServer<TGameServerConfig>) session.AppServer;
+
+            session.Build = appserver.GameContainer.GetServerContainer(token.ServerId);
+
+            if (session.Build == null)
+            {
+                if(Logger.IsFatalEnabled)
+                    Logger.Fatal($"Can't find game container\t:\t{token.ServerId}");
+                session.Close();
+            }
+            session.Rid = token.Rid;
+            session.ServerId = token.ServerId;
+
             //TODO 单设备登陆
 
+            var onlineManager = appserver.Container.Resolve<IOnlineManager>();
+            var onlineRole = GetOnlineRole(session, data);
+            onlineManager.Login(onlineRole);
 
-            throw new NotImplementedException();
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"Set role online\t:\t{onlineRole.ToJsv()}");
+            
+            return DoLogin(session,data);
         }
-
+        /// <summary> 执行游戏的登录逻辑
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public abstract TLoginResponse DoLogin(TSession session, TLoginRequest request);
+        /// <summary> 获取在线玩家在线信息
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public abstract IOnlineRole GetOnlineRole(TSession session,TLoginRequest request);
         /// <summary> 解析Token包
         /// </summary>
-        /// <param name="token"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
-        public abstract IToken UnPackToken(string token);
+        public abstract IToken UnPackToken(TLoginRequest data);
     }
 
     public class DebugToken : IToken

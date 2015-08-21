@@ -105,19 +105,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cointainer\GameContainer.cs" />
+    <Compile Include="Cointainer\IGameConfig.cs" />
+    <Compile Include="Cointainer\IGameContainer.cs" />
     <Compile Include="Command\Login.cs" />
-    <Compile Include="Command\NewSeedRequest.cs" />
-    <Compile Include="Command\NewSeedResponse.cs" />
     <Compile Include="Command\NoneRequest.cs" />
     <Compile Include="Command\NoneResponse.cs" />
-    <Compile Include="Command\PingRequest.cs" />
-    <Compile Include="Command\PingResponse.cs" />
+    <Compile Include="Domain\IEntityBase.cs" />
     <Compile Include="GException\FreezeException.cs" />
     <Compile Include="GException\LogoutException.cs" />
     <Compile Include="GException\PreconditionException.cs" />
     <Compile Include="Json\DoubleConverter.cs" />
     <Compile Include="Localization\LocalizationString.cs" />
     <Compile Include="Localization\LocalizationStringExtensions.cs" />
+    <Compile Include="Online\IOnlineManager.cs" />
+    <Compile Include="Online\RedisOnlineManager.cs" />
     <Compile Include="Protocol\Package\Zip.cs" />
     <Compile Include="Protocol\Package\ICrypto.cs" />
     <Compile Include="Protocol\AbstractProtocolPackage.cs" />
@@ -171,16 +173,9 @@
     <Folder Include="Cache\" />
     <Folder Include="Db\MySql\" />
     <Folder Include="Db\SqlServer\" />
-    <Folder Include="Domain\" />
     <Folder Include="Protocol\V2\" />
     <Folder Include="Record\" />
     <Folder Include="Service\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\GameServer.Container\GameServer.Container.csproj">
-      <Project>{ceac0b62-c88b-4fe4-810a-0ad506b3a9fb}</Project>
-      <Name>GameServer.Container</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

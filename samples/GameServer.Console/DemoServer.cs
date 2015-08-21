@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
-using GameServer.Container;
 using GameServer.Core;
+using GameServer.Core.Cointainer;
 using GameServer.Core.Protocol;
 using GameServer.Core.Protocol.V1;
 using ServiceStack.Redis;
 
 namespace GameServer.Console
 {
-    public class DemoServer : PServer<DemoSession, Enum,GameServerConfig>
+    public class DemoServer : PServer<DemoSession,GameServerConfig>
     {
         public DemoServer() : base(new DemoGameContainer(),new PokemonXProtocol())
         {

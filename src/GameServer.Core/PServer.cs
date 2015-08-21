@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Autofac;
-using GameServer.Container;
+using GameServer.Core.Cointainer;
+using GameServer.Core.Online;
 using GameServer.Core.Protocol;
 using GameServer.Core.Protocol.V1;
 using ServiceStack.Messaging.Redis;
@@ -11,20 +12,19 @@ using ServiceStack.Redis;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
 using SuperSocket.SocketBase.Protocol;
-using IServerConfig = SuperSocket.SocketBase.Config.IServerConfig;
 
 namespace GameServer.Core
 {
-    public abstract class PServer<TSession, TErrorCode,TGameServerConfig> : AppServer<TSession, IGameRequestInfo>, IGameServer<TGameServerConfig>
-        where 
-        TSession : PSession<TSession, TErrorCode>, new() where TGameServerConfig : IGameServerConfig
+    public abstract class PServer<TSession,TGameServerConfig> : AppServer<TSession, IGameRequestInfo>, IGameServer<TGameServerConfig>
+        where TSession : PSession<TSession>, new() 
+        where TGameServerConfig : IGameServerConfig
     {
         /// <summary> 后台工作线程列表
         /// </summary>
         protected static readonly IList<Thread> WorkerList = new List<Thread>();
         public IGameContainer<TGameServerConfig> GameContainer { get; set; }
 
-        protected IContainer Container { get; private set; }
+        public IContainer Container { get; private set; }
 
         public PServer(IGameContainer<TGameServerConfig> gameContainer,IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) :base (receiveFilterFactory)
         {
@@ -76,6 +76,10 @@ namespace GameServer.Core
 
             builder.Register(c => new PooledRedisClientManager(redisHost.Split(',')))
                 .As<IRedisClientsManager>()
+                .SingleInstance();
+
+            builder.Register(c => new RedisOnlineManager(c.Resolve<IRedisClientsManager>()))
+                .As<IOnlineManager>()
                 .SingleInstance();
             //默认的包解析器
             builder.Register(c => new JsonPackage()).As<IProtocolPackage<IGameRequestInfo>>();
@@ -149,6 +153,18 @@ namespace GameServer.Core
             _mqServer.Stop();
 
             base.Stop();
+        }
+
+        protected override void OnSessionClosed(TSession session, CloseReason reason)
+        {
+            base.OnSessionClosed(session, reason);
+
+            var onlineManager = this.Container.Resolve<IOnlineManager>();
+            onlineManager.Logout(session.Rid, session.SessionID);
+
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"Set role offline\t:\t {session.Rid}\t:{session.SessionID}\t{reason}");
+
         }
     }
 }

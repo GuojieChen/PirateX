@@ -30,7 +30,7 @@ namespace GameServer.Core.Protocol
             var start = DateTime.Now;
 
             var cacheName = Convert.ToString(session.CurrentO);
-            var rid = session.Items.ContainsKey("Rid") ? Convert.ToInt64(session.Items["Rid"]) : 0;
+            var rid = session.Items.ContainsKey("Id") ? Convert.ToInt64(session.Items["Id"]) : 0;
 
             var response = ExecuteResponseCommand(session, data);
             pms = sw.ElapsedMilliseconds;

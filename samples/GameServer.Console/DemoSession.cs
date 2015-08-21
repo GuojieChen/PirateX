@@ -9,7 +9,7 @@ using SuperSocket.SocketBase;
 
 namespace GameServer.Console
 {
-    public class DemoSession:PSession<DemoSession,Enum>
+    public class DemoSession:PSession<DemoSession>
     {
 
     }

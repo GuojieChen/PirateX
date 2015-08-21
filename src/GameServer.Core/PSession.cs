@@ -2,7 +2,9 @@
 using System.Net;
 using System.Text;
 using Autofac;
+using GameServer.Core.Cointainer;
 using GameServer.Core.GException;
+using GameServer.Core.Online;
 using GameServer.Core.Protocol;
 using ServiceStack;
 using ServiceStack.Redis;
@@ -12,11 +14,11 @@ using IGameSession = GameServer.Core.IGameSession;
 
 namespace GameServer.Core
 {
-    public class PSession : PSession<PSession, Enum>, IAppSession<PSession, IGameRequestInfo>
+    public class PSession : PSession<PSession>
     {
     }
 
-    public class PSession<TSession, TErrorCode> : AppSession<TSession, IGameRequestInfo>, IGameSession where
+    public class PSession<TSession> : AppSession<TSession, IGameRequestInfo>, IGameSession where
         TSession : AppSession<TSession, IGameRequestInfo>, new()
 
     {
@@ -33,7 +35,7 @@ namespace GameServer.Core
 
         private ILifetimeScope _container;
         private ILifetimeScope _fContainer;
-        private ILifetimeScope Build
+        public ILifetimeScope Build
         {
             get
             {
@@ -50,7 +52,8 @@ namespace GameServer.Core
             }
         }
         #endregion
-        
+
+
         public IProtocolPackage<IGameRequestInfo> ProtocolPackage { get; set;  }
 
         protected override void OnSessionStarted()
@@ -62,8 +65,6 @@ namespace GameServer.Core
         protected override void OnSessionClosed(CloseReason reason)
         {
             base.OnSessionClosed(reason);
-            if (Logger.IsDebugEnabled)
-                Logger.Debug($"Session {reason}:{this.SessionID}");
 
             if (_container != null)
             {
@@ -74,7 +75,7 @@ namespace GameServer.Core
 
         protected override void HandleException(System.Exception e)
         {
-            if (!(e is AbstactGameException<TErrorCode>))
+            if (!(e is AbstactGameException))
             {
                 if (Logger.IsErrorEnabled)
                     Logger.Error(e.Message, e);
@@ -90,9 +91,9 @@ namespace GameServer.Core
             object code = null;
             string msg = null;
 
-            if (e is AbstactGameException<TErrorCode>)
+            if (e is AbstactGameException)
             {
-                code = (e as AbstactGameException<TErrorCode>).CodeValue;
+                code = (e as AbstactGameException).CodeValue;
                 msg = e.ToString();
             }
             else if (e is WebException)
@@ -112,7 +113,7 @@ namespace GameServer.Core
                 msg = "ServerError"; //e.Message;
             }
 
-            if (!(e is AbstactGameException<TErrorCode>))
+            if (!(e is AbstactGameException))
             {
                 if (Logger.IsErrorEnabled)
                     Logger.Error($"Exception [{ServerId}:{Rid}] - {e.Message} ", e);

@@ -4,7 +4,7 @@ using GameServer.Core.GException;
 namespace GameServer.Core.Protocol.V1
 {
     [Serializable]
-    public class PokemonXException : AbstactGameException<Enum>
+    public class PokemonXException : AbstactGameException
     {
         public PokemonXException(Enum code) : base(code)
         {

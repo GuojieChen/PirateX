@@ -5,14 +5,14 @@ namespace GameServer.Core.GException
 {
     /// <summary> 异常类型 </summary>
     [Serializable]
-    public class AbstactGameException<TCodeKey> : System.Exception
+    public class AbstactGameException : System.Exception
     {
         public virtual object CodeValue
         {
             get { return Code;  }
         }
 
-        public TCodeKey Code { get; private set; }
+        public object Code { get; private set; }
         /// <summary>
         /// 附带的参数值列表
         /// </summary>
@@ -21,7 +21,7 @@ namespace GameServer.Core.GException
         /// 异常构造函数
         /// </summary>
         /// <param name="code"></param>
-        public AbstactGameException(TCodeKey code)
+        public AbstactGameException(object code)
         {
             Code = code;
         }
@@ -30,7 +30,7 @@ namespace GameServer.Core.GException
         /// </summary>
         /// <param name="code"></param>
         /// <param name="strs"></param>
-        public AbstactGameException(TCodeKey code, params object[] strs)
+        public AbstactGameException(object code, params object[] strs)
         {
             Code = code;
             Params = strs;

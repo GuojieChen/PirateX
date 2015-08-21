@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer.Console", "GameS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer.Core", "..\src\GameServer.Core\GameServer.Core.csproj", "{3EFD3B67-334F-4A08-9A7E-75FD9B50D03A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer.Container", "..\src\GameServer.Container\GameServer.Container.csproj", "{CEAC0B62-C88B-4FE4-810A-0AD506B3A9FB}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FBD3A58B-124D-4275-AEE3-C111A9989722}"
 EndProject
 Global
@@ -25,16 +23,11 @@ Global
 		{3EFD3B67-334F-4A08-9A7E-75FD9B50D03A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EFD3B67-334F-4A08-9A7E-75FD9B50D03A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EFD3B67-334F-4A08-9A7E-75FD9B50D03A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CEAC0B62-C88B-4FE4-810A-0AD506B3A9FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CEAC0B62-C88B-4FE4-810A-0AD506B3A9FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CEAC0B62-C88B-4FE4-810A-0AD506B3A9FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CEAC0B62-C88B-4FE4-810A-0AD506B3A9FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3EFD3B67-334F-4A08-9A7E-75FD9B50D03A} = {FBD3A58B-124D-4275-AEE3-C111A9989722}
-		{CEAC0B62-C88B-4FE4-810A-0AD506B3A9FB} = {FBD3A58B-124D-4275-AEE3-C111A9989722}
 	EndGlobalSection
 EndGlobal

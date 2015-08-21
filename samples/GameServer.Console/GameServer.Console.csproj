@@ -112,10 +112,6 @@
     <None Include="supersocket.sh" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\GameServer.Container\GameServer.Container.csproj">
-      <Project>{ceac0b62-c88b-4fe4-810a-0ad506b3a9fb}</Project>
-      <Name>GameServer.Container</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\GameServer.Core\GameServer.Core.csproj">
       <Project>{3efd3b67-334f-4a08-9a7e-75fd9b50d03a}</Project>
       <Name>GameServer.Core</Name>

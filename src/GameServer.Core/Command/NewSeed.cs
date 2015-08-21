@@ -14,7 +14,7 @@ namespace GameServer.Core.Command
     [SeedCreatedFilter]
     public class NewSeed<TSession> : GameCommand<TSession, NewSeedRequestAndResponse, NewSeedRequestAndResponse>
         //CommandBase<TSession,GameRequestInfoV1> 
-        where TSession : PSession<TSession,Enum>, IAppSession<TSession, IGameRequestInfo>, new()
+        where TSession : PSession<TSession>, IAppSession<TSession, IGameRequestInfo>, new()
     {
         protected override NewSeedRequestAndResponse ExecuteResponseCommand(TSession session, NewSeedRequestAndResponse data)
         {

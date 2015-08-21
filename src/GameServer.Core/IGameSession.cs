@@ -22,12 +22,16 @@ namespace GameServer.Core
         IProtocolPackage<IGameRequestInfo> ProtocolPackage { get; set; } 
 
         void SendMessage<TResponse>(TResponse message);
+
+        ILifetimeScope Build { get; set; }
+
         /*
         /// <summary> 额外的操作
         /// </summary>
         /// <param name="obj"></param>
         void ProcessEx(JToken obj);
         */
+
 
         /// <summary> 当前请求序列
         /// </summary>

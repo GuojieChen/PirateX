@@ -8,7 +8,7 @@ namespace GameServer.Core.Command
 {
     public class GamePing<TSession>: GameCommand<TSession, NoneRequest, PingResponse>
         //CommandBase<TSession,GameRequestInfoV1> 
-        where TSession : PSession<TSession, Enum>, IAppSession<TSession, IGameRequestInfo>, new()
+        where TSession : PSession<TSession>, IAppSession<TSession, IGameRequestInfo>, new()
     {
         protected override PingResponse ExecuteResponseCommand(TSession session, NoneRequest data)
         {
