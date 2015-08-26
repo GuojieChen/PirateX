@@ -3,7 +3,7 @@ using SuperSocket.Common;
 using SuperSocket.Facility.Protocol;
 using SuperSocket.SocketBase.Protocol;
 
-namespace GameServer.Core.Proxy.V1
+namespace GameServer.NLB
 {
     public class GameProxyRequestReceiveFilter : FixedHeaderReceiveFilter<BinaryRequestInfo>
     {

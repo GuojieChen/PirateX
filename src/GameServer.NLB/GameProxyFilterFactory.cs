@@ -2,7 +2,7 @@
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Protocol;
 
-namespace GameServer.Core.Proxy.V1
+namespace GameServer.NLB
 {
 
     public class GameProxyFilterFactory : IReceiveFilterFactory<BinaryRequestInfo>

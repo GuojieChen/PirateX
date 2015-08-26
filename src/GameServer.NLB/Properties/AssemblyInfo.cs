@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("GameServer.Samples.Proxy")]
+[assembly: AssemblyTitle("GameServer.NLB")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("GameServer.Samples.Proxy")]
+[assembly: AssemblyProduct("GameServer.NLB")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("5bd58b1f-6703-4db2-8e30-ac832f0c7802")]
+[assembly: Guid("4f68db64-7b1a-4794-8414-e560d93816b8")]
 
 // 程序集的版本信息由下列四个值组成: 
 //

@@ -118,10 +118,6 @@
       <Project>{3efd3b67-334f-4a08-9a7e-75fd9b50d03a}</Project>
       <Name>GameServer.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\GameServer.Proxy\GameServer.Proxy.csproj">
-      <Project>{cb1d007d-e72e-4647-a1c3-23cc9a7a8796}</Project>
-      <Name>GameServer.Proxy</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
