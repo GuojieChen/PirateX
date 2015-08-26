@@ -11,7 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FBD3A58B-124
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "architecture", "architecture", "{07D326C7-30F2-43D5-8966-C24D2AD1FFFC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer.NLB", "..\src\GameServer.NLB\GameServer.NLB.csproj", "{4F68DB64-7B1A-4794-8414-E560D93816B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer.SLB", "..\src\GameServer.SLB\GameServer.SLB.csproj", "{0B32BEA5-7395-4C2C-8CF2-E36B7F33120B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer.Sample.SLB", "GameServer.Sample.SLB\GameServer.Sample.SLB.csproj", "{B64CCFA5-577E-4C07-9EAD-7A85E44309D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,16 +29,20 @@ Global
 		{3EFD3B67-334F-4A08-9A7E-75FD9B50D03A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EFD3B67-334F-4A08-9A7E-75FD9B50D03A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EFD3B67-334F-4A08-9A7E-75FD9B50D03A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4F68DB64-7B1A-4794-8414-E560D93816B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4F68DB64-7B1A-4794-8414-E560D93816B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4F68DB64-7B1A-4794-8414-E560D93816B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4F68DB64-7B1A-4794-8414-E560D93816B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B32BEA5-7395-4C2C-8CF2-E36B7F33120B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B32BEA5-7395-4C2C-8CF2-E36B7F33120B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B32BEA5-7395-4C2C-8CF2-E36B7F33120B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B32BEA5-7395-4C2C-8CF2-E36B7F33120B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B64CCFA5-577E-4C07-9EAD-7A85E44309D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B64CCFA5-577E-4C07-9EAD-7A85E44309D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B64CCFA5-577E-4C07-9EAD-7A85E44309D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B64CCFA5-577E-4C07-9EAD-7A85E44309D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3EFD3B67-334F-4A08-9A7E-75FD9B50D03A} = {FBD3A58B-124D-4275-AEE3-C111A9989722}
-		{4F68DB64-7B1A-4794-8414-E560D93816B8} = {FBD3A58B-124D-4275-AEE3-C111A9989722}
+		{0B32BEA5-7395-4C2C-8CF2-E36B7F33120B} = {FBD3A58B-124D-4275-AEE3-C111A9989722}
 	EndGlobalSection
 EndGlobal

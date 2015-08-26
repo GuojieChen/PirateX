@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using GameServer.Core.Logging;
 using SuperSocket.SocketBase;
-using SuperSocket.SocketBase.Config;
 using SuperSocket.SocketEngine;
 
 namespace GameServer.Console

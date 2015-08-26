@@ -99,11 +99,11 @@
     <None Include="App.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="log4net.config" />
-    <None Include="log4net.unix.config" />
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="log4net.config" />
+    <None Include="log4net.unix.config" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>

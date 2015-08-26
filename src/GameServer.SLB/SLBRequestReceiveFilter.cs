@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SuperSocket.Common;
 using SuperSocket.Facility.Protocol;
 using SuperSocket.SocketBase.Protocol;
 
-namespace GameServer.Proxy
+namespace GameServer.SLB
 {
-    public class GameProxyRequestReceiveFilter : FixedHeaderReceiveFilter<BinaryRequestInfo>
+    public class SLBRequestReceiveFilter : FixedHeaderReceiveFilter<BinaryRequestInfo>
     {
-        private GameProxySession _session; 
+        private SLBSession _session; 
 
-        public GameProxyRequestReceiveFilter(GameProxySession session) : base(0)
+        public SLBRequestReceiveFilter(SLBSession session) : base(0)
         {
             this._session = session;
         }
