@@ -2,7 +2,7 @@
 
 namespace GameServer.Core
 {
-    public static class ShareConfig
+    internal static class ShareConfig
     {
         private static string _shareDb;
         private static string _redisHost;
@@ -17,7 +17,7 @@ namespace GameServer.Core
             get
             {
                 if (string.IsNullOrEmpty(_shareDb))
-                    _shareDb = System.Configuration.ConfigurationManager.AppSettings.Get("ShareDb");
+                    _shareDb = System.Configuration.ConfigurationManager.AppSettings.Get("ServerDb");
 
                 return _shareDb; 
             }

@@ -27,6 +27,8 @@ namespace GameServer.Console
     public class GameServerConfig : IGameServerConfig
     {
         public int Id { get; set; }
+        public string ConnectionString { get; set; }
+        public string ConfigConnectionString { get; set; }
 
         public string Name { get; set; }
 

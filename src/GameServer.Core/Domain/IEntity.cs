@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace GameServer.Core.Domain
 {
-    public interface IEntityBase
+    public interface IEntity
     {
 
     }
 
-    public interface IEntityBase<TPrimaryKey>
+    public interface IEntity<TPrimaryKey> : IEntity
     {
         TPrimaryKey Id { get; set; }
 

@@ -66,7 +66,7 @@ namespace GameServer.Core
 
             if (Logger.IsDebugEnabled)
             {
-                Logger.Debug($"Game Config >>>>>>>>>>>>>>>>>>>>>");
+                Logger.Debug($"config");
                 Logger.Debug($"servers\t:\t{serversStr}");
                 Logger.Debug($"redisHost\t:\t{redisHost}");
                 Logger.Debug($"DefaultCulture\t:\t{Thread.CurrentThread.CurrentCulture}");
@@ -75,7 +75,7 @@ namespace GameServer.Core
             #region SERVER IOC
 
             if (Logger.IsDebugEnabled)
-                Logger.Debug("SetServerConfig >>>>>>>>>>>>>>>>>>>>>");
+                Logger.Debug("SetServerConfig");
             var builder = new ContainerBuilder();
             builder.Register(c => new RedisMqServer(new PooledRedisClientManager(redisHost.Split(','))))
                 .As<RedisMqServer>()

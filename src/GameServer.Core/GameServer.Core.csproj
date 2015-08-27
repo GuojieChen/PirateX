@@ -38,6 +38,10 @@
       <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MySql.Data, Version=6.9.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\..\samples\packages\MySql.Data.6.9.5\lib\net45\MySql.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -64,6 +68,14 @@
     </Reference>
     <Reference Include="ServiceStack.OrmLite, Version=4.0.42.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ServiceStack.OrmLite.4.0.42\lib\net45\ServiceStack.OrmLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite.MySql, Version=4.0.42.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\samples\packages\ServiceStack.OrmLite.MySql.4.0.42\lib\net45\ServiceStack.OrmLite.MySql.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite.SqlServer, Version=4.0.42.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\samples\packages\ServiceStack.OrmLite.SqlServer.4.0.42\lib\net45\ServiceStack.OrmLite.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ServiceStack.Redis, Version=4.0.42.0, Culture=neutral, processorArchitecture=MSIL">
@@ -111,7 +123,12 @@
     <Compile Include="Command\Login.cs" />
     <Compile Include="Command\NoneRequest.cs" />
     <Compile Include="Command\NoneResponse.cs" />
-    <Compile Include="Domain\IEntityBase.cs" />
+    <Compile Include="Config\IConfigKeyValueEntity.cs" />
+    <Compile Include="Config\IConfigReader.cs" />
+    <Compile Include="Config\MemoryConfigReader.cs" />
+    <Compile Include="Db\MySql\GameMySqlDialectProvider.cs" />
+    <Compile Include="Config\IConfigEntity.cs" />
+    <Compile Include="Domain\IEntity.cs" />
     <Compile Include="GException\FreezeException.cs" />
     <Compile Include="GException\LogoutException.cs" />
     <Compile Include="GException\PreconditionException.cs" />
@@ -162,11 +179,11 @@
     <Compile Include="Utils\TimeUtil.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cache\" />
-    <Folder Include="Db\MySql\" />
     <Folder Include="Db\SqlServer\" />
     <Folder Include="Protocol\V2\" />
     <Folder Include="Record\" />
