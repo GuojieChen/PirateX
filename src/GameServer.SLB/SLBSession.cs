@@ -97,8 +97,6 @@ namespace GameServer.SLB
             }
 
             _targetSession.TrySend(new ArraySegment<byte>(buffer, offset, length));
-
-            //retry
         }
 
         protected override void OnSessionClosed(CloseReason reason)

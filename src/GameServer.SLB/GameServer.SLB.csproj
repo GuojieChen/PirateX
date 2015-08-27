@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncTcpSession2.cs" />
     <Compile Include="ServerLoadStrategy\ConfigServerLoadStrategy.cs" />
     <Compile Include="ForwardStrategy\IForwardStrategy.cs" />
     <Compile Include="ForwardStrategy\MinConnectionForwardStrategy.cs" />

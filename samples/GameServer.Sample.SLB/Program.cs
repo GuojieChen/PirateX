@@ -15,27 +15,53 @@ namespace GameServer.Sample.SLB
     {
         static void Main(string[] args)
         {
+            var bootstrap = BootstrapFactory.CreateBootstrap();
 
-            var server = new SLBServer();
-
-            server.Setup(new RootConfig()
+            if (!bootstrap.Initialize())
             {
-                LogFactory = "NLogLogFactory",
-            },new ServerConfig()
+                System.Console.WriteLine("Failed to initialize!");
+                System.Console.ReadKey();
+                return;
+            }
+
+            var result = bootstrap.Start();
+
+            System.Console.WriteLine("Start result: {0}!", result);
+
+            if (result == StartResult.Failed)
             {
-                Port = 3001,
-                MaxConnectionNumber = 100
-            });
+                System.Console.WriteLine("Failed to start!");
+                System.Console.WriteLine(result);
+                System.Console.ReadKey();
+                return;
+            }
+            else
+            {
+                foreach (var appServer in bootstrap.AppServers)
+                {
+                    var a = System.Console.ForegroundColor;
+                    System.Console.ForegroundColor = ConsoleColor.Green;
+                    System.Console.WriteLine("{0,20}\t{1,-4}", appServer.Name, appServer.State);
+                    System.Console.ForegroundColor = a;
+                }
+            }
 
-            server.Start();
+            System.Console.WriteLine("Press key 'q' to stop it!");
 
-            var a = System.Console.ForegroundColor;
-            System.Console.ForegroundColor = ConsoleColor.Green;
-            System.Console.WriteLine("{0,20}\t{1,-4}", server.Name, server.State);
-            System.Console.ForegroundColor = a;
+            while (System.Console.ReadKey().KeyChar != 'q')
+            {
+                System.Console.WriteLine();
+                continue;
+            }
 
-            Console.Read();
-            Console.Read();
+            System.Console.WriteLine();
+
+            //GameStop the appServer
+            bootstrap.Stop();
+
+            System.Console.WriteLine("The server was stopped!");
+
+            System.Console.Read();
         }
     }
 }
