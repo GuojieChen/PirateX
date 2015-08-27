@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer.SLB", "..\src\Ga
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer.Sample.SLB", "GameServer.Sample.SLB\GameServer.Sample.SLB.csproj", "{B64CCFA5-577E-4C07-9EAD-7A85E44309D1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{45A2ED03-C805-4A43-9258-0CB0F030DA97}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,7 +44,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{B771CFBD-AF9A-4312-A342-9D31CB0062C7} = {45A2ED03-C805-4A43-9258-0CB0F030DA97}
 		{3EFD3B67-334F-4A08-9A7E-75FD9B50D03A} = {FBD3A58B-124D-4275-AEE3-C111A9989722}
 		{0B32BEA5-7395-4C2C-8CF2-E36B7F33120B} = {FBD3A58B-124D-4275-AEE3-C111A9989722}
+		{B64CCFA5-577E-4C07-9EAD-7A85E44309D1} = {45A2ED03-C805-4A43-9258-0CB0F030DA97}
 	EndGlobalSection
 EndGlobal

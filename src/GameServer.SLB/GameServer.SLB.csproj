@@ -65,11 +65,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigServerLoadStrategy.cs" />
+    <Compile Include="ServerLoadStrategy\ConfigServerLoadStrategy.cs" />
     <Compile Include="ForwardStrategy\IForwardStrategy.cs" />
+    <Compile Include="ForwardStrategy\MinConnectionForwardStrategy.cs" />
     <Compile Include="ForwardStrategy\PollingForwardStrategy.cs" />
     <Compile Include="IServerInfo.cs" />
-    <Compile Include="IServerLoadStrategy.cs" />
+    <Compile Include="ServerLoadStrategy\IServerLoadStrategy.cs" />
     <Compile Include="SLBFilterFactory.cs" />
     <Compile Include="SLBRequestReceiveFilter.cs" />
     <Compile Include="SLBServer.cs" />

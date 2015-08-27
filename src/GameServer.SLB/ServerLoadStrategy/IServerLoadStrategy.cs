@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GameServer.SLB
+namespace GameServer.SLB.ServerLoadStrategy
 {
     /// <summary> 服列表加载策略
     /// </summary>
