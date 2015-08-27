@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Autofac;
@@ -55,6 +56,11 @@ namespace GameServer.Core
 
         protected override bool Setup(IRootConfig rootConfig, IServerConfig config)
         {
+            var defaultCulture = System.Configuration.ConfigurationManager.AppSettings["defaultCulture"];
+
+            if (!string.IsNullOrEmpty(defaultCulture))
+                CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(defaultCulture);
+
             var serversStr = config.Options.Get("servers");
             var redisHost = config.Options.Get("redisHost");
 
@@ -63,6 +69,7 @@ namespace GameServer.Core
                 Logger.Debug($"Game Config >>>>>>>>>>>>>>>>>>>>>");
                 Logger.Debug($"servers\t:\t{serversStr}");
                 Logger.Debug($"redisHost\t:\t{redisHost}");
+                Logger.Debug($"DefaultCulture\t:\t{Thread.CurrentThread.CurrentCulture}");
             }
 
             #region SERVER IOC
@@ -166,5 +173,7 @@ namespace GameServer.Core
                 Logger.Debug($"Set role offline\t:\t {session.Rid}\t:{session.SessionID}\t{reason}");
 
         }
+
+
     }
 }

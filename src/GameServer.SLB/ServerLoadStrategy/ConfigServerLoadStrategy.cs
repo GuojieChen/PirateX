@@ -15,9 +15,6 @@ namespace GameServer.SLB.ServerLoadStrategy
 
         public IList<IServerInfo> GetServers()
         {
-            foreach (var info in _list)
-                info.Ping = true; 
-
             return _list;
         }
     }

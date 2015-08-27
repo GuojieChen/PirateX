@@ -60,7 +60,6 @@ namespace GameServer.SLB
         {
             if (this.Connected)
             {
-                _targetSession = null;
                 this.Close();
             }
 

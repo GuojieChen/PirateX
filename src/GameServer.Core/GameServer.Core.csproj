@@ -162,12 +162,7 @@
     <Compile Include="Utils\TimeUtil.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="log4net.config" />
-    <None Include="log4net.unix.config" />
     <None Include="packages.config" />
-    <None Include="supersocket.cmd" />
-    <None Include="supersocket.sh" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Cache\" />

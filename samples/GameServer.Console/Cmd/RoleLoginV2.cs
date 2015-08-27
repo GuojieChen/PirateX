@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using GameServer.Core;
 using GameServer.Core.Command;
@@ -15,6 +16,10 @@ namespace GameServer.Console.Cmd
     {
         public override RoleLoginV2Request DoLogin(DemoSession session, RoleLoginV2Request request)
         {
+            Logger.Debug(Thread.CurrentThread.CurrentCulture);
+
+            Task.Factory.StartNew(() => Logger.Debug(Thread.CurrentThread.CurrentCulture)); 
+
             return request;
         }
 
