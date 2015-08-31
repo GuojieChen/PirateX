@@ -2,23 +2,27 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using Autofac;
 using GameServer.Core.Cointainer;
+using GameServer.Core.Config;
 using GameServer.Core.Online;
 using GameServer.Core.Protocol;
 using GameServer.Core.Protocol.V1;
-using ServiceStack.Messaging.Redis;
 using ServiceStack.Redis;
+using ServiceStack.Redis.Messaging;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
 using SuperSocket.SocketBase.Protocol;
 
 namespace GameServer.Core
 {
-    public abstract class PServer<TSession,TGameServerConfig> : AppServer<TSession, IGameRequestInfo>, IGameServer<TGameServerConfig>
+
+    public abstract class PServer<TSession,TGameServerConfig,TOnlineRole> : AppServer<TSession, IGameRequestInfo>, IGameServer<TGameServerConfig>
         where TSession : PSession<TSession>, new() 
         where TGameServerConfig : IGameServerConfig
+        where TOnlineRole : class, IOnlineRole,new()
     {
         /// <summary> 后台工作线程列表
         /// </summary>
@@ -85,9 +89,11 @@ namespace GameServer.Core
                 .As<IRedisClientsManager>()
                 .SingleInstance();
 
-            builder.Register(c => new RedisOnlineManager(c.Resolve<IRedisClientsManager>()))
-                .As<IOnlineManager>()
+            builder.Register(c => new RedisOnlineManager<TOnlineRole>(c.Resolve<IRedisClientsManager>()))
+                .As<IOnlineManager<TOnlineRole>>()
                 .SingleInstance();
+
+            builder.Register(c => ConfigAssembly()).Named<Assembly>("ConfigAssembly");
             //默认的包解析器
             builder.Register(c => new JsonPackage()).As<IProtocolPackage<IGameRequestInfo>>();
 
@@ -104,16 +110,17 @@ namespace GameServer.Core
 
             if (Logger.IsDebugEnabled)
                 Logger.Debug("InitContaners >>>>>>>>>>>>>>>>>>>>>");
+
+            GameContainer.ServiceContainer = Container;
             GameContainer.InitContainers(servers?.ToArray());
             
             //TODO 启动的时候看是否需要执行脚本 执行完成后进行删除
 
             //TODO 后台工作队列
-
-
-
             return base.Setup(rootConfig, config);
         }
+
+        public abstract Assembly ConfigAssembly(); 
 
         public abstract void SetServerConfig(ContainerBuilder builder);
 
@@ -166,14 +173,12 @@ namespace GameServer.Core
         {
             base.OnSessionClosed(session, reason);
 
-            var onlineManager = this.Container.Resolve<IOnlineManager>();
+            var onlineManager = this.Container.Resolve<IOnlineManager<IOnlineRole>>();
             onlineManager.Logout(session.Rid, session.SessionID);
 
             if (Logger.IsDebugEnabled)
                 Logger.Debug($"Set role offline\t:\t {session.Rid}\t:{session.SessionID}\t{reason}");
 
         }
-
-
     }
 }

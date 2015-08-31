@@ -2,37 +2,138 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ServiceStack.Caching;
+using System.Reflection;
+using GameServer.Core.Cache;
+using ServiceStack.CacheAccess;
+using ServiceStack.Common.Utils;
+using ServiceStack.OrmLite;
 
 namespace GameServer.Core.Config
 {
     public class MemoryConfigReader : IConfigReader
     {
-        private ICacheClient _cacheClient;
+        private readonly ICacheClient _cacheClient = new MemoryCacheClient();
 
-        public MemoryConfigReader(ICacheClient cacheClient)
+        private readonly Assembly _configAssembly;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configAssembly">配置模型所在的程序集</param>
+        public MemoryConfigReader(Assembly configAssembly)
         {
-            _cacheClient = cacheClient;
+            _configAssembly = configAssembly;
         }
 
         public void Load(IDbConnection connection)
         {
-            throw new NotImplementedException();
+            foreach (var type in _configAssembly.GetTypes())
+            {
+                if (type.IsAssignableFrom(typeof (IConfigEntity)))
+                {
+                    this.GetType().GetMethod("LoadConfigData", BindingFlags.Instance | BindingFlags.NonPublic)
+                                            .MakeGenericMethod(type)
+                                            .Invoke(this, new object[] { connection });
+                }       
+                else if (type.IsAssignableFrom(typeof (IConfigKeyValueEntity)))
+                {
+                    this.GetType().GetMethod("LoadKeyValueConfigData", BindingFlags.Instance | BindingFlags.NonPublic)
+                                            .MakeGenericMethod(type)
+                                            .Invoke(this, new object[] { connection });
+                }
+            }
+        }
+
+        private void LoadConfigData<T>(IDbConnection connection)
+        {
+            var list = connection.Select<T>();
+
+            if (!list.Any())
+                return;
+
+            var listkeys = new List<string>();
+            var indexkeys = new List<string>();
+
+            foreach (var item in list)
+            {
+                if (item == null)
+                    continue; 
+                var key = GetCacheKeyId<T>(item.GetId());
+                _cacheClient.Add(key, item); 
+                listkeys.Add(key);
+
+                foreach (var attr in item.GetType().GetCustomAttributes().Where(x=>x.GetType() == typeof(ConfigIndex)))
+                {// 添加索引
+                    //TODO ~~~~
+                }
+            }
+
+            if (listkeys.Any())
+                _cacheClient.Add(GetCacheKeyListKeys<T>() , listkeys);
+
+            if (indexkeys.Any())
+                _cacheClient.Add(GetCacheKeyIndexKeys<T>(),indexkeys);
+        }
+
+
+
+
+        private void LoadKeyValueConfigData<T>(IDbConnection connection) where T : IConfigKeyValueEntity
+        {
+            var list = connection.Select<T>();
+
+            if (!list.Any())
+                return;
+
+            foreach (var item in list)
+            {
+                if (item == null)
+                    continue;
+
+                var key = GetCacheKey<T>(item.Id);
+                _cacheClient.Add(key, item.V); 
+            }
+        }
+
+        private string GetCacheKeyId<T>(object id)
+        {
+            return $"id:{typeof(T).Name}:{id}"; 
+        }
+
+        private string GetCacheKeyListKeys<T>()
+        {
+            return $"list:{typeof (T).Name}";
+        }
+
+        private string GetCacheKeyIndexKeys<T>()
+        {
+            return $"index:{typeof (T).Name}";
+        }
+
+        private string GetCacheKey<T>(string key)
+        {
+            return $"kv:{typeof (T).Name}:{key}"; 
         }
 
         public T SingleById<T>(object id) where T : IConfigEntity
         {
-            throw new NotImplementedException();
+            return _cacheClient.Get<T>(GetCacheKeyId<T>(id)); 
         }
 
-        public IList<T> Select<T>() where T : IConfigEntity
+        public IEnumerable<T> Select<T>() where T : IConfigEntity
         {
-            throw new NotImplementedException();
+            var listkeys = _cacheClient.Get<IList<string>>(GetCacheKeyListKeys<T>());
+            if (listkeys.Any())
+                return _cacheClient.GetAll<T>(listkeys).Values;
+
+            return new T[0];
         }
 
-        public TValue GetValue<TKey, TValue>(TKey key)
+        public TValue GetValue<T, TValue>(string key)
+        {
+            return _cacheClient.Get<TValue>(GetCacheKey<T>(key));
+        }
+
+        public T SingleByIndexes<T>(object index)
         {
             throw new NotImplementedException();
         }

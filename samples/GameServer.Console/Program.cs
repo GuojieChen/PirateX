@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GameServer.Core.Logging;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketEngine;
 
 namespace GameServer.Console
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var bootstrap = BootstrapFactory.CreateBootstrap();
 
@@ -33,15 +28,12 @@ namespace GameServer.Console
                 System.Console.ReadKey();
                 return;
             }
-            else
+            foreach (var appServer in bootstrap.AppServers)
             {
-                foreach (var appServer in bootstrap.AppServers)
-                {
-                    var a = System.Console.ForegroundColor; 
-                    System.Console.ForegroundColor = ConsoleColor.Green;
-                    System.Console.WriteLine("{0,20}\t{1,-4}", appServer.Name, appServer.State);
-                    System.Console.ForegroundColor = a;
-                }
+                var a = System.Console.ForegroundColor;
+                System.Console.ForegroundColor = ConsoleColor.Green;
+                System.Console.WriteLine("{0,20}\t{1,-4}", appServer.Name, appServer.State);
+                System.Console.ForegroundColor = a;
             }
 
             System.Console.WriteLine("Press key 'q' to stop it!");
@@ -49,7 +41,6 @@ namespace GameServer.Console
             while (System.Console.ReadKey().KeyChar != 'q')
             {
                 System.Console.WriteLine();
-                continue;
             }
 
             System.Console.WriteLine();

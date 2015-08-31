@@ -4,8 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ServiceStack.Caching;
-using ServiceStack.Data;
 
 namespace GameServer.Core.Config
 {
@@ -24,14 +22,21 @@ namespace GameServer.Core.Config
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        IList<T> Select<T>() where T : IConfigEntity;
+        IEnumerable<T> Select<T>() where T : IConfigEntity;
 
         /// <summary>
         /// KEY - VALUE 结构 获取值
         /// </summary>
-        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="T"></typeparam>
         /// <typeparam name="TValue"></typeparam>
         /// <returns></returns>
-        TValue GetValue<TKey,TValue>(TKey key);
+        TValue GetValue<T,TValue>(string key);
+
+        /// <summary> 通过组合索引的方式进行查找 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        T SingleByIndexes<T>(object index);
     }
 }

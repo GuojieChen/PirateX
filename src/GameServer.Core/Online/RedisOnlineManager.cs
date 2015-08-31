@@ -5,15 +5,15 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using ServiceStack;
+using ServiceStack.Common.Utils;
 using ServiceStack.Redis;
 
 namespace GameServer.Core.Online
 {
-    public class RedisOnlineManager : IOnlineManager
+    public class RedisOnlineManager<TOnlineRole> : IOnlineManager<TOnlineRole>
+        where TOnlineRole : class, IOnlineRole, new()
     {
         private readonly IRedisClientsManager _redisClientsManager;
-        private string _serverName;
-
         private readonly string _urnServerHash;
         /// <summary>
         /// 在线管理构造器
@@ -29,8 +29,7 @@ namespace GameServer.Core.Online
                 throw new ArgumentNullException(nameof(serverName));
 
             _redisClientsManager = redisClientsManager;
-            _serverName = serverName;
-            _urnServerHash = $"core.online:{_serverName}";
+            _urnServerHash = $"core.online:{serverName}";
         }
 
         public RedisOnlineManager(IRedisClientsManager redisClientsManager) : this(redisClientsManager, Dns.GetHostName().Trim('"'))
@@ -51,7 +50,7 @@ namespace GameServer.Core.Online
                 redis.Remove(_urnServerHash);
         }
 
-        public void Login(IOnlineRole onlineRole)
+        public void Login(TOnlineRole onlineRole)
         {
             if (onlineRole == null)
                 return;
@@ -80,12 +79,12 @@ namespace GameServer.Core.Online
 
             using (var redis = _redisClientsManager.GetClient())
             {
-                var or = redis.GetById<IOnlineRole>(rid); 
+                var or = redis.GetById<TOnlineRole>(rid); 
                 if (or != null && Equals(or.SessionID, sessionid))
                 {
                     using (var trans = redis.CreateTransaction())
                     {
-                        trans.QueueCommand(r=>r.DeleteById<IOnlineRole>(rid));
+                        trans.QueueCommand(r=>r.DeleteById<TOnlineRole>(rid));
                         trans.QueueCommand(r=> r.RemoveEntryFromHash(_urnServerHash, Convert.ToString(rid)));
                         trans.Commit();
                     }
@@ -98,11 +97,11 @@ namespace GameServer.Core.Online
             return GetOnlineRole(rid) != null; 
         }
 
-        public IOnlineRole GetOnlineRole(long rid)
+        public TOnlineRole GetOnlineRole(long rid)
         {
             using (var redis = _redisClientsManager.GetClient())
             {
-                return redis.GetById<IOnlineRole>(rid); 
+                return redis.GetById<TOnlineRole>(rid); 
             }
         }
     }

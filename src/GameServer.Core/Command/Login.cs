@@ -9,6 +9,7 @@ using Autofac;
 using GameServer.Core.Cointainer;
 using GameServer.Core.Online;
 using ServiceStack;
+using ServiceStack.Text;
 
 namespace GameServer.Core.Command
 {
@@ -17,11 +18,14 @@ namespace GameServer.Core.Command
     /// <typeparam name="TSession"></typeparam>
     /// <typeparam name="TLoginRequest"></typeparam>
     /// <typeparam name="TLoginResponse"></typeparam>
-    public abstract class Login<TSession,TGameServerConfig,TLoginRequest, TLoginResponse> : GameCommand<TSession, TLoginRequest, TLoginResponse>
+    /// <typeparam name="TGameServerConfig"></typeparam>
+    /// <typeparam name="TOnlineRole"></typeparam>
+    public abstract class Login<TSession,TGameServerConfig,TLoginRequest, TLoginResponse,TOnlineRole> : GameCommand<TSession, TLoginRequest, TLoginResponse>
         where TSession : PSession<TSession>, IGameSession, new()
         where TLoginRequest :ILoginRequest
         where TLoginResponse :ILoginResponse
         where TGameServerConfig :IGameServerConfig
+        where TOnlineRole : class ,IOnlineRole,new()
     {
         protected override TLoginResponse ExecuteResponseCommand(TSession session, TLoginRequest data)
         {
@@ -62,7 +66,7 @@ namespace GameServer.Core.Command
 
             //TODO 单设备登陆
 
-            var onlineManager = appserver.Container.Resolve<IOnlineManager>();
+            var onlineManager = appserver.Container.Resolve<IOnlineManager<TOnlineRole>>();
             var onlineRole = GetOnlineRole(session, data);
             onlineManager.Login(onlineRole);
 
@@ -82,7 +86,7 @@ namespace GameServer.Core.Command
         /// <param name="session"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        public abstract IOnlineRole GetOnlineRole(TSession session,TLoginRequest request);
+        public abstract TOnlineRole GetOnlineRole(TSession session,TLoginRequest request);
         /// <summary> 解析Token包
         /// </summary>
         /// <param name="data"></param>

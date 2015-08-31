@@ -8,7 +8,8 @@ namespace GameServer.Core.Online
 {
     /// <summary> 在线管理抽象类
     /// </summary>
-    public interface IOnlineManager
+    public interface IOnlineManager<TOnlineRole>
+         where TOnlineRole:IOnlineRole
     {
         /// <summary> 机器下线
         /// </summary>
@@ -18,7 +19,7 @@ namespace GameServer.Core.Online
         void ServerOffline();
         /// <summary> 登录
         /// </summary>
-        void Login(IOnlineRole onlineRole);
+        void Login(TOnlineRole onlineRole);
         /// <summary> 登出
         /// </summary>
         void Logout(long rid,string sessionid);
@@ -31,7 +32,7 @@ namespace GameServer.Core.Online
         /// </summary>
         /// <param name="rid"></param>
         /// <returns></returns>
-        IOnlineRole GetOnlineRole(long rid);
+        TOnlineRole GetOnlineRole(long rid);
     }
 
     /// <summary> 抽象的在线角色信息

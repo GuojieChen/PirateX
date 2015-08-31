@@ -8,6 +8,7 @@ using GameServer.Core.Online;
 using GameServer.Core.Protocol;
 using ServiceStack;
 using ServiceStack.Redis;
+using ServiceStack.Text;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Protocol;
 using IGameSession = GameServer.Core.IGameSession;

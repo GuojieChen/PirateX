@@ -5,6 +5,10 @@ namespace GameServer.Core.Cointainer
 {
     public interface IGameContainer<TGameServerConfig> where TGameServerConfig : IGameServerConfig
     {
+        /// <summary> 服务器容器
+        /// </summary>
+        IContainer ServiceContainer { get; set; }
+
         /// <summary> 获取游戏服容器
         /// </summary>
         /// <param name="serverid"></param>

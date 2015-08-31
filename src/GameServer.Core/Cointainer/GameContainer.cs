@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Autofac;
+using GameServer.Core.Config;
 
 namespace GameServer.Core.Cointainer
 {
@@ -18,6 +20,8 @@ namespace GameServer.Core.Cointainer
         private readonly IDictionary<int, IContainer> _containers = new SortedDictionary<int, IContainer>();
 
         private readonly object _loadContainerLockHelper = new object();
+        public IContainer ServiceContainer { get; set; }
+
         public IContainer GetServerContainer(int serverid)
         {
             if (_containers.ContainsKey(serverid))
@@ -63,6 +67,11 @@ namespace GameServer.Core.Cointainer
             var builder = new ContainerBuilder();
 
             builder.Register(c => serverConfig).As<TGameServerConfig>().SingleInstance();
+
+            //默认Config缓存数据处理器
+            builder.Register(c => new MemoryConfigReader(ServiceContainer.ResolveNamed<Assembly>("ConfigAssembly")))
+                .As<IConfigReader>()
+                .SingleInstance();
 
             SetConfig(builder, serverConfig);
 
