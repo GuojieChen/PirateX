@@ -9,7 +9,7 @@ namespace GameServer.Core.Online
     /// <summary> 在线管理抽象类
     /// </summary>
     public interface IOnlineManager<TOnlineRole>
-         where TOnlineRole:IOnlineRole
+         where TOnlineRole : IOnlineRole
     {
         /// <summary> 机器下线
         /// </summary>
@@ -22,7 +22,7 @@ namespace GameServer.Core.Online
         void Login(TOnlineRole onlineRole);
         /// <summary> 登出
         /// </summary>
-        void Logout(long rid,string sessionid);
+        void Logout(long rid, string sessionid);
         /// <summary> 是否在线
         /// </summary>
         /// <param name="rid">角色ID</param>

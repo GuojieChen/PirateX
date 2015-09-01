@@ -59,6 +59,9 @@ namespace GameServer.SLB
                 return;
 
             this.Send(e.Data, e.Offset, e.Length);
+
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"S2C Send data from {this.RemoteEndPoint} to {_serverInfo.Port}:{_serverInfo.Port}");
         }
 
         void targetSession_Closed(object sender, EventArgs e)
@@ -80,18 +83,6 @@ namespace GameServer.SLB
                 _serverInfo.ProxyCount++;
         }
 
-        internal void RequestDataReceived(byte[] buffer, int offset, int length)
-        {
-            if (_targetSession == null)
-            {
-                //重连重发?
-                this.Close();
-                return;
-            }
-
-            _targetSession.Send(buffer, offset, length);
-        }
-
         public void PushRequestToRemoteServer(byte[] buffer, int offset, int length)
         {
             if (_targetSession == null)
@@ -100,7 +91,9 @@ namespace GameServer.SLB
                 return;
             }
 
-            _targetSession.TrySend(new ArraySegment<byte>(buffer, offset, length));
+            var isSendOk = _targetSession.TrySend(new ArraySegment<byte>(buffer, offset, length));
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"C2S Send data from {this.RemoteEndPoint} to {_serverInfo.Ip}:{_serverInfo.Port}\t{isSendOk}");
         }
 
         protected override void OnSessionClosed(CloseReason reason)

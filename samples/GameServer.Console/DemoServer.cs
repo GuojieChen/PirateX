@@ -19,7 +19,7 @@ namespace GameServer.Console
 
         public override Assembly ConfigAssembly()
         {
-            throw new NotImplementedException();
+            return this.GetType().Assembly;
         }
 
         public override void SetServerConfig(ContainerBuilder builder)

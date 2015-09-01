@@ -9,6 +9,7 @@ using Autofac;
 using GameServer.Core.Cointainer;
 using GameServer.Core.Online;
 using ServiceStack;
+using ServiceStack.Redis;
 using ServiceStack.Text;
 
 namespace GameServer.Core.Command
@@ -65,8 +66,6 @@ namespace GameServer.Core.Command
             session.ServerId = token.ServerId;
 
             //TODO 单设备登陆
-
-            Console.WriteLine(appserver.Container.Resolve<IOnlineManager<TOnlineRole>>());
 
             var onlineManager = appserver.Container.Resolve<IOnlineManager<TOnlineRole>>();
 
