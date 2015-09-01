@@ -29,7 +29,7 @@ namespace GameServer.Core
         protected static readonly IList<Thread> WorkerList = new List<Thread>();
         public IGameContainer<TGameServerConfig> GameContainer { get; set; }
 
-        public IContainer Container { get; private set; }
+        public ILifetimeScope Container { get; private set; }
 
         public PServer(IGameContainer<TGameServerConfig> gameContainer,IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) :base (receiveFilterFactory)
         {
@@ -81,14 +81,15 @@ namespace GameServer.Core
             if (Logger.IsDebugEnabled)
                 Logger.Debug("SetServerConfig");
             var builder = new ContainerBuilder();
+            //广播消息队列服务
             builder.Register(c => new RedisMqServer(new PooledRedisClientManager(redisHost.Split(','))))
                 .As<RedisMqServer>()
                 .SingleInstance();
-
+            //Redis连接池
             builder.Register(c => new PooledRedisClientManager(redisHost.Split(',')))
                 .As<IRedisClientsManager>()
                 .SingleInstance();
-
+            //在线管理
             builder.Register(c => new RedisOnlineManager<TOnlineRole>(c.Resolve<IRedisClientsManager>()))
                 .As<IOnlineManager<TOnlineRole>>()
                 .SingleInstance();
@@ -100,7 +101,7 @@ namespace GameServer.Core
             builder.Register(c => rootConfig).As<IRootConfig>().SingleInstance();
             builder.Register(c => redisHost).Named<string>("RedisHost");
             SetServerConfig(builder);
-            Container = builder.Build();
+            Container = builder.Build().BeginLifetimeScope();
 
             #endregion
 
@@ -173,8 +174,11 @@ namespace GameServer.Core
         {
             base.OnSessionClosed(session, reason);
 
-            var onlineManager = this.Container.Resolve<IOnlineManager<IOnlineRole>>();
-            onlineManager.Logout(session.Rid, session.SessionID);
+            if (session.Rid > 0)
+            {
+                var onlineManager = this.Container.Resolve<IOnlineManager<TOnlineRole>>();
+                onlineManager.Logout(session.Rid, session.SessionID);
+            }
 
             if (Logger.IsDebugEnabled)
                 Logger.Debug($"Set role offline\t:\t {session.Rid}\t:{session.SessionID}\t{reason}");

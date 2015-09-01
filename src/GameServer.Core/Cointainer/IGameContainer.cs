@@ -7,7 +7,7 @@ namespace GameServer.Core.Cointainer
     {
         /// <summary> 服务器容器
         /// </summary>
-        IContainer ServiceContainer { get; set; }
+        ILifetimeScope ServiceContainer { get; set; }
 
         /// <summary> 获取游戏服容器
         /// </summary>

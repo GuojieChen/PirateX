@@ -66,13 +66,16 @@ namespace GameServer.Core.Command
 
             //TODO 单设备登陆
 
+            Console.WriteLine(appserver.Container.Resolve<IOnlineManager<TOnlineRole>>());
+
             var onlineManager = appserver.Container.Resolve<IOnlineManager<TOnlineRole>>();
+
             var onlineRole = GetOnlineRole(session, data);
             onlineManager.Login(onlineRole);
 
             if (Logger.IsDebugEnabled)
                 Logger.Debug($"Set role online\t:\t{onlineRole.ToJsv()}");
-            
+
             return DoLogin(session,data);
         }
         /// <summary> 执行游戏的登录逻辑

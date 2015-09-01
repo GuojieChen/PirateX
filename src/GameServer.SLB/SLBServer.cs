@@ -126,9 +126,11 @@ namespace GameServer.SLB
                 var server = servers[i];
                 if (server.IsConnected)
                 {
+                    var c = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Green;
                     if (Logger.IsDebugEnabled)
                         Logger.Debug($"Ping {server}\tOk!");
-
+                    Console.ForegroundColor = c; 
                     continue;
                 }
                 else

@@ -20,7 +20,7 @@ namespace GameServer.Core.Cointainer
         private readonly IDictionary<int, IContainer> _containers = new SortedDictionary<int, IContainer>();
 
         private readonly object _loadContainerLockHelper = new object();
-        public IContainer ServiceContainer { get; set; }
+        public ILifetimeScope ServiceContainer { get; set; }
 
         public IContainer GetServerContainer(int serverid)
         {

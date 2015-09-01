@@ -11,7 +11,7 @@ namespace GameServer.Core
     {
         IGameContainer<TGameServerConfig> GameContainer { get; set; }
 
-        IContainer Container { get; }
+        ILifetimeScope Container { get; }
         /// <summary> 广播消息 
         /// </summary>
         /// <typeparam name="TMessage"></typeparam>

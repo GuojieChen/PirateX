@@ -88,6 +88,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cmd\NewSeed.cs" />
+    <Compile Include="Cmd\RoleLoginV2.cs" />
     <Compile Include="DemoServer.cs" />
     <Compile Include="DemoSession.cs" />
     <Compile Include="Program.cs" />

@@ -8,7 +8,7 @@ namespace GameServer.SLB
 {
     public class SLBSession : AppSession<SLBSession, BinaryRequestInfo>
     {
-        private IServerInfo _serverInfo; 
+        private IServerInfo _serverInfo;
         private TcpClientSession _targetSession;
 
         public new SLBServer AppServer => (SLBServer)base.AppServer;
@@ -32,7 +32,12 @@ namespace GameServer.SLB
 
         public void ConnectProxyServer()
         {
-            ConnectTarget(CreateNewSessionHandler());
+            var serverinfo = CreateNewSessionHandler();
+            ConnectTarget(serverinfo);
+
+
+            if (Logger.IsDebugEnabled && serverinfo != null)
+                Logger.Debug($"Connect to server [{serverinfo.Ip}:{serverinfo.Port}]");
         }
 
 
@@ -64,7 +69,7 @@ namespace GameServer.SLB
             }
 
             if (_serverInfo != null)
-                _serverInfo.ProxyCount --;
+                _serverInfo.ProxyCount--;
         }
 
         void targetSession_Connected(object sender, EventArgs e)
@@ -72,7 +77,7 @@ namespace GameServer.SLB
             _targetSession = (AsyncTcpSession)sender;
 
             if (_serverInfo != null)
-                _serverInfo.ProxyCount ++; 
+                _serverInfo.ProxyCount++;
         }
 
         internal void RequestDataReceived(byte[] buffer, int offset, int length)

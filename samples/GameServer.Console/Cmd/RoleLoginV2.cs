@@ -7,7 +7,7 @@ using GameServer.Core.Online;
 
 namespace GameServer.Console.Cmd
 {
-    public class RoleLoginV2 : Login<DemoSession, GameServerConfig, RoleLoginV2Request, RoleLoginV2Request>
+    public class RoleLoginV2 : Login<DemoSession, GameServerConfig, RoleLoginV2Request, RoleLoginV2Request,OnlineRole>
     {
         public override RoleLoginV2Request DoLogin(DemoSession session, RoleLoginV2Request request)
         {
@@ -18,7 +18,7 @@ namespace GameServer.Console.Cmd
             return request;
         }
 
-        public override IOnlineRole GetOnlineRole(DemoSession session, RoleLoginV2Request request)
+        public override OnlineRole GetOnlineRole(DemoSession session, RoleLoginV2Request request)
         {
             return new OnlineRole
             {
