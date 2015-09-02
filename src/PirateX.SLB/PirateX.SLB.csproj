@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0B32BEA5-7395-4C2C-8CF2-E36B7F33120B}</ProjectGuid>
+    <ProjectGuid>{42D72BEC-9F9B-4DFD-9A79-9833DA34ECC6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PirateX.SLB</RootNamespace>
