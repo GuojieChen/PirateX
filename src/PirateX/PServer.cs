@@ -84,7 +84,7 @@ namespace PirateX
                 .As<RedisMqServer>()
                 .SingleInstance();
             //Redis连接池
-            builder.Register(c => new ConnectionMultiplexer(redisHost.Split(',')))
+            builder.Register(c => new ConnectionMultiplexer(new ConfigurationOptions()))
                 .As<ConnectionMultiplexer>()
                 .SingleInstance();
             //在线管理
