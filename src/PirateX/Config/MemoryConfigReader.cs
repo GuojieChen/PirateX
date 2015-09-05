@@ -4,15 +4,12 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using PirateX.Cache;
-using ServiceStack.CacheAccess;
-using ServiceStack.Common.Utils;
-using ServiceStack.OrmLite;
 
 namespace PirateX.Config
 {
     public class MemoryConfigReader : IConfigReader
     {
-        private readonly ICacheClient _cacheClient = new MemoryCacheClient();
+        private readonly MemoryCacheClient _cacheClient = new MemoryCacheClient();
 
         private readonly Assembly _configAssembly;
         /// <summary>

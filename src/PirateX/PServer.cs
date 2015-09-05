@@ -9,8 +9,7 @@ using PirateX.Cointainer;
 using PirateX.Online;
 using PirateX.Protocol;
 using PirateX.Protocol.V1;
-using ServiceStack.Redis;
-using ServiceStack.Redis.Messaging;
+using StackExchange.Redis;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
 using SuperSocket.SocketBase.Protocol;
@@ -85,11 +84,11 @@ namespace PirateX
                 .As<RedisMqServer>()
                 .SingleInstance();
             //Redis连接池
-            builder.Register(c => new PooledRedisClientManager(redisHost.Split(',')))
-                .As<IRedisClientsManager>()
+            builder.Register(c => new ConnectionMultiplexer(redisHost.Split(',')))
+                .As<ConnectionMultiplexer>()
                 .SingleInstance();
             //在线管理
-            builder.Register(c => new RedisOnlineManager<TOnlineRole>(c.Resolve<IRedisClientsManager>()))
+            builder.Register(c => new RedisOnlineManager<TOnlineRole>(c.Resolve<ConnectionMultiplexer>()))
                 .As<IOnlineManager<TOnlineRole>>()
                 .SingleInstance();
 
@@ -129,7 +128,7 @@ namespace PirateX
             if(Logger.IsDebugEnabled)
                 Logger.Debug("Starting RedisMqServer");
 
-            _mqServer.Start();
+            //_mqServer.Start();
 
             foreach (var thread in WorkerList)
             {
@@ -164,7 +163,7 @@ namespace PirateX
             if (Logger.IsDebugEnabled)
                 Logger.Debug("Stoping RedisMqServer");
 
-            _mqServer.Stop();
+            //_mqServer.Stop();
 
             base.Stop();
         }

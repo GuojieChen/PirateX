@@ -1,48 +1,48 @@
 ﻿using System;
 using System.Net;
-using ServiceStack.Common.Utils;
-using ServiceStack.Redis;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace PirateX.Online
 {
     public class RedisOnlineManager<TOnlineRole> : IOnlineManager<TOnlineRole>
         where TOnlineRole : class, IOnlineRole, new()
     {
-        private readonly IRedisClientsManager _redisClientsManager;
+        private readonly ConnectionMultiplexer _connectionMultiplexer;
         private readonly string _urnServerHash;
         /// <summary>
         /// 在线管理构造器
         /// </summary>
-        /// <param name="redisClientsManager"></param>
+        /// <param name="connectionMultiplexer"></param>
         /// <param name="serverName">server名称</param>
-        public RedisOnlineManager(IRedisClientsManager redisClientsManager, string serverName)
+        public RedisOnlineManager(ConnectionMultiplexer connectionMultiplexer, string serverName)
         {
-            if (redisClientsManager == null)
-                throw new ArgumentNullException(nameof(redisClientsManager));
+            if (connectionMultiplexer == null)
+                throw new ArgumentNullException(nameof(connectionMultiplexer));
 
             if (string.IsNullOrEmpty(serverName))
                 throw new ArgumentNullException(nameof(serverName));
 
-            _redisClientsManager = redisClientsManager;
+            _connectionMultiplexer = connectionMultiplexer;
             _urnServerHash = $"core.online:{serverName}";
         }
 
-        public RedisOnlineManager(IRedisClientsManager redisClientsManager) : this(redisClientsManager, Dns.GetHostName().Trim('"'))
+        public RedisOnlineManager(ConnectionMultiplexer connectionMultiplexer) : this(connectionMultiplexer, Dns.GetHostName().Trim('"'))
         {
-            _redisClientsManager = redisClientsManager;
+            _connectionMultiplexer = connectionMultiplexer;
         }
 
 
         public void ServerOnline()
         {
-            using (var redis = _redisClientsManager.GetClient())
-                redis.SetEntryInHash(_urnServerHash, "0", "server");
+            var db = _connectionMultiplexer.GetDatabase();
+            db.HashSet(_urnServerHash, "0", "server");
         }
 
         public void ServerOffline()
         {
-            using (var redis = _redisClientsManager.GetClient())
-                redis.Remove(_urnServerHash);
+            var db = _connectionMultiplexer.GetDatabase();
+            db.HashDelete(_urnServerHash, "0");
         }
 
         public void Login(TOnlineRole onlineRole)
@@ -53,51 +53,51 @@ namespace PirateX.Online
             if (onlineRole.Id <= 0)
                 return;
 
-            var urn = onlineRole.CreateUrn();
+            var urn = $"core:onlinerole:{onlineRole.Id}";
 
-            using (var redis = _redisClientsManager.GetClient())
-            {
-                using (var trans = redis.CreateTransaction())
-                {
-                    trans.QueueCommand(r=>r.Store(onlineRole));
-                    trans.QueueCommand(r=>r.SetEntryInHash(_urnServerHash, Convert.ToString(onlineRole.Id), urn));
-                    trans.Commit();
-                }
-            }
+            var db = _connectionMultiplexer.GetDatabase();
+            var trans = db.CreateTransaction();
+
+            trans.StringSetAsync(urn, JsonConvert.SerializeObject(onlineRole));
+            trans.HashSetAsync(_urnServerHash, Convert.ToString(onlineRole.Id), urn);
+            trans.Execute();
         }
 
         public void Logout(long rid, string sessionid)
         {
             if (rid <= 0)
-                return; 
+                return;
 
+            var urn = $"core:onlinerole:{rid}";
 
-            using (var redis = _redisClientsManager.GetClient())
+            var db = _connectionMultiplexer.GetDatabase();
+            var onlineRoleStr = db.StringGet(urn);
+            if (!onlineRoleStr.HasValue)
+                return;
+            var onlineRole = JsonConvert.DeserializeObject<TOnlineRole>(onlineRoleStr);
+            if (Equals(onlineRole.SessionID, sessionid))
             {
-                var or = redis.GetById<TOnlineRole>(rid); 
-                if (or != null && Equals(or.SessionID, sessionid))
-                {
-                    using (var trans = redis.CreateTransaction())
-                    {
-                        trans.QueueCommand(r=>r.DeleteById<TOnlineRole>(rid));
-                        trans.QueueCommand(r=> r.RemoveEntryFromHash(_urnServerHash, Convert.ToString(rid)));
-                        trans.Commit();
-                    }
-                }
+                var trans = db.CreateTransaction();
+                //trans.AddCondition(Condition.StringEqual())
+                trans.KeyDeleteAsync(urn);
+                trans.HashDeleteAsync(_urnServerHash, Convert.ToString(rid));
+                trans.Execute();
             }
         }
 
         public bool IsOnline(long rid)
         {
-            return GetOnlineRole(rid) != null; 
+            return GetOnlineRole(rid) != null;
         }
 
         public TOnlineRole GetOnlineRole(long rid)
         {
-            using (var redis = _redisClientsManager.GetClient())
-            {
-                return redis.GetById<TOnlineRole>(rid); 
-            }
+            var urn = $"core:onlinerole:{rid}";
+            var db = _connectionMultiplexer.GetDatabase();
+            var onlineRoleStr = db.StringGet(urn);
+            if (!onlineRoleStr.HasValue)
+                return default (TOnlineRole);
+            return JsonConvert.DeserializeObject<TOnlineRole>(onlineRoleStr);
         }
     }
 }

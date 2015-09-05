@@ -3,7 +3,7 @@ using Autofac;
 using PirateX.Cointainer;
 using PirateX.Online;
 using PirateX.Protocol;
-using ServiceStack.Text;
+using Newtonsoft;
 
 namespace PirateX.Command
 {
@@ -66,7 +66,7 @@ namespace PirateX.Command
             onlineManager.Login(onlineRole);
 
             if (Logger.IsDebugEnabled)
-                Logger.Debug($"Set role online\t:\t{onlineRole.ToJsv()}");
+                Logger.Debug($"Set role online\t:\t{Newtonsoft.Json.JsonConvert.SerializeObject(onlineRole)}");
 
             return DoLogin(session,data);
         }

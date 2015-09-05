@@ -2,14 +2,13 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using ServiceStack.CacheAccess;
-using ServiceStack.Logging;
+using NLog;
 
 namespace PirateX.Cache
 {
-    public class MemoryCacheClient : ICacheClient
+    public class MemoryCacheClient
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(MemoryCacheClient));
+        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         private ConcurrentDictionary<string, CacheEntry> memory;
         private ConcurrentDictionary<string, int> counters;
