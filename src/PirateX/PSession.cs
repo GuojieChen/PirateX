@@ -3,8 +3,6 @@ using System.Net;
 using Autofac;
 using PirateX.GException;
 using PirateX.Protocol;
-using ServiceStack.Redis;
-using ServiceStack.Text;
 using SuperSocket.SocketBase;
 
 namespace PirateX
