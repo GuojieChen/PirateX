@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Net;
 using Autofac;
+using Newtonsoft.Json;
 using PirateX.GException;
 using PirateX.Protocol;
+using PirateX.Redis.StackExchange.Redis.Ex;
+using StackExchange.Redis;
 using SuperSocket.SocketBase;
 
 namespace PirateX
@@ -151,14 +154,13 @@ namespace PirateX
             if (rid <= 0)
                 return default(TResponse);
 
-            var rm = Build.Resolve<IRedisClientsManager>();
-            if (rm == null)
+            var db = Build.Resolve<IDatabase>();
+            if (db == null)
                 return default(TResponse);
 
             var key = $"sys:response:{rid}:{c}";
 
-            using (var redis = rm.GetClient())
-                return redis.Get<TResponse>(key);
+            return db.Get<TResponse>(key);
         }
 
         public virtual void SetLastReponse(long rid, string c, object o)
@@ -166,24 +168,23 @@ namespace PirateX
             if (rid <= 0 || string.IsNullOrEmpty(c) || o == null)
                 return;
 
-            var rm = Build.Resolve<IRedisClientsManager>();
-            if (rm == null)
-                return;
+            var db = Build.Resolve<IDatabase>();
+            if (db == null)
+                return ;
 
             //这里来具体维护 缓存多少条 ~ 
             var key = $"sys:response:{rid}:{c}";
             var listkey = $"sys:response:{rid}";
 
-            using (var redis = rm.GetClient())
-            {
-                redis.Set(key, o, new TimeSpan(0, 0, 1, 0));//30秒缓存
-                redis.EnqueueItemOnList(listkey, key);
+                db.Set(key,o, new TimeSpan(0, 0, 1, 0));
+            db.ListLeftPush(listkey, key);
 
-                if (redis.GetListCount(listkey) >= 4)
-                {
-                    var removekey = redis.DequeueItemFromList(listkey);
-                    redis.Remove(removekey);
-                }
+
+            if (db.ListLength(listkey) >= 4)
+            {
+                var removekey = db.ListRightPop(listkey);
+                db.KeyDelete(removekey.ToString());
+
             }
         }
         #endregion
@@ -200,7 +201,7 @@ namespace PirateX
             var result = TrySend(data, 0, data.Length);
 
             if (Logger.IsInfoEnabled)
-                Logger.Info(string.Format("Response[{4}]\t#{0}#\t{1}\t{2}\t{3}", Rid, this.RemoteEndPoint, SessionID, message?.ToJsv(), result));
+                Logger.Info(string.Format("Response[{4}]\t#{0}#\t{1}\t{2}\t{3}", Rid, this.RemoteEndPoint, SessionID, JsonConvert.SerializeObject(message), result));
         }
 
         public virtual void ProcessedRequest(string name, object args, long pms, long sms, long ms, DateTime start, DateTime end, string o)

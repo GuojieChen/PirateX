@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading;
 using Autofac;
@@ -29,12 +30,14 @@ namespace PirateX
 
         public ILifetimeScope Container { get; private set; }
 
+        protected ConnectionMultiplexer MqServer = null;
+
+        protected ISubscriber Subscriber;
+
         public PServer(IGameContainer<TGameServerConfig> gameContainer,IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) :base (receiveFilterFactory)
         {
             GameContainer = gameContainer;
         }
-
-        private RedisMqServer _mqServer => Container.Resolve<RedisMqServer>(); 
 
         public void Broadcast<TMessage>(TMessage message, IQueryable<long> rids)
         {
@@ -79,12 +82,18 @@ namespace PirateX
             if (Logger.IsDebugEnabled)
                 Logger.Debug("SetServerConfig");
             var builder = new ContainerBuilder();
-            //广播消息队列服务
-            builder.Register(c => new RedisMqServer(new PooledRedisClientManager(redisHost.Split(','))))
-                .As<RedisMqServer>()
-                .SingleInstance();
+
+            MqServer = ConnectionMultiplexer.Connect(redisHost);
+            Subscriber = MqServer.GetSubscriber();
+            Subscriber.SubscribeAsync(new RedisChannel(Dns.GetHostName().Trim('\''), RedisChannel.PatternMode.Literal),
+                (x, y) =>
+                {
+                    if(Logger.IsDebugEnabled)
+                        Logger.Debug($"channel:{x},value:{y}");
+                });
+            
             //Redis连接池
-            builder.Register(c => new ConnectionMultiplexer(new ConfigurationOptions()))
+            builder.Register(c => ConnectionMultiplexer.Connect(redisHost))
                 .As<ConnectionMultiplexer>()
                 .SingleInstance();
             //在线管理

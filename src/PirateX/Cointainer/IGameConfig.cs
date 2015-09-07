@@ -11,5 +11,9 @@
         /// <summary> 配置表数据库连接地址
         /// </summary>
         string ConfigConnectionString { get; set; }
+
+        int RedisDb { get; set; }
     }
+
+
 }

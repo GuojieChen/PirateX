@@ -77,6 +77,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Broadcas\IMsgBroadcast.cs" />
+    <Compile Include="Broadcas\LocalSessionMsgBroadcast.cs" />
+    <Compile Include="Broadcas\RedisMqMsgBroadcast.cs" />
     <Compile Include="Cache\MemoryCacheClient.cs" />
     <Compile Include="Cointainer\GameContainer.cs" />
     <Compile Include="Cointainer\IGameConfig.cs" />
