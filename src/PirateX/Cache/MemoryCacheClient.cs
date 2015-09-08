@@ -369,7 +369,7 @@ namespace PirateX.Cache
             }
             catch (Exception ex)
             {
-                Log.Error(string.Format("Error trying to remove items from cache with this {0} pattern", pattern), ex);
+                Log.Error($"Error trying to remove items from cache with this {pattern} pattern", ex);
             }
             return keys;
         }

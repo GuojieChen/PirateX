@@ -30,19 +30,20 @@ namespace GameServer.Console
     public class GameServerConfig : IGameServerConfig
     {
         public string Name { get; set; }
-        public int Db { get; set; }
         public int Id { get; set; }
         public string ConnectionString { get; set; }
         public string ConfigConnectionString { get; set; }
+        public string Redis { get; set; }
+        public int RedisDb { get; set; }
     }
 
     internal class DemoGameContainer : GameContainer<GameServerConfig>
     {
         private static readonly IEnumerable<GameServerConfig> ServerConfigs = new[]
         {
-            new GameServerConfig {Id = 1, Name = "test 01"},
-            new GameServerConfig {Id = 2, Name = "test 02"},
-            new GameServerConfig {Id = 3, Name = "test 03"}
+            new GameServerConfig {Id = 1, Name = "test 01",Redis = "127.0.0.1",RedisDb = 1},
+            new GameServerConfig {Id = 2, Name = "test 02",Redis = "127.0.0.1",RedisDb = 2},
+            new GameServerConfig {Id = 3, Name = "test 03",Redis = "127.0.0.1",RedisDb = 3}
         };
 
         public override IEnumerable<GameServerConfig> LoadServerConfigs()
@@ -57,8 +58,7 @@ namespace GameServer.Console
 
         public override void SetConfig(ContainerBuilder builder, GameServerConfig config)
         {
-            builder.Register(c => new PooledRedisClientManager(new[] {"127.0.0.1"}, new[] {"127.0.0.1"}, config.Db))
-                .As<IRedisClientsManager>().SingleInstance();
+           
         }
     }
 }

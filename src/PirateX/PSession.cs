@@ -43,7 +43,7 @@ namespace PirateX
             set
             {
                 if (value == null)
-                    return; 
+                    return;
 
                 if (_container == null)
                     _container = value.BeginLifetimeScope();
@@ -53,7 +53,7 @@ namespace PirateX
         #endregion
 
 
-        public IProtocolPackage<IGameRequestInfo> ProtocolPackage { get; set;  }
+        public IProtocolPackage<IGameRequestInfo> ProtocolPackage { get; set; }
 
         protected override void OnSessionStarted()
         {
@@ -138,7 +138,7 @@ namespace PirateX
         protected override void HandleUnknownRequest(IGameRequestInfo requestInfo)
         {
             //SendError(requestInfo.Key, new AbstactGameException(ServerCode.NotFound, requestInfo.Key));
-            if(Logger.IsErrorEnabled)
+            if (Logger.IsErrorEnabled)
                 Logger.Error($"Unknow request\t:\t{requestInfo.Key}");
         }
 
@@ -170,21 +170,19 @@ namespace PirateX
 
             var db = Build.Resolve<IDatabase>();
             if (db == null)
-                return ;
+                return;
 
             //这里来具体维护 缓存多少条 ~ 
             var key = $"sys:response:{rid}:{c}";
             var listkey = $"sys:response:{rid}";
 
-                db.Set(key,o, new TimeSpan(0, 0, 1, 0));
+            db.Set(key, o, new TimeSpan(0, 0, 1, 0));
             db.ListLeftPush(listkey, key);
 
-
-            if (db.ListLength(listkey) >= 4)
+            if (db.ListLength(listkey) > 4)
             {
                 var removekey = db.ListRightPop(listkey);
                 db.KeyDelete(removekey.ToString());
-
             }
         }
         #endregion

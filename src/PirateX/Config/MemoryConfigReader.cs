@@ -4,6 +4,8 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using PirateX.Cache;
+using ServiceStack.Common.Utils;
+using ServiceStack.OrmLite;
 
 namespace PirateX.Config
 {

@@ -4,10 +4,6 @@ using SuperSocket.SocketBase;
 
 namespace PirateX.Protocol
 {
-    public abstract class GameCommand<TRequest, TResponse> : GameCommand<PSession, TRequest, TResponse>
-    {
-
-    }
 
     /// <summary>
     /// GameCommand
@@ -27,7 +23,7 @@ namespace PirateX.Protocol
             var start = DateTime.Now;
 
             var cacheName = Convert.ToString(session.CurrentO);
-            var rid = session.Items.ContainsKey("Id") ? Convert.ToInt64(session.Items["Id"]) : 0;
+            var rid = session.Rid;
 
             var response = ExecuteResponseCommand(session, data);
             pms = sw.ElapsedMilliseconds;
@@ -35,8 +31,10 @@ namespace PirateX.Protocol
             if (!Equals(response, default(TResponse)))
             {
                 SendResponse(session, response);
+
+
                 //if (!IgnoreCmds.Contains(cacheName))
-                //    session.SetLastReponse(rid, cacheName, response);
+                    session.SetLastReponse(rid, cacheName, response);
                 sms = sw.ElapsedMilliseconds;
             }
             else
@@ -44,7 +42,7 @@ namespace PirateX.Protocol
                 SendResponse(session, null);
 
                 //if (!IgnoreCmds.Contains(cacheName))
-                //    session.SetLastReponse(rid, cacheName, null);
+                    session.SetLastReponse(rid, cacheName, null);
                 sms = sw.ElapsedMilliseconds;
             }
 

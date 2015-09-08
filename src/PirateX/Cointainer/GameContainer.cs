@@ -68,6 +68,8 @@ namespace PirateX.Cointainer
             var builder = new ContainerBuilder();
 
             builder.Register(c => serverConfig).As<TGameServerConfig>().SingleInstance();
+            builder.Register(c => ConnectionMultiplexer.Connect(serverConfig.Redis)); 
+
             builder.Register(c => c.Resolve<ConnectionMultiplexer>().GetDatabase(serverConfig.RedisDb)).As<IDatabase>();
             //默认Config缓存数据处理器
             builder.Register(c => new MemoryConfigReader(ServiceContainer.ResolveNamed<Assembly>("ConfigAssembly")))

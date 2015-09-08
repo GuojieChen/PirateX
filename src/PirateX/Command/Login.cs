@@ -34,7 +34,7 @@ namespace PirateX.Command
             token = UnPackToken(data);
             if (token == null)
             {
-
+                
             }
 #endif
 

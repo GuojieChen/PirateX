@@ -12,6 +12,7 @@
         /// </summary>
         string ConfigConnectionString { get; set; }
 
+        string Redis { get; set; }
         int RedisDb { get; set; }
     }
 
