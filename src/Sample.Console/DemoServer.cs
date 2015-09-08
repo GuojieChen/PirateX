@@ -7,6 +7,7 @@ using PirateX;
 using PirateX.Cointainer;
 using PirateX.Online;
 using PirateX.Protocol;
+using PirateX.Redis.StackExchange.Redis.Ex;
 using ServiceStack.Redis;
 
 namespace GameServer.Console
@@ -24,6 +25,7 @@ namespace GameServer.Console
 
         public override void SetServerConfig(ContainerBuilder builder)
         {
+            builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
         }
     }
 

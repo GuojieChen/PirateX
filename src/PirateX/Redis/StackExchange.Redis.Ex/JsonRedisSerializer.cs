@@ -7,7 +7,7 @@ using ServiceStack.Text;
 
 namespace PirateX.Redis.StackExchange.Redis.Ex
 {
-    public class JsonRedisSerilazer : IRedisSerilazer
+    public class JsonRedisSerializer : IRedisSerializer
     {
         public string Serilazer<T>(T obj)
         {

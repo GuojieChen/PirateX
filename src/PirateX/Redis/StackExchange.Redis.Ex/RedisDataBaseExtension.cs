@@ -9,14 +9,14 @@ namespace PirateX.Redis.StackExchange.Redis.Ex
 {
     public static class RedisDataBaseExtension
     {
-        private static IRedisSerilazer _redisSerilazer;
+        private static IRedisSerializer _redisSerilazer;
 
-        public static IRedisSerilazer RedisSerilazer
+        public static IRedisSerializer RedisSerilazer
         {
             get
             {
                 if(_redisSerilazer == null)
-                    _redisSerilazer = new JsonRedisSerilazer();
+                    _redisSerilazer = new JsonRedisSerializer();
                 return _redisSerilazer;
             }
             set
@@ -35,13 +35,13 @@ namespace PirateX.Redis.StackExchange.Redis.Ex
             return RedisSerilazer.Des<T>(value); 
         }
 
-        public static void Set<T>(this IDatabase db,RedisKey key, T t,TimeSpan? expire = null)
+        public static bool Set<T>(this IDatabase db,RedisKey key, T t,TimeSpan? expire = null)
         {
             var value = RedisSerilazer.Serilazer<T>(t);
             if (string.IsNullOrEmpty(value))
-                return;
+                return false;
 
-            db.StringSet(key, value, expire);
+            return db.StringSet(key, value, expire);
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PirateX.Redis.StackExchange.Redis.Ex
 {
-    public interface IRedisSerilazer
+    public interface IRedisSerializer
     {
         string Serilazer<T>(T obj);
 

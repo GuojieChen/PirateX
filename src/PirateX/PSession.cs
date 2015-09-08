@@ -176,7 +176,10 @@ namespace PirateX
             var key = $"sys:response:{rid}:{c}";
             var listkey = $"sys:response:{rid}";
 
-            db.Set(key, o, new TimeSpan(0, 0, 1, 0));
+            var setOk = db.Set(key, o, new TimeSpan(0, 0, 1, 0));
+            if (!setOk)
+                return;
+
             db.ListLeftPush(listkey, key);
 
             if (db.ListLength(listkey) > 4)

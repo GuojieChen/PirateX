@@ -46,6 +46,10 @@
       <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ServiceStack.Common, Version=1.0.4339.6048, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ServiceStack.Common.3.0.6\lib\ServiceStack.Common.dll</HintPath>
       <Private>True</Private>
@@ -127,6 +131,7 @@
     <Compile Include="Online\IOnlineManager.cs" />
     <Compile Include="Online\OnlineRole.cs" />
     <Compile Include="Online\RedisOnlineManager.cs" />
+    <Compile Include="ProtobufRedisSerializer.cs" />
     <Compile Include="Protocol\Package\Zip.cs" />
     <Compile Include="Protocol\Package\ICrypto.cs" />
     <Compile Include="Protocol\AbstractProtocolPackage.cs" />
@@ -162,8 +167,9 @@
     <Compile Include="Protocol\GameProtocol.cs" />
     <Compile Include="PServer.cs" />
     <Compile Include="PSession.cs" />
-    <Compile Include="Redis\StackExchange.Redis.Ex\IRedisSerilazer.cs" />
-    <Compile Include="Redis\StackExchange.Redis.Ex\JsonRedisSerilazer.cs" />
+    <Compile Include="Redis\StackExchange.Redis.Ex\IRedisSerializer.cs" />
+    <Compile Include="Redis\StackExchange.Redis.Ex\JsonRedisSerializer.cs" />
+    <Compile Include="Redis\StackExchange.Redis.Ex\ProtobufRedisSerializer.cs" />
     <Compile Include="Redis\StackExchange.Redis.Ex\RedisDataBaseExtension.cs" />
     <Compile Include="ShareConfig.cs" />
     <Compile Include="Protocol\Package\GZip.cs" />

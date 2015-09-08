@@ -6,10 +6,12 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using Autofac;
+using Newtonsoft.Json;
 using PirateX.Cointainer;
 using PirateX.Online;
 using PirateX.Protocol;
 using PirateX.Protocol.V1;
+using PirateX.Redis.StackExchange.Redis.Ex;
 using StackExchange.Redis;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
@@ -69,12 +71,12 @@ namespace PirateX
             var serversStr = config.Options.Get("servers");
             var redisHost = config.Options.Get("redisHost");
 
-            if (Logger.IsDebugEnabled)
+            if (Logger.IsInfoEnabled)
             {
-                Logger.Debug($"config");
-                Logger.Debug($"servers\t:\t{serversStr}");
-                Logger.Debug($"redisHost\t:\t{redisHost}");
-                Logger.Debug($"DefaultCulture\t:\t{Thread.CurrentThread.CurrentCulture}");
+                Logger.Info($"config");
+                Logger.Info($"servers\t:\t{serversStr}");
+                Logger.Info($"redisHost\t:\t{redisHost}");
+                Logger.Info($"DefaultCulture\t:\t{Thread.CurrentThread.CurrentCulture}");
             }
 
             #region SERVER IOC
@@ -104,6 +106,8 @@ namespace PirateX
             builder.Register(c => ConfigAssembly()).Named<Assembly>("ConfigAssembly");
             //默认的包解析器
             builder.Register(c => new JsonPackage()).As<IProtocolPackage<IGameRequestInfo>>();
+            //全局Redis序列化/反序列化方式
+            builder.Register(c => new JsonRedisSerializer()).As<IRedisSerializer>().SingleInstance();
 
             builder.Register(c => rootConfig).As<IRootConfig>().SingleInstance();
             builder.Register(c => redisHost).Named<string>("RedisHost");
@@ -121,7 +125,9 @@ namespace PirateX
 
             GameContainer.ServiceContainer = Container;
             GameContainer.InitContainers(servers?.ToArray());
-            
+
+            RedisDataBaseExtension.RedisSerilazer = Container.Resolve<IRedisSerializer>();
+
             //TODO 启动的时候看是否需要执行脚本 执行完成后进行删除
 
             //TODO 后台工作队列
@@ -136,8 +142,6 @@ namespace PirateX
         {
             if(Logger.IsDebugEnabled)
                 Logger.Debug("Starting RedisMqServer");
-
-            //_mqServer.Start();
 
             foreach (var thread in WorkerList)
             {
