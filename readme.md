@@ -1,12 +1,40 @@
 #PirateX
 .NET FrameWrok : 4.5.2
 
-##配置
 
-###全局配置
+##全局配置
 指在AppSettings中可以配置的项
 
-###Server配置
+##服务器配置    
+框架中的配置基本都是基于IOC来控制的，所以我们需要做的就是在<code>IocConfig()</code> 方法中指定相应的配置。   
+###全局Redis序列化方式
+默认采用的是<code>JsonRedisSerializer</code>方式来进行序列化和反序列化   
+框架中另外提供了 [protobuf](https://github.com/mgravell/protobuf-net) 的方式来进行序列化和反序列化
+```csharp
+public override void IocConfig(ContainerBuilder builder)
+{
+    builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
+}
+```   
+采用protobuf方式模式时 需要设定游戏模型的属性
+
+```csharp
+[Serializable]
+[ProtoContract(Name = "RoleInfoResponse")]
+public class RoleInfoResponse
+{
+    [ProtoMember(1)]
+    public string Name { get; set; }
+
+    [ProtoMember(2)]
+    public int Lv { get; set; }
+
+    [ProtoMember(3)]
+    public DateTime CreateAt { get; set; }
+}
+```
+>TODO 框架提供的基础模型需要支持好此属性
+
 
 
 ##数据缓存

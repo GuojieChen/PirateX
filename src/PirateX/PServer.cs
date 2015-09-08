@@ -6,7 +6,6 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using Autofac;
-using Newtonsoft.Json;
 using PirateX.Cointainer;
 using PirateX.Online;
 using PirateX.Protocol;
@@ -30,7 +29,7 @@ namespace PirateX
         protected static readonly IList<Thread> WorkerList = new List<Thread>();
         public IGameContainer<TGameServerConfig> GameContainer { get; set; }
 
-        public ILifetimeScope Container { get; private set; }
+        public ILifetimeScope Ioc { get; private set; }
 
         protected ConnectionMultiplexer MqServer = null;
 
@@ -58,7 +57,7 @@ namespace PirateX
         {
             base.OnNewSessionConnected(session);
 
-            session.ProtocolPackage = Container.Resolve<IProtocolPackage<IGameRequestInfo>>();
+            session.ProtocolPackage = Ioc.Resolve<IProtocolPackage<IGameRequestInfo>>();
         }
 
         protected override bool Setup(IRootConfig rootConfig, IServerConfig config)
@@ -82,7 +81,7 @@ namespace PirateX
             #region SERVER IOC
 
             if (Logger.IsDebugEnabled)
-                Logger.Debug("SetServerConfig");
+                Logger.Debug("IocConfig");
             var builder = new ContainerBuilder();
 
             MqServer = ConnectionMultiplexer.Connect(redisHost);
@@ -111,8 +110,8 @@ namespace PirateX
 
             builder.Register(c => rootConfig).As<IRootConfig>().SingleInstance();
             builder.Register(c => redisHost).Named<string>("RedisHost");
-            SetServerConfig(builder);
-            Container = builder.Build().BeginLifetimeScope();
+            IocConfig(builder);
+            Ioc = builder.Build().BeginLifetimeScope();
 
             #endregion
 
@@ -123,10 +122,10 @@ namespace PirateX
             if (Logger.IsDebugEnabled)
                 Logger.Debug("InitContaners >>>>>>>>>>>>>>>>>>>>>");
 
-            GameContainer.ServiceContainer = Container;
+            GameContainer.ServiceContainer = Ioc;
             GameContainer.InitContainers(servers?.ToArray());
 
-            RedisDataBaseExtension.RedisSerilazer = Container.Resolve<IRedisSerializer>();
+            RedisDataBaseExtension.RedisSerilazer = Ioc.Resolve<IRedisSerializer>();
 
             //TODO 启动的时候看是否需要执行脚本 执行完成后进行删除
 
@@ -136,7 +135,7 @@ namespace PirateX
 
         public abstract Assembly ConfigAssembly(); 
 
-        public abstract void SetServerConfig(ContainerBuilder builder);
+        public abstract void IocConfig(ContainerBuilder builder);
 
         public override bool Start()
         {
@@ -187,7 +186,7 @@ namespace PirateX
 
             if (session.Rid > 0)
             {
-                var onlineManager = this.Container.Resolve<IOnlineManager<TOnlineRole>>();
+                var onlineManager = this.Ioc.Resolve<IOnlineManager<TOnlineRole>>();
                 onlineManager.Logout(session.Rid, session.SessionID);
             }
 
