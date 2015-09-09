@@ -5,10 +5,10 @@ using SuperSocket.SocketBase;
 
 namespace PirateX
 {
-    public interface IGameServer<TGameServerConfig> : IAppServer where TGameServerConfig : IGameServerConfig
+    public interface IGameServer<TDistrictConfig> : IAppServer where TDistrictConfig : IDistrictConfig
 
     {
-        IGameContainer<TGameServerConfig> GameContainer { get; set; }
+        IDistrictContainer<TDistrictConfig> DistrictContainer { get; set; }
 
         ILifetimeScope Ioc { get; }
         /// <summary> 广播消息 

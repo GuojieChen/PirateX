@@ -7,9 +7,9 @@ using PirateX.Cointainer;
 
 namespace PirateX.Broadcas
 {
-    public class LocalSessionMsgBroadcast<TGameServerConfig> : IMsgBroadcast where TGameServerConfig : IGameServerConfig
+    public class LocalSessionMsgBroadcast<TDistrictConfig> : IMsgBroadcast where TDistrictConfig : Cointainer.IDistrictConfig
     {
-        private readonly IGameServer<IGameServerConfig> _server;
+        private readonly IGameServer<TDistrictConfig> _server;
 
 
         public void Send<T>(T msg, params long[] rids)
@@ -17,7 +17,7 @@ namespace PirateX.Broadcas
             throw new NotImplementedException();
         }
 
-        public void SendToServer<T>(T msg, params int[] serverId)
+        public void SendToDistrict<T>(T msg, params int[] districtId)
         {
             throw new NotImplementedException();
         }

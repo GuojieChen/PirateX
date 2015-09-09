@@ -13,7 +13,7 @@ namespace PirateX.Broadcas
             throw new NotImplementedException();
         }
 
-        public void SendToServer<T>(T msg, params int[] serverId)
+        public void SendToDistrict<T>(T msg, params int[] districtId)
         {
             throw new NotImplementedException();
         }

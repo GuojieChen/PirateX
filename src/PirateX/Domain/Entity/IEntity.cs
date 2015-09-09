@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PirateX.Domain
+namespace PirateX.Domain.Entity
 {
     public interface IEntity
     {

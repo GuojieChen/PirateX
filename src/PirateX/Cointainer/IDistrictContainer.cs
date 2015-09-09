@@ -3,45 +3,45 @@ using Autofac;
 
 namespace PirateX.Cointainer
 {
-    public interface IGameContainer<TGameServerConfig> where TGameServerConfig : IGameServerConfig
+    public interface IDistrictContainer<TDistrictConfig> where TDistrictConfig : IDistrictConfig
     {
         /// <summary> 服务器容器
         /// </summary>
-        ILifetimeScope ServiceContainer { get; set; }
+        ILifetimeScope ServerIoc { get; set; }
 
         /// <summary> 获取游戏服容器
         /// </summary>
-        /// <param name="serverid"></param>
+        /// <param name="districtid"></param>
         /// <returns></returns>
-        IContainer GetServerContainer(int serverid);
+        IContainer GetDistrictContainer(int districtid);
         /// <summary>
         /// 重新加载配置
         /// </summary>
-        /// <param name="serverid"></param>
+        /// <param name="districtid"></param>
         /// <returns></returns>
-        IContainer LoadServerContainer(int serverid);
+        IContainer LoadDistrictContainer(int districtid);
         /// <summary> 获取管理的配置列表
         /// </summary>
         /// <returns></returns>
-        IEnumerable<TGameServerConfig> GetServerConfigs();
+        IEnumerable<TDistrictConfig> GetDistrictConfigs();
         /// <summary>
         /// 初始化容器信息
         /// </summary>
-        /// <param name="servers">启动就初始化的游戏服ID列表</param>
-        void InitContainers(params int[] servers);
+        /// <param name="districtids">启动就初始化的游戏服ID列表</param>
+        void InitContainers(params int[] districtids);
 
 
         /// <summary> 加载配置列表
         /// </summary>
         /// <returns></returns>
-        IEnumerable<TGameServerConfig> LoadServerConfigs();
+        IEnumerable<TDistrictConfig> LoadDistrictConfigs();
         /// <summary> 获取单个 配置信息 
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        TGameServerConfig GetServerConfig(int id);
+        TDistrictConfig GetDistrictConfig(int id);
 
-        void SetConfig(ContainerBuilder builder, TGameServerConfig config);
+        void BuildContainer(ContainerBuilder builder, TDistrictConfig config);
     }
 
 

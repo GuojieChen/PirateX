@@ -18,7 +18,7 @@ namespace PirateX.Broadcas
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="msg"></param>
-        /// <param name="serverId"></param>
-        void SendToServer<T>(T msg, params int[] serverId);
+        /// <param name="districtId"></param>
+        void SendToDistrict<T>(T msg, params int[] districtId);
     }
 }

@@ -2,7 +2,7 @@
 {
     /// <summary> 游戏配置模型
     /// </summary>
-    public interface IGameServerConfig
+    public interface IDistrictConfig
     {
         int Id { get; set; }
         /// <summary> 游戏数据库地址

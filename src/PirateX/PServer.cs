@@ -21,13 +21,13 @@ namespace PirateX
 
     public abstract class PServer<TSession,TGameServerConfig,TOnlineRole> : AppServer<TSession, IGameRequestInfo>, IGameServer<TGameServerConfig>
         where TSession : PSession<TSession>, new() 
-        where TGameServerConfig : IGameServerConfig
+        where TGameServerConfig : IDistrictConfig
         where TOnlineRole : class, IOnlineRole,new()
     {
         /// <summary> 后台工作线程列表
         /// </summary>
         protected static readonly IList<Thread> WorkerList = new List<Thread>();
-        public IGameContainer<TGameServerConfig> GameContainer { get; set; }
+        public IDistrictContainer<TGameServerConfig> DistrictContainer { get; set; }
 
         public ILifetimeScope Ioc { get; private set; }
 
@@ -35,9 +35,9 @@ namespace PirateX
 
         protected ISubscriber Subscriber;
 
-        public PServer(IGameContainer<TGameServerConfig> gameContainer,IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) :base (receiveFilterFactory)
+        public PServer(IDistrictContainer<TGameServerConfig> districtContainer,IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) :base (receiveFilterFactory)
         {
-            GameContainer = gameContainer;
+            DistrictContainer = districtContainer;
         }
 
         public void Broadcast<TMessage>(TMessage message, IQueryable<long> rids)
@@ -122,8 +122,8 @@ namespace PirateX
             if (Logger.IsDebugEnabled)
                 Logger.Debug("InitContaners >>>>>>>>>>>>>>>>>>>>>");
 
-            GameContainer.ServiceContainer = Ioc;
-            GameContainer.InitContainers(servers?.ToArray());
+            DistrictContainer.ServerIoc = Ioc;
+            DistrictContainer.InitContainers(servers?.ToArray());
 
             RedisDataBaseExtension.RedisSerilazer = Ioc.Resolve<IRedisSerializer>();
 

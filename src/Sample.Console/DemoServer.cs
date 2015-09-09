@@ -12,9 +12,9 @@ using ServiceStack.Redis;
 
 namespace GameServer.Console
 {
-    public class DemoServer : PServer<DemoSession, GameServerConfig,OnlineRole>
+    public class DemoServer : PServer<DemoSession, DistrictConfig,OnlineRole>
     {
-        public DemoServer() : base(new DemoGameContainer(), new PokemonXProtocol())
+        public DemoServer() : base(new DemoDistrictContainer(), new PokemonXProtocol())
         {
         }
 
@@ -23,13 +23,13 @@ namespace GameServer.Console
             return this.GetType().Assembly;
         }
 
-        public override void SetServerConfig(ContainerBuilder builder)
+        public override void IocConfig(ContainerBuilder builder)
         {
-            builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
+            //builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
         }
     }
 
-    public class GameServerConfig : IGameServerConfig
+    public class DistrictConfig : IDistrictConfig
     {
         public string Name { get; set; }
         public int Id { get; set; }
@@ -39,26 +39,26 @@ namespace GameServer.Console
         public int RedisDb { get; set; }
     }
 
-    internal class DemoGameContainer : GameContainer<GameServerConfig>
+    internal class DemoDistrictContainer : DistrictContainer<DistrictConfig>
     {
-        private static readonly IEnumerable<GameServerConfig> ServerConfigs = new[]
+        private static readonly IEnumerable<DistrictConfig> ServerConfigs = new[]
         {
-            new GameServerConfig {Id = 1, Name = "test 01",Redis = "127.0.0.1",RedisDb = 1},
-            new GameServerConfig {Id = 2, Name = "test 02",Redis = "127.0.0.1",RedisDb = 2},
-            new GameServerConfig {Id = 3, Name = "test 03",Redis = "127.0.0.1",RedisDb = 3}
+            new DistrictConfig {Id = 1, Name = "test 01",Redis = "127.0.0.1",RedisDb = 1},
+            new DistrictConfig {Id = 2, Name = "test 02",Redis = "127.0.0.1",RedisDb = 2},
+            new DistrictConfig {Id = 3, Name = "test 03",Redis = "127.0.0.1",RedisDb = 3}
         };
 
-        public override IEnumerable<GameServerConfig> LoadServerConfigs()
+        public override IEnumerable<DistrictConfig> LoadDistrictConfigs()
         {
             return ServerConfigs;
         }
 
-        public override GameServerConfig GetServerConfig(int id)
+        public override DistrictConfig GetDistrictConfig(int id)
         {
             return ServerConfigs.FirstOrDefault(item => item.Id == id);
         }
 
-        public override void SetConfig(ContainerBuilder builder, GameServerConfig config)
+        public override void BuildContainer(ContainerBuilder builder, DistrictConfig config)
         {
            
         }

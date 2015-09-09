@@ -5,16 +5,16 @@
     public interface IOnlineManager<TOnlineRole>
          where TOnlineRole : IOnlineRole
     {
-        /// <summary> 机器下线
+        /// <summary> 服务器上线
         /// </summary>
         void ServerOnline();
-        /// <summary> 机器上线
+        /// <summary> 服务器下线
         /// </summary>
         void ServerOffline();
-        /// <summary> 登录
+        /// <summary> 角色登录
         /// </summary>
         void Login(TOnlineRole onlineRole);
-        /// <summary> 登出
+        /// <summary> 角色登出
         /// </summary>
         void Logout(long rid, string sessionid);
         /// <summary> 是否在线
@@ -34,11 +34,16 @@
     public interface IOnlineRole
     {
         long Id { get; set; }
-
-        int ServerId { get; set; }
-
-        string ServerName { get; set; }
-
+        /// <summary> 区服ID
+        /// </summary>
+        int Did { get; set; }
+        /// <summary>
+        /// 区服NAME
+        /// </summary>
+        string DistrictName { get; set; }
+        /// <summary>
+        /// Session ID
+        /// </summary>
         string SessionID { get; set; }
     }
 }

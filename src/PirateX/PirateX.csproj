@@ -109,9 +109,9 @@
     <Compile Include="Broadcas\LocalSessionMsgBroadcast.cs" />
     <Compile Include="Broadcas\RedisMqMsgBroadcast.cs" />
     <Compile Include="Cache\MemoryCacheClient.cs" />
-    <Compile Include="Cointainer\GameContainer.cs" />
-    <Compile Include="Cointainer\IGameConfig.cs" />
-    <Compile Include="Cointainer\IGameContainer.cs" />
+    <Compile Include="Cointainer\DistrictContainer.cs" />
+    <Compile Include="Cointainer\IDistrictConfig.cs" />
+    <Compile Include="Cointainer\IDistrictContainer.cs" />
     <Compile Include="Command\Login.cs" />
     <Compile Include="Command\NoneRequest.cs" />
     <Compile Include="Command\NoneResponse.cs" />
@@ -121,7 +121,9 @@
     <Compile Include="Config\MemoryConfigReader.cs" />
     <Compile Include="Db\MySql\GameMySqlDialectProvider.cs" />
     <Compile Include="Config\IConfigEntity.cs" />
-    <Compile Include="Domain\IEntity.cs" />
+    <Compile Include="Domain\Entity\IEntity.cs" />
+    <Compile Include="Domain\Uow\IRepository.cs" />
+    <Compile Include="Domain\Uow\IUnitOfWork.cs" />
     <Compile Include="GException\FreezeException.cs" />
     <Compile Include="GException\LogoutException.cs" />
     <Compile Include="GException\PreconditionException.cs" />

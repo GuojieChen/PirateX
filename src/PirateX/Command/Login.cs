@@ -12,13 +12,13 @@ namespace PirateX.Command
     /// <typeparam name="TSession"></typeparam>
     /// <typeparam name="TLoginRequest"></typeparam>
     /// <typeparam name="TLoginResponse"></typeparam>
-    /// <typeparam name="TGameServerConfig"></typeparam>
+    /// <typeparam name="TDistrictConfig"></typeparam>
     /// <typeparam name="TOnlineRole"></typeparam>
-    public abstract class Login<TSession,TGameServerConfig,TLoginRequest, TLoginResponse,TOnlineRole> : GameCommand<TSession, TLoginRequest, TLoginResponse>
+    public abstract class Login<TSession,TDistrictConfig,TLoginRequest, TLoginResponse,TOnlineRole> : GameCommand<TSession, TLoginRequest, TLoginResponse>
         where TSession : PSession<TSession>, IGameSession, new()
         where TLoginRequest :ILoginRequest
         where TLoginResponse :ILoginResponse
-        where TGameServerConfig :IGameServerConfig
+        where TDistrictConfig :IDistrictConfig
         where TOnlineRole : class ,IOnlineRole,new()
     {
         protected override TLoginResponse ExecuteResponseCommand(TSession session, TLoginRequest data)
@@ -28,7 +28,7 @@ namespace PirateX.Command
             token = new DebugToken()
             {
                 Rid = data.Rid,
-                ServerId = data.ServerId
+                DistrictId = data.Did
             };
 #else
             token = UnPackToken(data);
@@ -45,22 +45,22 @@ namespace PirateX.Command
                 session.Close();
             }
 
-            var appserver = (IGameServer<TGameServerConfig>) session.AppServer;
+            var appserver = (IGameServer<TDistrictConfig>) session.AppServer;
 
-            session.Build = appserver.GameContainer.GetServerContainer(token.ServerId);
+            session.Build = appserver.DistrictContainer.GetDistrictContainer(token.DistrictId);
 
             if (session.Build == null)
             {
                 if(Logger.IsFatalEnabled)
-                    Logger.Fatal($"Can't find game container\t:\t{token.ServerId}");
+                    Logger.Fatal($"Can't find game container\t:\t{token.DistrictId}");
                 session.Close();
             }
             session.Rid = token.Rid;
-            session.ServerId = token.ServerId;
+            session.ServerId = token.DistrictId;
 
             //TODO 单设备登陆
 
-            var onlineManager = appserver.Container.Resolve<IOnlineManager<TOnlineRole>>();
+            var onlineManager = appserver.Ioc.Resolve<IOnlineManager<TOnlineRole>>();
 
             var onlineRole = GetOnlineRole(session, data);
             onlineManager.Login(onlineRole);
@@ -92,7 +92,7 @@ namespace PirateX.Command
     public class DebugToken : IToken
     {
         public long Rid { get; set; }
-        public int ServerId { get; set; }
+        public int DistrictId { get; set; }
         public long Timestamp { get; set; }
         public string Secret { get; set; }
         public DateTime? CreateAt { get; set; }
@@ -107,7 +107,7 @@ namespace PirateX.Command
         long Rid { get; set; }
         /// <summary> 游戏服ID
         /// </summary>
-        int ServerId { get; set; }
+        int DistrictId { get; set; }
         /// <summary> 时间戳
         /// </summary>
         long Timestamp { get; set; }
@@ -125,8 +125,9 @@ namespace PirateX.Command
         string Token { get; set; }
 
         long Rid { get; set; }
-
-        int ServerId { get; set; }
+        /// <summary> 区服ID
+        /// </summary>
+        int Did { get; set; }
     }
 
     /// <summary>
