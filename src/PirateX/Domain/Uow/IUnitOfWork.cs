@@ -11,20 +11,12 @@ namespace PirateX.Domain.Uow
     /// </summary>
     public interface IUnitOfWork
     {
-        /// <summary> 更新
-        /// </summary>
-        /// <param name="entity"></param>
-        void RegisterUpdate(IEntity entity);
-        /// <summary> 新增
-        /// </summary>
-        /// <param name="entity"></param>
-        void RegisterAdd(IEntity entity);
-        /// <summary> 删除
-        /// </summary>
-        /// <param name="entity"></param>
-        void RegisterRemoved(IEntity entity);
         /// <summary> 提交
         /// </summary>
         void Commit();
+        /// <summary> 添加命令
+        /// </summary>
+        /// <param name="command"></param>
+        void QueueCommand(Action<IRepository> command);
     }
 }

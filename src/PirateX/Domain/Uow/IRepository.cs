@@ -24,6 +24,10 @@ namespace PirateX.Domain.Uow
         /// </summary>
         /// <param name="entity"></param>
         void Remove(IEntity entity);
+        /// <summary> 创建工作单元
+        /// </summary>
+        /// <returns></returns>
+        IUnitOfWork CreateUnitOfWork();
     }
 
 
