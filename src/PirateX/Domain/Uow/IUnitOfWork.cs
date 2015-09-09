@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX.Domain.Entity;
+using PirateX.Domain.Repository;
 
 namespace PirateX.Domain.Uow
 {

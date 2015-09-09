@@ -122,8 +122,9 @@
     <Compile Include="Db\MySql\GameMySqlDialectProvider.cs" />
     <Compile Include="Config\IConfigEntity.cs" />
     <Compile Include="Domain\Entity\IEntity.cs" />
-    <Compile Include="Domain\Uow\IRepository.cs" />
+    <Compile Include="Domain\Repository\IRepository.cs" />
     <Compile Include="Domain\Uow\IUnitOfWork.cs" />
+    <Compile Include="Domain\Uow\UnitOfWork.cs" />
     <Compile Include="GException\FreezeException.cs" />
     <Compile Include="GException\LogoutException.cs" />
     <Compile Include="GException\PreconditionException.cs" />
