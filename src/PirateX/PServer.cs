@@ -19,15 +19,15 @@ using SuperSocket.SocketBase.Protocol;
 namespace PirateX
 {
 
-    public abstract class PServer<TSession,TGameServerConfig,TOnlineRole> : AppServer<TSession, IGameRequestInfo>, IGameServer<TGameServerConfig>
+    public abstract class PServer<TSession,TDistrictConfig,TOnlineRole> : AppServer<TSession, IGameRequestInfo>, IGameServer<TDistrictConfig>
         where TSession : PSession<TSession>, new() 
-        where TGameServerConfig : IDistrictConfig
+        where TDistrictConfig : IDistrictConfig
         where TOnlineRole : class, IOnlineRole,new()
     {
         /// <summary> 后台工作线程列表
         /// </summary>
         protected static readonly IList<Thread> WorkerList = new List<Thread>();
-        public IDistrictContainer<TGameServerConfig> DistrictContainer { get; set; }
+        public IDistrictContainer<TDistrictConfig> DistrictContainer { get; set; }
 
         public ILifetimeScope Ioc { get; private set; }
 
@@ -35,7 +35,7 @@ namespace PirateX
 
         protected ISubscriber Subscriber;
 
-        public PServer(IDistrictContainer<TGameServerConfig> districtContainer,IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) :base (receiveFilterFactory)
+        protected PServer(IDistrictContainer<TDistrictConfig> districtContainer,IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) :base (receiveFilterFactory)
         {
             DistrictContainer = districtContainer;
         }
@@ -67,13 +67,13 @@ namespace PirateX
             if (!string.IsNullOrEmpty(defaultCulture))
                 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(defaultCulture);
 
-            var serversStr = config.Options.Get("servers");
+            var districtIdsStr = config.Options.Get("districtids");
             var redisHost = config.Options.Get("redisHost");
 
             if (Logger.IsInfoEnabled)
             {
                 Logger.Info($"config");
-                Logger.Info($"servers\t:\t{serversStr}");
+                Logger.Info($"districtids\t:\t{districtIdsStr}");
                 Logger.Info($"redisHost\t:\t{redisHost}");
                 Logger.Info($"DefaultCulture\t:\t{Thread.CurrentThread.CurrentCulture}");
             }
@@ -115,15 +115,15 @@ namespace PirateX
 
             #endregion
 
-            IEnumerable<int> servers = null;
-            if (!string.IsNullOrEmpty(serversStr))
-                servers = serversStr.TrimStart('[').TrimEnd(']').Split(new char[] { ',' }).Select(int.Parse);
+            IEnumerable<int> districts = null;
+            if (!string.IsNullOrEmpty(districtIdsStr))
+                districts = districtIdsStr.TrimStart('[').TrimEnd(']').Split(new char[] { ',' }).Select(int.Parse);
 
             if (Logger.IsDebugEnabled)
                 Logger.Debug("InitContaners >>>>>>>>>>>>>>>>>>>>>");
 
             DistrictContainer.ServerIoc = Ioc;
-            DistrictContainer.InitContainers(servers?.ToArray());
+            DistrictContainer.InitContainers(districts?.ToArray());
 
             RedisDataBaseExtension.RedisSerilazer = Ioc.Resolve<IRedisSerializer>();
 
@@ -171,11 +171,6 @@ namespace PirateX
                     }
                 }
             }
-
-            if (Logger.IsDebugEnabled)
-                Logger.Debug("Stoping RedisMqServer");
-
-            //_mqServer.Stop();
 
             base.Stop();
         }

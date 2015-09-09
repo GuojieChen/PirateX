@@ -23,8 +23,8 @@ namespace GameServer.Console.Cmd
             return new OnlineRole
             {
                 Id = request.Rid,
-                ServerId = request.ServerId,
-                ServerName = Dns.GetHostName().Trim('\''),
+                Did = request.Did,
+                DistrictName = Dns.GetHostName().Trim('\''),
                 SessionID = session.SessionID
             };
         }
@@ -34,7 +34,7 @@ namespace GameServer.Console.Cmd
             return new Token
             {
                 Rid = data.Rid,
-                ServerId = data.ServerId,
+                DistrictId = data.Did,
                 Timestamp = 1000000000,
                 Secret = "ERLKCKJEJLBKPCDWLEKRHKJGKWE"
             };
@@ -44,7 +44,7 @@ namespace GameServer.Console.Cmd
     public class Token : IToken
     {
         public long Rid { get; set; }
-        public int ServerId { get; set; }
+        public int DistrictId { get; set; }
         public long Timestamp { get; set; }
         public string Secret { get; set; }
         public DateTime? CreateAt { get; set; }
@@ -54,6 +54,6 @@ namespace GameServer.Console.Cmd
     {
         public string Token { get; set; }
         public long Rid { get; set; }
-        public int ServerId { get; set; }
+        public int Did { get; set; }
     }
 }
