@@ -50,26 +50,6 @@
       <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ServiceStack.Common, Version=1.0.4339.6048, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ServiceStack.Common.3.0.6\lib\ServiceStack.Common.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ServiceStack.Interfaces, Version=1.0.4339.6048, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ServiceStack.Common.3.0.6\lib\ServiceStack.Interfaces.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ServiceStack.OrmLite, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.71\lib\net35\ServiceStack.OrmLite.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ServiceStack.OrmLite.SqlServer, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.71\lib\net35\ServiceStack.OrmLite.SqlServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ServiceStack.Text, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ServiceStack.Text.3.9.71\lib\net35\ServiceStack.Text.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="StackExchange.Redis, Version=1.0.316.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\StackExchange.Redis.1.0.481\lib\net45\StackExchange.Redis.dll</HintPath>
       <Private>True</Private>
@@ -123,6 +103,7 @@
     <Compile Include="Config\IConfigEntity.cs" />
     <Compile Include="Domain\Entity\IEntity.cs" />
     <Compile Include="Domain\Repository\IRepository.cs" />
+    <Compile Include="Domain\Repository\ServiceStackRepository.cs" />
     <Compile Include="Domain\Uow\IUnitOfWork.cs" />
     <Compile Include="Domain\Uow\UnitOfWork.cs" />
     <Compile Include="GException\FreezeException.cs" />
@@ -194,6 +175,24 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Upgrade\readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ServiceStack-V3\ServiceStack.Common\ServiceStack.Common.csproj">
+      <Project>{982416db-c143-4028-a0c3-cf41892d18d3}</Project>
+      <Name>ServiceStack.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceStack-V3\ServiceStack.Interfaces\ServiceStack.Interfaces.csproj">
+      <Project>{55942102-033a-4da8-a6af-1db7b2f34a2d}</Project>
+      <Name>ServiceStack.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceStack-V3\ServiceStack.OrmLite\ServiceStack.OrmLite.csproj">
+      <Project>{96179ac6-f6f1-40c3-9fdd-4f6582f54c5c}</Project>
+      <Name>ServiceStack.OrmLite</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ServiceStack-V3\ServiceStack.Text\ServiceStack.Text.csproj">
+      <Project>{579b3fdb-cdad-44e1-8417-885c38e49a0e}</Project>
+      <Name>ServiceStack.Text</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

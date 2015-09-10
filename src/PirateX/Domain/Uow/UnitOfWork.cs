@@ -14,15 +14,15 @@ namespace PirateX.Domain.Uow
     {
         private IList<Action<IRepository>> _commands = new List<Action<IRepository>>();
 
-        private IDbConnection dbConnection; 
+        private IDbConnection _dbConnection;
+
+        public UnitOfWork(IDbConnection dbConnection)
+        {
+            this._dbConnection = dbConnection;
+        }
 
         public void Commit()
         {
-                using (var db = new OrmLiteConnectionFactory("").OpenDbConnection())
-                {
-                    db.Where<OnlineRole>(item=>item.Did ==2)
-                }
-
         }
 
         public void QueueCommand(Action<IRepository> command)

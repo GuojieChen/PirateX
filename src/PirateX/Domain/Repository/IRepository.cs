@@ -6,7 +6,7 @@ using PirateX.Domain.Uow;
 
 namespace PirateX.Domain.Repository
 {
-    public interface IRepository
+    public interface IRepository: IDisposable
     {
         #region Insert
         /// <summary> 新增
