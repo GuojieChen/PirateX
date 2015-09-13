@@ -12,7 +12,7 @@ namespace PirateX.Domain.Uow
 {
     public class UnitOfWork :IUnitOfWork
     {
-        private IList<Action<IRepository>> _commands = new List<Action<IRepository>>();
+        private IList<Action<IReadRepository>> _commands = new List<Action<IReadRepository>>();
 
         private IDbConnection _dbConnection;
 
@@ -25,7 +25,7 @@ namespace PirateX.Domain.Uow
         {
         }
 
-        public void QueueCommand(Action<IRepository> command)
+        public void QueueCommand(Action<IReadRepository> command)
         {
             _commands.Add(command);
         }
