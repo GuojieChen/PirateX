@@ -18,6 +18,6 @@ namespace PirateX.Domain.Uow
         /// <summary> 添加命令
         /// </summary>
         /// <param name="command"></param>
-        void QueueCommand(Action<IRepository> command);
+        void QueueCommand(Action<IReadRepository> command);
     }
 }

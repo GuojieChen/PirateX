@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ServiceStack.Common.Utils;
 using StackExchange.Redis;
 
 namespace PirateX.Redis.StackExchange.Redis.Ex
@@ -43,5 +44,21 @@ namespace PirateX.Redis.StackExchange.Redis.Ex
 
             return db.StringSet(key, value, expire);
         }
+
+        public static bool Set<T>(this IDatabase db, T t, TimeSpan? expire = null)
+        {
+            return db.Set(t.GetId().ToString(), t, expire);
+        }
+
+
+
+        public static void SetAsHash<T>(this IDatabase db, T t,TimeSpan? expire = null)
+        {
+            var key = t.GetId().ToString();
+
+            db.HashSet(key, t.GetType().GetProperties().Select(property => new HashEntry(property.Name, property.GetValue(t).ToString())).ToArray());
+            // TODO 缓存时间
+        }
+
     }
 }
