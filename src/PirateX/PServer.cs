@@ -106,7 +106,7 @@ namespace PirateX
             //默认的包解析器
             builder.Register(c => new JsonPackage()).As<IProtocolPackage<IGameRequestInfo>>();
             //全局Redis序列化/反序列化方式
-            builder.Register(c => new JsonRedisSerializer()).As<IRedisSerializer>().SingleInstance();
+            builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
 
             builder.Register(c => rootConfig).As<IRootConfig>().SingleInstance();
             builder.Register(c => redisHost).Named<string>("RedisHost");

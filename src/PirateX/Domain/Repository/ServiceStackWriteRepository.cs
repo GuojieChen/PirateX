@@ -14,11 +14,12 @@ namespace PirateX.Domain.Repository
 {
     public class ServiceStackWriteRepository:IWriteRepository
     {
-        private IDbConnection _connection;
-        private IDatabase _redisDatabase; 
+        private readonly IDbConnection _connection;
+        private readonly IDatabase _redisDatabase; 
 
-        public ServiceStackWriteRepository(IDbConnection dbConnection)
+        public ServiceStackWriteRepository(IDatabase database, IDbConnection dbConnection)
         {
+            _redisDatabase = database;
             _connection = dbConnection;
         }
 
@@ -37,21 +38,26 @@ namespace PirateX.Domain.Repository
 
         public long Insert<TEntity>(TEntity entity, bool identity) where TEntity : IEntity, new()
         {
-            throw new NotImplementedException();
+            _connection.Insert(entity);
+            return _connection.GetLastInsertId();
         }
 
         public Task InsertAsync<TEntity>(TEntity entity) where TEntity : IEntity, new()
         {
+            _connection.Insert(entity);
+
             throw new NotImplementedException();
         }
 
         public void Update<TEntity>(TEntity entity) where TEntity : IEntity, new()
         {
-            throw new NotImplementedException();
+            _connection.Update<TEntity>(entity); 
         }
 
         public void Update<TEntity>(object fields, object id)
         {
+
+
             throw new NotImplementedException();
         }
 

@@ -10,7 +10,6 @@ namespace PirateX.Domain.Repository
 {
     public interface IWriteRepository : IDisposable
     {
-
         #region Insert
         /// <summary> 新增
         /// </summary>

@@ -12,20 +12,21 @@ namespace PirateX.Domain.Uow
 {
     public class UnitOfWork :IUnitOfWork
     {
-        private IList<Action<IReadRepository>> _commands = new List<Action<IReadRepository>>();
+        private IList<Action<IWriteRepository>> _commands = new List<Action<IWriteRepository>>();
 
-        private IDbConnection _dbConnection;
+        private IWriteRepository writeRepository;
 
-        public UnitOfWork(IDbConnection dbConnection)
+        public UnitOfWork(IWriteRepository writeRepository)
         {
-            this._dbConnection = dbConnection;
+            this.writeRepository = writeRepository;
         }
 
         public void Commit()
         {
+            //TODO Commit
         }
 
-        public void QueueCommand(Action<IReadRepository> command)
+        public void QueueCommand(Action<IWriteRepository> command)
         {
             _commands.Add(command);
         }

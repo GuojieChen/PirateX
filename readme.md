@@ -2,18 +2,21 @@
 .NET FrameWrok : 4.5.2
 
 
+PirateX
+
+
 ##全局配置
 指在AppSettings中可以配置的项
 
 ##服务器配置    
 框架中的配置基本都是基于IOC来控制的，所以我们需要做的就是在<code>IocConfig()</code> 方法中指定相应的配置。   
 ###全局Redis序列化方式
-默认采用的是<code>JsonRedisSerializer</code>方式来进行序列化和反序列化   
+默认采用的是<code>ProtobufRedisSerializer</code>方式来进行序列化和反序列化   
 框架中另外提供了 [protobuf](https://github.com/mgravell/protobuf-net) 的方式来进行序列化和反序列化
 ```csharp
 public override void IocConfig(ContainerBuilder builder)
 {
-    builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
+    builder.Register(c => new JsonRedisSerializer()).As<IRedisSerializer>().SingleInstance();
 }
 ```   
 采用protobuf方式模式时 需要设定游戏模型的属性
@@ -52,6 +55,10 @@ public class RoleInfoResponse
 私有型数据会在玩家初次登陆时加载，并保存24小时。在操作过程中，记录保存到Redis，操作记录会添加到同步都列，并且是针对单个对象进行合并处理。
 >变化类型有   增/删/改 其代码分别为 i/d/u  
 >其中优先级为 删>增>改
+
+私有数据是按照角色rid存放在独自的容器中。
+
+>TODO 私有数据的管理需要考虑到Redis的特性。后续在做具体的支持
 
 **4. 缓存数据**   
 <code>internal</code>   
