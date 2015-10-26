@@ -38,6 +38,8 @@ public class RoleInfoResponse
 ```
 >TODO 框架提供的基础模型需要支持好此属性
 
+###工作单元
+所有数据库查询的连接都是既用既开的
 
 
 ##数据缓存
@@ -77,7 +79,9 @@ public class RoleInfoResponse
 
 > TODO 国际化需要支持多国语言。并且各语言需要在同一个CSV文件中，方便后期维护。
 
-
+> 1、Task做分布式协调，可以参考AkkA.NET    
+> 2、玩家私有数据 可以做缓存，数据库层面可以进行分表
+> 3、玩家历史数据的保留可以考虑分表分库，在库表的定位上需要进行封装
 
 ##Open Source Projects in Use
 

@@ -4,8 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using PirateX.Cache;
-using ServiceStack.Common.Utils;
-using ServiceStack.OrmLite;
 
 namespace PirateX.Config
 {
@@ -44,6 +42,7 @@ namespace PirateX.Config
 
         private void LoadConfigData<T>(IDbConnection connection)
         {
+            /* #TODO#
             var list = connection.Select<T>();
 
             if (!list.Any())
@@ -71,6 +70,7 @@ namespace PirateX.Config
 
             if (indexkeys.Any())
                 _cacheClient.Add(GetCacheKeyIndexKeys<T>(),indexkeys);
+            */
         }
 
 
@@ -78,6 +78,7 @@ namespace PirateX.Config
 
         private void LoadKeyValueConfigData<T>(IDbConnection connection) where T : IConfigKeyValueEntity
         {
+            /*#TODO#
             var list = connection.Select<T>();
 
             if (!list.Any())
@@ -91,6 +92,7 @@ namespace PirateX.Config
                 var key = GetCacheKey<T>(item.Id);
                 _cacheClient.Add(key, item.V); 
             }
+            */
         }
 
         private string GetCacheKeyId<T>(object id)

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ServiceStack.Text;
 
 namespace PirateX.Redis.StackExchange.Redis.Ex
 {
@@ -11,12 +10,16 @@ namespace PirateX.Redis.StackExchange.Redis.Ex
     {
         public string Serilazer<T>(T obj)
         {
-            return obj.ToJson();
+            throw new NotImplementedException();
+            
+            //return obj.ToJson();
         }
 
         public T Des<T>(string value)
         {
-            return JsonSerializer.DeserializeFromString<T>(value); 
+            throw new NotImplementedException();
+
+            //return JsonSerializer.DeserializeFromString<T>(value); 
         }
     }
 }

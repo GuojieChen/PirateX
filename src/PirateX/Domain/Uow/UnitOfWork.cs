@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using PirateX.Domain.Repository;
 using PirateX.Online;
-using ServiceStack.OrmLite;
 
 namespace PirateX.Domain.Uow
 {
@@ -15,6 +14,7 @@ namespace PirateX.Domain.Uow
         private IList<Action<IWriteRepository>> _commands = new List<Action<IWriteRepository>>();
 
         private IWriteRepository writeRepository;
+        
 
         public UnitOfWork(IWriteRepository writeRepository)
         {
@@ -23,12 +23,14 @@ namespace PirateX.Domain.Uow
 
         public void Commit()
         {
-            //TODO Commit
+
         }
 
         public void QueueCommand(Action<IWriteRepository> command)
         {
             _commands.Add(command);
         }
+
+        public 
     }
 }
