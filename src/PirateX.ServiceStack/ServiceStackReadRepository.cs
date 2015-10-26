@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using PirateX.Domain.Entity;
 using PirateX.Domain.Uow;
-using ServiceStack.OrmLite;
 
 namespace PirateX.Domain.Repository
 {

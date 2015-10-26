@@ -7,8 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using PirateX.Domain.Entity;
 using PirateX.Redis.StackExchange.Redis.Ex;
-using ServiceStack.OrmLite;
-using StackExchange.Redis;
 
 namespace PirateX.Domain.Repository
 {
