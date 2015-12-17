@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using Autofac;
 using Newtonsoft.Json;
@@ -149,44 +150,106 @@ namespace PirateX
 
         #region 请求结果的缓存
 
-        public virtual TResponse GetLastResponse<TResponse>(long rid, string c)
+        private static string GetRequestKey(long rid,string c)
         {
-            if (rid <= 0)
-                return default(TResponse);
-
-            var db = Build.Resolve<IDatabase>();
-            if (db == null)
-                return default(TResponse);
-
-            var key = $"sys:response:{rid}:{c}";
-
-            return db.Get<TResponse>(key);
+            return $"sys:request:{rid}:{c}"; 
         }
 
-        public virtual void SetLastReponse(long rid, string c, object o)
+        private static string GetRequestListKey(long rid)
         {
-            if (rid <= 0 || string.IsNullOrEmpty(c) || o == null)
+            return $"sys:requestlist:{rid}";
+        }
+
+        public virtual bool ExistsReqeust(long rid, string c)
+        {
+            var db = Build.Resolve<IDatabase>();
+            if (db == null)
+                return false;
+
+            var key = GetRequestKey(rid,c);
+            var listkey = GetRequestListKey(rid);
+
+            if (db.ListLength(listkey) <= 0)
+            {
+                if(Logger.IsDebugEnabled)
+                    Logger.Debug($"RID : {rid},Request.Length = 0");
+
+                return false;
+            }
+
+            var list = db.ListRange(listkey);
+
+            if (list.Any(item => Equals(item.ToString(), key.ToString())))
+            {
+                if (Logger.IsDebugEnabled)
+                    Logger.Debug($"RID : {rid},Request.[{key}] exists!");
+
+                return true;
+            }
+
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"RID : {rid},Request.[{key}] not exists!");
+
+            return false;
+        }
+
+        public virtual void StartRequest(long rid, string c)
+        {
+            if (rid <= 0 || string.IsNullOrEmpty(c))
                 return;
 
             var db = Build.Resolve<IDatabase>();
             if (db == null)
-                return;
+                return ;
 
-            //这里来具体维护 缓存多少条 ~ 
-            var key = $"sys:response:{rid}:{c}";
-            var listkey = $"sys:response:{rid}";
-
-            var setOk = db.Set(key, o, new TimeSpan(0, 0, 1, 0));
-            if (!setOk)
-                return;
+            var key     = GetRequestKey(rid,c);
+            var listkey = GetRequestListKey(rid);
 
             db.ListLeftPush(listkey, key);
 
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"StartRequest ,ListLeftPush({listkey},{key})");
+
             if (db.ListLength(listkey) > 4)
             {
-                var removekey = db.ListRightPop(listkey);
-                db.KeyDelete(removekey.ToString());
+                var removekey = db.ListLeftPop(listkey);
+                if (!string.IsNullOrEmpty(removekey))
+                    db.KeyDelete(removekey.ToString());
+
+                if (Logger.IsDebugEnabled)
+                    Logger.Debug($"StartRequest ,ListLeftPop({listkey}) and KeyDelete({removekey})");
             }
+        }
+
+        public virtual void EndRequest(long rid, string c, object response)
+        {
+            if (rid <= 0 || string.IsNullOrEmpty(c))
+                return;
+
+            var db = Build.Resolve<IDatabase>();
+            if (db == null)
+                return;
+
+            var key = GetRequestKey(rid,c);
+
+            var setOk = db.Set(key, response, new TimeSpan(0, 0, 1, 50));
+
+            if (Logger.IsDebugEnabled)
+            {
+                Logger.Debug($"EndRequest, set response {setOk}");
+                Logger.Debug($"EndRequest,Response is {JsonConvert.SerializeObject(response)}");
+            }
+        }
+
+        public virtual TResonse GetResponse<TResonse>(long rid, string c)
+        {
+            var key = GetRequestKey(rid,c);
+
+            var db = Build.Resolve<IDatabase>();
+            if (db == null)
+                return default(TResonse);
+
+            return db.Get<TResonse>(key); 
         }
         #endregion
 

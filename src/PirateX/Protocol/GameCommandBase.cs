@@ -11,12 +11,12 @@ namespace PirateX.Protocol
     /// <typeparam name="TSession">The type of the web socket session.</typeparam>
     /// <typeparam name="TRequest">The type of the request info.</typeparam>
     /// <typeparam name="TResponse">The type of the response info</typeparam>
-    public abstract class GameCommandBase<TSession, TRequest,TResponse> : CommandBase<TSession, IGameRequestInfo>
+    public abstract class GameCommandBase<TSession, TRequest, TResponse> : CommandBase<TSession, IGameRequestInfo>
         where TSession : IGameSession, IAppSession<TSession, IGameRequestInfo>, new()
     {
         //protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        protected ILog Logger { get; private set; } 
+        protected ILog Logger { get; private set; }
 
         private Type m_CommandInfoType;
 
@@ -47,32 +47,47 @@ namespace PirateX.Protocol
                 if (Logger.IsDebugEnabled)
                     Logger.Debug($"ExecuteCommand[{DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss ffff")}]\t{session.SessionID}\tSessionID\t{Name}\tRid:{session.Rid}");
             }
-            
+
+            var cacheName = $"{Name}_{session.CurrentO}";
             if (requestInfo.IsRetry)
-            { //客户端请求失败 
-                var cacheName = Convert.ToString(session.CurrentO);
-                var r = session.GetLastResponse<TResponse>(session.Rid, cacheName);
+            { 
+                //客户端请求失败 
+              /*
+                客户端请求失败 尝试重新请求
+                服务端查看请求列表中是否有该请求
+                有    则等待
+                没有  则查看Response是否有
+              */
 
-                if (r != null)
+                if (session.ExistsReqeust(session.Rid, cacheName))
                 {
-                    if (Logger.IsDebugEnabled)
-                        Logger.Debug($"Retry success,Session [{session.SessionID}]");
-
-                    session.SendMessage(new
+                    // 已有请求 等待完成
+                    var response = session.GetResponse<TResponse>(session.Rid, cacheName);
+                    if (Equals(default(TResponse), response))
                     {
-                        C = Name,
-                        D = r,
-                        O = session.CurrentO
-                    });
+                        if (Logger.IsDebugEnabled)
+                            Logger.Debug($"Retry fail,Session [{session.SessionID}],cacheName : {cacheName}");
+                        return;
+                    }
+                    else
+                    {
+                        if (Logger.IsDebugEnabled)
+                            Logger.Debug($"Retry success,Session [{session.SessionID}],cacheName : {cacheName}");
 
-                    return;
+                        session.SendMessage(new
+                        {
+                            C = Name,
+                            D = response,
+                            O = session.CurrentO
+                        });
+
+                        return;
+                    }
                 }
                 else
                 {
                     if (Logger.IsDebugEnabled)
-                        Logger.Debug($"Retry fail,Session [{session.SessionID}]");
-
-                    return;
+                        Logger.Debug($"Retry no request,Session [{session.SessionID}],cacheName : {cacheName}");
                 }
             }
 

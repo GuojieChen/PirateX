@@ -92,6 +92,7 @@
     <Compile Include="Cointainer\DistrictContainer.cs" />
     <Compile Include="Cointainer\IDistrictConfig.cs" />
     <Compile Include="Cointainer\IDistrictContainer.cs" />
+    <Compile Include="Command\GamePulse.cs" />
     <Compile Include="Command\Login.cs" />
     <Compile Include="Command\NoneRequest.cs" />
     <Compile Include="Command\NoneResponse.cs" />
