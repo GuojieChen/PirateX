@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Xml.Serialization;
 
 namespace PirateX.SLB.ServerLoadStrategy
 {
@@ -7,15 +11,51 @@ namespace PirateX.SLB.ServerLoadStrategy
     /// </summary>
     public class ConfigServerLoadStrategy : IServerLoadStrategy
     {
-        private List<IServerInfo> _list = new List<IServerInfo>()
+        private IList<IServerInfo> List { get; set; } 
+
+        public ConfigServerLoadStrategy()
         {
-            new ServerInfo() {Id = 1,Ip = "127.0.0.1",    Port = 3002,Name = "localhost" },
-            new ServerInfo() {Id = 2,Ip = "192.168.1.212",Port = 3001,Name = "192.168.1.212" }
-        };
+            var serializer = new XmlSerializer(typeof(ServersInfo));
+
+            IList<ServerInfo> list = null;
+            List = new List<IServerInfo>();
+            /*
+            using (StreamWriter writer = new StreamWriter(@"servers.xml"))
+            {
+                serializer.Serialize(writer, new ServersInfo()
+                {
+                    Servers = new List<ServerInfo>()
+                    {
+                        new ServerInfo() {Id = 1,Ip = "127.0.0.1",    Port = 3002,Name = "localhost" },
+                        new ServerInfo() {Id = 2,Ip = "192.168.1.212",Port = 3001,Name = "192.168.1.212" }
+                    }
+                });
+            }
+            */
+
+            using (var fs = new FileStream("servers.xml", FileMode.Open))
+                list = ((ServersInfo)serializer.Deserialize(fs)).Servers;
+
+            int i = 1;
+            foreach (var info in list)
+            {
+                info.Id = i++; 
+                List.Add(info);
+            }
+        }
 
         public IList<IServerInfo> GetServers()
         {
-            return _list;
+            
+
+            return List;
         }
+    }
+
+    public class ServersInfo
+    {
+        //[XmlArray(ElementName = "Servers")]
+        [XmlArrayItem(ElementName = "Server")]
+        public List<ServerInfo> Servers { get; set; } 
     }
 }

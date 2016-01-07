@@ -31,10 +31,9 @@ namespace PirateX.Protocol
             if (!Equals(response, default(TResponse)))
             {
                 SendResponse(session, response);
-
-
+                
                 //if (!IgnoreCmds.Contains(cacheName))
-                    session.SetLastReponse(rid, cacheName, response);
+                    session.EndRequest(rid, cacheName, response);
                 sms = sw.ElapsedMilliseconds;
             }
             else
@@ -42,7 +41,7 @@ namespace PirateX.Protocol
                 SendResponse(session, null);
 
                 //if (!IgnoreCmds.Contains(cacheName))
-                    session.SetLastReponse(rid, cacheName, null);
+                    session.EndRequest(rid, cacheName, null);
                 sms = sw.ElapsedMilliseconds;
             }
 

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac;
 
-namespace PirateX
+namespace PirateX.Service
 {
-    class ProtobufRedisSerializer
+    public class GameService :IService
     {
+        public ILifetimeScope Ioc { get; set; }
     }
 }

@@ -108,6 +108,8 @@ namespace PirateX
             //全局Redis序列化/反序列化方式
             builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
 
+            //builder.Register(c => new ServiceStackDatabaseFactory())
+
             builder.Register(c => rootConfig).As<IRootConfig>().SingleInstance();
             builder.Register(c => redisHost).Named<string>("RedisHost");
             IocConfig(builder);

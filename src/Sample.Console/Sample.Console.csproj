@@ -92,6 +92,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cmd\Exception.cs" />
     <Compile Include="Cmd\NewSeed.cs" />
     <Compile Include="Cmd\RoleInfo.cs" />
     <Compile Include="Cmd\RoleLoginV2.cs" />
@@ -120,6 +121,10 @@
     <ProjectReference Include="..\..\src\PirateX\PirateX.csproj">
       <Project>{3efd3b67-334f-4a08-9a7e-75fd9b50d03a}</Project>
       <Name>PirateX</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PirateX.SLB\PirateX.SLB.csproj">
+      <Project>{42d72bec-9f9b-4dfd-9a79-9833da34ecc6}</Project>
+      <Name>PirateX.SLB</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

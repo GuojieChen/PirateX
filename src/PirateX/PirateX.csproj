@@ -34,8 +34,16 @@
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Dapper, Version=1.40.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.42\lib\net45\Dapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.7.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.7.9\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -48,6 +56,30 @@
     </Reference>
     <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Common, Version=3.9.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Common.3.9.11\lib\net35\ServiceStack.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces, Version=3.9.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Common.3.9.11\lib\net35\ServiceStack.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.71\lib\net35\ServiceStack.OrmLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite.MySql, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.OrmLite.MySql.3.9.71\lib\net35\ServiceStack.OrmLite.MySql.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite.SqlServer, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.OrmLite.SqlServer.3.9.71\lib\net35\ServiceStack.OrmLite.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Text, Version=3.9.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Text.3.9.11\lib\net35\ServiceStack.Text.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="StackExchange.Redis, Version=1.0.316.0, Culture=neutral, processorArchitecture=MSIL">
@@ -71,6 +103,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -90,8 +123,10 @@
     <Compile Include="Broadcas\RedisMqMsgBroadcast.cs" />
     <Compile Include="Cache\MemoryCacheClient.cs" />
     <Compile Include="Cointainer\DistrictContainer.cs" />
+    <Compile Include="Cointainer\IDatabaseFactory.cs" />
     <Compile Include="Cointainer\IDistrictConfig.cs" />
     <Compile Include="Cointainer\IDistrictContainer.cs" />
+    <Compile Include="Cointainer\ServiceStackDatabaseFactory.cs" />
     <Compile Include="Command\GamePulse.cs" />
     <Compile Include="Command\Login.cs" />
     <Compile Include="Command\NoneRequest.cs" />
@@ -100,7 +135,6 @@
     <Compile Include="Config\IConfigKeyValueEntity.cs" />
     <Compile Include="Config\IConfigReader.cs" />
     <Compile Include="Config\MemoryConfigReader.cs" />
-    <Compile Include="Db\MySql\GameMySqlDialectProvider.cs" />
     <Compile Include="Config\IConfigEntity.cs" />
     <Compile Include="Domain\Entity\IEntity.cs" />
     <Compile Include="Domain\Entity\IPrivateCacheData.cs" />
@@ -118,7 +152,6 @@
     <Compile Include="Online\IOnlineManager.cs" />
     <Compile Include="Online\OnlineRole.cs" />
     <Compile Include="Online\RedisOnlineManager.cs" />
-    <Compile Include="ProtobufRedisSerializer.cs" />
     <Compile Include="Protocol\Package\Zip.cs" />
     <Compile Include="Protocol\Package\ICrypto.cs" />
     <Compile Include="Protocol\AbstractProtocolPackage.cs" />
@@ -158,6 +191,8 @@
     <Compile Include="Redis\StackExchange.Redis.Ex\JsonRedisSerializer.cs" />
     <Compile Include="Redis\StackExchange.Redis.Ex\ProtobufRedisSerializer.cs" />
     <Compile Include="Redis\StackExchange.Redis.Ex\RedisDataBaseExtension.cs" />
+    <Compile Include="Service\GameService.cs" />
+    <Compile Include="Service\IService.cs" />
     <Compile Include="ShareConfig.cs" />
     <Compile Include="Protocol\Package\GZip.cs" />
     <Compile Include="Protocol\Package\IZip.cs" />
@@ -171,10 +206,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Db\SqlServer\" />
     <Folder Include="Protocol\V2\" />
     <Folder Include="Record\" />
-    <Folder Include="Service\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Upgrade\readme.txt" />

@@ -32,17 +32,30 @@ namespace PirateX.SLB
 
         public void ConnectProxyServer()
         {
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"ConnectProxyServer");
+
+
             var serverinfo = CreateNewSessionHandler();
-            ConnectTarget(serverinfo);
+            if (serverinfo == null)
+            {
+                this.Close();
+            }
+            else
+            {
+                ConnectTarget(serverinfo);
 
-
-            if (Logger.IsDebugEnabled && serverinfo != null)
-                Logger.Debug($"Connect to server [{serverinfo.Ip}:{serverinfo.Port}]");
+                if (Logger.IsDebugEnabled)
+                    Logger.Debug($"Connect to server [{serverinfo.Ip}:{serverinfo.Port}]");
+            }
         }
 
 
         void targetSession_Error(object sender, ErrorEventArgs e)
         {
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"targetSession_Error");
+
             Logger.Error(e.Exception);
 
             var client = (AsyncTcpSession)sender;
@@ -55,6 +68,9 @@ namespace PirateX.SLB
 
         void targetSession_DataReceived(object sender, DataEventArgs e)
         {
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"targetSession_DataReceived");
+
             if (!this.Connected)
                 return;
 
@@ -66,6 +82,9 @@ namespace PirateX.SLB
 
         void targetSession_Closed(object sender, EventArgs e)
         {
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"targetSession_Closed");
+
             if (this.Connected)
             {
                 this.Close();
@@ -77,6 +96,9 @@ namespace PirateX.SLB
 
         void targetSession_Connected(object sender, EventArgs e)
         {
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"targetSession_Connected");
+
             _targetSession = (AsyncTcpSession)sender;
 
             if (_serverInfo != null)
@@ -85,6 +107,9 @@ namespace PirateX.SLB
 
         public void PushRequestToRemoteServer(byte[] buffer, int offset, int length)
         {
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"PushRequestToRemoteServer");
+
             if (_targetSession == null)
             {
                 this.Close();
@@ -98,6 +123,9 @@ namespace PirateX.SLB
 
         protected override void OnSessionClosed(CloseReason reason)
         {
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"OnSessionClosed");
+
             if (_targetSession != null)
             {
                 _targetSession.Close();

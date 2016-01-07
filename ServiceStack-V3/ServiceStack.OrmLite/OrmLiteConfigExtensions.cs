@@ -21,7 +21,7 @@ using ServiceStack.Text;
 
 namespace ServiceStack.OrmLite
 {
-    internal static class OrmLiteConfigExtensions
+    public static class OrmLiteConfigExtensions
     {
         private static Dictionary<Type, ModelDefinition> typeModelDefinitionMap = new Dictionary<Type, ModelDefinition>();
 
@@ -52,7 +52,7 @@ namespace ServiceStack.OrmLite
             return modelType.GetModelDefinition();
         }
 
-        internal static ModelDefinition GetModelDefinition(this Type modelType)
+        public static ModelDefinition GetModelDefinition(this Type modelType)
         {
             ModelDefinition modelDef;
 

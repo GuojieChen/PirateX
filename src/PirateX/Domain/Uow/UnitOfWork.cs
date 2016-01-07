@@ -30,7 +30,5 @@ namespace PirateX.Domain.Uow
         {
             _commands.Add(command);
         }
-
-       
     }
 }

@@ -31,6 +31,10 @@ namespace PirateX.SLB
 
         public SLBServer(IServerLoadStrategy serverLoadStrategy) : base(new SLBFilterFactory())
         {
+            //默认的策略
+            ServerLoadStrategy = serverLoadStrategy ?? new ConfigServerLoadStrategy();
+            ForwardStrategy = new MinConnectionForwardStrategy();
+
             //创建远程代理
             base.NewSessionConnected += session =>
             {
@@ -41,10 +45,6 @@ namespace PirateX.SLB
             };
             //将代理收到的数据转发给远程服务器
             base.NewRequestReceived += (session, info) => session.PushRequestToRemoteServer(info.Body, 0, info.Body.Length);
-
-            //默认的策略
-            ServerLoadStrategy = serverLoadStrategy ?? new ConfigServerLoadStrategy();
-            ForwardStrategy = new MinConnectionForwardStrategy();
         }
 
         protected override bool Setup(IRootConfig rootConfig, IServerConfig config)

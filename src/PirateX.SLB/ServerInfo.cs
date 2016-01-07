@@ -1,5 +1,8 @@
-﻿namespace PirateX.SLB
+﻿using System.Xml.Serialization;
+
+namespace PirateX.SLB
 {
+    [XmlRoot("ServerInfo", IsNullable = false)]
     public class ServerInfo :IServerInfo
     {
         public object Id { get; set; }

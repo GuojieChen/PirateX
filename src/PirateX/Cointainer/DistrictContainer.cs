@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using PirateX.Config;
+using PirateX.Domain.Entity;
 using StackExchange.Redis;
 
 namespace PirateX.Cointainer
@@ -75,6 +76,9 @@ namespace PirateX.Cointainer
             builder.Register(c => new MemoryConfigReader(ServerIoc.ResolveNamed<Assembly>("ConfigAssembly")))
                 .As<IConfigReader>()
                 .SingleInstance();
+
+            if (ServerIoc.IsRegisteredWithName<Assembly>("EntityAssembly"))
+                ServerIoc.Resolve<IDatabaseFactory>().CreateAndAlterTable(ServerIoc.ResolveNamed<Assembly>("EntityAssembly").GetTypes().Where(item=> typeof(IEntity).IsAssignableFrom(item)));
 
             BuildContainer(builder, districtConfig);
 
