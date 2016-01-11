@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX.Protocol;
-using PirateX.Utils;
 using SuperSocket.SocketBase;
 
 namespace PirateX.Command

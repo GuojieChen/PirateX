@@ -1,7 +1,7 @@
 ﻿using System;
+using PirateX.Core.Utils;
 using PirateX.Filters;
 using PirateX.Protocol;
-using PirateX.Utils;
 using SuperSocket.SocketBase;
 
 namespace PirateX.Command

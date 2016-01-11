@@ -3,9 +3,9 @@ using System.Linq;
 using System.Net;
 using Autofac;
 using Newtonsoft.Json;
+using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.GException;
 using PirateX.Protocol;
-using PirateX.Redis.StackExchange.Redis.Ex;
 using StackExchange.Redis;
 using SuperSocket.SocketBase;
 

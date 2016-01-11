@@ -1,9 +1,9 @@
 ﻿using System;
 using Autofac;
-using PirateX.Cointainer;
-using PirateX.Online;
 using PirateX.Protocol;
 using Newtonsoft;
+using PirateX.Core;
+using PirateX.Core.Online;
 
 namespace PirateX.Command
 {
@@ -32,10 +32,6 @@ namespace PirateX.Command
             };
 #else
             token = UnPackToken(data);
-            if (token == null)
-            {
-                
-            }
 #endif
 
             if (token == null)
@@ -47,7 +43,7 @@ namespace PirateX.Command
 
             var appserver = (IGameServer<TDistrictConfig>) session.AppServer;
 
-            session.Build = appserver.DistrictContainer.GetDistrictContainer(token.DistrictId);
+            session.Build = appserver.ServerContainer.GetDistrictContainer(token.DistrictId);
 
             if (session.Build == null)
             {

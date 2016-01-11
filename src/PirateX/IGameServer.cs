@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Autofac;
-using PirateX.Cointainer;
+using PirateX.Core;
 using SuperSocket.SocketBase;
 
 namespace PirateX
@@ -8,7 +8,7 @@ namespace PirateX
     public interface IGameServer<TDistrictConfig> : IAppServer where TDistrictConfig : IDistrictConfig
 
     {
-        IDistrictContainer<TDistrictConfig> DistrictContainer { get; set; }
+        IServerContainer<TDistrictConfig> ServerContainer { get; set; }
 
         ILifetimeScope Ioc { get; }
         /// <summary> 广播消息 

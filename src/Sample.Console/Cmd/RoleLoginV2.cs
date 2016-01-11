@@ -3,7 +3,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using PirateX.Command;
-using PirateX.Online;
+using PirateX.Core.Online;
 
 namespace GameServer.Console.Cmd
 {

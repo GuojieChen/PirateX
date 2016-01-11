@@ -1,5 +1,5 @@
-﻿using PirateX.Protocol;
-using PirateX.Utils;
+﻿using PirateX.Core.Utils;
+using PirateX.Protocol;
 using SuperSocket.SocketBase;
 
 namespace PirateX.Command
