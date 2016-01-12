@@ -1,4 +1,6 @@
 ﻿using System;
+using PirateX.GException;
+using PirateX.GException.V1;
 using SuperSocket.Common;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Metadata;
@@ -12,15 +14,14 @@ namespace PirateX.Filters
     {
         public override void OnCommandExecuting(CommandExecutingContext commandContext)
         {
-            var seedCreated = commandContext.Session.Items.GetValue<bool>(ItemsConst.SeedCreated);
+            var seedCreated = commandContext.Session.Items.GetValue<bool>(KeyStore.FilterSeedCreated);
             if (seedCreated)
-                //throw new PException(ServerCode.SeedReCreate);
-                throw new ArgumentException("种子已经创建");
+                throw new GameException(ServerCode.SeedReCreate); 
         }
 
         public override void OnCommandExecuted(CommandExecutingContext commandContext)
         {
-            commandContext.Session.Items[ItemsConst.SeedCreated] = true;
+            commandContext.Session.Items[KeyStore.FilterSeedCreated] = true;
 
             ((IGameSession)commandContext.Session).ProtocolPackage.CryptoEnable = true;
         }

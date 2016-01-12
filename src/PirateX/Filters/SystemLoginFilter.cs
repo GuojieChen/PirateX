@@ -12,7 +12,7 @@ namespace PirateX.Filters
 
         public override void OnCommandExecuted(CommandExecutingContext commandContext)
         {
-            commandContext.Session.Items[ItemsConst.IsSystem] = true;
+            commandContext.Session.Items[KeyStore.FilterIsSystem] = true;
         }
     }
 }

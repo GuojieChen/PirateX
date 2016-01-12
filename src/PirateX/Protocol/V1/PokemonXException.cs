@@ -4,7 +4,7 @@ using PirateX.GException;
 namespace PirateX.Protocol.V1
 {
     [Serializable]
-    public class PokemonXException : AbstactGameException
+    public class PokemonXException : GameException
     {
         public PokemonXException(Enum code) : base(code)
         {
@@ -13,7 +13,5 @@ namespace PirateX.Protocol.V1
         public PokemonXException(Enum code, params object[] strs) : base(code, strs)
         {
         }
-
-        public override object CodeValue => Convert.ToInt32(base.Code);
     }
 }

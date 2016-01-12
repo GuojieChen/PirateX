@@ -101,11 +101,9 @@
     <Compile Include="Command\Login.cs" />
     <Compile Include="Command\NoneRequest.cs" />
     <Compile Include="Command\NoneResponse.cs" />
-    <Compile Include="GException\FreezeException.cs" />
-    <Compile Include="GException\LogoutException.cs" />
-    <Compile Include="GException\PreconditionException.cs" />
     <Compile Include="GException\V1\ServerCode.cs" />
     <Compile Include="Json\DoubleConverter.cs" />
+    <Compile Include="KeyStore.cs" />
     <Compile Include="Localization\LocalizationString.cs" />
     <Compile Include="Localization\LocalizationStringExtensions.cs" />
     <Compile Include="Protocol\Package\Zip.cs" />
@@ -117,11 +115,10 @@
     <Compile Include="Protocol\Package\NoneCrypto.cs" />
     <Compile Include="Protocol\Package\NoneZip.cs" />
     <Compile Include="Protocol\Package\XXTea.cs" />
-    <Compile Include="GException\AbstactGameException.cs" />
+    <Compile Include="GException\GameException.cs" />
     <Compile Include="GException\GameExceptionMessageAttribute.cs" />
     <Compile Include="Filters\AuthorizedFilter.cs" />
     <Compile Include="Filters\IPConnectionFilter.cs" />
-    <Compile Include="Filters\ItemsConst.cs" />
     <Compile Include="Filters\LoginSuccessFilter.cs" />
     <Compile Include="Filters\SeedCreatedFilter.cs" />
     <Compile Include="Filters\SeedCreatingFilter.cs" />
@@ -155,6 +152,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Command\System\" />
     <Folder Include="Protocol\V2\" />
     <Folder Include="Record\" />
   </ItemGroup>

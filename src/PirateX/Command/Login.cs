@@ -62,7 +62,7 @@ namespace PirateX.Command
             if (oldOnlineInfo != null)
             {//已经登陆，挤下来
                 var sub = appserver.Ioc.Resolve<ConnectionMultiplexer>().GetSubscriber();
-                sub.Publish("logout", oldOnlineInfo.SessionID, CommandFlags.FireAndForget);
+                sub.Publish(KeyStore.SubscribeChannelLogout, oldOnlineInfo.SessionID, CommandFlags.FireAndForget);
             }
 
             onlineManager.Login(oldOnlineInfo);

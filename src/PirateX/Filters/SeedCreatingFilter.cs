@@ -1,4 +1,5 @@
 ﻿using PirateX.GException;
+using PirateX.GException.V1;
 using SuperSocket.Common;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Metadata;
@@ -12,10 +13,9 @@ namespace PirateX.Filters
     {
         public override void OnCommandExecuting(CommandExecutingContext commandContext)
         {
-            var seedCreated = commandContext.Session.Items.GetValue<bool>(ItemsConst.SeedCreated);
+            var seedCreated = commandContext.Session.Items.GetValue<bool>(KeyStore.FilterSeedCreated);
             if (!seedCreated)
-                //throw new PException(ServerCode.PreconditionFailed);
-                throw new PreconditionException();
+                throw new GameException(ServerCode.PreconditionFailed);
         }
 
         public override void OnCommandExecuted(CommandExecutingContext commandContext)

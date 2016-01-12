@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX.GException;
+using PirateX.GException.V1;
 using PirateX.Protocol;
 
 namespace GameServer.Console.Cmd
@@ -12,7 +13,7 @@ namespace GameServer.Console.Cmd
     {
         protected override RoleInfoResponse ExecuteResponseCommand(DemoSession session, RoleInfoRequest data)
         {
-            throw new FreezeException();
+            throw new GameException(ServerCode.NotFound);
         }
     }
 }

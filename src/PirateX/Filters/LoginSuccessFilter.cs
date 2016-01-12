@@ -17,7 +17,7 @@ namespace PirateX.Filters
 
         public override void OnCommandExecuted(CommandExecutingContext commandContext)
         {
-            commandContext.Session.Items[ItemsConst.IsLogin] = true;
+            commandContext.Session.Items[KeyStore.FilterIsLogin] = true;
         }
     }
 }

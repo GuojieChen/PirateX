@@ -12,12 +12,12 @@ PirateX
 更加简便的国际化语言管理方式，最好使用CVS格式来管理字段对应的不同语种  
 红点推送机制的优化   
 Config索引机制   
-Error模式   
 消息广播   
 定时重载Config   
-Logout   
-日志的记录
-
+日志的记录   
+online    
+push   
+protobuf，自动生成模型的描述文件
 
 
 ##表结构自维护   

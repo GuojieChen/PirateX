@@ -130,30 +130,31 @@ namespace PirateX
             }
 
             MqServer.GetSubscriber()
-                .SubscribeAsync(new RedisChannel(Dns.GetHostName(), RedisChannel.PatternMode.Literal),
-                (x, y) =>
-                {
-                    if (Logger.IsDebugEnabled)
-                        Logger.Debug($"channel:{x},value:{y}");
-                });
-
+                .SubscribeAsync(new RedisChannel(Dns.GetHostName(), RedisChannel.PatternMode.Literal), BroadcastToRoleSubscribe);
 
             Ioc.Resolve<ConnectionMultiplexer>().GetSubscriber()
-                .SubscribeAsync(new RedisChannel("logout", RedisChannel.PatternMode.Literal),
-            (channel, sessionid) =>
-            {
-
-                if (Logger.IsDebugEnabled)
-                    Logger.Debug($"logout \t channel:{channel},value:{sessionid}");
-
-                var session = GetSessionByID(sessionid);
-
-                if(!session.Items.ContainsKey(ItemsConst.IsLogout))
-                    session.Items.Add(ItemsConst.IsLogout, true);
-            });
+                .SubscribeAsync(new RedisChannel(KeyStore.SubscribeChannelLogout, RedisChannel.PatternMode.Literal), LogoutSubscribe);
             
             return base.Start();
         }
+        #region Subscribe
+        private void LogoutSubscribe(RedisChannel channel, RedisValue sessionid)
+        {
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"logout \t channel:{channel},value:{sessionid}");
+
+            var session = GetSessionByID(sessionid);
+
+            if (!session.Items.ContainsKey(KeyStore.FilterIsLogout))
+                session.Items.Add(KeyStore.FilterIsLogout, true);
+        }
+
+        private void BroadcastToRoleSubscribe(RedisChannel channel, RedisValue value)
+        {
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"channel:{channel},value:{value}");
+        }
+        #endregion
 
         public override void Stop()
         {

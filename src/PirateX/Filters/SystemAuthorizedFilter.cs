@@ -13,7 +13,7 @@ namespace PirateX.Filters
     {
         public override void OnCommandExecuting(CommandExecutingContext commandContext)
         {
-            var islogin = commandContext.Session.Items.GetValue<bool>(ItemsConst.IsSystem);
+            var islogin = commandContext.Session.Items.GetValue<bool>(KeyStore.FilterIsSystem);
             if (!islogin)
                 throw new GameException(ServerCode.Unauthorized);
         }
