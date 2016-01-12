@@ -15,6 +15,32 @@ PirateX
 红点推送机制的优化
 
 
+##表结构自维护   
+注册需要进行维护的程序集，在此之后，每次重启的时候都会对表结构进行维护    
+这里的 “EntityAssembly”是一个关键字
+
+```csharp
+public override void IocConfig(ContainerBuilder builder)
+{
+    builder.Register(c => typeof(Role).Assembly).Named<Assembly>("EntityAssembly").SingleInstance();
+}
+```
+
+此外还有两个开关来控制每个容器是否启用表结构的维护   
+```csharp
+IServerSetting.AlterTable
+```
+该开关是全局控制的，如果为FALSE，则所有的容器都不执行表结构的维护
+
+```csharp
+IDistrictConfig.AlterTable
+```
+该开关只控制自己的容器
+
+
+>特别提示   
+开发过程中严谨对模型字段进行改名，这会带来不必要的麻烦。通常都是增加冗余字段。
+
 
 ##全局配置
 指在AppSettings中可以配置的项

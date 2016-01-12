@@ -22,6 +22,7 @@ namespace PirateX.Core
         private readonly IDictionary<int, IContainer> _containers = new SortedDictionary<int, IContainer>();
 
         private readonly object _loadContainerLockHelper = new object();
+
         public ILifetimeScope ServerIoc { get; set; }
 
         public IServerSetting Settings { get;  }
@@ -65,7 +66,6 @@ namespace PirateX.Core
             return (DefaultServerSetting)defaultServerSetting;
         }
 
-
         public IContainer GetDistrictContainer(int districtid)
         {
             if (_containers.ContainsKey(districtid))
@@ -108,6 +108,7 @@ namespace PirateX.Core
 
             return list.Where(item => Settings.Districts.Select(d=>d.ServerId).Contains(item.Id));
         }
+
         private IContainer LoadDistrictContainer(TDistrictConfig districtConfig)
         {
             if (districtConfig == null)

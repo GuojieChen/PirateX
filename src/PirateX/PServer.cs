@@ -74,8 +74,6 @@ namespace PirateX
 
             #region SERVER IOC
 
-            if (Logger.IsDebugEnabled)
-                Logger.Debug("IocConfig");
             var builder = new ContainerBuilder();
 
             MqServer = ConnectionMultiplexer.Connect(ServerContainer.Settings.RedisHost);

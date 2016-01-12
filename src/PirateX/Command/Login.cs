@@ -118,8 +118,11 @@ namespace PirateX.Command
     /// </summary>
     public interface ILoginRequest
     {
+        /// <summary> TOKEN 令牌
+        /// </summary>
         string Token { get; set; }
-
+        /// <summary> RID
+        /// </summary>
         long Rid { get; set; }
         /// <summary> 区服ID
         /// </summary>
