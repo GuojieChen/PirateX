@@ -87,9 +87,8 @@ namespace PirateX
             builder.Register(c => new RedisOnlineManager<TOnlineRole>(c.Resolve<ConnectionMultiplexer>())
             {
                 Serializer = c.Resolve<IRedisSerializer>()
-            })
-                .As<IOnlineManager<TOnlineRole>>()
-                .SingleInstance();
+            }).As<IOnlineManager<TOnlineRole>>()
+              .SingleInstance();
 
             builder.Register(c => ConfigAssembly()).Named<Assembly>("ConfigAssembly");
             //默认的包解析器

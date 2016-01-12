@@ -116,6 +116,7 @@
     <Compile Include="DemoSession.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SampleConfig\DefaultConfig.cs" />
     <Compile Include="SampleConfig\PetConfig.cs" />
     <Compile Include="SampleDomain\Role.cs" />
   </ItemGroup>

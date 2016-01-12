@@ -25,13 +25,13 @@ namespace PirateX.Core.Config
         {
             foreach (var type in _configAssembly.GetTypes())
             {     
-                if (type.IsAssignableFrom(typeof (IConfigKeyValueEntity)))
+                if (typeof(IConfigKeyValueEntity).IsAssignableFrom(type))
                 {
                     this.GetType().GetMethod("LoadKeyValueConfigData", BindingFlags.Instance | BindingFlags.NonPublic)
                                             .MakeGenericMethod(type)
                                             .Invoke(this, new object[] { connection });
                 }
-                else if (type.IsAssignableFrom(typeof(IConfigEntity)))
+                else if (typeof(IConfigEntity).IsAssignableFrom(type))
                 {
                     this.GetType().GetMethod("LoadConfigData", BindingFlags.Instance | BindingFlags.NonPublic)
                                             .MakeGenericMethod(type)
@@ -42,7 +42,6 @@ namespace PirateX.Core.Config
 
         private void LoadConfigData<T>(IDatabaseFactory connection) where T : IConfigIdEntity
         {
-            
             var list = connection.Select<T>();
 
             if (!list.Any())
@@ -58,6 +57,7 @@ namespace PirateX.Core.Config
                 var key = GetCacheKeyId<T>(item.Id);
                 _cacheClient.Add(key, item);
                 listkeys.Add(key);
+
                 foreach (var attr in item.GetType().GetCustomAttributes().Where(x=>x.GetType() == typeof(ConfigIndex)))
                 {// 添加索引
                     //TODO ~~~~
@@ -87,7 +87,6 @@ namespace PirateX.Core.Config
                 var key = GetCacheKey<T>(item.Id);
                 _cacheClient.Add(key, item.V); 
             }
-            
         }
 
         private string GetCacheKeyId<T>(object id)

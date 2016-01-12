@@ -15,10 +15,10 @@ Config索引机制
 消息广播   
 定时重载Config   
 日志的记录   
-online    
 push   
 protobuf，自动生成模型的描述文件
 
+TODO SubscribeAsync 需要看看是否用对了
 
 ##表结构自维护   
 注册需要进行维护的程序集，在此之后，每次重启的时候都会对表结构进行维护    

@@ -143,7 +143,7 @@ namespace PirateX.Core
             if (Log.IsTraceEnabled)
                 Log.Trace("Load Config datas");
             if (ServerIoc.IsRegisteredWithName<Assembly>("ConfigAssembly"))
-                container.Resolve<IConfigReader>().Load(container.Resolve<IDatabaseFactory>());
+                container.Resolve<IConfigReader>().Load(container.ResolveNamed<IDatabaseFactory>("ConfigDbFactory"));
 
             return container;
         }

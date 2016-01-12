@@ -63,7 +63,7 @@
     <Compile Include="Config\IConfigReader.cs" />
     <Compile Include="Config\MemoryConfigReader.cs" />
     <Compile Include="DefaultServerSetting.cs" />
-    <Compile Include="DistrictContainer.cs" />
+    <Compile Include="ServerContainer.cs" />
     <Compile Include="Domain\Entity\IEntity.cs" />
     <Compile Include="Domain\Entity\IPrivateCacheData.cs" />
     <Compile Include="Domain\Repository\ICacheRepository.cs" />

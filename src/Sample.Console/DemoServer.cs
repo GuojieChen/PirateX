@@ -109,6 +109,8 @@ namespace GameServer.Console
         public override void BuildContainer(ContainerBuilder builder, DistrictConfig config)
         {
             builder.Register(c => new ServiceStackDatabaseFactory(config.ConnectionString)).As<IDatabaseFactory>().SingleInstance();
+            builder.Register(c => new ServiceStackDatabaseFactory(config.ConfigConnectionString))
+                .Named<IDatabaseFactory>("ConfigDbFactory").SingleInstance();
         }
     }
 }
