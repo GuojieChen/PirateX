@@ -32,7 +32,7 @@ namespace PirateX.Core.Online
             _urnServerHash = $"core.online:{serverName}";
         }
 
-        public RedisOnlineManager(ConnectionMultiplexer connectionMultiplexer) : this(connectionMultiplexer, Dns.GetHostName().Trim('"'))
+        public RedisOnlineManager(ConnectionMultiplexer connectionMultiplexer) : this(connectionMultiplexer, Dns.GetHostName())
         {
             Serializer = new ProtobufRedisSerializer();
         }

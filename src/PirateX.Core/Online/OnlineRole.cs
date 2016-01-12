@@ -12,7 +12,7 @@ namespace PirateX.Core.Online
         [ProtoMember(2)]
         public int Did { get; set; }
         [ProtoMember(3)]
-        public string DistrictName { get; set; }
+        public string HotName { get; set; }
         [ProtoMember(4)]
         public string SessionID { get; set; }
     }

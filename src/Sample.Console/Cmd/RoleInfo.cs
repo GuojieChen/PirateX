@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX;
+using PirateX.Filters;
 using PirateX.Protocol;
 using ProtoBuf;
 
 namespace GameServer.Console.Cmd
 {
+    [AuthorizedFilterBase]
     public class RoleInfo: GameCommand<DemoSession,RoleInfoRequest,RoleInfoResponse>
     {
         protected override RoleInfoResponse ExecuteResponseCommand(DemoSession session, RoleInfoRequest data)

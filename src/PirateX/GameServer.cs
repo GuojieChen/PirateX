@@ -9,6 +9,7 @@ using Autofac;
 using PirateX.Core;
 using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
+using PirateX.Filters;
 using PirateX.Protocol;
 using PirateX.Protocol.V1;
 using StackExchange.Redis;
@@ -78,13 +79,12 @@ namespace PirateX
 
             MqServer = ConnectionMultiplexer.Connect(ServerContainer.Settings.RedisHost);
             Subscriber = MqServer.GetSubscriber();
-            Subscriber.SubscribeAsync(new RedisChannel(Dns.GetHostName().Trim('\''), RedisChannel.PatternMode.Literal),
+            Subscriber.SubscribeAsync(new RedisChannel(Dns.GetHostName(), RedisChannel.PatternMode.Literal),
                 (x, y) =>
                 {
                     if (Logger.IsDebugEnabled)
                         Logger.Debug($"channel:{x},value:{y}");
                 });
-
             //Redis连接池
             builder.Register(c => ConnectionMultiplexer.Connect(ServerContainer.Settings.RedisHost))
                 .As<ConnectionMultiplexer>()
@@ -136,6 +136,21 @@ namespace PirateX
                 thread.Start();
             }
 
+            var subscriber = Ioc.Resolve<ConnectionMultiplexer>().GetSubscriber();
+
+            subscriber.SubscribeAsync(new RedisChannel("logout", RedisChannel.PatternMode.Literal),
+            (channel, sessionid) =>
+            {
+
+                if (Logger.IsDebugEnabled)
+                    Logger.Debug($"logout \t channel:{channel},value:{sessionid}");
+
+                var session = GetSessionByID(sessionid);
+
+                if(!session.Items.ContainsKey(ItemsConst.IsLogout))
+                    session.Items.Add(ItemsConst.IsLogout, true);
+            });
+            
             return base.Start();
         }
 

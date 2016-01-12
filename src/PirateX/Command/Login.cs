@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Net;
 using Autofac;
 using PirateX.Protocol;
 using Newtonsoft;
 using PirateX.Core;
 using PirateX.Core.Online;
+using StackExchange.Redis;
 
 namespace PirateX.Command
 {
@@ -54,15 +56,19 @@ namespace PirateX.Command
             session.Rid = token.Rid;
             session.ServerId = token.DistrictId;
 
-            //TODO 单设备登陆
-
             var onlineManager = appserver.Ioc.Resolve<IOnlineManager<TOnlineRole>>();
 
-            var onlineRole = GetOnlineRole(session, data);
-            onlineManager.Login(onlineRole);
+            var oldOnlineInfo = GetOnlineRole(session, data);
+            if (oldOnlineInfo != null)
+            {//已经登陆，挤下来
+                var sub = appserver.Ioc.Resolve<ConnectionMultiplexer>().GetSubscriber();
+                sub.Publish("logout", oldOnlineInfo.SessionID); 
+            }
+
+            onlineManager.Login(oldOnlineInfo);
 
             if (Logger.IsDebugEnabled)
-                Logger.Debug($"Set role online\t:\t{Newtonsoft.Json.JsonConvert.SerializeObject(onlineRole)}");
+                Logger.Debug($"Set role online\t:\t{Newtonsoft.Json.JsonConvert.SerializeObject(oldOnlineInfo)}");
 
             return DoLogin(session,data);
         }

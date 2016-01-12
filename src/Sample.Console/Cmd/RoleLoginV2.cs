@@ -24,7 +24,7 @@ namespace GameServer.Console.Cmd
             {
                 Id = request.Rid,
                 Did = request.Did,
-                DistrictName = Dns.GetHostName().Trim('\''),
+                HotName = Dns.GetHostName(),
                 SessionID = session.SessionID
             };
         }

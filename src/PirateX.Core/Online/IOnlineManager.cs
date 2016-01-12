@@ -42,7 +42,7 @@ namespace PirateX.Core.Online
         /// <summary>
         /// 区服NAME
         /// </summary>
-        string DistrictName { get; set; }
+        string HotName { get; set; }
         /// <summary>
         /// Session ID
         /// </summary>

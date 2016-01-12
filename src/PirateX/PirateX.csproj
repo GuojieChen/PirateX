@@ -140,11 +140,10 @@
     <Compile Include="Protocol\V1\JsonPackage.cs" />
     <Compile Include="Protocol\V1\PokemonXException.cs" />
     <Compile Include="Protocol\GameProtocol.cs" />
-    <Compile Include="PServer.cs" />
-    <Compile Include="PSession.cs" />
+    <Compile Include="GameServer.cs" />
+    <Compile Include="GameSession.cs" />
     <Compile Include="Service\GameService.cs" />
     <Compile Include="Service\IService.cs" />
-    <Compile Include="ShareConfig.cs" />
     <Compile Include="Protocol\Package\GZip.cs" />
     <Compile Include="Protocol\Package\IZip.cs" />
   </ItemGroup>

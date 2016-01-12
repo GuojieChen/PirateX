@@ -11,7 +11,7 @@ using SuperSocket.SocketBase;
 
 namespace PirateX
 {
-    public class PSession : PSession<PSession>
+    public class GameSession : PSession<GameSession>
     {
     }
 
