@@ -104,6 +104,7 @@
     <Compile Include="GException\FreezeException.cs" />
     <Compile Include="GException\LogoutException.cs" />
     <Compile Include="GException\PreconditionException.cs" />
+    <Compile Include="GException\V1\ServerCode.cs" />
     <Compile Include="Json\DoubleConverter.cs" />
     <Compile Include="Localization\LocalizationString.cs" />
     <Compile Include="Localization\LocalizationStringExtensions.cs" />

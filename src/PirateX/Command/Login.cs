@@ -16,12 +16,12 @@ namespace PirateX.Command
     /// <typeparam name="TLoginResponse"></typeparam>
     /// <typeparam name="TDistrictConfig"></typeparam>
     /// <typeparam name="TOnlineRole"></typeparam>
-    public abstract class Login<TSession,TDistrictConfig,TLoginRequest, TLoginResponse,TOnlineRole> : GameCommand<TSession, TLoginRequest, TLoginResponse>
+    public abstract class Login<TSession, TDistrictConfig, TLoginRequest, TLoginResponse, TOnlineRole> : GameCommand<TSession, TLoginRequest, TLoginResponse>
         where TSession : PSession<TSession>, IGameSession, new()
-        where TLoginRequest :ILoginRequest
-        where TLoginResponse :ILoginResponse
-        where TDistrictConfig :IDistrictConfig
-        where TOnlineRole : class ,IOnlineRole,new()
+        where TLoginRequest : ILoginRequest
+        where TLoginResponse : ILoginResponse
+        where TDistrictConfig : IDistrictConfig
+        where TOnlineRole : class, IOnlineRole, new()
     {
         protected override TLoginResponse ExecuteResponseCommand(TSession session, TLoginRequest data)
         {
@@ -38,18 +38,18 @@ namespace PirateX.Command
 
             if (token == null)
             {
-                if(Logger.IsFatalEnabled)
+                if (Logger.IsFatalEnabled)
                     Logger.Fatal("Token Error.");
                 session.Close();
             }
 
-            var appserver = (IGameServer<TDistrictConfig>) session.AppServer;
+            var appserver = (IGameServer<TDistrictConfig>)session.AppServer;
 
             session.Build = appserver.ServerContainer.GetDistrictContainer(token.DistrictId);
 
             if (session.Build == null)
             {
-                if(Logger.IsFatalEnabled)
+                if (Logger.IsFatalEnabled)
                     Logger.Fatal($"Can't find game container\t:\t{token.DistrictId}");
                 session.Close();
             }
@@ -62,15 +62,12 @@ namespace PirateX.Command
             if (oldOnlineInfo != null)
             {//已经登陆，挤下来
                 var sub = appserver.Ioc.Resolve<ConnectionMultiplexer>().GetSubscriber();
-                sub.Publish("logout", oldOnlineInfo.SessionID); 
+                sub.Publish("logout", oldOnlineInfo.SessionID, CommandFlags.FireAndForget);
             }
 
             onlineManager.Login(oldOnlineInfo);
 
-            if (Logger.IsDebugEnabled)
-                Logger.Debug($"Set role online\t:\t{Newtonsoft.Json.JsonConvert.SerializeObject(oldOnlineInfo)}");
-
-            return DoLogin(session,data);
+            return DoLogin(session, data);
         }
         /// <summary> 执行游戏的登录逻辑
         /// </summary>
@@ -83,7 +80,7 @@ namespace PirateX.Command
         /// <param name="session"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        public abstract TOnlineRole GetOnlineRole(TSession session,TLoginRequest request);
+        public abstract TOnlineRole GetOnlineRole(TSession session, TLoginRequest request);
         /// <summary> 解析Token包
         /// </summary>
         /// <param name="data"></param>
@@ -140,6 +137,6 @@ namespace PirateX.Command
     /// </summary>
     public interface ILoginResponse
     {
-        
+
     }
 }

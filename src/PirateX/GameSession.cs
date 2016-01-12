@@ -5,6 +5,7 @@ using Autofac;
 using Newtonsoft.Json;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.GException;
+using PirateX.GException.V1;
 using PirateX.Protocol;
 using StackExchange.Redis;
 using SuperSocket.SocketBase;
@@ -27,9 +28,7 @@ namespace PirateX
         public int MyLastO { get; set; }
 
         public int ServerId { get; set; }
-
         #region IOC
-
         private ILifetimeScope _container;
         private ILifetimeScope _fContainer;
         public ILifetimeScope Build
@@ -52,14 +51,12 @@ namespace PirateX
             }
         }
         #endregion
-
-
         public IProtocolPackage<IGameRequestInfo> ProtocolPackage { get; set; }
 
         protected override void OnSessionStarted()
         {
             if (Logger.IsDebugEnabled)
-                Logger.Debug($"SessionId:{this.SessionID}");
+                Logger.Debug($"OnSessionStarted - SessionId:{this.SessionID}");
         }
 
         protected override void OnSessionClosed(CloseReason reason)
@@ -75,7 +72,7 @@ namespace PirateX
 
         protected override void HandleException(System.Exception e)
         {
-            if (!(e is AbstactGameException))
+            if (!(e is GameException))
             {
                 if (Logger.IsErrorEnabled)
                     Logger.Error(e.Message, e);
@@ -88,18 +85,18 @@ namespace PirateX
 
         private void SendError(string cmdName, System.Exception e)
         {
-            object code = null;
+            //#ERROR#
+            object code = 400;
             string msg = null;
 
-            if (e is AbstactGameException)
+            if (e is GameException)
             {
-                code = (e as AbstactGameException).CodeValue;
+                code = (e as GameException).Code;
                 msg = e.ToString();
             }
             else if (e is WebException)
             {
-                //TODO 
-                //code = (short)ServerCode.RemoteError;
+                code = (short)ServerCode.RemoteError;
                 msg = e.Message;
             }
             //else if (e is JsonReaderException)
@@ -113,7 +110,7 @@ namespace PirateX
                 msg = "ServerError"; //e.Message;
             }
 
-            if (!(e is AbstactGameException))
+            if (!(e is GameException))
             {
                 if (Logger.IsErrorEnabled)
                     Logger.Error($"Exception [{ServerId}:{Rid}] - {e.Message} ", e);
@@ -138,9 +135,7 @@ namespace PirateX
 
         protected override void HandleUnknownRequest(IGameRequestInfo requestInfo)
         {
-            //SendError(requestInfo.Key, new AbstactGameException(ServerCode.NotFound, requestInfo.Key));
-            if (Logger.IsErrorEnabled)
-                Logger.Error($"Unknow request\t:\t{requestInfo.Key}");
+            SendError(requestInfo.Key, new GameException(ServerCode.NotFound, requestInfo.Key));
         }
 
         protected override void OnInit()
@@ -149,7 +144,6 @@ namespace PirateX
         }
 
         #region 请求结果的缓存
-
         private static string GetRequestKey(long rid,string c)
         {
             return $"sys:request:{rid}:{c}"; 
@@ -257,7 +251,9 @@ namespace PirateX
         /// 发送消息
         /// </summary>
         /// <typeparam cmdName="TMessage"></typeparam>
+        /// <typeparam name="TMessage"></typeparam>
         /// <param cmdName="message"></param>
+        /// <param name="message"></param>
         public void SendMessage<TMessage>(TMessage message)
         {
             byte[] data = ProtocolPackage.SerializeObject(message);

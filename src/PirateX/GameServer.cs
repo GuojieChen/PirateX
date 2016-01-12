@@ -78,13 +78,6 @@ namespace PirateX
             var builder = new ContainerBuilder();
 
             MqServer = ConnectionMultiplexer.Connect(ServerContainer.Settings.RedisHost);
-            Subscriber = MqServer.GetSubscriber();
-            Subscriber.SubscribeAsync(new RedisChannel(Dns.GetHostName(), RedisChannel.PatternMode.Literal),
-                (x, y) =>
-                {
-                    if (Logger.IsDebugEnabled)
-                        Logger.Debug($"channel:{x},value:{y}");
-                });
             //Redis连接池
             builder.Register(c => ConnectionMultiplexer.Connect(ServerContainer.Settings.RedisHost))
                 .As<ConnectionMultiplexer>()
@@ -136,9 +129,17 @@ namespace PirateX
                 thread.Start();
             }
 
-            var subscriber = Ioc.Resolve<ConnectionMultiplexer>().GetSubscriber();
+            MqServer.GetSubscriber()
+                .SubscribeAsync(new RedisChannel(Dns.GetHostName(), RedisChannel.PatternMode.Literal),
+                (x, y) =>
+                {
+                    if (Logger.IsDebugEnabled)
+                        Logger.Debug($"channel:{x},value:{y}");
+                });
 
-            subscriber.SubscribeAsync(new RedisChannel("logout", RedisChannel.PatternMode.Literal),
+
+            Ioc.Resolve<ConnectionMultiplexer>().GetSubscriber()
+                .SubscribeAsync(new RedisChannel("logout", RedisChannel.PatternMode.Literal),
             (channel, sessionid) =>
             {
 

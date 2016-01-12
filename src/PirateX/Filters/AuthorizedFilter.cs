@@ -1,5 +1,6 @@
 ﻿using System.Security.Authentication;
 using PirateX.GException;
+using PirateX.GException.V1;
 using SuperSocket.Common;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Metadata;
@@ -12,31 +13,22 @@ namespace PirateX.Filters
     {
         public override void OnCommandExecuting(CommandExecutingContext commandContext)
         {
-            //var seedCreated = commandContext.Session.Items.GetValue<bool>(ItemsConst.SeedCreated);
-            //if (!seedCreated)
-            //    throw new AbstactGameException(ServerCode.Unauthorized);
-
             var islogin = commandContext.Session.Items.GetValue<bool>(ItemsConst.IsLogin);
             if (!islogin)
-                //throw new PException(ServerCode.Unauthorized);
-                throw new AuthenticationException();
+                throw new GameException(ServerCode.Unauthorized);
 
             var islogout = commandContext.Session.Items.GetValue<bool>(ItemsConst.IsLogout);
             if (islogout)
-                //throw new PException(ServerCode.ReLogin);
-                throw new LogoutException(); 
-
+                throw new GameException(ServerCode.ReLogin); 
 
             var isclosed = commandContext.Session.Items.GetValue<bool>(ItemsConst.IsClosed);
             if (isclosed)
-                //throw new PException(ServerCode.RoleStoped);
-                throw new FreezeException();
-
-
+                throw new GameException(ServerCode.RoleStoped);
         }
 
         public override void OnCommandExecuted(CommandExecutingContext commandContext)
         {
+
         }
     }
 }

@@ -5,13 +5,8 @@ namespace PirateX.GException
 {
     /// <summary> 异常类型 </summary>
     [Serializable]
-    public class AbstactGameException : System.Exception
+    public class GameException : System.Exception
     {
-        public virtual object CodeValue
-        {
-            get { return Code;  }
-        }
-
         public object Code { get; private set; }
         /// <summary>
         /// 附带的参数值列表
@@ -21,7 +16,7 @@ namespace PirateX.GException
         /// 异常构造函数
         /// </summary>
         /// <param name="code"></param>
-        public AbstactGameException(object code)
+        public GameException(object code)
         {
             Code = code;
         }
@@ -30,7 +25,7 @@ namespace PirateX.GException
         /// </summary>
         /// <param name="code"></param>
         /// <param name="strs"></param>
-        public AbstactGameException(object code, params object[] strs)
+        public GameException(object code, params object[] strs)
         {
             Code = code;
             Params = strs;

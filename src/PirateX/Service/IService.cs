@@ -9,6 +9,6 @@ namespace PirateX.Service
 {
     public interface IService
     {
-        ILifetimeScope Ioc { get; set; }
+        ILifetimeScope Container { get; set; }
     }
 }

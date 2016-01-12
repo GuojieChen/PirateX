@@ -4,9 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using PirateX.Command;
 using PirateX.Core.Online;
+using PirateX.Filters;
 
 namespace GameServer.Console.Cmd
 {
+    [LoginSuccessFilter]
     public class RoleLoginV2 : Login<DemoSession, DistrictConfig, RoleLoginV2Request, RoleLoginV2Request,OnlineRole>
     {
         public override RoleLoginV2Request DoLogin(DemoSession session, RoleLoginV2Request request)

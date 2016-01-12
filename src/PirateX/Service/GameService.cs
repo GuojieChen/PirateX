@@ -9,6 +9,6 @@ namespace PirateX.Service
 {
     public class GameService :IService
     {
-        public ILifetimeScope Ioc { get; set; }
+        public ILifetimeScope Container { get; set; }
     }
 }
