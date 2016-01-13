@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX.Core.Config;
-using ServiceStack.DataAnnotations;
 
 namespace GameServer.Console.SampleConfig
 {
@@ -12,7 +11,6 @@ namespace GameServer.Console.SampleConfig
     {
         public string Id { get; set; }
 
-        [Alias("Value")]
         public string V { get; set; }
     }
 }

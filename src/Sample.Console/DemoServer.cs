@@ -94,7 +94,7 @@ namespace GameServer.Console
                 Name = "test 01",
                 Redis = "127.0.0.1",
                 RedisDb = 1 ,
-                ConfigConnectionString = "Server=192.168.1.213;Database=pokemonx.config;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
+                ConfigConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
                 ConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"},
 
             new DistrictConfig {
@@ -102,7 +102,7 @@ namespace GameServer.Console
                 Name = "test 02",
                 Redis = "127.0.0.1",
                 RedisDb = 2 ,
-                ConfigConnectionString = "Server=192.168.1.213;Database=pokemonx.config;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
+                ConfigConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
                 ConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"},
 
             new DistrictConfig {
@@ -110,7 +110,7 @@ namespace GameServer.Console
                 Name = "test 02",
                 Redis = "127.0.0.1",
                 RedisDb = 3,
-                ConfigConnectionString = "Server=192.168.1.213;Database=pokemonx.config;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
+                ConfigConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
                 ConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"},
         };
 

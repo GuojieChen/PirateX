@@ -10,7 +10,6 @@ using PirateX.Core;
 using PirateX.Core.Config;
 using PirateX.Core.Online;
 using PirateX.Filters;
-using ServiceStack.Text;
 
 namespace GameServer.Console.Cmd
 {
