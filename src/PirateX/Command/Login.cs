@@ -14,13 +14,11 @@ namespace PirateX.Command
     /// <typeparam name="TSession"></typeparam>
     /// <typeparam name="TLoginRequest"></typeparam>
     /// <typeparam name="TLoginResponse"></typeparam>
-    /// <typeparam name="TDistrictConfig"></typeparam>
     /// <typeparam name="TOnlineRole"></typeparam>
-    public abstract class Login<TSession, TDistrictConfig, TLoginRequest, TLoginResponse, TOnlineRole> : GameCommand<TSession, TLoginRequest, TLoginResponse>
+    public abstract class Login<TSession, TLoginRequest, TLoginResponse, TOnlineRole> : GameCommand<TSession, TLoginRequest, TLoginResponse>
         where TSession : PSession<TSession>, IGameSession, new()
         where TLoginRequest : ILoginRequest
         where TLoginResponse : ILoginResponse
-        where TDistrictConfig : IDistrictConfig
         where TOnlineRole : class, IOnlineRole, new()
     {
         protected override TLoginResponse ExecuteResponseCommand(TSession session, TLoginRequest data)

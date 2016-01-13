@@ -14,7 +14,7 @@ using PirateX.Filters;
 namespace GameServer.Console.Cmd
 {
     [LoginSuccessFilter]
-    public class RoleLoginV2 : Login<DemoSession, DistrictConfig, RoleLoginV2Request, RoleLoginV2Request,OnlineRole>
+    public class RoleLoginV2 : Login<DemoSession, RoleLoginV2Request, RoleLoginV2Request,OnlineRole>
     {
         public override RoleLoginV2Request DoLogin(DemoSession session, RoleLoginV2Request request)
         {
