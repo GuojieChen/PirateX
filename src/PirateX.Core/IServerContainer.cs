@@ -3,7 +3,7 @@ using Autofac;
 
 namespace PirateX.Core
 {
-    public interface IServerContainer<TDistrictConfig> where TDistrictConfig : IDistrictConfig
+    public interface IServerContainer
     {
         /// <summary> 服务器容器
         /// </summary>
@@ -19,7 +19,7 @@ namespace PirateX.Core
         /// <summary> 获取管理的配置列表
         /// </summary>
         /// <returns></returns>
-        IEnumerable<TDistrictConfig> GetDistrictConfigs();
+        IEnumerable<IDistrictConfig> GetDistrictConfigs();
         /// <summary>
         /// 初始化容器信息
         /// </summary>
@@ -29,14 +29,14 @@ namespace PirateX.Core
         /// <summary> 加载配置列表
         /// </summary>
         /// <returns></returns>
-        IEnumerable<TDistrictConfig> LoadDistrictConfigs();
+        IEnumerable<IDistrictConfig> LoadDistrictConfigs();
         /// <summary> 获取单个 配置信息 
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        TDistrictConfig GetDistrictConfig(int id);
+        IDistrictConfig GetDistrictConfig(int id);
 
-        void BuildContainer(ContainerBuilder builder, TDistrictConfig config);
+        void BuildContainer(ContainerBuilder builder);
     }
 
 

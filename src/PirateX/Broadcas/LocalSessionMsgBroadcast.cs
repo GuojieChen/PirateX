@@ -9,9 +9,6 @@ namespace PirateX.Broadcas
 {
     public class LocalSessionMsgBroadcast<TDistrictConfig> : IMsgBroadcast where TDistrictConfig : IDistrictConfig
     {
-        private readonly IGameServer<TDistrictConfig> _server;
-
-
         public void Send<T>(T msg, params long[] rids)
         {
             throw new NotImplementedException();

@@ -18,7 +18,7 @@ namespace PirateX.Core
 {
     /// <summary> 默认的游戏容器实现
     /// </summary>
-    public abstract class ServerContainer<TDistrictConfig> : IServerContainer<TDistrictConfig> where TDistrictConfig : IDistrictConfig
+    public abstract class ServerContainer : IServerContainer
     {
         protected static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -113,7 +113,7 @@ namespace PirateX.Core
             return c;
         }
 
-        public IEnumerable<TDistrictConfig> GetDistrictConfigs()
+        public IEnumerable<IDistrictConfig> GetDistrictConfigs()
         {
             var list = LoadDistrictConfigs();
             if (Settings.Districts == null)
@@ -122,7 +122,7 @@ namespace PirateX.Core
             return list.Where(item => Settings.Districts.Select(d => d.ServerId).Contains(item.Id));
         }
 
-        private IContainer LoadDistrictContainer(TDistrictConfig districtConfig)
+        private IContainer LoadDistrictContainer(IDistrictConfig districtConfig)
         {
             if (districtConfig == null)
                 return null;
@@ -132,12 +132,12 @@ namespace PirateX.Core
 
             var builder = new ContainerBuilder();
 
-            builder.Register(c => districtConfig).As<TDistrictConfig>().SingleInstance();
+            builder.Register(c => districtConfig).As<IDistrictConfig>().SingleInstance();
             builder.Register(c => ConnectionMultiplexer.Connect(districtConfig.Redis));
 
             builder.Register(c => c.Resolve<ConnectionMultiplexer>().GetDatabase(districtConfig.RedisDb)).As<IDatabase>();
             builder.Register(c => districtConfig).As<IDistrictConfig>().SingleInstance();
-            BuildContainer(builder, districtConfig);
+            BuildContainer(builder);
 
             //默认Config缓存数据处理器
             builder.Register(c =>
@@ -226,18 +226,18 @@ namespace PirateX.Core
         /// <summary> 加载配置列表
         /// </summary>
         /// <returns></returns>
-        public abstract IEnumerable<TDistrictConfig> LoadDistrictConfigs();
+        public abstract IEnumerable<IDistrictConfig> LoadDistrictConfigs();
         /// <summary> 获取单个 配置信息 
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public abstract TDistrictConfig GetDistrictConfig(int id);
+        public abstract IDistrictConfig GetDistrictConfig(int id);
         /// <summary>
         /// 创建游戏容器
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="config"></param>
-        public abstract void BuildContainer(ContainerBuilder builder, TDistrictConfig config);
+        public abstract void BuildContainer(ContainerBuilder builder);
 
     }
 

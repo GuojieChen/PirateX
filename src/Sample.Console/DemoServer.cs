@@ -76,7 +76,7 @@ namespace GameServer.Console
         }
     }
 
-    internal class DemoServerContainer : ServerContainer<DistrictConfig>
+    internal class DemoServerContainer : ServerContainer
     {
         public DemoServerContainer() : base(new ContainerSetting(), new ServerSetting
         {
@@ -114,20 +114,20 @@ namespace GameServer.Console
                 ConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"},
         };
 
-        public override IEnumerable<DistrictConfig> LoadDistrictConfigs()
+        public override IEnumerable<IDistrictConfig> LoadDistrictConfigs()
         {
             return ServerConfigs;
         }
 
-        public override DistrictConfig GetDistrictConfig(int id)
+        public override IDistrictConfig GetDistrictConfig(int id)
         {
             return ServerConfigs.FirstOrDefault(item => item.Id == id);
         }
 
-        public override void BuildContainer(ContainerBuilder builder, DistrictConfig config)
+        public override void BuildContainer(ContainerBuilder builder)
         {
-            builder.Register(c => new ServiceStackDatabaseFactory(config.ConnectionString)).As<IDatabaseFactory>().SingleInstance();
-            builder.Register(c => new ServiceStackDatabaseFactory(config.ConfigConnectionString))
+            builder.Register(c => new ServiceStackDatabaseFactory(c.Resolve<IDistrictConfig>().ConnectionString)).As<IDatabaseFactory>().SingleInstance();
+            builder.Register(c => new ServiceStackDatabaseFactory(c.Resolve<IDistrictConfig>().ConfigConnectionString))
                 .Named<IDatabaseFactory>("ConfigDbFactory").SingleInstance();
         }
     }

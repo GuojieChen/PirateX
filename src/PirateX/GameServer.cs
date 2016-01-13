@@ -20,7 +20,7 @@ using SuperSocket.SocketBase.Protocol;
 namespace PirateX
 {
 
-    public abstract class PServer<TSession, TDistrictConfig, TOnlineRole> : AppServer<TSession, IGameRequestInfo>, IGameServer<TDistrictConfig>
+    public abstract class PServer<TSession, TDistrictConfig, TOnlineRole> : AppServer<TSession, IGameRequestInfo>, IGameServer
         where TSession : PSession<TSession>, new()
         where TDistrictConfig : IDistrictConfig
         where TOnlineRole : class, IOnlineRole, new()
@@ -28,7 +28,7 @@ namespace PirateX
         /// <summary> 后台工作线程列表
         /// </summary>
         protected static readonly IList<Thread> Workers = new List<Thread>();
-        public IServerContainer<TDistrictConfig> ServerContainer { get; set; }
+        public IServerContainer ServerContainer { get; set; }
 
         public ILifetimeScope Ioc { get; private set; }
 
@@ -36,7 +36,7 @@ namespace PirateX
 
         protected ISubscriber Subscriber;
 
-        protected PServer(IServerContainer<TDistrictConfig> serverContainer, IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) : base(receiveFilterFactory)
+        protected PServer(IServerContainer  serverContainer, IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) : base(receiveFilterFactory)
         {
             ServerContainer = serverContainer;
         }
