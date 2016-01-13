@@ -119,6 +119,7 @@
     <Compile Include="SampleConfig\DefaultConfig.cs" />
     <Compile Include="SampleConfig\PetConfig.cs" />
     <Compile Include="SampleDomain\Role.cs" />
+    <Compile Include="SampleService\RoleService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

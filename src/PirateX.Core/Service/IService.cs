@@ -4,6 +4,6 @@ namespace PirateX.Core.Service
 {
     public interface IService
     {
-        ILifetimeScope Container { get; set; }
+        ILifetimeScope Resolver { get; set; }
     }
 }

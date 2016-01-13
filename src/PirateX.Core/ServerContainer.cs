@@ -4,9 +4,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Autofac;
+using Autofac.Core;
 using NLog;
 using PirateX.Core.Config;
 using PirateX.Core.Domain.Entity;
+using PirateX.Core.Service;
 using PirateX.Core.Utils;
 using StackExchange.Redis;
 
@@ -28,11 +30,17 @@ namespace PirateX.Core
 
         public ILifetimeScope ServerIoc { get; set; }
 
-        public IServerSetting Settings { get;  }
+        public IServerSetting Settings { get; }
 
-        public ServerContainer(IServerSetting settings)
+        public IContainerSetting ContainerSetting { get; }
+
+        public ServerContainer(IContainerSetting csetting, IServerSetting settings)
         {
             Settings = settings;
+            ContainerSetting = csetting;
+
+            if (ContainerSetting == null)
+                throw new ArgumentException("ContainerSetting");
 
             if (Settings == null)
             {
@@ -50,20 +58,20 @@ namespace PirateX.Core
             }
         }
 
-        public ServerContainer():this(null)
+        public ServerContainer(IContainerSetting csetting) : this(csetting, null)
         {
-            
+
         }
 
         private static DefaultServerSetting GetDefaultSeting()
         {
-            var ps = typeof (DefaultServerSetting).GetProperties();
+            var ps = typeof(DefaultServerSetting).GetProperties();
             var defaultServerSetting = Activator.CreateInstance(typeof(DefaultServerSetting), null);
 
             foreach (var propertyInfo in ps)
             {
                 var value = System.Configuration.ConfigurationManager.AppSettings.Get(propertyInfo.Name.ToLower());
-                propertyInfo.SetValue(defaultServerSetting,value);
+                propertyInfo.SetValue(defaultServerSetting, value);
             }
 
             return (DefaultServerSetting)defaultServerSetting;
@@ -91,14 +99,14 @@ namespace PirateX.Core
 
         public IContainer ReLoadContainer(int districtid)
         {
-            var districtConfig = GetDistrictConfig(districtid); 
+            var districtConfig = GetDistrictConfig(districtid);
 
             var c = LoadDistrictContainer(districtConfig);
 
             if (_containers.ContainsKey(districtid))
-                _containers[districtid] =c ;
-            else 
-                _containers.Add(districtid,c);
+                _containers[districtid] = c;
+            else
+                _containers.Add(districtid, c);
 
             return c;
         }
@@ -109,7 +117,7 @@ namespace PirateX.Core
             if (Settings.Districts == null)
                 return list;
 
-            return list.Where(item => Settings.Districts.Select(d=>d.ServerId).Contains(item.Id));
+            return list.Where(item => Settings.Districts.Select(d => d.ServerId).Contains(item.Id));
         }
 
         private IContainer LoadDistrictContainer(TDistrictConfig districtConfig)
@@ -117,7 +125,7 @@ namespace PirateX.Core
             if (districtConfig == null)
                 return null;
 
-            if(Log.IsTraceEnabled)
+            if (Log.IsTraceEnabled)
                 Log.Trace($"Init district container\t{districtConfig.Id}");
 
             var builder = new ContainerBuilder();
@@ -137,21 +145,33 @@ namespace PirateX.Core
                 if (_configReaderDic.ContainsKey(configDbKey))
                     return _configReaderDic[configDbKey];
 
-                var newReader = new MemoryConfigReader(ServerIoc.ResolveNamed<Assembly>("ConfigAssembly"));
-                _configReaderDic.Add(configDbKey,newReader);
-                return newReader; 
+                var newReader = new MemoryConfigReader(ContainerSetting.ConfigAssembly);
+                _configReaderDic.Add(configDbKey, newReader);
+                return newReader;
             })
                 .As<IConfigReader>()
                 .SingleInstance();
 
+            if (ContainerSetting.ServiceAssembly != null)
+            {
+                builder.RegisterAssemblyTypes(ContainerSetting.ServiceAssembly)
+                    .Where(item => item.IsSubclassOf(typeof(GameService)) && !Equals(item.Name, typeof(GameService).Name))
+                    //.WithProperty("Test",123)
+                    .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
+                    //.WithProperty(new ResolvedParameter((pi, context) => pi.Name == "Resolver", (pi, ctx) => ctx))
+                    .AsSelf()
+                    //.AsImplementedInterfaces()
+                    .InstancePerLifetimeScope();
+            }
+
             var container = builder.Build();
 
-            if(Log.IsTraceEnabled)
+            if (Log.IsTraceEnabled)
                 Log.Trace("CreateAndAlterTable");
-            if (ServerIoc.IsRegisteredWithName<Assembly>("EntityAssembly") && Settings.AlterTable && districtConfig.AlterTable )
-                container.Resolve<IDatabaseFactory>().CreateAndAlterTable(ServerIoc.ResolveNamed<Assembly>("EntityAssembly").GetTypes().Where(item => typeof(IEntity).IsAssignableFrom(item)));
+            if (ContainerSetting.EntityAssembly != null && Settings.AlterTable && districtConfig.AlterTable)
+                container.Resolve<IDatabaseFactory>().CreateAndAlterTable(ContainerSetting.EntityAssembly.GetTypes().Where(item => typeof(IEntity).IsAssignableFrom(item)));
 
-            if (ServerIoc.IsRegisteredWithName<Assembly>("ConfigAssembly"))
+            if (ContainerSetting.ConfigAssembly != null)
                 container.Resolve<IConfigReader>().Load(container.ResolveNamed<IDatabaseFactory>("ConfigDbFactory"));
 
             return container;
@@ -214,5 +234,15 @@ namespace PirateX.Core
         /// <param name="config"></param>
         public abstract void BuildContainer(ContainerBuilder builder, TDistrictConfig config);
 
+    }
+
+
+    public interface IContainerSetting
+    {
+        Assembly ConfigAssembly { get; }
+
+        Assembly EntityAssembly { get; }
+
+        Assembly ServiceAssembly { get; }
     }
 }

@@ -2,9 +2,15 @@
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
+using GameServer.Console.SampleConfig;
+using GameServer.Console.SampleService;
 using PirateX.Command;
+using PirateX.Core;
+using PirateX.Core.Config;
 using PirateX.Core.Online;
 using PirateX.Filters;
+using ServiceStack.Text;
 
 namespace GameServer.Console.Cmd
 {
@@ -13,9 +19,12 @@ namespace GameServer.Console.Cmd
     {
         public override RoleLoginV2Request DoLogin(DemoSession session, RoleLoginV2Request request)
         {
-            Logger.Debug(Thread.CurrentThread.CurrentCulture);
+            Logger.Error(session.Build.Resolve<IConfigReader>().SingleById<PetConfig>(1).Name);
+            var roleservice = session.Build.Resolve<RoleService>();
 
-            Task.Factory.StartNew(() => Logger.Debug(Thread.CurrentThread.CurrentCulture));
+            Logger.Error(roleservice);
+            
+            Logger.Error(roleservice.Resolver.Resolve<IDistrictConfig>().ToJson());
 
             return request;
         }

@@ -5,9 +5,11 @@ using System.Reflection;
 using Autofac;
 using GameServer.Console.SampleConfig;
 using GameServer.Console.SampleDomain;
+using GameServer.Console.SampleService;
 using PirateX;
 using PirateX.Core;
 using PirateX.Core.Online;
+using PirateX.Core.Service;
 using PirateX.Protocol;
 using PirateX.ServiceStackV3;
 
@@ -27,8 +29,6 @@ namespace GameServer.Console
         public override void IocConfig(ContainerBuilder builder)
         {
             //builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
-            builder.Register(c => typeof(Role).Assembly).Named<Assembly>("EntityAssembly").SingleInstance();
-            builder.Register(c => typeof(PetConfig).Assembly).Named<Assembly>("ConfigAssembly").SingleInstance();
         }
     }
 
@@ -58,9 +58,27 @@ namespace GameServer.Console
         public List<AppServer> Districts { get; set; }
     }
 
+    public class ContainerSetting : IContainerSetting
+    {
+        public Assembly ConfigAssembly
+        {
+            get { return typeof (PetConfig).Assembly; }
+        }
+
+        public Assembly EntityAssembly
+        {
+            get { return typeof (Role).Assembly; }
+        }
+
+        public Assembly ServiceAssembly
+        {
+            get { return typeof (RoleService).Assembly; }
+        }
+    }
+
     internal class DemoServerContainer : ServerContainer<DistrictConfig>
     {
-        public DemoServerContainer() : base( new ServerSetting
+        public DemoServerContainer() : base(new ContainerSetting(), new ServerSetting
         {
             Id = "PirateX.VS-DEV",
             RedisHost = "127.0.1"
