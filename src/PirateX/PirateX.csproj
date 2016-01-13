@@ -34,12 +34,8 @@
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Dapper, Version=1.40.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.1.42\lib\net45\Dapper.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MySql.Data, Version=6.7.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
@@ -62,20 +58,16 @@
       <HintPath>..\packages\StackExchange.Redis.1.0.481\lib\net45\StackExchange.Redis.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StackExchange.Redis.Extensions.Core, Version=1.1.13.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\StackExchange.Redis.Extensions.Core.1.1.13.0\lib\net45\StackExchange.Redis.Extensions.Core.dll</HintPath>
+    <Reference Include="SuperSocket.Common, Version=1.6.5.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.1.6.5\lib\net45\SuperSocket.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SuperSocket.Common, Version=1.6.4.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
-      <HintPath>..\packages\SuperSocket.1.6.4\lib\net45\SuperSocket.Common.dll</HintPath>
+    <Reference Include="SuperSocket.Facility, Version=1.6.5.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.1.6.5\lib\net45\SuperSocket.Facility.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SuperSocket.Facility, Version=1.6.4.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
-      <HintPath>..\packages\SuperSocket.1.6.4\lib\net45\SuperSocket.Facility.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SuperSocket.SocketBase, Version=1.6.4.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
-      <HintPath>..\packages\SuperSocket.1.6.4\lib\net45\SuperSocket.SocketBase.dll</HintPath>
+    <Reference Include="SuperSocket.SocketBase, Version=1.6.5.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.1.6.5\lib\net45\SuperSocket.SocketBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
