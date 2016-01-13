@@ -118,9 +118,6 @@ namespace PirateX
 
         public override bool Start()
         {
-            if (Logger.IsDebugEnabled)
-                Logger.Debug("Starting RedisMqServer");
-
             foreach (var thread in Workers)
             {
                 if (Logger.IsDebugEnabled)

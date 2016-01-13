@@ -23,8 +23,7 @@ namespace GameServer.Console.Cmd
             var roleservice = session.Build.Resolve<RoleService>();
 
             Logger.Error(roleservice);
-            
-            Logger.Error(roleservice.Resolver.Resolve<IDistrictConfig>().ToJson());
+            roleservice.ShowLog();
 
             return request;
         }

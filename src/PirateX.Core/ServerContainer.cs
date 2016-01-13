@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -140,8 +142,7 @@ namespace PirateX.Core
             //默认Config缓存数据处理器
             builder.Register(c =>
             {
-                var dbFactory = c.ResolveNamed<IDatabaseFactory>("ConfigDbFactory");
-                var configDbKey = GetConfigDbKey(dbFactory.ConnectionString);
+                var configDbKey = GetConfigDbKey(districtConfig.ConfigConnectionString);
                 if (_configReaderDic.ContainsKey(configDbKey))
                     return _configReaderDic[configDbKey];
 
@@ -151,6 +152,10 @@ namespace PirateX.Core
             })
                 .As<IConfigReader>()
                 .SingleInstance();
+
+            builder.Register(c =>new SqlConnection(districtConfig.ConnectionString))
+               .As<IDbConnection>()
+               .InstancePerLifetimeScope();
 
             if (ContainerSetting.ServiceAssembly != null)
             {
