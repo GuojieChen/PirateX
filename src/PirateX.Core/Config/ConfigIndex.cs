@@ -1,6 +1,11 @@
-﻿namespace PirateX.Core.Config
+﻿using System;
+
+namespace PirateX.Core.Config
 {
-    public class ConfigIndex
+    /// <summary> 泳衣配置模型的 索引键
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class ConfigIndex : Attribute
     {
         public string[] Names { get; private set; }
 

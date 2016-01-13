@@ -83,6 +83,8 @@
     <Compile Include="Redis\StackExchange.Redis.Ex\JsonRedisSerializer.cs" />
     <Compile Include="Redis\StackExchange.Redis.Ex\ProtobufRedisSerializer.cs" />
     <Compile Include="Redis\StackExchange.Redis.Ex\RedisDataBaseExtension.cs" />
+    <Compile Include="Service\GameService.cs" />
+    <Compile Include="Service\IService.cs" />
     <Compile Include="Utils\ObjectUtil.cs" />
     <Compile Include="Utils\RandomUtil.cs" />
     <Compile Include="Utils\TimeUtil.cs" />

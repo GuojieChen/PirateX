@@ -28,6 +28,8 @@ namespace PirateX.ServiceStackV3
                 dbConnectionFactory = new OrmLiteConnectionFactory(connectionstring, MySqlDialect.Provider);
             else
                 dbConnectionFactory = new OrmLiteConnectionFactory(connectionstring,SqlServerDialect.Provider);
+
+            ConnectionString = connectionstring;
         }
 
         private static readonly string[] MySqlKeys = new[] {"persist security info", "charset", "allow user variables"};
@@ -41,6 +43,7 @@ namespace PirateX.ServiceStackV3
             return items.Select(item => item.Split(new char[] {'='})).Any(ss => MySqlKeys.Contains(ss[0].ToLower()));
         }
 
+        public string ConnectionString { get; }
 
         public bool TableExists<T>()
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Autofac;
 using NLog;
 using PirateX.Core.Config;
@@ -22,6 +23,8 @@ namespace PirateX.Core
         private readonly IDictionary<int, IContainer> _containers = new SortedDictionary<int, IContainer>();
 
         private readonly object _loadContainerLockHelper = new object();
+
+        private readonly IDictionary<string, IConfigReader> _configReaderDic = new Dictionary<string, IConfigReader>();
 
         public ILifetimeScope ServerIoc { get; set; }
 
@@ -122,16 +125,24 @@ namespace PirateX.Core
             builder.Register(c => districtConfig).As<TDistrictConfig>().SingleInstance();
             builder.Register(c => ConnectionMultiplexer.Connect(districtConfig.Redis));
 
-
             builder.Register(c => c.Resolve<ConnectionMultiplexer>().GetDatabase(districtConfig.RedisDb)).As<IDatabase>();
             builder.Register(c => districtConfig).As<IDistrictConfig>().SingleInstance();
             BuildContainer(builder, districtConfig);
 
             //默认Config缓存数据处理器
-            builder.Register(c => new MemoryConfigReader(ServerIoc.ResolveNamed<Assembly>("ConfigAssembly")))
+            builder.Register(c =>
+            {
+                var dbFactory = c.ResolveNamed<IDatabaseFactory>("ConfigDbFactory");
+                var configDbKey = GetConfigDbKey(dbFactory.ConnectionString);
+                if (_configReaderDic.ContainsKey(configDbKey))
+                    return _configReaderDic[configDbKey];
+
+                var newReader = new MemoryConfigReader(ServerIoc.ResolveNamed<Assembly>("ConfigAssembly"));
+                _configReaderDic.Add(configDbKey,newReader);
+                return newReader; 
+            })
                 .As<IConfigReader>()
                 .SingleInstance();
-
 
             var container = builder.Build();
 
@@ -140,12 +151,34 @@ namespace PirateX.Core
             if (ServerIoc.IsRegisteredWithName<Assembly>("EntityAssembly") && Settings.AlterTable && districtConfig.AlterTable )
                 container.Resolve<IDatabaseFactory>().CreateAndAlterTable(ServerIoc.ResolveNamed<Assembly>("EntityAssembly").GetTypes().Where(item => typeof(IEntity).IsAssignableFrom(item)));
 
-            if (Log.IsTraceEnabled)
-                Log.Trace("Load Config datas");
             if (ServerIoc.IsRegisteredWithName<Assembly>("ConfigAssembly"))
                 container.Resolve<IConfigReader>().Load(container.ResolveNamed<IDatabaseFactory>("ConfigDbFactory"));
 
             return container;
+        }
+        /// <summary>
+        /// 获取配置连接的信息摘要
+        /// 这个后期是否需要非内置？
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
+        private static string GetConfigDbKey(string connectionString)
+        {
+            var items = connectionString.Split(new char[] { ';' });
+            var builder = new StringBuilder();
+            foreach (var item in items)
+            {
+                var ss = item.Split(new char[] { '=' });
+                switch (ss[0].Trim().ToLower())
+                {
+                    case "database":
+                    case "server":
+                        builder.Append(ss[1].Trim().ToLower());
+                        break;
+                }
+            }
+
+            return builder.ToString();
         }
 
         public void InitContainers()

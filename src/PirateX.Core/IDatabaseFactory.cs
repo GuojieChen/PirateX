@@ -8,6 +8,8 @@ namespace PirateX.Core
     /// </summary>
     public interface IDatabaseFactory
     {
+        string ConnectionString { get; }
+
         /// <summary> 判断表是否存在
         /// </summary>
         /// <typeparam name="T"></typeparam>

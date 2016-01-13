@@ -33,6 +33,6 @@ namespace PirateX.Core.Config
         /// <typeparam name="T"></typeparam>
         /// <param name="index"></param>
         /// <returns></returns>
-        T SingleByIndexes<T>(object index);
+        T SingleByIndexes<T>(object index) where T : IConfigIdEntity;
     }
 }
