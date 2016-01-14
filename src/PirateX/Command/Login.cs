@@ -16,7 +16,7 @@ namespace PirateX.Command
     /// <typeparam name="TLoginResponse"></typeparam>
     /// <typeparam name="TOnlineRole"></typeparam>
     public abstract class Login<TSession, TLoginRequest, TLoginResponse, TOnlineRole> : GameCommand<TSession, TLoginRequest, TLoginResponse>
-        where TSession : PSession<TSession>, IGameSession, new()
+        where TSession : GameSession<TSession>, IGameSession, new()
         where TLoginRequest : ILoginRequest
         where TLoginResponse : ILoginResponse
         where TOnlineRole : class, IOnlineRole, new()

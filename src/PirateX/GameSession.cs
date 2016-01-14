@@ -12,11 +12,11 @@ using SuperSocket.SocketBase;
 
 namespace PirateX
 {
-    public class GameSession : PSession<GameSession>
+    public class GameSession : GameSession<GameSession>
     {
     }
 
-    public class PSession<TSession> : AppSession<TSession, IGameRequestInfo>, IGameSession where
+    public class GameSession<TSession> : AppSession<TSession, IGameRequestInfo>, IGameSession where
         TSession : AppSession<TSession, IGameRequestInfo>, new()
 
     {

@@ -20,9 +20,8 @@ using SuperSocket.SocketBase.Protocol;
 namespace PirateX
 {
 
-    public abstract class PServer<TSession, TDistrictConfig, TOnlineRole> : AppServer<TSession, IGameRequestInfo>, IGameServer
-        where TSession : PSession<TSession>, new()
-        where TDistrictConfig : IDistrictConfig
+    public abstract class GameServer<TSession, TOnlineRole> : AppServer<TSession, IGameRequestInfo>, IGameServer
+        where TSession : GameSession<TSession>, new()
         where TOnlineRole : class, IOnlineRole, new()
     {
         /// <summary> 后台工作线程列表
@@ -36,7 +35,7 @@ namespace PirateX
 
         protected ISubscriber Subscriber;
 
-        protected PServer(IServerContainer  serverContainer, IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) : base(receiveFilterFactory)
+        protected GameServer(IServerContainer  serverContainer, IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) : base(receiveFilterFactory)
         {
             ServerContainer = serverContainer;
         }

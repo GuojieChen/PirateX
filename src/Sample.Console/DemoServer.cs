@@ -15,7 +15,7 @@ using PirateX.ServiceStackV3;
 
 namespace GameServer.Console
 {
-    public class DemoServer : PServer<DemoSession, DistrictConfig,OnlineRole>
+    public class DemoServer : GameServer<DemoSession,OnlineRole>
     {
         public DemoServer() : base(new DemoServerContainer(), new PokemonXProtocol())
         {
