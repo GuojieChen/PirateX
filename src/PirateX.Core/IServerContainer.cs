@@ -37,6 +37,10 @@ namespace PirateX.Core
         IDistrictConfig GetDistrictConfig(int id);
 
         void BuildContainer(ContainerBuilder builder);
+
+        IDatabaseFactory GetConfigDatabaseFactory(IDistrictConfig config);
+
+        IDatabaseFactory GetDistrictDatabaseFactory(IDistrictConfig config);
     }
 
 

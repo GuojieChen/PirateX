@@ -153,9 +153,8 @@ namespace PirateX.Core
                 .As<IConfigReader>()
                 .SingleInstance();
 
-            builder.Register(c =>new SqlConnection(districtConfig.ConnectionString))
-               .As<IDbConnection>()
-               .InstancePerLifetimeScope();
+            builder.Register(c => new SqlConnection(districtConfig.ConnectionString))
+                .As<IDbConnection>().InstancePerDependency();
 
             if (ContainerSetting.ServiceAssembly != null)
             {
@@ -169,6 +168,8 @@ namespace PirateX.Core
                     .InstancePerLifetimeScope();
             }
 
+            builder.Register(c => GetDistrictDatabaseFactory(districtConfig)).As<IDatabaseFactory>().SingleInstance();
+
             var container = builder.Build();
 
             if (Log.IsTraceEnabled)
@@ -177,10 +178,12 @@ namespace PirateX.Core
                 container.Resolve<IDatabaseFactory>().CreateAndAlterTable(ContainerSetting.EntityAssembly.GetTypes().Where(item => typeof(IEntity).IsAssignableFrom(item)));
 
             if (ContainerSetting.ConfigAssembly != null)
-                container.Resolve<IConfigReader>().Load(container.ResolveNamed<IDatabaseFactory>("ConfigDbFactory"));
+                container.Resolve<IConfigReader>().Load(GetConfigDatabaseFactory(districtConfig));
 
             return container;
         }
+
+
         /// <summary>
         /// 获取配置连接的信息摘要
         /// 这个后期是否需要非内置？
@@ -239,6 +242,9 @@ namespace PirateX.Core
         /// <param name="config"></param>
         public abstract void BuildContainer(ContainerBuilder builder);
 
+        public abstract IDatabaseFactory GetConfigDatabaseFactory(IDistrictConfig config);
+
+        public abstract IDatabaseFactory GetDistrictDatabaseFactory(IDistrictConfig config);
     }
 
 

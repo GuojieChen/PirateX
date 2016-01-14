@@ -19,6 +19,7 @@ namespace GameServer.Console.SampleService
         {
 
             Resolver.Resolve<IDatabase>().StringSet("test", "aaaaaa");
+            Resolver.Resolve<IDatabase>().StringSet("test2", "bbbbb");
 
             using (var db = Resolver.Resolve<IDbConnection>())
             {
@@ -28,7 +29,17 @@ namespace GameServer.Console.SampleService
                 //Logger.Error(db.Execute("insert into role(Id,CreateAt) values(@Id,@CreateAt);",new {Id=1 ,CreateAt = DateTime.Now}));
 
                 db.Close();
-            } 
+            }
+
+            using (var db = Resolver.Resolve<IDbConnection>())
+            {
+                db.Open();
+
+                Logger.Error(db.Query<Role>("select * from role").ToList());
+                //Logger.Error(db.Execute("insert into role(Id,CreateAt) values(@Id,@CreateAt);",new {Id=1 ,CreateAt = DateTime.Now}));
+
+                db.Close();
+            }
         }
     }
 }

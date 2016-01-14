@@ -43,7 +43,8 @@ namespace PirateX.Command
 
             var appserver = (IGameServer)session.AppServer;
 
-            session.Build = appserver.ServerContainer.GetDistrictContainer(token.DistrictId);
+            if (session.Build == null)
+                session.Build = appserver.ServerContainer.GetDistrictContainer(token.DistrictId);
 
             if (session.Build == null)
             {

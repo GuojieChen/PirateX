@@ -126,9 +126,16 @@ namespace GameServer.Console
 
         public override void BuildContainer(ContainerBuilder builder)
         {
-            builder.Register(c => new ServiceStackDatabaseFactory(c.Resolve<IDistrictConfig>().ConnectionString)).As<IDatabaseFactory>().SingleInstance();
-            builder.Register(c => new ServiceStackDatabaseFactory(c.Resolve<IDistrictConfig>().ConfigConnectionString))
-                .Named<IDatabaseFactory>("ConfigDbFactory").SingleInstance();
+        }
+
+        public override IDatabaseFactory GetConfigDatabaseFactory(IDistrictConfig config)
+        {
+            return new ServiceStackDatabaseFactory(config.ConnectionString);
+        }
+
+        public override IDatabaseFactory GetDistrictDatabaseFactory(IDistrictConfig config)
+        {
+            return new ServiceStackDatabaseFactory(config.ConfigConnectionString);
         }
     }
 }

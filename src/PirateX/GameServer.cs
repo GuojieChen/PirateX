@@ -137,6 +137,9 @@ namespace PirateX
 
             var session = GetSessionByID(sessionid);
 
+            if (session == null)
+                return;
+
             if (!session.Items.ContainsKey(KeyStore.FilterIsLogout))
                 session.Items.Add(KeyStore.FilterIsLogout, true);
         }
