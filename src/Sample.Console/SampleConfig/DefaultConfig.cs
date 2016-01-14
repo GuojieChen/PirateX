@@ -7,6 +7,9 @@ using PirateX.Core.Config;
 
 namespace GameServer.Console.SampleConfig
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class DefaultConfig : IConfigKeyValueEntity
     {
         public string Id { get; set; }

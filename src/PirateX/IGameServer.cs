@@ -9,8 +9,6 @@ namespace PirateX
 
     {
         IServerContainer ServerContainer { get; set; }
-
-        ILifetimeScope Ioc { get; }
         /// <summary> 广播消息 
         /// </summary>
         /// <typeparam name="TMessage"></typeparam>

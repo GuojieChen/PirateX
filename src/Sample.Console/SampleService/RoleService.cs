@@ -6,8 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using Dapper;
+using GameServer.Console.SampleConfig;
 using GameServer.Console.SampleDomain;
 using PirateX.Core;
+using PirateX.Core.Config;
 using PirateX.Core.Service;
 using StackExchange.Redis;
 
@@ -20,6 +22,12 @@ namespace GameServer.Console.SampleService
 
             Resolver.Resolve<IDatabase>().StringSet("test", "aaaaaa");
             Resolver.Resolve<IDatabase>().StringSet("test2", "bbbbb");
+
+            Resolver.Resolve<IConfigReader>().SingleByIndexes<PetConfig>(new
+            {
+                AwakeCost = 1,
+                ElementType=2
+            }); 
 
             using (var db = Resolver.Resolve<IDbConnection>())
             {

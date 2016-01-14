@@ -20,6 +20,46 @@ protobuf，自动生成模型的描述文件
 
 TODO SubscribeAsync 需要看看是否用对了
 
+
+##配置数据模型(Config)
+```csharp
+/// <summary>
+/// 普通模式，以Id为主键的
+/// </summary>
+[ConfigIndex("Index1", "Index2")]
+public class PetConfig : IConfigIdEntity
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; }
+
+    public int Index1 { get; set; }
+
+    public int Index2 { get; set; }
+}
+```
+
+```csharp
+/// <summary>
+/// KEY-VALUE模式
+/// </summary>
+public class DefaultConfig : IConfigKeyValueEntity
+{
+    public string Id { get; set; }
+
+    public string V { get; set; }
+}
+```
+
+```csharp
+///配置模型索引键，后期查询用
+Resolver.Resolve<IConfigReader>().SingleByIndexes<PetConfig>(new
+{
+    Index1 = 1,
+    Index2 = 2
+}); 
+```
+
 ##表结构自维护   
 注册需要进行维护的程序集，在此之后，每次重启的时候都会对表结构进行维护    
 这里的 “EntityAssembly”是一个关键字

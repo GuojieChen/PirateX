@@ -55,12 +55,12 @@ namespace PirateX.Command
             session.Rid = token.Rid;
             session.ServerId = token.DistrictId;
 
-            var onlineManager = appserver.Ioc.Resolve<IOnlineManager<TOnlineRole>>();
+            var onlineManager = appserver.ServerContainer.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
 
             var oldOnlineInfo = GetOnlineRole(session, data);
             if (oldOnlineInfo != null)
             {//已经登陆，挤下来
-                var sub = appserver.Ioc.Resolve<ConnectionMultiplexer>().GetSubscriber();
+                var sub = appserver.ServerContainer.ServerIoc.Resolve<ConnectionMultiplexer>().GetSubscriber();
                 sub.Publish(KeyStore.SubscribeChannelLogout, oldOnlineInfo.SessionID, CommandFlags.FireAndForget);
             }
 
