@@ -9,6 +9,7 @@ using Dapper;
 using GameServer.Console.SampleConfig;
 using GameServer.Console.SampleDomain;
 using PirateX.Core;
+using PirateX.Core.Broadcas;
 using PirateX.Core.Config;
 using PirateX.Core.Service;
 using StackExchange.Redis;
@@ -48,6 +49,10 @@ namespace GameServer.Console.SampleService
 
                 db.Close();
             }
+
+            Resolver.Resolve<IMsgBroadcast>().Send(new {},1,2);
+
+            Resolver.Resolve<IMsgBroadcast>().SendToDistrict(new {},1,2);
         }
     }
 }

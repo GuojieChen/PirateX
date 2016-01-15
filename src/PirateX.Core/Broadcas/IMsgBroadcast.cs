@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PirateX.Broadcas
+﻿namespace PirateX.Core.Broadcas
 {
     public interface IMsgBroadcast
     {

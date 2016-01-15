@@ -32,7 +32,6 @@ namespace PirateX
         void ProcessEx(JToken obj);
         */
 
-
         /// <summary> 当前请求序列
         /// </summary>
         int CurrentO { get; set; }

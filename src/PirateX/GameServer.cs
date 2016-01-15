@@ -7,8 +7,10 @@ using System.Reflection;
 using System.Threading;
 using Autofac;
 using PirateX.Core;
+using PirateX.Core.Broadcas;
 using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
+using PirateX.Core.Service;
 using PirateX.Filters;
 using PirateX.Protocol;
 using PirateX.Protocol.V1;
@@ -20,7 +22,7 @@ using SuperSocket.SocketBase.Protocol;
 namespace PirateX
 {
 
-    public abstract class GameServer<TSession, TOnlineRole> : AppServer<TSession, IGameRequestInfo>, IGameServer
+    public abstract class GameServer<TSession, TOnlineRole> : AppServer<TSession, IGameRequestInfo> ,IGameServer
         where TSession : GameSession<TSession>, new()
         where TOnlineRole : class, IOnlineRole, new()
     {
@@ -38,19 +40,6 @@ namespace PirateX
         protected GameServer(IServerContainer  serverContainer, IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) : base(receiveFilterFactory)
         {
             ServerContainer = serverContainer;
-        }
-
-        public void Broadcast<TMessage>(TMessage message, IQueryable<long> rids)
-        {
-            if (message == null || rids == null)
-                return;
-
-            this.AsyncRun(() =>
-            {
-                var sessions = GetAllSessions().Where(item => rids.Contains(item.Rid));
-                foreach (var session in sessions)
-                    session.SendMessage(message);
-            }, exception => Logger.Error(exception));
         }
 
         protected override void OnNewSessionConnected(TSession session)
@@ -93,8 +82,12 @@ namespace PirateX
             builder.Register(c => new JsonPackage()).As<IProtocolPackage<IGameRequestInfo>>();
             //全局Redis序列化/反序列化方式
             builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
-
+            
             builder.Register(c => rootConfig).As<IRootConfig>().SingleInstance();
+            //默认消息广播
+            builder.Register(c => new LocalSessionMsgBroadcast()).SingleInstance();
+            //TODO 默认消息推送（应用级）
+            //builder.Register(c =>)
             IocConfig(builder);
             Ioc = builder.Build().BeginLifetimeScope();
 

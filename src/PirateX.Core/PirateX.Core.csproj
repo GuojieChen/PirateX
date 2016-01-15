@@ -57,12 +57,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Broadcas\IMsgBroadcast.cs" />
+    <Compile Include="Broadcas\LocalSessionMsgBroadcast.cs" />
+    <Compile Include="Broadcas\RedisMqMsgBroadcast.cs" />
     <Compile Include="Cache\MemoryCacheClient.cs" />
     <Compile Include="Config\ConfigIndex.cs" />
     <Compile Include="Config\IConfigEntity.cs" />
     <Compile Include="Config\IConfigReader.cs" />
     <Compile Include="Config\MemoryConfigReader.cs" />
     <Compile Include="DefaultServerSetting.cs" />
+    <Compile Include="IGameServer.cs" />
     <Compile Include="ServerContainer.cs" />
     <Compile Include="Domain\Entity\IEntity.cs" />
     <Compile Include="Domain\Entity\IPrivateCacheData.cs" />

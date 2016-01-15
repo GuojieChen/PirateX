@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PirateX.Broadcas
+namespace PirateX.Core.Broadcas
 {
-    public class RedisMqMsgBroadcast:IMsgBroadcast
+    public class LocalSessionMsgBroadcast
     {
         public void Send<T>(T msg, params long[] rids)
         {

@@ -5,6 +5,7 @@ using PirateX.Protocol;
 using Newtonsoft;
 using PirateX.Core;
 using PirateX.Core.Online;
+using PirateX.Core.Service;
 using StackExchange.Redis;
 
 namespace PirateX.Command
