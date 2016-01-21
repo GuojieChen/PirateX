@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace PirateX.Core.Broadcas
 {
-    public class LocalSessionMsgBroadcast
+    public class DefaultMessageBroadcast : IMessageBroadcast
     {
         public void Send<T>(T msg, params long[] rids)
         {
-            throw new NotImplementedException();
         }
 
         public void SendToDistrict<T>(T msg, params int[] districtId)
         {
-            throw new NotImplementedException();
+
         }
     }
 }

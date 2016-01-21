@@ -8,6 +8,7 @@ using System.Text;
 using Autofac;
 using Autofac.Core;
 using NLog;
+using PirateX.Core.Broadcas;
 using PirateX.Core.Config;
 using PirateX.Core.Domain.Entity;
 using PirateX.Core.Service;
@@ -137,6 +138,12 @@ namespace PirateX.Core
 
             builder.Register(c => c.Resolve<ConnectionMultiplexer>().GetDatabase(districtConfig.RedisDb)).As<IDatabase>();
             builder.Register(c => districtConfig).As<IDistrictConfig>().SingleInstance();
+
+            if (ServerIoc.IsRegistered<IMessageBroadcast>())
+                builder.Register(c => ServerIoc.Resolve<IMessageBroadcast>()).As<IMessageBroadcast>().SingleInstance();
+            else
+                builder.Register(c => new DefaultMessageBroadcast()).As<IMessageBroadcast>().SingleInstance();
+
             BuildContainer(builder);
 
             //默认Config缓存数据处理器

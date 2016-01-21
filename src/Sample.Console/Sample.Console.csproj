@@ -88,6 +88,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cmd\Broadcast.cs" />
     <Compile Include="Cmd\Exception.cs" />
     <Compile Include="Cmd\NewSeed.cs" />
     <Compile Include="Cmd\RoleInfo.cs" />

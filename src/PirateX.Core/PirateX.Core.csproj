@@ -57,9 +57,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Broadcas\IMsgBroadcast.cs" />
-    <Compile Include="Broadcas\LocalSessionMsgBroadcast.cs" />
-    <Compile Include="Broadcas\RedisMqMsgBroadcast.cs" />
+    <Compile Include="Broadcas\IMessageBroadcast.cs" />
+    <Compile Include="Broadcas\DefaultMessageBroadcast.cs" />
+    <Compile Include="Broadcas\RedisMqMessageBroadcast.cs" />
     <Compile Include="Cache\MemoryCacheClient.cs" />
     <Compile Include="Config\ConfigIndex.cs" />
     <Compile Include="Config\IConfigEntity.cs" />

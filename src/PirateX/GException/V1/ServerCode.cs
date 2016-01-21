@@ -47,6 +47,9 @@ namespace PirateX.GException.V1
         [PExceptionMessage("您的账号已在其他设备登陆，请重新登陆")]
         ReLogin = 413,
 
+        [PExceptionMessage("不能重复登陆")]
+        NotLoginAgain = 414,
+
         /// <summary>
         /// 角色被封停
         /// </summary>

@@ -2,7 +2,7 @@
 
 namespace PirateX.Core.Broadcas
 {
-    public class RedisMqMsgBroadcast:IMsgBroadcast
+    public class RedisMqMessageBroadcast:IMessageBroadcast
     {
         public void Send<T>(T msg, params long[] rids)
         {

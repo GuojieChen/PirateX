@@ -85,7 +85,7 @@ namespace PirateX
             
             builder.Register(c => rootConfig).As<IRootConfig>().SingleInstance();
             //默认消息广播
-            builder.Register(c => new LocalSessionMsgBroadcast()).SingleInstance();
+            builder.Register(c => new DefaultMessageBroadcast()).SingleInstance();
             //TODO 默认消息推送（应用级）
             //builder.Register(c =>)
             IocConfig(builder);

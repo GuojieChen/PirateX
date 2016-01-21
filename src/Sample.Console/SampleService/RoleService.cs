@@ -50,9 +50,9 @@ namespace GameServer.Console.SampleService
                 db.Close();
             }
 
-            Resolver.Resolve<IMsgBroadcast>().Send(new {},1,2);
+            Resolver.Resolve<IMessageBroadcast>().Send(new {Name="abc",Content="Content"},1,2);
 
-            Resolver.Resolve<IMsgBroadcast>().SendToDistrict(new {},1,2);
+            Resolver.Resolve<IMessageBroadcast>().SendToDistrict(new { Name = "abc", Content = "Content" }, 1,2);
         }
     }
 }

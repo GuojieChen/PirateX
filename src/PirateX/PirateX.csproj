@@ -130,6 +130,7 @@
     <Compile Include="GameSession.cs" />
     <Compile Include="Protocol\Package\GZip.cs" />
     <Compile Include="Protocol\Package\IZip.cs" />
+    <Compile Include="SessionMessageBroadcast.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -8,6 +8,7 @@ using GameServer.Console.SampleDomain;
 using GameServer.Console.SampleService;
 using PirateX;
 using PirateX.Core;
+using PirateX.Core.Broadcas;
 using PirateX.Core.Online;
 using PirateX.Core.Service;
 using PirateX.Protocol;
@@ -29,6 +30,7 @@ namespace GameServer.Console
         public override void IocConfig(ContainerBuilder builder)
         {
             //builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
+            builder.Register(c => new SessionMessageBroadcast<DemoSession>(this)).As<IMessageBroadcast>().SingleInstance();
         }
     }
 

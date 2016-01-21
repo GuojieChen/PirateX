@@ -1,6 +1,6 @@
 ﻿namespace PirateX.Core.Broadcas
 {
-    public interface IMsgBroadcast
+    public interface IMessageBroadcast
     {
         /// <summary> 广播消息
         /// </summary>
