@@ -11,6 +11,7 @@ using GameServer.Console.SampleDomain;
 using PirateX.Core;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Config;
+using PirateX.Core.Push;
 using PirateX.Core.Service;
 using StackExchange.Redis;
 
@@ -55,6 +56,8 @@ namespace GameServer.Console.SampleService
             MessageBroadcast.Send(new {Name="abc",Content="Content"},1,2);
 
             MessageBroadcast.SendToDistrict(new { Name = "abc", Content = "Content" }, 1,2);
+            
+
         }
     }
 }

@@ -149,9 +149,30 @@ public class RoleInfoResponse
 
 
 ##PUSH
+```csharp
+Resolver.Resolve<IPushService>().Notification();
+```
 
 ##广播
+```csharp
+//广播给玩家
+Resolver.Resolve<IMessageBroadcast>().Send(new News{ Name = "abc", Content = "Content" }, 1, 2);
+//广播给一个区
+Resolver.Resolve<IMessageBroadcast>().SendToDistrict(new News{ Name = "abc", Content = "Content" }, 1, 2);
+```
 
+>广播返回给客户端的模型是
+```csharp
+new
+{
+    B = typeof(T).Name,//类型的名称，上面是News
+    D = message
+}
+```
+
+##Protobuf模型获取
+在程序启动阶段，会更新一下本地的protobuf清单，启动之后，客户端可以对其进行同步
+（暂定），如果客户端不能动态更新 则需要另外的方式
 
 ##国际化
 1、AppSettings中添加配置

@@ -41,5 +41,22 @@ namespace GameServer.Console.Cmd
 
         [ProtoMember(3)]
         public DateTime CreateAt { get; set; }
+
+        [ProtoMember(4)]
+        public TestData Data { get; set; }
+
+        [ProtoMember(5)]
+        public List<string> List { get; set; }
+
+        [ProtoMember(6)]
+        public List<TestData> Datas { get; set; } 
+    }
+
+    [Serializable]
+    [ProtoContract(Name = "TestData")]
+    public class TestData
+    {
+        [ProtoMember(1)]
+        public int Age { get; set; }
     }
 }
