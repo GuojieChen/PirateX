@@ -18,6 +18,8 @@ namespace GameServer.Console.SampleService
 {
     public class RoleService : GameService
     {
+        public IMessageBroadcast MessageBroadcast { get; set; }
+
         public void ShowLog()
         {
 
@@ -50,9 +52,9 @@ namespace GameServer.Console.SampleService
                 db.Close();
             }
 
-            Resolver.Resolve<IMessageBroadcast>().Send(new {Name="abc",Content="Content"},1,2);
+            MessageBroadcast.Send(new {Name="abc",Content="Content"},1,2);
 
-            Resolver.Resolve<IMessageBroadcast>().SendToDistrict(new { Name = "abc", Content = "Content" }, 1,2);
+            MessageBroadcast.SendToDistrict(new { Name = "abc", Content = "Content" }, 1,2);
         }
     }
 }

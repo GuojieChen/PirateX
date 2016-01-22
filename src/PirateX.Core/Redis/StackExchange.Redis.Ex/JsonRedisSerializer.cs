@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace PirateX.Core.Redis.StackExchange.Redis.Ex
 {
@@ -6,16 +7,12 @@ namespace PirateX.Core.Redis.StackExchange.Redis.Ex
     {
         public string Serilazer<T>(T obj)
         {
-            throw new NotImplementedException();
-            
-            //return obj.ToJson();
+            return JsonConvert.SerializeObject(obj);
         }
 
         public T Deserialize<T>(string value)
         {
-            throw new NotImplementedException();
-
-            //return JsonSerializer.DeserializeFromString<T>(value); 
+            return JsonConvert.DeserializeObject<T>(value);
         }
     }
 }

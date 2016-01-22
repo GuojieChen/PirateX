@@ -83,6 +83,7 @@ namespace PirateX.GException
             string des = null;
             try
             {
+                //TODO 
                 rm = new ResourceManager($"{enumeratedType.GetType().Assembly.GetName().Name}.Resources.Resource", enumeratedType.GetType().Assembly);
                 des = rm.GetString(description);
             }

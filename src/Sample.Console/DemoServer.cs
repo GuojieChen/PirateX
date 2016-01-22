@@ -78,7 +78,7 @@ namespace GameServer.Console
         }
     }
 
-    internal class DemoServerContainer : ServerContainer
+    internal class DemoServerContainer : DistrictContainer
     {
         public DemoServerContainer() : base(new ContainerSetting(), new ServerSetting
         {

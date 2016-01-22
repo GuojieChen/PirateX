@@ -11,6 +11,7 @@ using NLog;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Config;
 using PirateX.Core.Domain.Entity;
+using PirateX.Core.Push;
 using PirateX.Core.Service;
 using PirateX.Core.Utils;
 using StackExchange.Redis;
@@ -19,7 +20,7 @@ namespace PirateX.Core
 {
     /// <summary> 默认的游戏容器实现
     /// </summary>
-    public abstract class ServerContainer : IServerContainer
+    public abstract class DistrictContainer : IServerContainer
     {
         protected static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -37,7 +38,7 @@ namespace PirateX.Core
 
         public IContainerSetting ContainerSetting { get; }
 
-        public ServerContainer(IContainerSetting csetting, IServerSetting settings)
+        public DistrictContainer(IContainerSetting csetting, IServerSetting settings)
         {
             Settings = settings;
             ContainerSetting = csetting;
@@ -61,7 +62,7 @@ namespace PirateX.Core
             }
         }
 
-        public ServerContainer(IContainerSetting csetting) : this(csetting, null)
+        public DistrictContainer(IContainerSetting csetting) : this(csetting, null)
         {
 
         }
@@ -133,16 +134,28 @@ namespace PirateX.Core
 
             var builder = new ContainerBuilder();
 
-            builder.Register(c => districtConfig).As<IDistrictConfig>().SingleInstance();
-            builder.Register(c => ConnectionMultiplexer.Connect(districtConfig.Redis));
+            builder.Register(c => districtConfig).As<IDistrictConfig>()
+                .SingleInstance();
 
-            builder.Register(c => c.Resolve<ConnectionMultiplexer>().GetDatabase(districtConfig.RedisDb)).As<IDatabase>();
-            builder.Register(c => districtConfig).As<IDistrictConfig>().SingleInstance();
+            builder.Register(c => ConnectionMultiplexer.Connect(districtConfig.Redis))
+                .AsSelf();
+
+            builder.Register(c => c.Resolve<ConnectionMultiplexer>().GetDatabase(districtConfig.RedisDb))
+                .As<IDatabase>()
+                .InstancePerDependency();
+
+            builder.Register(c => districtConfig).As<IDistrictConfig>()
+                .SingleInstance();
 
             if (ServerIoc.IsRegistered<IMessageBroadcast>())
                 builder.Register(c => ServerIoc.Resolve<IMessageBroadcast>()).As<IMessageBroadcast>().SingleInstance();
             else
                 builder.Register(c => new DefaultMessageBroadcast()).As<IMessageBroadcast>().SingleInstance();
+
+            if (ServerIoc.IsRegistered<IPushService>())
+                builder.Register(c => ServerIoc.Resolve<IPushService>())
+                    .As<IPushService>()
+                    .SingleInstance();
 
             BuildContainer(builder);
 
@@ -189,7 +202,6 @@ namespace PirateX.Core
 
             return container;
         }
-
 
         /// <summary>
         /// 获取配置连接的信息摘要
