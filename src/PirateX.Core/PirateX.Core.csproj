@@ -96,6 +96,7 @@
     <Compile Include="Redis\StackExchange.Redis.Ex\RedisDataBaseExtension.cs" />
     <Compile Include="Service\GameService.cs" />
     <Compile Include="Service\IService.cs" />
+    <Compile Include="Service\SyncProtobufService.cs" />
     <Compile Include="Utils\CsvFileReader.cs" />
     <Compile Include="Utils\ObjectUtil.cs" />
     <Compile Include="Utils\RandomUtil.cs" />

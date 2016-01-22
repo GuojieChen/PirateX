@@ -46,7 +46,7 @@ namespace PirateX
         {
             base.OnNewSessionConnected(session);
 
-            session.ProtocolPackage = Ioc.Resolve<IProtocolPackage<IGameRequestInfo>>();
+            session.ProtocolPackage = Ioc.Resolve<IProtocolPackage>();
         }
 
         protected override bool Setup(IRootConfig rootConfig, IServerConfig config)
@@ -79,7 +79,7 @@ namespace PirateX
               .SingleInstance();
 
             //默认的包解析器
-            builder.Register(c => new JsonPackage()).As<IProtocolPackage<IGameRequestInfo>>();
+            builder.Register(c => new JsonPackage()).As<IProtocolPackage>();
             //全局Redis序列化/反序列化方式
             builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
             

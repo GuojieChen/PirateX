@@ -5,14 +5,7 @@ using PirateX.Protocol.Package;
 
 namespace PirateX.Protocol
 {
-    public abstract class AbstractProtocolPackag : AbstractProtocolPackag<IGameRequestInfo>
-    {
-        protected AbstractProtocolPackag(IZip zip, ICrypto crypto) : base(zip, crypto)
-        {
-        }
-    }
-
-    public abstract class AbstractProtocolPackag<TRequestInfo> : IProtocolPackage<TRequestInfo> where TRequestInfo : IGameRequestInfo
+    public abstract class AbstractProtocolPackag : IProtocolPackage
 
     {
         protected AbstractProtocolPackag(IZip zip,ICrypto crypto)
@@ -39,7 +32,7 @@ namespace PirateX.Protocol
 
         public abstract byte[] SerializeObject<TMessage>(TMessage message);
 
-        public abstract TRequestInfo DeObject(byte[] datas);
+        public abstract IGameRequestInfo DeObject(byte[] datas);
 
 
         public virtual byte[] Pack(byte[] datas)

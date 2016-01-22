@@ -51,7 +51,7 @@ namespace PirateX
             }
         }
         #endregion
-        public IProtocolPackage<IGameRequestInfo> ProtocolPackage { get; set; }
+        public IProtocolPackage ProtocolPackage { get; set; }
 
         protected override void OnSessionStarted()
         {

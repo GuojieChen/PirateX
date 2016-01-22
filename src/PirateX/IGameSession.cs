@@ -19,7 +19,7 @@ namespace PirateX
         /// </summary>
         DateTime LastResponseTime { get; set; }
 
-        IProtocolPackage<IGameRequestInfo> ProtocolPackage { get; set; } 
+        IProtocolPackage ProtocolPackage { get; set; } 
 
         void SendMessage<TResponse>(TResponse message);
 

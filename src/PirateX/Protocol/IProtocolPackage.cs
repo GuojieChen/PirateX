@@ -3,8 +3,7 @@ using PirateX.Protocol.Package;
 
 namespace PirateX.Protocol
 {
-    public interface IProtocolPackage<out TRequestInfo>
-        where TRequestInfo :IGameRequestInfo
+    public interface IProtocolPackage
     {
         /// <summary> 数据压缩操作类
         /// </summary>
@@ -39,11 +38,6 @@ namespace PirateX.Protocol
         /// </summary>
         /// <param name="datas"></param>
         /// <returns></returns>
-        TRequestInfo DeObject(byte[] datas); 
-    }
-
-    public interface IProtocolPackage : IProtocolPackage<IGameRequestInfo>
-    {
-        
+        IGameRequestInfo DeObject(byte[] datas); 
     }
 }

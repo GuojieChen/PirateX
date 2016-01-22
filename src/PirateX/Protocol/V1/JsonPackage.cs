@@ -7,7 +7,7 @@ using PirateX.Json;
 
 namespace PirateX.Protocol.V1
 {
-    public class JsonPackage:AbstractProtocolPackag<JsonRequestInfo>
+    public class JsonPackage:AbstractProtocolPackag
     {
 
         public JsonPackage()
@@ -44,7 +44,7 @@ namespace PirateX.Protocol.V1
             return base.Pack(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, JsonSettings)));
         }
 
-        public override JsonRequestInfo DeObject(byte[] datas)
+        public override IGameRequestInfo DeObject(byte[] datas)
         {
             var body = Encoding.UTF8.GetString(base.Unpack(datas));
 
