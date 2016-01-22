@@ -18,7 +18,8 @@ namespace GameServer.Console
 {
     public class DemoServer : GameServer<DemoSession,OnlineRole>
     {
-        public DemoServer() : base(new DemoServerContainer(), new PokemonXProtocol())
+        public DemoServer() 
+            : base(new DemoServerContainer(), new PokemonXProtocol())
         {
         }
 

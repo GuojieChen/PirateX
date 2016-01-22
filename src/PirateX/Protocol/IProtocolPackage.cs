@@ -28,16 +28,30 @@ namespace PirateX.Protocol
         /// <summary>
         /// 序列化包为二进制数据
         /// </summary>
-        /// <typeparam name="TMessage"></typeparam>
         /// <param name="message"></param>
         /// <returns></returns>
-        byte[] SerializeObject<TMessage>(TMessage message);
+        byte[] SerializeObject(ProtocolMessage message)
+;
 
         /// <summary>
         /// 解析数据包为请求对象
         /// </summary>
         /// <param name="datas"></param>
         /// <returns></returns>
-        IGameRequestInfo DeObject(byte[] datas); 
+        IGameRequestInfo DeserializeObject(byte[] datas); 
+    }
+
+    public class ProtocolMessage
+    {
+        public string B { get; set; }
+        public string C { get; set; }
+
+        public object D { get; set; }
+
+        public object Code { get; set; }
+
+        public string Msg { get; set; }
+        
+        public int O { get; set; }
     }
 }

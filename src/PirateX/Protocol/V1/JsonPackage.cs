@@ -39,12 +39,12 @@ namespace PirateX.Protocol.V1
             }
         }
 
-        public override byte[] SerializeObject<TMessage>(TMessage message)
+        public override byte[] SerializeObject(ProtocolMessage message)
         {
             return base.Pack(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, JsonSettings)));
         }
 
-        public override IGameRequestInfo DeObject(byte[] datas)
+        public override IGameRequestInfo DeserializeObject(byte[] datas)
         {
             var body = Encoding.UTF8.GetString(base.Unpack(datas));
 

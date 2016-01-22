@@ -13,6 +13,7 @@ using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Core.Service;
 using PirateX.Filters;
 using PirateX.Protocol;
+using PirateX.Protocol.Http;
 using PirateX.Protocol.V1;
 using StackExchange.Redis;
 using SuperSocket.SocketBase;
@@ -41,6 +42,12 @@ namespace PirateX
         {
             ServerContainer = serverContainer;
         }
+
+
+        protected GameServer(IServerContainer serverContainer) : base(new HttpProtocol())
+        {
+            ServerContainer = serverContainer;
+        } 
 
         protected override void OnNewSessionConnected(TSession session)
         {

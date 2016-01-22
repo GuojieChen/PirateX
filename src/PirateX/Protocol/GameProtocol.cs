@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using PirateX.Protocol.Http;
 using PirateX.Protocol.V1;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Protocol;
@@ -10,6 +11,14 @@ namespace PirateX.Protocol
         public IReceiveFilter<IGameRequestInfo> CreateFilter(IAppServer appServer, IAppSession appSession, IPEndPoint remoteEndPoint)
         {
             return new JsonReceiveFilter((IGameSession)appSession);
+        }
+    }
+
+    public class HttpProtocol : IReceiveFilterFactory<IGameRequestInfo>
+    {
+        public IReceiveFilter<IGameRequestInfo> CreateFilter(IAppServer appServer, IAppSession appSession, IPEndPoint remoteEndPoint)
+        {
+            return new HttpProxyReceiveFilter();
         }
     }
 }

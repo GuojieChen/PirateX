@@ -31,6 +31,7 @@ namespace PirateX
         #region IOC
         private ILifetimeScope _container;
         private ILifetimeScope _fContainer;
+
         public ILifetimeScope Build
         {
             get
@@ -118,7 +119,7 @@ namespace PirateX
 
             try
             {
-                this.SendMessage(new
+                this.SendMessage(new ProtocolMessage()
                 {
                     C = cmdName,
                     Code = code,
@@ -251,10 +252,9 @@ namespace PirateX
         /// 发送消息
         /// </summary>
         /// <typeparam cmdName="TMessage"></typeparam>
-        /// <typeparam name="TMessage"></typeparam>
         /// <param cmdName="message"></param>
         /// <param name="message"></param>
-        public void SendMessage<TMessage>(TMessage message)
+        public void SendMessage(ProtocolMessage message)
         {
             byte[] data = ProtocolPackage.SerializeObject(message);
 

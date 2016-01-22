@@ -74,7 +74,7 @@ namespace PirateX.Protocol
                         if (Logger.IsDebugEnabled)
                             Logger.Debug($"Retry success,Session [{session.SessionID}],cacheName : {cacheName}");
 
-                        session.SendMessage(new
+                        session.SendMessage(new ProtocolMessage
                         {
                             C = Name,
                             D = response,
@@ -107,7 +107,7 @@ namespace PirateX.Protocol
 
         protected void SendResponse(TSession session, object response)
         {
-            session.SendMessage(new
+            session.SendMessage(new ProtocolMessage
             {
                 C = Name,
                 D = response,

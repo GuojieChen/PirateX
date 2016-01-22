@@ -67,7 +67,7 @@ namespace PirateX.Protocol.V1
 
             LogHead(bodyBuffer, offset, length);
 #endif
-            var requestinfo = _session.ProtocolPackage.DeObject(bodyBuffer.CloneRange(offset, length));
+            var requestinfo = _session.ProtocolPackage.DeserializeObject(bodyBuffer.CloneRange(offset, length));
 
             if (Logger.IsInfoEnabled)
                 Logger.Info($"Request\t#{_session.Rid}#\t{_session.RemoteEndPoint}\t{_session.SessionID}\t\r\n{requestinfo?.Body??"NULL"}");

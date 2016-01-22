@@ -95,6 +95,7 @@
     <Compile Include="KeyStore.cs" />
     <Compile Include="Localization\LocalizationString.cs" />
     <Compile Include="Localization\LocalizationStringExtensions.cs" />
+    <Compile Include="Protocol\Http\HttpProxyReceiveFilter.cs" />
     <Compile Include="Protocol\Package\Zip.cs" />
     <Compile Include="Protocol\Package\ICrypto.cs" />
     <Compile Include="Protocol\AbstractProtocolPackage.cs" />
@@ -130,6 +131,7 @@
     <Compile Include="GameSession.cs" />
     <Compile Include="Protocol\Package\GZip.cs" />
     <Compile Include="Protocol\Package\IZip.cs" />
+    <Compile Include="Protocol\V2\V2Package.cs" />
     <Compile Include="SessionMessageBroadcast.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -140,7 +142,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Command\System\" />
-    <Folder Include="Protocol\V2\" />
     <Folder Include="Record\" />
   </ItemGroup>
   <ItemGroup>

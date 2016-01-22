@@ -21,7 +21,7 @@ namespace PirateX
 
         IProtocolPackage ProtocolPackage { get; set; } 
 
-        void SendMessage<TResponse>(TResponse message);
+        void SendMessage(ProtocolMessage message);
 
         ILifetimeScope Build { get; set; }
 

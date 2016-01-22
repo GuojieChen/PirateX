@@ -70,7 +70,7 @@ namespace PirateX.Protocol
 
         protected void SendResponse(TSession session, TResponse response)
         {
-            session.SendMessage(new
+            session.SendMessage(new ProtocolMessage
             {
                 C = Name,
                 D = response,

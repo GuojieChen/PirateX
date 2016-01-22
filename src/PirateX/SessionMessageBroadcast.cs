@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using PirateX.Core.Broadcas;
+using PirateX.Protocol;
 using SuperSocket.SocketBase;
 
 namespace PirateX
@@ -58,7 +59,7 @@ namespace PirateX
                 if (sessions != null)
                     foreach (var session in sessions)
                     {
-                        session.SendMessage(new
+                        session.SendMessage(new ProtocolMessage
                         {
                             B = message.TypeName,
                             D = message.Message

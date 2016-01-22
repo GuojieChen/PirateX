@@ -30,9 +30,9 @@ namespace PirateX.Protocol
         public IList<byte[]> ClientKeys { get; set; }
         public IList<byte[]> ServerKeys { get; set; }
 
-        public abstract byte[] SerializeObject<TMessage>(TMessage message);
+        public abstract byte[] SerializeObject(ProtocolMessage message);
 
-        public abstract IGameRequestInfo DeObject(byte[] datas);
+        public abstract IGameRequestInfo DeserializeObject(byte[] datas);
 
 
         public virtual byte[] Pack(byte[] datas)
