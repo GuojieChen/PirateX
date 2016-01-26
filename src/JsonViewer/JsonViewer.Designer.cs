@@ -188,10 +188,10 @@ namespace EPocalipse.Json.Viewer
             this.pageTextView.Controls.Add(this.txtJson);
             this.pageTextView.Controls.Add(this.toolStrip1);
             this.pageTextView.Controls.Add(this.lblError);
-            this.pageTextView.Location = new System.Drawing.Point(4, 36);
+            this.pageTextView.Location = new System.Drawing.Point(4, 22);
             this.pageTextView.Name = "pageTextView";
             this.pageTextView.Padding = new System.Windows.Forms.Padding(3);
-            this.pageTextView.Size = new System.Drawing.Size(784, 518);
+            this.pageTextView.Size = new System.Drawing.Size(784, 532);
             this.pageTextView.TabIndex = 1;
             this.pageTextView.Text = "Text";
             this.pageTextView.UseVisualStyleBackColor = true;
@@ -209,7 +209,7 @@ namespace EPocalipse.Json.Viewer
             this.txtJson.Multiline = true;
             this.txtJson.Name = "txtJson";
             this.txtJson.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtJson.Size = new System.Drawing.Size(778, 465);
+            this.txtJson.Size = new System.Drawing.Size(778, 479);
             this.txtJson.TabIndex = 4;
             this.txtJson.TextChanged += new System.EventHandler(this.txtJson_TextChanged);
             // 
@@ -323,7 +323,7 @@ namespace EPocalipse.Json.Viewer
             this.lblError.ForeColor = System.Drawing.Color.Red;
             this.lblError.LinkBehavior = System.Windows.Forms.LinkBehavior.AlwaysUnderline;
             this.lblError.LinkColor = System.Drawing.Color.Red;
-            this.lblError.Location = new System.Drawing.Point(3, 493);
+            this.lblError.Location = new System.Drawing.Point(3, 507);
             this.lblError.Name = "lblError";
             this.lblError.Size = new System.Drawing.Size(778, 22);
             this.lblError.TabIndex = 5;
@@ -335,10 +335,10 @@ namespace EPocalipse.Json.Viewer
             // pageTreeView
             // 
             this.pageTreeView.Controls.Add(this.spcViewer);
-            this.pageTreeView.Location = new System.Drawing.Point(4, 36);
+            this.pageTreeView.Location = new System.Drawing.Point(4, 22);
             this.pageTreeView.Name = "pageTreeView";
             this.pageTreeView.Padding = new System.Windows.Forms.Padding(3);
-            this.pageTreeView.Size = new System.Drawing.Size(784, 518);
+            this.pageTreeView.Size = new System.Drawing.Size(784, 532);
             this.pageTreeView.TabIndex = 0;
             this.pageTreeView.Text = "Viewer";
             this.pageTreeView.UseVisualStyleBackColor = true;
@@ -358,7 +358,7 @@ namespace EPocalipse.Json.Viewer
             // 
             this.spcViewer.Panel2.Controls.Add(this.pnlVisualizer);
             this.spcViewer.Panel2.Controls.Add(this.cbVisualizers);
-            this.spcViewer.Size = new System.Drawing.Size(778, 512);
+            this.spcViewer.Size = new System.Drawing.Size(778, 526);
             this.spcViewer.SplitterDistance = 560;
             this.spcViewer.TabIndex = 5;
             // 
@@ -373,7 +373,7 @@ namespace EPocalipse.Json.Viewer
             this.tvJson.Location = new System.Drawing.Point(0, 0);
             this.tvJson.Name = "tvJson";
             this.tvJson.SelectedImageIndex = 0;
-            this.tvJson.Size = new System.Drawing.Size(560, 482);
+            this.tvJson.Size = new System.Drawing.Size(560, 496);
             this.tvJson.TabIndex = 3;
             this.tvJson.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.tvJson_BeforeExpand);
             this.tvJson.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvJson_AfterSelect);
@@ -386,7 +386,7 @@ namespace EPocalipse.Json.Viewer
             this.pnlFind.Controls.Add(this.txtFind);
             this.pnlFind.Controls.Add(this.lblFind);
             this.pnlFind.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlFind.Location = new System.Drawing.Point(0, 482);
+            this.pnlFind.Location = new System.Drawing.Point(0, 496);
             this.pnlFind.Name = "pnlFind";
             this.pnlFind.Size = new System.Drawing.Size(560, 30);
             this.pnlFind.TabIndex = 6;
@@ -406,9 +406,7 @@ namespace EPocalipse.Json.Viewer
             this.txtFind.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFind.Location = new System.Drawing.Point(32, 6);
-            this.txtFind.Multiline = false;
             this.txtFind.Name = "txtFind";
-            this.txtFind.SelectedText = "";
             this.txtFind.Size = new System.Drawing.Size(374, 21);
             this.txtFind.TabIndex = 1;
             this.txtFind.TextChanged += new System.EventHandler(this.txtFind_TextChanged);
@@ -419,7 +417,7 @@ namespace EPocalipse.Json.Viewer
             this.lblFind.AutoSize = true;
             this.lblFind.Location = new System.Drawing.Point(3, 8);
             this.lblFind.Name = "lblFind";
-            this.lblFind.Size = new System.Drawing.Size(34, 19);
+            this.lblFind.Size = new System.Drawing.Size(29, 12);
             this.lblFind.TabIndex = 0;
             this.lblFind.Text = "&Find";
             // 
@@ -429,7 +427,7 @@ namespace EPocalipse.Json.Viewer
             this.pnlVisualizer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlVisualizer.Location = new System.Drawing.Point(0, 29);
             this.pnlVisualizer.Name = "pnlVisualizer";
-            this.pnlVisualizer.Size = new System.Drawing.Size(214, 483);
+            this.pnlVisualizer.Size = new System.Drawing.Size(214, 497);
             this.pnlVisualizer.TabIndex = 6;
             // 
             // cbVisualizers
@@ -523,7 +521,6 @@ namespace EPocalipse.Json.Viewer
         private System.Windows.Forms.Label lblFind;
         private System.Windows.Forms.Panel pnlVisualizer;
         private System.Windows.Forms.ComboBox cbVisualizers;
-        private System.Windows.Forms.TabControl tabControl;
-
+        public TabControl tabControl;
     }
 }

@@ -108,9 +108,12 @@
     </None>
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <None Include="Config\log4net.config" />
-    <None Include="Config\log4net.unix.config" />
+    <None Include="Config\log4net.unix.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
