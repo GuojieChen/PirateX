@@ -9,6 +9,7 @@ using System.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PirateX.Client.Command;
+using PirateX.Client.Protocol;
 using SuperSocket.ClientEngine;
 using ErrorEventArgs = System.IO.ErrorEventArgs;
 

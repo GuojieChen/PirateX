@@ -186,55 +186,62 @@
             // labelHost
             // 
             this.labelHost.AutoSize = true;
+            this.labelHost.Font = new System.Drawing.Font("宋体", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.labelHost.Location = new System.Drawing.Point(13, 10);
             this.labelHost.Name = "labelHost";
-            this.labelHost.Size = new System.Drawing.Size(29, 12);
+            this.labelHost.Size = new System.Drawing.Size(49, 19);
             this.labelHost.TabIndex = 0;
             this.labelHost.Text = "Host";
             // 
             // txtHost
             // 
-            this.txtHost.Location = new System.Drawing.Point(13, 32);
+            this.txtHost.Font = new System.Drawing.Font("宋体", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.txtHost.Location = new System.Drawing.Point(13, 39);
             this.txtHost.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
             this.txtHost.Name = "txtHost";
-            this.txtHost.Size = new System.Drawing.Size(230, 21);
+            this.txtHost.Size = new System.Drawing.Size(230, 29);
             this.txtHost.TabIndex = 1;
             this.txtHost.Text = "127.0.0.1";
             // 
             // labelPort
             // 
             this.labelPort.AutoSize = true;
-            this.labelPort.Location = new System.Drawing.Point(13, 63);
+            this.labelPort.Font = new System.Drawing.Font("宋体", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.labelPort.Location = new System.Drawing.Point(13, 78);
             this.labelPort.Name = "labelPort";
-            this.labelPort.Size = new System.Drawing.Size(29, 12);
+            this.labelPort.Size = new System.Drawing.Size(49, 19);
             this.labelPort.TabIndex = 2;
             this.labelPort.Text = "Port";
             // 
             // txtPort
             // 
-            this.txtPort.Location = new System.Drawing.Point(13, 85);
+            this.txtPort.Font = new System.Drawing.Font("宋体", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.txtPort.Location = new System.Drawing.Point(13, 107);
             this.txtPort.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
             this.txtPort.Name = "txtPort";
-            this.txtPort.Size = new System.Drawing.Size(230, 21);
+            this.txtPort.Size = new System.Drawing.Size(230, 29);
             this.txtPort.TabIndex = 3;
             this.txtPort.Text = "3001";
             // 
             // labelProtocol
             // 
             this.labelProtocol.AutoSize = true;
-            this.labelProtocol.Location = new System.Drawing.Point(13, 116);
+            this.labelProtocol.Font = new System.Drawing.Font("宋体", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.labelProtocol.Location = new System.Drawing.Point(13, 146);
             this.labelProtocol.Name = "labelProtocol";
-            this.labelProtocol.Size = new System.Drawing.Size(53, 12);
+            this.labelProtocol.Size = new System.Drawing.Size(89, 19);
             this.labelProtocol.TabIndex = 5;
             this.labelProtocol.Text = "Protocol";
             // 
             // comboBox1
             // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.Font = new System.Drawing.Font("宋体", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(13, 138);
+            this.comboBox1.Location = new System.Drawing.Point(13, 175);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(230, 20);
+            this.comboBox1.Size = new System.Drawing.Size(230, 27);
             this.comboBox1.TabIndex = 6;
             // 
             // panel5
@@ -242,7 +249,7 @@
             this.panel5.Controls.Add(this.btnDisConn);
             this.panel5.Controls.Add(this.btnSend);
             this.panel5.Controls.Add(this.btnConn);
-            this.panel5.Location = new System.Drawing.Point(13, 171);
+            this.panel5.Location = new System.Drawing.Point(13, 208);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(230, 84);
             this.panel5.TabIndex = 4;

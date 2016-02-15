@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using PirateX.Client;
+using PirateX.Client.Protocol;
 
 namespace PirateX.ClientForm
 {
@@ -20,7 +21,7 @@ namespace PirateX.ClientForm
             InitializeComponent();
             InitRequestHistory();
             InitResponseHistory();
-
+            InitProtocol();
             var request = new
             {
                 C = "RoleLoginV2",
@@ -62,6 +63,24 @@ namespace PirateX.ClientForm
             jsonViewForm.jsonViewer1.Json = (sender as ListView).FocusedItem.SubItems[2].Text;
 
             jsonViewForm.Show(this);
+        }
+
+        private void InitProtocol()
+        {
+            var types = typeof (IProtocolPackage).Assembly.GetTypes().Where(item=> typeof(IProtocolPackage).IsAssignableFrom(item));
+
+            foreach (var type in types)
+            {
+                var attrs = type.GetCustomAttributes(typeof (ProtocolNameAttribute), false);
+
+                if(!attrs.Any())
+                    continue;
+
+                comboBox1.Items.Add((attrs[0] as ProtocolNameAttribute).Name);
+            }
+
+
+            comboBox1.Text = comboBox1.Items[0].ToString();
         }
 
         private void InitResponseHistory()
