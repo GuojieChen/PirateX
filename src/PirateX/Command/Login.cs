@@ -5,7 +5,6 @@ using PirateX.Protocol;
 using Newtonsoft;
 using PirateX.Core;
 using PirateX.Core.Online;
-using PirateX.Core.Service;
 using StackExchange.Redis;
 
 namespace PirateX.Command
@@ -22,6 +21,10 @@ namespace PirateX.Command
         where TLoginResponse : ILoginResponse
         where TOnlineRole : class, IOnlineRole, new()
     {
+
+
+        private static readonly object LoggingHelper = new object();
+
         protected override TLoginResponse ExecuteResponseCommand(TSession session, TLoginRequest data)
         {
             IToken token = null;
@@ -44,10 +47,24 @@ namespace PirateX.Command
 
             var appserver = (IGameServer)session.AppServer;
 
-            if (session.Build == null)
-                session.Build = appserver.ServerContainer.GetDistrictContainer(token.DistrictId);
+            var onlineManager = appserver.ServerContainer.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
 
-            if (session.Build == null)
+            #region 实行登陆排队，并且排除同一时间同一个账号的可能
+            lock (LoggingHelper)
+            {
+                var onlineInfo = GetOnlineRole(session, data);
+                onlineManager.Login(onlineInfo);
+
+                //TODO 如果还需要控制登陆数量，可以参考以下网站
+                //http://blog.csdn.net/21aspnet/article/details/1539638
+            }
+            #endregion
+
+
+            if (session.Reslover == null)
+                session.Reslover = appserver.ServerContainer.GetDistrictContainer(token.DistrictId);
+
+            if (session.Reslover == null)
             {
                 if (Logger.IsFatalEnabled)
                     Logger.Fatal($"Can't find game container\t:\t{token.DistrictId}");
@@ -55,17 +72,6 @@ namespace PirateX.Command
             }
             session.Rid = token.Rid;
             session.ServerId = token.DistrictId;
-
-            var onlineManager = appserver.ServerContainer.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
-
-            var oldOnlineInfo = GetOnlineRole(session, data);
-            if (oldOnlineInfo != null)
-            {//已经登陆，挤下来
-                var sub = appserver.ServerContainer.ServerIoc.Resolve<ConnectionMultiplexer>().GetSubscriber();
-                sub.Publish(KeyStore.SubscribeChannelLogout, oldOnlineInfo.SessionID, CommandFlags.FireAndForget);
-            }
-
-            onlineManager.Login(oldOnlineInfo);
 
             return DoLogin(session, data);
         }
@@ -86,6 +92,16 @@ namespace PirateX.Command
         /// <param name="data"></param>
         /// <returns></returns>
         public abstract IToken UnPackToken(TLoginRequest data);
+
+
+        /*
+         *  重新登陆的控制
+            if (GameServer.LoggingSet.ContainsKey(data.Rid))
+                GameServer.LoggingSet[data.Rid] = session.SessionID;
+            else
+                GameServer.LoggingSet.Add(data.Rid, session.SessionID);
+         * 
+         */
     }
 
     public class DebugToken : IToken

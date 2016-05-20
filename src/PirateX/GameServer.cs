@@ -6,15 +6,17 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using Autofac;
+using Newtonsoft.Json;
 using PirateX.Core;
 using PirateX.Core.Broadcas;
+using PirateX.Core.Domain.Entity;
 using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
-using PirateX.Core.Service;
 using PirateX.Filters;
 using PirateX.Protocol;
 using PirateX.Protocol.Http;
 using PirateX.Protocol.V1;
+using PirateX.Service;
 using StackExchange.Redis;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
@@ -31,6 +33,7 @@ namespace PirateX
         /// </summary>
         protected static readonly IList<Thread> Workers = new List<Thread>();
         public IServerContainer ServerContainer { get; set; }
+        public IDictionary<long, string> LoggingSet { get; set; }
 
         public ILifetimeScope Ioc { get; private set; }
 
@@ -41,12 +44,12 @@ namespace PirateX
         protected GameServer(IServerContainer  serverContainer, IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) : base(receiveFilterFactory)
         {
             ServerContainer = serverContainer;
+
+            LoggingSet = new Dictionary<long, string>();
         }
 
-
-        protected GameServer(IServerContainer serverContainer) : base(new HttpProtocol())
+        protected GameServer(IServerContainer serverContainer) : this(serverContainer, new HttpProtocol())
         {
-            ServerContainer = serverContainer;
         } 
 
         protected override void OnNewSessionConnected(TSession session)
@@ -93,6 +96,8 @@ namespace PirateX
             builder.Register(c => rootConfig).As<IRootConfig>().SingleInstance();
             //默认消息广播
             builder.Register(c => new DefaultMessageBroadcast()).SingleInstance();
+
+            builder.Register(c => new ProtobufService()).SingleInstance();
             //TODO 默认消息推送（应用级）
             //builder.Register(c =>)
             IocConfig(builder);
@@ -104,6 +109,8 @@ namespace PirateX
             ServerContainer.InitContainers();
 
             RedisDataBaseExtension.RedisSerilazer = Ioc.Resolve<IRedisSerializer>();
+
+            Ioc.Resolve<ProtobufService>().Init(ServerContainer.ContainerSetting.EntityAssembly);
 
             return base.Setup(rootConfig, config);
         }
@@ -124,26 +131,10 @@ namespace PirateX
             MqServer.GetSubscriber()
                 .SubscribeAsync(new RedisChannel(Dns.GetHostName(), RedisChannel.PatternMode.Literal), BroadcastToRoleSubscribe);
 
-            Ioc.Resolve<ConnectionMultiplexer>().GetSubscriber()
-                .SubscribeAsync(new RedisChannel(KeyStore.SubscribeChannelLogout, RedisChannel.PatternMode.Literal), LogoutSubscribe);
-            
             return base.Start();
         }
+
         #region Subscribe
-        private void LogoutSubscribe(RedisChannel channel, RedisValue sessionid)
-        {
-            if (Logger.IsDebugEnabled)
-                Logger.Debug($"logout \t channel:{channel},value:{sessionid}");
-
-            var session = GetSessionByID(sessionid);
-
-            if (session == null)
-                return;
-
-            if (!session.Items.ContainsKey(KeyStore.FilterIsLogout))
-                session.Items.Add(KeyStore.FilterIsLogout, true);
-        }
-
         private void BroadcastToRoleSubscribe(RedisChannel channel, RedisValue value)
         {
             if (Logger.IsDebugEnabled)
@@ -194,5 +185,118 @@ namespace PirateX
                     Logger.Debug($"Set role offline\t:\t {session.Rid}\t:{session.SessionID}\t{reason}");
             }
         }
+        
+        #region 请求结果的缓存
+        private static string GetRequestKey(long rid, string c)
+        {
+            return $"sys:request:{rid}:{c}";
+        }
+
+        private static string GetRequestListKey(long rid)
+        {
+            return $"sys:requestlist:{rid}";
+        }
+
+        public virtual bool ExistsReqeust(IGameSession session, string c)
+        {
+            var rid = session.Rid;
+
+            var db = ServerContainer.ServerIoc.Resolve<IDatabase>();
+            if (db == null)
+                return false;
+
+            var key = GetRequestKey(rid, c);
+            var listkey = GetRequestListKey(rid);
+
+            if (db.ListLength(listkey) <= 0)
+            {
+                if (Logger.IsDebugEnabled)
+                    Logger.Debug($"RID : {rid},Request.Length = 0");
+
+                return false;
+            }
+
+            var list = db.ListRange(listkey);
+
+            if (list.Any(item => Equals(item.ToString(), key.ToString())))
+            {
+                if (Logger.IsDebugEnabled)
+                    Logger.Debug($"RID : {rid},Request.[{key}] exists!");
+
+                return true;
+            }
+
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"RID : {rid},Request.[{key}] not exists!");
+
+            return false;
+        }
+
+        public virtual void StartRequest(IGameSession session, string c)
+        {
+            var rid = session.Rid;
+            if (rid <= 0 || string.IsNullOrEmpty(c))
+                return;
+
+            var db = session.Reslover.Resolve<IDatabase>();
+            if (db == null)
+                return;
+
+            var onlineManager = this.Ioc.Resolve<IOnlineManager<TOnlineRole>>();
+            //if(onlineRole != null && !Equals(onlineRole.SessionID,))
+
+
+            var key = GetRequestKey(rid, c);
+            var listkey = GetRequestListKey(rid);
+
+            db.ListLeftPush(listkey, key);
+
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"StartRequest ,ListLeftPush({listkey},{key})");
+
+            if (db.ListLength(listkey) > 4)
+            {
+                var removekey = db.ListLeftPop(listkey);
+                if (!string.IsNullOrEmpty(removekey))
+                    db.KeyDelete(removekey.ToString());
+
+                if (Logger.IsDebugEnabled)
+                    Logger.Debug($"StartRequest ,ListLeftPop({listkey}) and KeyDelete({removekey})");
+            }
+        }
+
+        public virtual void EndRequest(IGameSession session, string c, object response)
+        {
+            var rid = session.Rid;
+            if (rid <= 0 || string.IsNullOrEmpty(c))
+                return;
+
+            var db = session.Reslover.Resolve<IDatabase>();
+            if (db == null)
+                return;
+
+            var key = GetRequestKey(rid, c);
+
+            var setOk = db.Set(key, response, new TimeSpan(0, 0, 1, 50));
+
+            if (Logger.IsDebugEnabled)
+            {
+                Logger.Debug($"EndRequest, set response {setOk}");
+                Logger.Debug($"EndRequest,Response is {JsonConvert.SerializeObject(response)}");
+            }
+        }
+
+        public virtual TResonse GetResponse<TResonse>(IGameSession session, string c)
+        {
+            var rid = session.Rid;
+            var key = GetRequestKey(rid, c);
+
+            var db = session.Reslover.Resolve<IDatabase>();
+            if (db == null)
+                return default(TResonse);
+
+            return db.Get<TResonse>(key);
+        }
+        #endregion
     }
 }

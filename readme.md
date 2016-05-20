@@ -1,4 +1,4 @@
-#PirateX
+# PirateX
 .NET FrameWrok : 4.5.2
 
 
@@ -8,20 +8,40 @@ PirateX
 更加快速的重连机制   
 客户端数据同步机制，只返回变化的数据，大部分数据存放在客户端自己这边   
 缓存管理，合理是用散列的方式来存储数据模型   
-协议的修改，以此来支持重连、扩展等机制   
-更加简便的国际化语言管理方式，最好使用CVS格式来管理字段对应的不同语种  
+协议的修改，以此来支持重连、扩展等机制    
 红点推送机制的优化   
 消息广播
 日志的记录   
-protobuf，自动生成模型的描述文件
+protobuf，自动生成模型的描述文件   
+DDD的实践   
+多语系统,服务器拜托语言的束缚，都采用模板的方式，包括信件系统、任务系统等等   
+支持实时对战模式的处理    
+静态数据静默重载     
 
-TODO SubscribeAsync 需要看看是否用对了
+>TODO SubscribeAsync 需要看看是否用对了   
 
 
-##配置数据模型(Config)
+## 功能说明
+1. 登陆控制  实行单设备登陆。每次登陆或者重连都将记录当前角色的SessionID ，并在每次请求中检查SessionID，如果发现不一致的，说明角色登陆有变化，需要重新连接
+
+
+## 配置数据模型(Config)
+>注册配置    
+
+```csharp
+public class DemoServer : GameServer<DemoSession,OnlineRole>
+{
+        public override Assembly ConfigAssembly()
+        {
+            return this.GetType().Assembly;
+        }
+}
+```  
+
 ```csharp
 /// <summary>
-/// 普通模式，以Id为主键的
+/// 普通模式，以Id为主键
+/// 额外会有其他的作为查询索引
 /// </summary>
 [ConfigIndex("Index1", "Index2")]
 public class PetConfig : IConfigIdEntity
@@ -57,7 +77,7 @@ Resolver.Resolve<IConfigReader>().SingleByIndexes<PetConfig>(new
 }); 
 ```
 
-##表结构自维护   
+## 表结构自维护   
 注册需要进行维护的程序集，在此之后，每次重启的时候都会对表结构进行维护    
 这里的 “EntityAssembly”是一个关键字
 
@@ -69,27 +89,25 @@ public override void IocConfig(ContainerBuilder builder)
 ```
 
 此外还有两个开关来控制每个容器是否启用表结构的维护   
+全局开关，如果为FALSE，则所有的容器无论是否启用表维护都不执行表结构的维护
 ```csharp
 IServerSetting.AlterTable
 ```
-该开关是全局控制的，如果为FALSE，则所有的容器都不执行表结构的维护
-
+私有关只控制自己的容器
 ```csharp
 IDistrictConfig.AlterTable
 ```
-该开关只控制自己的容器
-
 
 >特别提示   
-开发过程中严谨对模型字段进行改名，这会带来不必要的麻烦。通常都是增加冗余字段。
+开发过程中严谨对模型字段进行改名，这会带来不必要的麻烦。通常都是增加冗余字段。    
 
 
-##全局配置
+## 全局配置
 指在AppSettings中可以配置的项
 
-##服务器配置    
+## 服务器配置    
 框架中的配置基本都是基于IOC来控制的，所以我们需要做的就是在<code>IocConfig()</code> 方法中指定相应的配置。   
-###全局Redis序列化方式
+### 全局Redis序列化方式
 默认采用的是<code>ProtobufRedisSerializer</code>方式来进行序列化和反序列化   
 框架中另外提供了 [protobuf](https://github.com/mgravell/protobuf-net) 的方式来进行序列化和反序列化
 ```csharp
@@ -117,13 +135,13 @@ public class RoleInfoResponse
 ```
 >TODO 框架提供的基础模型需要支持好此属性
 
-###工作单元
+### 工作单元
 所有数据库查询的连接都是既用既开的
 
 
-##数据缓存
+## 数据缓存
 
-###1、缓存类型
+### 1、缓存类型
 **1. 配置数据**   
 <code>config</code>   
 指游戏中的数值数据，这样的数据单独放在一个数据库中。服务器在启动过程中进行加载缓存。缓存直接缓在内存当中。
@@ -148,12 +166,12 @@ public class RoleInfoResponse
 
 
 
-##PUSH
+## PUSH
 ```csharp
 Resolver.Resolve<IPushService>().Notification();
 ```
 
-##广播
+## 广播
 ```csharp
 //广播给玩家
 Resolver.Resolve<IMessageBroadcast>().Send(new News{ Name = "abc", Content = "Content" }, 1, 2);
@@ -170,11 +188,11 @@ new
 }
 ```
 
-##Protobuf模型获取
+## Protobuf模型获取
 在程序启动阶段，会更新一下本地的protobuf清单，启动之后，客户端可以对其进行同步
 （暂定），如果客户端不能动态更新 则需要另外的方式
 
-##国际化
+## 国际化
 1、AppSettings中添加配置
 
 ```csharp
@@ -188,7 +206,7 @@ new
 > 2、玩家私有数据 可以做缓存，数据库层面可以进行分表
 > 3、玩家历史数据的保留可以考虑分表分库，在库表的定位上需要进行封装
 
-##Open Source Projects in Use
+## Open Source Projects in Use
 
 - [Autofac](https://github.com/autofac/Autofac)
 - [SuperSocket](https://github.com/kerryjiang/SuperSocket)

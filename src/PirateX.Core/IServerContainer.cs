@@ -25,6 +25,8 @@ namespace PirateX.Core
         /// </summary>
         void InitContainers();
 
+        IContainerSetting ContainerSetting { get; }
+
 
         /// <summary> 加载配置列表
         /// </summary>

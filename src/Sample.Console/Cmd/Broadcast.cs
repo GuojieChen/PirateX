@@ -14,7 +14,7 @@ namespace GameServer.Console.Cmd
     {
         protected override NoneResponse ExecuteResponseCommand(DemoSession session, BroadcastRequest data)
         {
-            var b = session.Build.Resolve<IMessageBroadcast>();
+            var b = session.Reslover.Resolve<IMessageBroadcast>();
             b.Send(data,1,2,3);
 
             return null; 

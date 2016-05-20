@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using PirateX.Core;
 using SuperSocket.SocketBase;
 
 namespace PirateX.Protocol
@@ -23,7 +24,9 @@ namespace PirateX.Protocol
             var start = DateTime.Now;
 
             var cacheName = Convert.ToString(session.CurrentO);
-            var rid = session.Rid;
+            var appserver = (IGameServer) session.AppServer;
+
+            appserver.StartRequest(session, cacheName);
 
             var response = ExecuteResponseCommand(session, data);
             pms = sw.ElapsedMilliseconds;
@@ -31,9 +34,9 @@ namespace PirateX.Protocol
             if (!Equals(response, default(TResponse)))
             {
                 SendResponse(session, response);
-                
+
                 //if (!IgnoreCmds.Contains(cacheName))
-                    session.EndRequest(rid, cacheName, response);
+                appserver.EndRequest(session, cacheName, response);
                 sms = sw.ElapsedMilliseconds;
             }
             else
@@ -41,7 +44,7 @@ namespace PirateX.Protocol
                 SendResponse(session, null);
 
                 //if (!IgnoreCmds.Contains(cacheName))
-                    session.EndRequest(rid, cacheName, null);
+                appserver.EndRequest(session, cacheName, null);
                 sms = sw.ElapsedMilliseconds;
             }
 

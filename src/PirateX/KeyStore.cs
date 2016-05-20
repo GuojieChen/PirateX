@@ -8,8 +8,6 @@ namespace PirateX
 {
     public static class KeyStore
     {
-        public const string SubscribeChannelLogout = "logout";
-
         public const string FilterIsLogin = "IsLogin";
 
         public const string FilterIsLogout = "IsLogout";

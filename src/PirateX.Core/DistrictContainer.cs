@@ -12,7 +12,6 @@ using PirateX.Core.Broadcas;
 using PirateX.Core.Config;
 using PirateX.Core.Domain.Entity;
 using PirateX.Core.Push;
-using PirateX.Core.Service;
 using PirateX.Core.Utils;
 using StackExchange.Redis;
 
@@ -179,7 +178,7 @@ namespace PirateX.Core
             if (ContainerSetting.ServiceAssembly != null)
             {
                 builder.RegisterAssemblyTypes(ContainerSetting.ServiceAssembly)
-                    .Where(item => item.IsSubclassOf(typeof(GameService)) && !Equals(item.Name, typeof(GameService).Name))
+                    .Where(item =>typeof(IService).IsAssignableFrom(item))
                     //.WithProperty("Test",123)
                     .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
                     //.WithProperty(new ResolvedParameter((pi, context) => pi.Name == "Resolver", (pi, ctx) => ctx))

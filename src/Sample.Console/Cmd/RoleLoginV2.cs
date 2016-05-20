@@ -10,6 +10,7 @@ using PirateX.Core;
 using PirateX.Core.Config;
 using PirateX.Core.Online;
 using PirateX.Filters;
+using ProtoBuf;
 
 namespace GameServer.Console.Cmd
 {
@@ -18,8 +19,8 @@ namespace GameServer.Console.Cmd
     {
         public override RoleLoginV2Request DoLogin(DemoSession session, RoleLoginV2Request request)
         {
-            Logger.Error(session.Build.Resolve<IConfigReader>().SingleById<PetConfig>(1).Name);
-            var roleservice = session.Build.Resolve<RoleService>();
+            Logger.Error(session.Reslover.Resolve<IConfigReader>().SingleById<PetConfig>(1).Name);
+            var roleservice = session.Reslover.Resolve<RoleService>();
 
             Logger.Error(roleservice);
             roleservice.ShowLog();
@@ -59,10 +60,15 @@ namespace GameServer.Console.Cmd
         public DateTime? CreateAt { get; set; }
     }
 
+    [Serializable]
+    [ProtoContract]
     public class RoleLoginV2Request : ILoginRequest, ILoginResponse
     {
+        [ProtoMember(1)]
         public string Token { get; set; }
+        [ProtoMember(2)]
         public long Rid { get; set; }
+        [ProtoMember(3)]
         public int Did { get; set; }
     }
 }

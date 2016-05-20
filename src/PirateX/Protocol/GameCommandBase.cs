@@ -59,10 +59,13 @@ namespace PirateX.Protocol
                 没有  则查看Response是否有
               */
 
-                if (session.ExistsReqeust(session.Rid, cacheName))
+                var appserver = (IGameServer) session.AppServer;
+
+
+                if (appserver.ExistsReqeust(session, cacheName))
                 {
                     // 已有请求 等待完成
-                    var response = session.GetResponse<TResponse>(session.Rid, cacheName);
+                    var response = appserver.GetResponse<TResponse>(session, cacheName);
                     if (Equals(default(TResponse), response))
                     {
                         if (Logger.IsDebugEnabled)

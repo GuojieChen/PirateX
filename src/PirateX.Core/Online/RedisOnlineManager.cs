@@ -92,17 +92,25 @@ namespace PirateX.Core.Online
 
         public bool IsOnline(long rid)
         {
-            return GetOnlineRole(rid) != null;
+            var urn = GetUrnOnlineRole(rid);
+            var db = _connectionMultiplexer.GetDatabase();
+
+            return db.KeyExists(urn);
         }
 
         public TOnlineRole GetOnlineRole(long rid)
         {
-            var urn = $"core:onlinerole:{rid}";
+            var urn = GetUrnOnlineRole(rid);
             var db = _connectionMultiplexer.GetDatabase();
             var onlineRoleStr = db.StringGet(urn);
             if (!onlineRoleStr.HasValue)
                 return default (TOnlineRole);
             return Serializer.Deserialize<TOnlineRole>(onlineRoleStr);
+        }
+
+        private static string GetUrnOnlineRole(long rid)
+        {
+            return $"core:onlinerole:{rid}";
         }
     }
 }

@@ -91,6 +91,7 @@
     <Compile Include="Command\NoneRequest.cs" />
     <Compile Include="Command\NoneResponse.cs" />
     <Compile Include="GException\V1\ServerCode.cs" />
+    <Compile Include="IGameServer.cs" />
     <Compile Include="Json\DoubleConverter.cs" />
     <Compile Include="KeyStore.cs" />
     <Compile Include="Localization\LocalizationString.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Logging\NLogLog.cs" />
     <Compile Include="Logging\NLogLogFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Protocol\ProtoSync\IProtoService.cs" />
     <Compile Include="Protocol\V1\JsonReceiveFilter.cs" />
     <Compile Include="Protocol\V1\JsonRequestInfo.cs" />
     <Compile Include="Command\GamePing.cs" />
@@ -132,6 +134,8 @@
     <Compile Include="Protocol\Package\GZip.cs" />
     <Compile Include="Protocol\Package\IZip.cs" />
     <Compile Include="Protocol\V2\V2Package.cs" />
+    <Compile Include="Service\GameService.cs" />
+    <Compile Include="Protocol\ProtoSync\ProtobufService.cs" />
     <Compile Include="SessionMessageBroadcast.cs" />
   </ItemGroup>
   <ItemGroup>

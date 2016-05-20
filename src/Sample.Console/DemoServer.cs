@@ -10,7 +10,7 @@ using PirateX;
 using PirateX.Core;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Online;
-using PirateX.Core.Service;
+using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Protocol;
 using PirateX.ServiceStackV3;
 
@@ -31,6 +31,7 @@ namespace GameServer.Console
         public override void IocConfig(ContainerBuilder builder)
         {
             //builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
+            //builder.Register(c => new JsonRedisSerializer()).As<IRedisSerializer>().SingleInstance();
             builder.Register(c => new SessionMessageBroadcast<DemoSession>(this)).As<IMessageBroadcast>().SingleInstance();
         }
     }

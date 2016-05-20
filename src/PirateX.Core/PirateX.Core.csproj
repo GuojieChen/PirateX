@@ -71,7 +71,6 @@
     <Compile Include="Config\MemoryConfigReader.cs" />
     <Compile Include="DefaultServerSetting.cs" />
     <Compile Include="i18n\I18N.cs" />
-    <Compile Include="IGameServer.cs" />
     <Compile Include="Push\IPushService.cs" />
     <Compile Include="Push\LogToFilePushService.cs" />
     <Compile Include="DistrictContainer.cs" />
@@ -94,9 +93,8 @@
     <Compile Include="Redis\StackExchange.Redis.Ex\JsonRedisSerializer.cs" />
     <Compile Include="Redis\StackExchange.Redis.Ex\ProtobufRedisSerializer.cs" />
     <Compile Include="Redis\StackExchange.Redis.Ex\RedisDataBaseExtension.cs" />
-    <Compile Include="Service\GameService.cs" />
-    <Compile Include="Service\IService.cs" />
-    <Compile Include="Service\SyncProtobufService.cs" />
+    <Compile Include="IService.cs" />
+    <Compile Include="ServiceBase.cs" />
     <Compile Include="Utils\CsvFileReader.cs" />
     <Compile Include="Utils\ObjectUtil.cs" />
     <Compile Include="Utils\RandomUtil.cs" />

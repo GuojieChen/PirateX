@@ -12,7 +12,7 @@ using PirateX.Core;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Config;
 using PirateX.Core.Push;
-using PirateX.Core.Service;
+using PirateX.Service;
 using StackExchange.Redis;
 
 namespace GameServer.Console.SampleService
