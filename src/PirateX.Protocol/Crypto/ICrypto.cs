@@ -1,4 +1,4 @@
-﻿namespace PirateX.Protocol.Package
+﻿namespace PirateX.Protocol.Crypto
 {
     public interface ICrypto
     {

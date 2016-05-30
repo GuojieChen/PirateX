@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using PirateX.Protocol.V1;
 using ProtoBuf;
 
 namespace PirateX.Protocol.V2
@@ -15,6 +13,7 @@ namespace PirateX.Protocol.V2
     /// V1的请求体
     /// protobuf的数据返回
     /// </summary>
+    [ProtocolName("V2")]
     public class V2Package : AbstractProtocolPackag
     {
         private const int Version = 2;
@@ -40,7 +39,7 @@ namespace PirateX.Protocol.V2
 
             message.D = null;
 
-            var header = PrePack(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, JsonPackage.JsonSettings)));
+            var header = PrePack(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, JsonSettings)));
 
             var cryptoByte = new byte[1];
             cryptoByte[0] = CryptoEnable ? (byte)128 : (byte)0;
@@ -90,6 +89,31 @@ namespace PirateX.Protocol.V2
             var jObject = JObject.Parse(body);
 
             return new JsonRequestInfo(jObject["C"]?.ToString(), jObject["D"], Convert.ToBoolean(jObject["R"]), Convert.ToInt32(jObject["O"]));
+        }
+
+
+        /// <summary>
+        /// JSON 序列化配置
+        /// </summary>
+        public static JsonSerializerSettings JsonSettings
+        {
+            get
+            {
+                var timeConverter = new IsoDateTimeConverter();
+                //这里使用自定义日期格式，如果不使用的话，默认是ISO8601格式     
+                timeConverter.DateTimeFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss";
+
+                var settings = new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
+                };
+
+                settings.Converters.Add(timeConverter);
+                settings.Converters.Add(new DoubleConverter());
+
+                return settings;
+            }
         }
     }
 }

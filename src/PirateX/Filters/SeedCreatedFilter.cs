@@ -1,6 +1,7 @@
 ﻿using System;
 using PirateX.GException;
 using PirateX.GException.V1;
+using PirateX.Protocol;
 using SuperSocket.Common;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Metadata;

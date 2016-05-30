@@ -2,11 +2,10 @@
 using System.IO;
 using zlib;
 
-namespace PirateX.Protocol.Package
+namespace PirateX.Protocol.Zip
 {
-    public class Zip:IZip
+    public class DefaultZip:IZip
     {
-
         public byte[] Compress(byte[] datas)
         {
             using (var outMemoryStream = new MemoryStream())
@@ -15,7 +14,7 @@ namespace PirateX.Protocol.Package
             {
                 CopyTo(inMemoryStream, outZStream);
                 outZStream.finish();
-                return outMemoryStream.ToArray();
+                return  outMemoryStream.ToArray();
             }
         }
 
@@ -27,7 +26,7 @@ namespace PirateX.Protocol.Package
             {
                 CopyTo(inMemoryStream, outZStream);
                 outZStream.finish();
-                return outMemoryStream.ToArray();
+                return  outMemoryStream.ToArray();
             }
         }
         private static void CopyTo(Stream src, Stream dest)

@@ -1,8 +1,9 @@
 ﻿using PirateX.Core;
+using PirateX.Protocol;
 
 namespace PirateX
 {
-    public interface IGameServer
+    public interface IGameServer:IGameServerBase
     {
         IServerContainer ServerContainer { get; set; }
 

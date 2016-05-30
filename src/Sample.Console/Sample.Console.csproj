@@ -57,24 +57,24 @@
       <HintPath>..\packages\StackExchange.Redis.1.0.488\lib\net45\StackExchange.Redis.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SuperSocket.Common, Version=1.6.5.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
-      <HintPath>..\packages\SuperSocket.1.6.5\lib\net45\SuperSocket.Common.dll</HintPath>
+    <Reference Include="SuperSocket.Common, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.1.6.6.1\lib\net45\SuperSocket.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SuperSocket.Facility, Version=1.6.5.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
-      <HintPath>..\packages\SuperSocket.1.6.5\lib\net45\SuperSocket.Facility.dll</HintPath>
+    <Reference Include="SuperSocket.Facility, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.1.6.6.1\lib\net45\SuperSocket.Facility.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SuperSocket.SocketBase, Version=1.6.5.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
-      <HintPath>..\packages\SuperSocket.1.6.5\lib\net45\SuperSocket.SocketBase.dll</HintPath>
+    <Reference Include="SuperSocket.SocketBase, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.1.6.6.1\lib\net45\SuperSocket.SocketBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SuperSocket.SocketEngine, Version=1.6.5.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
-      <HintPath>..\packages\SuperSocket.Engine.1.6.5.1\lib\net45\SuperSocket.SocketEngine.dll</HintPath>
+    <Reference Include="SuperSocket.SocketEngine, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.Engine.1.6.6.1\lib\net45\SuperSocket.SocketEngine.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SuperSocket.SocketService, Version=1.6.5.0, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
-      <HintPath>..\packages\SuperSocket.Engine.1.6.5.1\lib\net45\SuperSocket.SocketService.exe</HintPath>
+    <Reference Include="SuperSocket.SocketService, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.Engine.1.6.6.1\lib\net45\SuperSocket.SocketService.exe</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -111,9 +111,7 @@
       <SubType>Designer</SubType>
     </Content>
     <None Include="Config\log4net.config" />
-    <None Include="Config\log4net.unix.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Config\log4net.unix.config" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -131,6 +129,14 @@
     <ProjectReference Include="..\PirateX.Core\PirateX.Core.csproj">
       <Project>{af6f5077-f2f6-4293-afd2-21c9e1ebc296}</Project>
       <Name>PirateX.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PirateX.Protocol.V1\PirateX.Protocol.V1.csproj">
+      <Project>{7ce23c21-db40-4ba2-a3c4-988e6e6302cc}</Project>
+      <Name>PirateX.Protocol.V1</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PirateX.Protocol\PirateX.Protocol.csproj">
+      <Project>{ebde20ee-7293-4b51-99f4-6688ebdd3d2b}</Project>
+      <Name>PirateX.Protocol</Name>
     </ProjectReference>
     <ProjectReference Include="..\PirateX.ServiceStackV3\PirateX.ServiceStackV3.csproj">
       <Project>{dfd44c8c-5914-4470-898d-3b77a901e051}</Project>

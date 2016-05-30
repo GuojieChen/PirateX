@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3EFD3B67-334F-4A08-9A7E-75FD9B50D03A}</ProjectGuid>
+    <ProjectGuid>{EB5DC20F-C205-44FF-A7DA-7820C164C227}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PirateX</RootNamespace>
-    <AssemblyName>PirateX</AssemblyName>
+    <RootNamespace>PirateX.Protocol.V2</RootNamespace>
+    <AssemblyName>PirateX.Protocol.V2</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,32 +30,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MySql.Data, Version=6.7.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.6.7.9\lib\net45\MySql.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.0.1\lib\net45\NLog.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
       <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="StackExchange.Redis, Version=1.0.316.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\StackExchange.Redis.1.0.481\lib\net45\StackExchange.Redis.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SuperSocket.Common, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
@@ -71,7 +55,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -80,66 +63,17 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="zlib.net, Version=1.0.3.0, Culture=neutral, PublicKeyToken=47d7877cb3620160">
-      <HintPath>..\packages\zlib.net.1.0.4.0\lib\zlib.net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Command\GamePulse.cs" />
-    <Compile Include="Command\Login.cs" />
-    <Compile Include="Command\NoneRequest.cs" />
-    <Compile Include="Command\NoneResponse.cs" />
-    <Compile Include="GException\V1\ServerCode.cs" />
-    <Compile Include="IGameServer.cs" />
-    <Compile Include="IGameSession.cs" />
-    <Compile Include="Json\DoubleConverter.cs" />
-    <Compile Include="KeyStore.cs" />
-    <Compile Include="Localization\LocalizationString.cs" />
-    <Compile Include="Localization\LocalizationStringExtensions.cs" />
-    <Compile Include="Command\KeyGenerator.cs" />
-    <Compile Include="GException\GameException.cs" />
-    <Compile Include="GException\GameExceptionMessageAttribute.cs" />
-    <Compile Include="Filters\AuthorizedFilter.cs" />
-    <Compile Include="Filters\IPConnectionFilter.cs" />
-    <Compile Include="Filters\LoginSuccessFilter.cs" />
-    <Compile Include="Filters\SeedCreatedFilter.cs" />
-    <Compile Include="Filters\SeedCreatingFilter.cs" />
-    <Compile Include="Filters\SystemAuthorizedFilter.cs" />
-    <Compile Include="Filters\SystemLoginFilter.cs" />
-    <Compile Include="Logging\NLogLog.cs" />
-    <Compile Include="Logging\NLogLogFactory.cs" />
+    <Compile Include="DoubleConverter.cs" />
+    <Compile Include="JsonRequestInfo.cs" />
+    <Compile Include="ProtobufPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Protocol\ProtoSync\IProtoService.cs" />
-    <Compile Include="Command\GamePing.cs" />
-    <Compile Include="Command\NewSeed.cs" />
-    <Compile Include="Protocol\GameCommand.cs" />
-    <Compile Include="Protocol\GameCommandBase.cs" />
-    <Compile Include="Protocol\V1\PokemonXException.cs" />
-    <Compile Include="GameServer.cs" />
-    <Compile Include="GameSession.cs" />
-    <Compile Include="Service\GameService.cs" />
-    <Compile Include="Protocol\ProtoSync\ProtobufService.cs" />
-    <Compile Include="SessionMessageBroadcast.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Command\System\" />
-    <Folder Include="Record\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Upgrade\readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PirateX.Core\PirateX.Core.csproj">
-      <Project>{af6f5077-f2f6-4293-afd2-21c9e1ebc296}</Project>
-      <Name>PirateX.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PirateX.Protocol\PirateX.Protocol.csproj">
       <Project>{ebde20ee-7293-4b51-99f4-6688ebdd3d2b}</Project>
       <Name>PirateX.Protocol</Name>

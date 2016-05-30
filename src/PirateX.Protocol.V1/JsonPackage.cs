@@ -3,10 +3,10 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using PirateX.Json;
 
 namespace PirateX.Protocol.V1
 {
+    [ProtocolName("V1")]
     public class JsonPackage:AbstractProtocolPackag
     {
 

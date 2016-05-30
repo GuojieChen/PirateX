@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PirateX.Protocol.Package
+namespace PirateX.Protocol.Crypto
 {
     public class XXTea : ICrypto
     {

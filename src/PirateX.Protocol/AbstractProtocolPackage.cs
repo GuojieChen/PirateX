@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using PirateX.Protocol.Package;
+using PirateX.Protocol.Crypto;
+using PirateX.Protocol.Zip;
 
 namespace PirateX.Protocol
 {
@@ -17,7 +18,7 @@ namespace PirateX.Protocol
             Crypto = crypto;
         }
 
-        protected AbstractProtocolPackag():this(new Zip(),new XXTea())
+        protected AbstractProtocolPackag():this(new DefaultZip(),new XXTea())
         {
             
         }

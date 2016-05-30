@@ -14,7 +14,6 @@ using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Filters;
 using PirateX.Protocol;
-using PirateX.Protocol.Http;
 using PirateX.Protocol.V1;
 using PirateX.Service;
 using StackExchange.Redis;
@@ -48,9 +47,10 @@ namespace PirateX
             LoggingSet = new Dictionary<long, string>();
         }
 
-        protected GameServer(IServerContainer serverContainer) : this(serverContainer, new HttpProtocol())
-        {
-        } 
+        //TODO...
+        //protected GameServer(IServerContainer serverContainer) : this(serverContainer, new HttpProtocol())
+        //{
+        //} 
 
         protected override void OnNewSessionConnected(TSession session)
         {
@@ -89,7 +89,8 @@ namespace PirateX
               .SingleInstance();
 
             //默认的包解析器
-            builder.Register(c => new JsonPackage()).As<IProtocolPackage>();
+            //builder.Register(c => new JsonPackage()).As<IProtocolPackage>();
+
             //全局Redis序列化/反序列化方式
             builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
             
@@ -104,6 +105,9 @@ namespace PirateX
             Ioc = builder.Build().BeginLifetimeScope();
 
             #endregion
+
+            if(!Ioc.IsRegistered<IProtocolPackage>())
+                throw new ArgumentNullException("IProtocolPackage");
 
             ServerContainer.ServerIoc = Ioc;
             ServerContainer.InitContainers();

@@ -18,9 +18,9 @@ namespace PirateX.Protocol.V1
     {
         private ILog Logger { get; set; }
 
-        private IGameSession _session;
+        private IGameSessionBase _session;
 
-        public JsonReceiveFilter(IGameSession session)
+        public JsonReceiveFilter(IGameSessionBase session)
             : base(0)
         {
             this._session = session;

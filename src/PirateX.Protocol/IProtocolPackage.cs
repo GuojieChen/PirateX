@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using PirateX.Protocol.Package;
+using PirateX.Protocol.Crypto;
+using PirateX.Protocol.Zip;
 
 namespace PirateX.Protocol
 {
     public interface IProtocolPackage
-    {
-        /// <summary> 数据压缩操作类
-        /// </summary>
+    {/// <summary> 数据压缩操作类
+     /// </summary>
         IZip Zip { get; }
         /// <summary> 数据加密解密操作类
         /// </summary>
@@ -30,15 +30,13 @@ namespace PirateX.Protocol
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        byte[] SerializeObject(ProtocolMessage message)
-;
-
+        byte[] SerializeObject(ProtocolMessage message);
         /// <summary>
         /// 解析数据包为请求对象
         /// </summary>
         /// <param name="datas"></param>
         /// <returns></returns>
-        IGameRequestInfo DeserializeObject(byte[] datas); 
+        IGameRequestInfo DeserializeObject(byte[] datas);
     }
 
     public class ProtocolMessage
@@ -51,7 +49,7 @@ namespace PirateX.Protocol
         public object Code { get; set; }
 
         public string Msg { get; set; }
-        
+
         public int O { get; set; }
     }
 }
