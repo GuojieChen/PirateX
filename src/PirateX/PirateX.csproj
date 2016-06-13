@@ -93,7 +93,6 @@
     <Compile Include="GException\V1\ServerCode.cs" />
     <Compile Include="IGameServer.cs" />
     <Compile Include="IGameSession.cs" />
-    <Compile Include="Json\DoubleConverter.cs" />
     <Compile Include="KeyStore.cs" />
     <Compile Include="Localization\LocalizationString.cs" />
     <Compile Include="Localization\LocalizationStringExtensions.cs" />

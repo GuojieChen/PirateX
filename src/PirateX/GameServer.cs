@@ -15,6 +15,7 @@ using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Filters;
 using PirateX.GException.V1;
 using PirateX.Protocol;
+using PirateX.Protocol.Package;
 using PirateX.Protocol.ProtoSync;
 using PirateX.Protocol.V1;
 using PirateX.Service;
@@ -91,7 +92,7 @@ namespace PirateX
               .SingleInstance();
 
             //默认的包解析器
-            //builder.Register(c => new JsonPackage()).As<IProtocolPackage>();
+            builder.Register(c => new JsonPackage()).As<IProtocolPackage>();
 
             //全局Redis序列化/反序列化方式
             builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
@@ -107,9 +108,6 @@ namespace PirateX
             Ioc = builder.Build().BeginLifetimeScope();
 
             #endregion
-
-            if (!Ioc.IsRegistered<IProtocolPackage>())
-                throw new ArgumentNullException("IProtocolPackage");
 
             ServerContainer.ServerIoc = Ioc;
             ServerContainer.InitContainers();

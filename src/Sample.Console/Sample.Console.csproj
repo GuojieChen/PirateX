@@ -130,10 +130,6 @@
       <Project>{af6f5077-f2f6-4293-afd2-21c9e1ebc296}</Project>
       <Name>PirateX.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PirateX.Protocol.V1\PirateX.Protocol.V1.csproj">
-      <Project>{7ce23c21-db40-4ba2-a3c4-988e6e6302cc}</Project>
-      <Name>PirateX.Protocol.V1</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PirateX.Protocol\PirateX.Protocol.csproj">
       <Project>{ebde20ee-7293-4b51-99f4-6688ebdd3d2b}</Project>
       <Name>PirateX.Protocol</Name>

@@ -357,7 +357,8 @@ namespace PirateX.Client
 
             Send("NewSeed", new
             {
-                Seed = _clientSeed
+                Seed = _clientSeed,
+                Format = "JSON"
             });
         }
 

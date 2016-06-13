@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using PirateX.Protocol.Crypto;
 using PirateX.Protocol.Zip;
 
@@ -24,7 +25,10 @@ namespace PirateX.Protocol
         /// <summary> 服务端秘钥列表
         /// </summary>
         IList<byte[]> ServerKeys { get; set; }
-
+        /// <summary>
+        /// 强制JSON 返回
+        /// </summary>
+        bool JsonEnable { get; set; }
         /// <summary>
         /// 序列化包为二进制数据
         /// </summary>
@@ -47,7 +51,7 @@ namespace PirateX.Protocol
         public object D { get; set; }
 
         public object Code { get; set; }
-
+        
         public string Msg { get; set; }
 
         public int O { get; set; }

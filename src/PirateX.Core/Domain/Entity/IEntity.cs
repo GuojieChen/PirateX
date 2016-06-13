@@ -12,5 +12,9 @@ namespace PirateX.Core.Domain.Entity
         TPrimaryKey Id { get; set; }
 
         DateTime CreateAt { get; set; }
+        /// <summary>
+        /// 数据版本号，用时间戳来表示
+        /// </summary>
+        long Vid { get; set; }
     }
 }

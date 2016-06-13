@@ -19,5 +19,7 @@ namespace GameServer.Console.SampleDomain
 
         [ProtoMember(2)]
         public DateTime CreateAt { get; set; }
+
+        public long Vid { get; set; }
     }
 }

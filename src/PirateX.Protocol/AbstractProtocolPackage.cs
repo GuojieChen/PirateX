@@ -28,6 +28,7 @@ namespace PirateX.Protocol
 
         public bool ZipEnable { get; set; }
         public bool CryptoEnable { get; set; }
+        public bool JsonEnable { get; set; }
         public IList<byte[]> ClientKeys { get; set; }
         public IList<byte[]> ServerKeys { get; set; }
 
@@ -46,7 +47,7 @@ namespace PirateX.Protocol
             cryptoByte[0] = CryptoEnable ? (byte)128 : (byte)0;
 
             var zipByte = new byte[1];
-            zipByte[0] = ZipEnable ? (byte)128 : (byte)0;
+            zipByte[0] = ZipEnable ? (byte)Math.Pow(2,7) : (byte)0;
 
             using (var stream = new MemoryStream())
             {
@@ -84,14 +85,11 @@ namespace PirateX.Protocol
                     dataBytes = Crypto.Decode(dataBytes, ClientKeys[7 - i]);
             }
 
-            if (ZipEnable)
+            var zipenable = GetbitValue(zipBit[0], 7) == 1;
+
+            if (zipenable)
             {
-                for (int i = 0; i < 8; i++)
-                {
-                    var v = GetbitValue(zipBit[0], i);
-                    if (v == 1)
-                        dataBytes = Zip.Decompress(dataBytes);
-                }
+                 dataBytes = Zip.Decompress(dataBytes);
             }
             return dataBytes;
         }

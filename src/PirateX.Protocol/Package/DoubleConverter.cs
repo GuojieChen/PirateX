@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace PirateX.Json
+namespace PirateX.Protocol.Package
 {
     public class DoubleConverter : JsonConverter
     {

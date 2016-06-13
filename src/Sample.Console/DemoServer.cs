@@ -12,7 +12,7 @@ using PirateX.Core.Broadcas;
 using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Protocol;
-using PirateX.Protocol.V1;
+using PirateX.Protocol.Package;
 using PirateX.ServiceStackV3;
 
 namespace GameServer.Console
@@ -87,7 +87,7 @@ namespace GameServer.Console
         public DemoServerContainer() : base(new ContainerSetting(), new ServerSetting
         {
             Id = "PirateX.VS-DEV",
-            RedisHost = "127.0.1"
+            RedisHost = "127.0.0.1"
         })
         {
             

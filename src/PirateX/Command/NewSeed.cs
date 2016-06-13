@@ -2,6 +2,7 @@
 using PirateX.Core.Utils;
 using PirateX.Filters;
 using PirateX.Protocol;
+using PirateX.Protocol.Package;
 using SuperSocket.SocketBase;
 
 namespace PirateX.Command
@@ -23,6 +24,9 @@ namespace PirateX.Command
 
             //用客户端的seed生成一个seed
             //保存秘钥
+            if (Equals(data.Format.ToUpper(), "JSON"))
+                session.ProtocolPackage.JsonEnable = true;
+
             session.ProtocolPackage.ClientKeys.Add(clientKey.MakeKey());
             session.ProtocolPackage.ServerKeys.Add(serverKey.MakeKey());
 
@@ -37,5 +41,7 @@ namespace PirateX.Command
     public class NewSeedRequestAndResponse
     {
         public int Seed { get; set; }
+
+        public string Format { get; set; }
     }
 }
