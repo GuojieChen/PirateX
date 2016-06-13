@@ -153,3 +153,5 @@ $RECYCLE.BIN/
 /TimeTravel.DB/Mcmurphy.TimeTravel.mdf
 /TimeTravel.DB/Mcmurphy.TimeTravel_log.ldf
 /TimeTravel.DB
+
+*.nuspec
