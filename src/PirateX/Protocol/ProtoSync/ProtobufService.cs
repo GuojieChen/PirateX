@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
-using Autofac;
 using Newtonsoft.Json;
 using NLog;
-using PirateX.Core;
 using PirateX.Core.Domain.Entity;
-using PirateX.Protocol.ProtoSync;
 using ProtoBuf;
 
-namespace PirateX.Service
+namespace PirateX.Protocol.ProtoSync
 {
     /// <summary>
     /// proto协议描述同步服务
@@ -33,9 +27,9 @@ namespace PirateX.Service
         private static readonly string ProtoHashFile = Path.Combine(ProtoDir, "protoshash.json");
 
 
-        private static string CurrentModuleVersionId = string.Empty;
+        private static string _currentModuleVersionId = string.Empty;
 
-        private static Dictionary<string, string> Protoshash = new Dictionary<string, string>();
+        private static Dictionary<string, string> _protoshash = new Dictionary<string, string>();
 
         private bool _isInitOk = false;
         public void Init(Assembly assembly)
@@ -47,7 +41,7 @@ namespace PirateX.Service
                 Directory.CreateDirectory(ProtoDir);
 
             if (File.Exists(ModuleVersionIdFileName))
-                CurrentModuleVersionId = File.ReadAllText(ModuleVersionIdFileName);
+                _currentModuleVersionId = File.ReadAllText(ModuleVersionIdFileName);
             else
                 using (var f = File.Create(ModuleVersionIdFileName))
                 {
@@ -55,14 +49,14 @@ namespace PirateX.Service
                 }
 
             if (Logger.IsDebugEnabled)
-                Logger.Debug($"previous ModuleVersionId is {CurrentModuleVersionId}");
+                Logger.Debug($"previous ModuleVersionId is {_currentModuleVersionId}");
 
             if (File.Exists(ProtoHashFile))
             {
                 var protoshash =
                     JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(ProtoHashFile));
                 if (protoshash != null)
-                    Protoshash = protoshash;
+                    _protoshash = protoshash;
             }
             else
             {
@@ -71,7 +65,7 @@ namespace PirateX.Service
                 }
             }
 
-            if (!Equals(assembly.ManifestModule.ModuleVersionId.ToString(), CurrentModuleVersionId))
+            if (!Equals(assembly.ManifestModule.ModuleVersionId.ToString(), _currentModuleVersionId))
             {
                 if (Logger.IsDebugEnabled)
                     Logger.Debug("genterating proto files...");
@@ -80,7 +74,7 @@ namespace PirateX.Service
                 {
                     var guid = type.GUID.ToString();
 
-                    if (Protoshash.ContainsKey(type.Name) && Equals(Protoshash[type.Name], guid))
+                    if (_protoshash.ContainsKey(type.Name) && Equals(_protoshash[type.Name], guid))
                         continue;
 
                     var proto = typeof(Serializer).GetMethod("GetProto",
@@ -98,15 +92,15 @@ namespace PirateX.Service
 
                     File.WriteAllText(protofile, proto.ToString());
 
-                    if (Protoshash.ContainsKey(type.Name))
-                        Protoshash[type.Name] = guid;
+                    if (_protoshash.ContainsKey(type.Name))
+                        _protoshash[type.Name] = guid;
                     else
-                        Protoshash.Add(type.Name, guid);
+                        _protoshash.Add(type.Name, guid);
                 }
 
-                CurrentModuleVersionId = assembly.ManifestModule.ModuleVersionId.ToString();
+                _currentModuleVersionId = assembly.ManifestModule.ModuleVersionId.ToString();
                 File.WriteAllText(ModuleVersionIdFileName, assembly.ManifestModule.ModuleVersionId.ToString());
-                File.WriteAllText(ProtoHashFile, JsonConvert.SerializeObject(Protoshash));
+                File.WriteAllText(ProtoHashFile, JsonConvert.SerializeObject(_protoshash));
             }
 
             _isInitOk = true;
@@ -114,26 +108,12 @@ namespace PirateX.Service
 
         public string GetProtosHash()
         {
-            return CurrentModuleVersionId;
+            return _currentModuleVersionId;
         }
 
         public IDictionary<string, string> GetProtosHashDic(Assembly assembly)
         {
-            return Protoshash;
-        }
-
-        /// <summary> 生成签名
-        /// </summary>
-        /// <param name="proto"></param>
-        /// <returns></returns>
-        private string GetMD5String(string proto)
-        {
-            var bytes = Encoding.Default.GetBytes(proto);
-
-            var md5 = new MD5CryptoServiceProvider();
-            var output = md5.ComputeHash(bytes);
-
-            return BitConverter.ToString(output).Replace("-", "").ToLower();
+            return _protoshash;
         }
     }
 }

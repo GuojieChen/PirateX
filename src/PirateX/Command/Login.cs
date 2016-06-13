@@ -43,6 +43,7 @@ namespace PirateX.Command
                 if (Logger.IsFatalEnabled)
                     Logger.Fatal("Token Error.");
                 session.Close();
+                
             }
 
             var appserver = (IGameServer)session.AppServer;

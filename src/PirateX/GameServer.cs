@@ -13,7 +13,9 @@ using PirateX.Core.Domain.Entity;
 using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Filters;
+using PirateX.GException.V1;
 using PirateX.Protocol;
+using PirateX.Protocol.ProtoSync;
 using PirateX.Protocol.V1;
 using PirateX.Service;
 using StackExchange.Redis;
@@ -24,7 +26,7 @@ using SuperSocket.SocketBase.Protocol;
 namespace PirateX
 {
 
-    public abstract class GameServer<TSession, TOnlineRole> : AppServer<TSession, IGameRequestInfo> ,IGameServer
+    public abstract class GameServer<TSession, TOnlineRole> : AppServer<TSession, IGameRequestInfo>, IGameServer
         where TSession : GameSession<TSession>, new()
         where TOnlineRole : class, IOnlineRole, new()
     {
@@ -40,7 +42,7 @@ namespace PirateX
 
         protected ISubscriber Subscriber;
 
-        protected GameServer(IServerContainer  serverContainer, IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) : base(receiveFilterFactory)
+        protected GameServer(IServerContainer serverContainer, IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) : base(receiveFilterFactory)
         {
             ServerContainer = serverContainer;
 
@@ -93,7 +95,7 @@ namespace PirateX
 
             //全局Redis序列化/反序列化方式
             builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
-            
+
             builder.Register(c => rootConfig).As<IRootConfig>().SingleInstance();
             //默认消息广播
             builder.Register(c => new DefaultMessageBroadcast()).SingleInstance();
@@ -106,7 +108,7 @@ namespace PirateX
 
             #endregion
 
-            if(!Ioc.IsRegistered<IProtocolPackage>())
+            if (!Ioc.IsRegistered<IProtocolPackage>())
                 throw new ArgumentNullException("IProtocolPackage");
 
             ServerContainer.ServerIoc = Ioc;
@@ -189,7 +191,7 @@ namespace PirateX
                     Logger.Debug($"Set role offline\t:\t {session.Rid}\t:{session.SessionID}\t{reason}");
             }
         }
-        
+
         #region 请求结果的缓存
         private static string GetRequestKey(long rid, string c)
         {
@@ -247,8 +249,9 @@ namespace PirateX
                 return;
 
             var onlineManager = this.Ioc.Resolve<IOnlineManager<TOnlineRole>>();
-            //if(onlineRole != null && !Equals(onlineRole.SessionID,))
-
+            var onlineRole = onlineManager.GetOnlineRole(rid);
+            if (onlineRole != null && !Equals(onlineRole.SessionID, session.SessionID))
+                throw new PokemonXException(ServerCode.ReLogin);
 
             var key = GetRequestKey(rid, c);
             var listkey = GetRequestListKey(rid);
@@ -260,7 +263,7 @@ namespace PirateX
 
             if (db.ListLength(listkey) > 4)
             {
-                var removekey = db.ListLeftPop(listkey);
+                var removekey = db.ListLeftPop(listkey); 
                 if (!string.IsNullOrEmpty(removekey))
                     db.KeyDelete(removekey.ToString());
 
