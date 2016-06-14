@@ -187,6 +187,50 @@ namespace PirateX.ServiceStackV3
 
                 if (string.IsNullOrEmpty(field.DefaultValue))
                 {
+                    var fieldType = field.FieldType;
+                    if (fieldType == typeof(DateTime))
+                    {
+                        field.DefaultValue = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd");
+                    }
+                    else if (fieldType == typeof(DateTimeOffset))
+                    {
+                        field.DefaultValue = "00:00:00";
+                    }
+                    else if (fieldType.IsPrimitive)
+                    {
+                        if (fieldType == typeof(bool))
+                        {
+                            field.DefaultValue = "0";
+                        }
+                        else if (fieldType == typeof(string))
+                        {
+                            field.DefaultValue = "";
+                        }
+                        else
+                        {
+                            var typeCode = Type.GetTypeCode(fieldType);
+                            switch (typeCode)
+                            {
+                                case TypeCode.Double:
+                                case TypeCode.Decimal:
+                                case TypeCode.Byte:
+                                case TypeCode.Int16:
+                                case TypeCode.Int32:
+                                case TypeCode.Int64:
+                                case TypeCode.SByte:
+                                case TypeCode.UInt16:
+                                case TypeCode.UInt32:
+                                case TypeCode.UInt64:
+                                    field.DefaultValue = "0";
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+
+                if (string.IsNullOrEmpty(field.DefaultValue))
+                {
                     alterSql = string.Format("ALTER TABLE [{0}] ADD {1} {2}",
                     model.ModelName,
                     "",//field.FieldName,
@@ -195,11 +239,11 @@ namespace PirateX.ServiceStackV3
                 }
                 else
                 {
-                    alterSql = string.Format("ALTER TABLE [{0}] ADD {1} {2} {3}",
+                    alterSql = string.Format("ALTER TABLE [{0}] ADD {1} {2}",
                     model.ModelName,
                     "",//field.FieldName,
-                    db.GetDialectProvider().GetColumnDefinition(field.FieldName, field.FieldType, field.IsPrimaryKey, field.AutoIncrement, field.IsNullable, field.FieldLength, field.Scale, field.DefaultValue),
-                    string.Format("DEFAULT '{0}'", field.DefaultValue)
+                    db.GetDialectProvider().GetColumnDefinition(field.FieldName, field.FieldType, field.IsPrimaryKey, field.AutoIncrement, field.IsNullable, field.FieldLength, field.Scale, field.DefaultValue)
+                   // string.Format("DEFAULT '{0}'", field.DefaultValue)
                     );
                 }
 

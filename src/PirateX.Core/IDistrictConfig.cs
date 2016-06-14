@@ -14,8 +14,6 @@
 
         string Redis { get; set; }
         int RedisDb { get; set; }
-
-        bool AlterTable { get; set; }
     }
 
 

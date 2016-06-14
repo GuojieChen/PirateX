@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PirateX.Core.Domain.Entity;
 using ProtoBuf;
+using ServiceStack.DataAnnotations;
 
 namespace GameServer.Console.SampleDomain
 {
@@ -13,6 +14,7 @@ namespace GameServer.Console.SampleDomain
     public class Role:IEntity<int>
     {
         [ProtoMember(1)]
+        [AutoIncrement]
         public int Id { get; set; }
 
         public string Name { get; set; }
@@ -21,5 +23,10 @@ namespace GameServer.Console.SampleDomain
         public DateTime CreateAt { get; set; }
 
         public long Vid { get; set; }
+
+        public Role()
+        {
+            CreateAt = DateTime.UtcNow;
+        }
     }
 }

@@ -193,7 +193,7 @@ namespace PirateX.Core
 
             if (Log.IsTraceEnabled)
                 Log.Trace("CreateAndAlterTable");
-            if (ContainerSetting.EntityAssembly != null && Settings.AlterTable && districtConfig.AlterTable)
+            if (ContainerSetting.EntityAssembly != null)
                 container.Resolve<IDatabaseFactory>().CreateAndAlterTable(ContainerSetting.EntityAssembly.GetTypes().Where(item => typeof(IEntity).IsAssignableFrom(item)));
 
             if (ContainerSetting.ConfigAssembly != null)

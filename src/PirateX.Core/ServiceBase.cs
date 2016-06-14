@@ -7,6 +7,7 @@ using Autofac;
 using NLog;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Config;
+using PirateX.Core.Domain.Uow;
 using PirateX.Core.Push;
 using StackExchange.Redis;
 
@@ -28,6 +29,12 @@ namespace PirateX.Core
         /// <summary> 消息推送
         /// </summary>
         protected IPushService PushService => Resolver.Resolve<IPushService>();
+
+
+        protected IUnitOfWork CreateUnitOfWork()
+        {
+            return new UnitOfWork(Resolver);
+        }
 
         //TODO UnitOfWork  Repository
     }
