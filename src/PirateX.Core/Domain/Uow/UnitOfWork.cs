@@ -89,11 +89,11 @@ namespace PirateX.Core.Domain.Uow
 
         public void Dispose()
         {
-            dispose(true);
+            idispose(true);
             //GC.SuppressFinalize(this);
         }
 
-        private void dispose(bool disposing)
+        private void idispose(bool disposing)
         {
             if (_disposed) return;
 
@@ -122,7 +122,7 @@ namespace PirateX.Core.Domain.Uow
 
         ~UnitOfWork()
         {
-            dispose(false);
+            idispose(false);
         }
     }
 }

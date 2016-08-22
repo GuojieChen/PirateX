@@ -49,7 +49,7 @@ namespace PirateX.Core.Redis.StackExchange.Redis.Ex
         public static void SetAsHash<T>(this IDatabase db, T t,TimeSpan? expire = null)
         {
             var key = GetIdAsKey(t);
-
+            
             db.HashSet(key, t.GetType().GetProperties().Select(property => new HashEntry(property.Name, property.GetValue(t).ToString())).ToArray());
             // TODO 缓存时间
         }

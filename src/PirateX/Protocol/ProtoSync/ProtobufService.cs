@@ -26,7 +26,6 @@ namespace PirateX.Protocol.ProtoSync
 
         private static readonly string ProtoHashFile = Path.Combine(ProtoDir, "protoshash.json");
 
-
         private static string _currentModuleVersionId = string.Empty;
 
         private static Dictionary<string, string> _protoshash = new Dictionary<string, string>();
