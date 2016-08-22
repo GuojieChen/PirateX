@@ -77,10 +77,12 @@
     <Compile Include="Config\IConfigEntity.cs" />
     <Compile Include="Config\IConfigReader.cs" />
     <Compile Include="Config\MemoryConfigReader.cs" />
+    <Compile Include="DataSync.cs" />
     <Compile Include="DefaultServerSetting.cs" />
     <Compile Include="Domain\Repository\IRepository.cs" />
     <Compile Include="Domain\Repository\RepositoryBase.cs" />
     <Compile Include="i18n\I18N.cs" />
+    <Compile Include="IDataSync.cs" />
     <Compile Include="Push\IPushService.cs" />
     <Compile Include="Push\LogToFilePushService.cs" />
     <Compile Include="DistrictContainer.cs" />

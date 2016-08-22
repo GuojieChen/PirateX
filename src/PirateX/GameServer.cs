@@ -114,7 +114,7 @@ namespace PirateX
 
             RedisDataBaseExtension.RedisSerilazer = Ioc.Resolve<IRedisSerializer>();
 
-            Ioc.Resolve<ProtobufService>().Init(ServerContainer.ContainerSetting.EntityAssembly);
+            Ioc.Resolve<ProtobufService>().Init(ServerContainer.ContainerSetting.ServiceAssembly);
 
             return base.Setup(rootConfig, config);
         }
