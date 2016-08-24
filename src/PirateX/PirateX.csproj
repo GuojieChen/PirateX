@@ -91,7 +91,7 @@
     <Compile Include="Command\NoneRequest.cs" />
     <Compile Include="Command\NoneResponse.cs" />
     <Compile Include="Command\System\DataSyncListAction.cs" />
-    <Compile Include="Command\System\ProtobufSyncAction.cs" />
+    <Compile Include="Command\System\SysinfoAction.cs" />
     <Compile Include="GException\V1\ServerCode.cs" />
     <Compile Include="IGameServer.cs" />
     <Compile Include="IGameSession.cs" />

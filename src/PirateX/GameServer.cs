@@ -56,7 +56,7 @@ namespace PirateX
         {
             var commands = new List<ICommand<TSession, IGameRequestInfo>>
                 {
-                    new ProtobufSyncAction<TSession>(),
+                    new SysinfoAction<TSession>(),
                     new NewSeed<TSession>(),
                     new Ping<TSession>(),
                     new KeepAlive<TSession>(),

@@ -111,7 +111,7 @@ namespace PirateX.Protocol
                     session.SendMessage(new ProtocolMessage
                     {
                         C = Name,
-                        D = response,
+                        D = response, 
                         O = session.CurrentO
                     });
 
