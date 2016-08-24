@@ -12,7 +12,7 @@ namespace PirateX.Protocol
     /// <typeparam name="TSession">The type of the socket session.</typeparam>
     /// <typeparam name="TRequest">The type of the request info.</typeparam>
     /// <typeparam name="TResponse">The type of the response info.</typeparam>
-    public abstract class GameCommand<TSession, TRequest, TResponse> : GameCommandBase<TSession, TRequest,TResponse>
+    public abstract class GameCommand<TSession, TRequest, TResponse> : GameCommandBase<TSession, TRequest>
         where TSession : IGameSession, IAppSession<TSession, IGameRequestInfo>, new()
     {
         protected override void ExecuteGameCommand(TSession session, TRequest data)
@@ -80,6 +80,52 @@ namespace PirateX.Protocol
                 O = session.CurrentO
             });
         }
+
+
+        //客户端请求失败 
+        /*
+          客户端请求失败 尝试重新请求
+          服务端查看请求列表中是否有该请求
+          有    则等待
+          没有  则查看Response是否有
+        */
+        protected override bool Retry(TSession session, string cacheName)
+        {
+            var appserver = (IGameServer)session.AppServer;
+
+            if (appserver.ExistsReqeust(session, cacheName))
+            {
+                // 已有请求 等待完成
+                var response = appserver.GetResponse<TResponse>(session, cacheName);
+                if (Equals(default(TResponse), response))
+                {
+                    if (Logger.IsDebugEnabled)
+                        Logger.Debug($"Retry fail,Session [{session.SessionID}],cacheName : {cacheName}");
+                    return true;
+                }
+                else
+                {
+                    if (Logger.IsDebugEnabled)
+                        Logger.Debug($"Retry success,Session [{session.SessionID}],cacheName : {cacheName}");
+
+                    session.SendMessage(new ProtocolMessage
+                    {
+                        C = Name,
+                        D = response,
+                        O = session.CurrentO
+                    });
+
+                    return true;
+                }
+            }
+            else
+            {
+                if (Logger.IsDebugEnabled)
+                    Logger.Debug($"Retry no request,Session [{session.SessionID}],cacheName : {cacheName}");
+            }
+            return false;
+        }
+
 
         public delegate void OnResponsedEventHandler(TSession session, TRequest request);
         public OnResponsedEventHandler OnResponsedEvent;

@@ -7,7 +7,7 @@ using NLog;
 using PirateX.Core.Domain.Entity;
 using ProtoBuf;
 
-namespace PirateX.Protocol.ProtoSync
+namespace PirateX.Sync.ProtoSync
 {
     /// <summary>
     /// proto协议描述同步服务

@@ -83,6 +83,7 @@
     <Compile Include="Domain\Repository\RepositoryBase.cs" />
     <Compile Include="i18n\I18N.cs" />
     <Compile Include="IDataSync.cs" />
+    <Compile Include="ISyncList.cs" />
     <Compile Include="Push\IPushService.cs" />
     <Compile Include="Push\LogToFilePushService.cs" />
     <Compile Include="DistrictContainer.cs" />

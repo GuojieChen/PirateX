@@ -6,8 +6,9 @@ using PirateX.Protocol.Zip;
 namespace PirateX.Protocol
 {
     public interface IProtocolPackage
-    {/// <summary> 数据压缩操作类
-     /// </summary>
+    {
+        /// <summary> 数据压缩操作类
+        /// </summary>
         IZip Zip { get; }
         /// <summary> 数据加密解密操作类
         /// </summary>

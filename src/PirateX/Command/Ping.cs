@@ -4,10 +4,11 @@ using SuperSocket.SocketBase;
 
 namespace PirateX.Command
 {
-    public class GamePing<TSession>: GameCommand<TSession, NoneRequest, PingResponse>
-        //CommandBase<TSession,GameRequestInfoV1> 
+    public class Ping<TSession>: GameCommand<TSession, NoneRequest, PingResponse>
         where TSession : GameSession<TSession>, IAppSession<TSession, IGameRequestInfo>, new()
     {
+        public override string Name => "Ping"; 
+
         protected override PingResponse ExecuteResponseCommand(TSession session, NoneRequest data)
         {
             return new PingResponse()

@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Threading;
 using Autofac;
 using Newtonsoft.Json;
+using PirateX.Command;
+using PirateX.Command.System;
 using PirateX.Core;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Domain.Entity;
@@ -16,17 +18,17 @@ using PirateX.Filters;
 using PirateX.GException.V1;
 using PirateX.Protocol;
 using PirateX.Protocol.Package;
-using PirateX.Protocol.ProtoSync;
 using PirateX.Protocol.V1;
 using PirateX.Service;
+using PirateX.Sync.ProtoSync;
 using StackExchange.Redis;
 using SuperSocket.SocketBase;
+using SuperSocket.SocketBase.Command;
 using SuperSocket.SocketBase.Config;
 using SuperSocket.SocketBase.Protocol;
 
 namespace PirateX
 {
-
     public abstract class GameServer<TSession, TOnlineRole> : AppServer<TSession, IGameRequestInfo>, IGameServer
         where TSession : GameSession<TSession>, new()
         where TOnlineRole : class, IOnlineRole, new()
@@ -37,7 +39,7 @@ namespace PirateX
         public IServerContainer ServerContainer { get; set; }
         public IDictionary<long, string> LoggingSet { get; set; }
 
-        public ILifetimeScope Ioc { get; private set; }
+        public ILifetimeScope ServerIoc { get; private set; }
 
         protected ConnectionMultiplexer MqServer = null;
 
@@ -50,16 +52,28 @@ namespace PirateX
             LoggingSet = new Dictionary<long, string>();
         }
 
-        //TODO...
-        //protected GameServer(IServerContainer serverContainer) : this(serverContainer, new HttpProtocol())
-        //{
-        //} 
+        protected override bool SetupCommands(Dictionary<string, ICommand<TSession, IGameRequestInfo>> discoveredCommands)
+        {
+            var commands = new List<ICommand<TSession, IGameRequestInfo>>
+                {
+                    new ProtobufSyncAction<TSession>(),
+                    new NewSeed<TSession>(),
+                    new Ping<TSession>(),
+                    new KeepAlive<TSession>(),
+                };
+
+            commands.ForEach(c => discoveredCommands.Add(c.Name, c));
+
+            if (!base.SetupCommands(discoveredCommands))
+                return false;
+            return true;
+        }
 
         protected override void OnNewSessionConnected(TSession session)
         {
             base.OnNewSessionConnected(session);
 
-            session.ProtocolPackage = Ioc.Resolve<IProtocolPackage>();
+            session.ProtocolPackage = ServerIoc.Resolve<IProtocolPackage>();
         }
 
         protected override bool Setup(IRootConfig rootConfig, IServerConfig config)
@@ -101,24 +115,25 @@ namespace PirateX
             //默认消息广播
             builder.Register(c => new DefaultMessageBroadcast()).SingleInstance();
 
-            builder.Register(c => new ProtobufService()).SingleInstance();
+            builder.Register(c => new ProtobufService()).As<IProtoService>().SingleInstance();
             //TODO 默认消息推送（应用级）
             //builder.Register(c =>)
             IocConfig(builder);
-            Ioc = builder.Build().BeginLifetimeScope();
+            ServerIoc = builder.Build().BeginLifetimeScope();
 
             #endregion
 
-            ServerContainer.ServerIoc = Ioc;
+            ServerContainer.ServerIoc = ServerIoc;
             ServerContainer.InitContainers();
 
-            RedisDataBaseExtension.RedisSerilazer = Ioc.Resolve<IRedisSerializer>();
+            RedisDataBaseExtension.RedisSerilazer = ServerIoc.Resolve<IRedisSerializer>();
+            
+            ServerIoc.Resolve<IProtoService>().Init(ServerContainer.ContainerSetting.EntityAssembly);
 
-            Ioc.Resolve<ProtobufService>().Init(ServerContainer.ContainerSetting.ServiceAssembly);
 
             return base.Setup(rootConfig, config);
         }
-
+        
         public abstract Assembly ConfigAssembly();
 
         public abstract void IocConfig(ContainerBuilder builder);
@@ -174,7 +189,7 @@ namespace PirateX
             if (Logger.IsDebugEnabled)
                 Logger.Debug("Close redis");
             MqServer.Close();
-            Ioc.Resolve<ConnectionMultiplexer>().Close();
+            ServerIoc.Resolve<ConnectionMultiplexer>().Close();
         }
 
         protected override void OnSessionClosed(TSession session, CloseReason reason)
@@ -183,7 +198,7 @@ namespace PirateX
 
             if ((reason == CloseReason.ClientClosing || reason == CloseReason.TimeOut) && session.Rid > 0)
             {
-                var onlineManager = this.Ioc.Resolve<IOnlineManager<TOnlineRole>>();
+                var onlineManager = this.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
                 onlineManager.Logout(session.Rid, session.SessionID);
                 if (Logger.IsDebugEnabled)
                     Logger.Debug($"Set role offline\t:\t {session.Rid}\t:{session.SessionID}\t{reason}");
@@ -246,7 +261,7 @@ namespace PirateX
             if (db == null)
                 return;
 
-            var onlineManager = this.Ioc.Resolve<IOnlineManager<TOnlineRole>>();
+            var onlineManager = this.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
             var onlineRole = onlineManager.GetOnlineRole(rid);
             if (onlineRole != null && !Equals(onlineRole.SessionID, session.SessionID))
                 throw new PokemonXException(ServerCode.ReLogin);

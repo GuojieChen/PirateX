@@ -8,8 +8,11 @@ using SuperSocket.SocketBase;
 
 namespace PirateX.Command
 {
-    public class GamePulse<TSession> : GameCommand<TSession,NoneRequest,NoneResponse> where TSession : IGameSession, IAppSession<TSession, IGameRequestInfo>, new()
+    public class KeepAlive<TSession> : GameCommand<TSession,NoneRequest,NoneResponse> 
+        where TSession : IGameSession, IAppSession<TSession, IGameRequestInfo>, new()
     {
+        public override string Name => "KeepAlive";
+
         protected override NoneResponse ExecuteResponseCommand(TSession session, NoneRequest data)
         {
 

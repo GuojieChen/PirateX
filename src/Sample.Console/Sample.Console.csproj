@@ -102,7 +102,6 @@
   <ItemGroup>
     <Compile Include="Cmd\Broadcast.cs" />
     <Compile Include="Cmd\Exception.cs" />
-    <Compile Include="Cmd\NewSeed.cs" />
     <Compile Include="Cmd\RoleInfo.cs" />
     <Compile Include="Cmd\RoleLoginV2.cs" />
     <Compile Include="DemoServer.cs" />

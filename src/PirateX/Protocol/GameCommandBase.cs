@@ -10,22 +10,12 @@ namespace PirateX.Protocol
     /// </summary>
     /// <typeparam name="TSession">The type of the web socket session.</typeparam>
     /// <typeparam name="TRequest">The type of the request info.</typeparam>
-    /// <typeparam name="TResponse">The type of the response info</typeparam>
-    public abstract class GameCommandBase<TSession, TRequest, TResponse> : CommandBase<TSession, IGameRequestInfo>
+    public abstract class GameCommandBase<TSession, TRequest> : CommandBase<TSession, IGameRequestInfo>
         where TSession : IGameSession, IAppSession<TSession, IGameRequestInfo>, new()
     {
-        //protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
         protected ILog Logger { get; private set; }
 
-        private Type m_CommandInfoType;
-
         protected object Args { get; set; }
-
-        public GameCommandBase()
-        {
-            m_CommandInfoType = typeof(TRequest);
-        }
 
         /// <summary>
         /// Executes the command.
@@ -50,48 +40,9 @@ namespace PirateX.Protocol
 
             var cacheName = $"{Name}_{session.CurrentO}";
             if (requestInfo.IsRetry)
-            { 
-                //客户端请求失败 
-              /*
-                客户端请求失败 尝试重新请求
-                服务端查看请求列表中是否有该请求
-                有    则等待
-                没有  则查看Response是否有
-              */
-
-                var appserver = (IGameServer) session.AppServer;
-
-
-                if (appserver.ExistsReqeust(session, cacheName))
-                {
-                    // 已有请求 等待完成
-                    var response = appserver.GetResponse<TResponse>(session, cacheName);
-                    if (Equals(default(TResponse), response))
-                    {
-                        if (Logger.IsDebugEnabled)
-                            Logger.Debug($"Retry fail,Session [{session.SessionID}],cacheName : {cacheName}");
-                        return;
-                    }
-                    else
-                    {
-                        if (Logger.IsDebugEnabled)
-                            Logger.Debug($"Retry success,Session [{session.SessionID}],cacheName : {cacheName}");
-
-                        session.SendMessage(new ProtocolMessage
-                        {
-                            C = Name,
-                            D = response,
-                            O = session.CurrentO
-                        });
-
-                        return;
-                    }
-                }
-                else
-                {
-                    if (Logger.IsDebugEnabled)
-                        Logger.Debug($"Retry no request,Session [{session.SessionID}],cacheName : {cacheName}");
-                }
+            {
+                if (Retry(session, cacheName))
+                    return;
             }
 
             if (requestInfo.Body == null)
@@ -104,8 +55,11 @@ namespace PirateX.Protocol
                 Args = jsonCommandInfo;
                 ExecuteGameCommand(session, jsonCommandInfo);
             }
+        }
 
-            //session.ProcessEx(requestInfo.Ex);
+        protected virtual bool Retry(TSession session, string cacheName)
+        {
+            return false;
         }
 
         protected void SendResponse(TSession session, object response)

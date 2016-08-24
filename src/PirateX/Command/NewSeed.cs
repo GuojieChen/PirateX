@@ -12,9 +12,10 @@ namespace PirateX.Command
     /// </summary>
     [SeedCreatedFilter]
     public class NewSeed<TSession> : GameCommand<TSession, NewSeedRequestAndResponse, NewSeedRequestAndResponse>
-        //CommandBase<TSession,GameRequestInfoV1> 
         where TSession : GameSession<TSession>, IAppSession<TSession, IGameRequestInfo>, new()
     {
+        public override string Name => "NewSeed"; 
+
         protected override NewSeedRequestAndResponse ExecuteResponseCommand(TSession session, NewSeedRequestAndResponse data)
         {
             var serverSeed = (int)(TimeUtil.GetTimestamp(new DateTime(DateTime.Now.Ticks + RandomUtil.Random.Next(-10001, 10001))) / 1000);
@@ -24,7 +25,7 @@ namespace PirateX.Command
 
             //用客户端的seed生成一个seed
             //保存秘钥
-            if (Equals(data.Format.ToUpper(), "JSON"))
+            if (Equals(data.Format?.ToUpper(), "JSON"))
                 session.ProtocolPackage.JsonEnable = true;
 
             session.ProtocolPackage.ClientKeys.Add(clientKey.MakeKey());
@@ -43,5 +44,56 @@ namespace PirateX.Command
         public int Seed { get; set; }
 
         public string Format { get; set; }
+    }
+
+    public class KeyGenerator
+    {
+        public int Seed { get; private set; }
+
+        public KeyGenerator(int seed)
+        {
+            this.Seed = seed;
+        }
+
+        /// <summary>
+        /// 随机算法
+        /// </summary>
+        /// <returns></returns>
+        public int Rand()
+        {
+            Seed = Seed * 0x343fd + 0x269EC3;  // a=214013, b=2531011
+            return (Seed >> 0x10) & 0x7FFF;
+        }
+
+        public byte[] MakeKey()
+        {
+            const int tableSize = 128;
+            var originals = new int[tableSize];
+
+            for (var i = 0; i < tableSize; i++)
+            {
+                originals[i] = i;
+            }
+
+            for (var i = 0; i < tableSize; i++)
+            {
+                var rand = ((char)(Rand() % tableSize));
+
+                var tmp = originals[i];
+                originals[i] = originals[rand];
+                originals[rand] = tmp;
+            }
+
+            //size [4,16)
+            var size = Rand() % 12 + 4;
+            var keys = new byte[size];
+
+            for (var i = 0; i < size; i++)
+            {
+                keys[i] = (byte)originals[i];
+            }
+
+            return keys;
+        }
     }
 }
