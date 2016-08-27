@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using PirateX.Core;
+using PirateX.Protocol.Package;
 using SuperSocket.SocketBase;
 
 namespace PirateX.Protocol
@@ -13,7 +14,7 @@ namespace PirateX.Protocol
     /// <typeparam name="TRequest">The type of the request info.</typeparam>
     /// <typeparam name="TResponse">The type of the response info.</typeparam>
     public abstract class GameCommand<TSession, TRequest, TResponse> : GameCommandBase<TSession, TRequest>
-        where TSession : IGameSession, IAppSession<TSession, IGameRequestInfo>, new()
+        where TSession : IPirateXSession, IAppSession<TSession, IPirateXRequestInfo>, new()
     {
         protected override void ExecuteGameCommand(TSession session, TRequest data)
         {
@@ -24,7 +25,7 @@ namespace PirateX.Protocol
             var start = DateTime.Now;
 
             var cacheName = Convert.ToString(session.CurrentO);
-            var appserver = (IGameServer) session.AppServer;
+            var appserver = (IPirateXServer) session.AppServer;
 
             appserver.StartRequest(session, cacheName);
 
@@ -33,7 +34,7 @@ namespace PirateX.Protocol
 
             if (!Equals(response, default(TResponse)))
             {
-                SendResponse(session, response);
+                session.SendMessage<TResponse>(base.Response, response);
 
                 //if (!IgnoreCmds.Contains(cacheName))
                 appserver.EndRequest(session, cacheName, response);
@@ -41,7 +42,7 @@ namespace PirateX.Protocol
             }
             else
             {//返回默认的给客户端
-                SendResponse(session, null);
+                session.SendMessage<TResponse>(base.Response, response);
 
                 //if (!IgnoreCmds.Contains(cacheName))
                 appserver.EndRequest(session, cacheName, null);
@@ -61,7 +62,7 @@ namespace PirateX.Protocol
 
             session.LastResponseTime = DateTime.Now;
             ms = sw.ElapsedMilliseconds;
-            session.ProcessedRequest(Name, Args, pms, sms, ms, start, DateTime.Now, cacheName);
+            session.ProcessedRequest(Name, base.Request.QueryString, pms, sms, ms, start, DateTime.Now, cacheName);
         }
 
         /// <summary>
@@ -70,18 +71,7 @@ namespace PirateX.Protocol
         /// <param name="session">The session.</param>
         /// <param name="data">The command info.</param>
         protected abstract TResponse ExecuteResponseCommand(TSession session, TRequest data);
-
-        protected void SendResponse(TSession session, TResponse response)
-        {
-            session.SendMessage(new ProtocolMessage
-            {
-                C = Name,
-                D = response,
-                O = session.CurrentO
-            });
-        }
-
-
+        
         //客户端请求失败 
         /*
           客户端请求失败 尝试重新请求
@@ -91,7 +81,7 @@ namespace PirateX.Protocol
         */
         protected override bool Retry(TSession session, string cacheName)
         {
-            var appserver = (IGameServer)session.AppServer;
+            var appserver = (IPirateXServer)session.AppServer;
 
             if (appserver.ExistsReqeust(session, cacheName))
             {
@@ -108,12 +98,7 @@ namespace PirateX.Protocol
                     if (Logger.IsDebugEnabled)
                         Logger.Debug($"Retry success,Session [{session.SessionID}],cacheName : {cacheName}");
 
-                    session.SendMessage(new ProtocolMessage
-                    {
-                        C = Name,
-                        D = response, 
-                        O = session.CurrentO
-                    });
+                    session.SendMessage<TResponse>(base.Response, response);
 
                     return true;
                 }
@@ -125,7 +110,6 @@ namespace PirateX.Protocol
             }
             return false;
         }
-
 
         public delegate void OnResponsedEventHandler(TSession session, TRequest request);
         public OnResponsedEventHandler OnResponsedEvent;

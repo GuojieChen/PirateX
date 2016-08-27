@@ -15,10 +15,8 @@ using PirateX.Core.Domain.Entity;
 using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Filters;
-using PirateX.GException.V1;
 using PirateX.Protocol;
 using PirateX.Protocol.Package;
-using PirateX.Protocol.V1;
 using PirateX.Service;
 using PirateX.Sync.ProtoSync;
 using StackExchange.Redis;
@@ -29,8 +27,8 @@ using SuperSocket.SocketBase.Protocol;
 
 namespace PirateX
 {
-    public abstract class GameServer<TSession, TOnlineRole> : AppServer<TSession, IGameRequestInfo>, IGameServer
-        where TSession : GameSession<TSession>, new()
+    public abstract class PirateXServer<TSession, TOnlineRole> : AppServer<TSession, IPirateXRequestInfo>, IPirateXServer
+        where TSession : PirateXSession<TSession>, new()
         where TOnlineRole : class, IOnlineRole, new()
     {
         /// <summary> 后台工作线程列表
@@ -45,16 +43,16 @@ namespace PirateX
 
         protected ISubscriber Subscriber;
 
-        protected GameServer(IServerContainer serverContainer, IReceiveFilterFactory<IGameRequestInfo> receiveFilterFactory) : base(receiveFilterFactory)
+        protected PirateXServer(IServerContainer serverContainer, IReceiveFilterFactory<IPirateXRequestInfo> receiveFilterFactory) : base(receiveFilterFactory)
         {
             ServerContainer = serverContainer;
 
             LoggingSet = new Dictionary<long, string>();
         }
 
-        protected override bool SetupCommands(Dictionary<string, ICommand<TSession, IGameRequestInfo>> discoveredCommands)
+        protected override bool SetupCommands(Dictionary<string, ICommand<TSession, IPirateXRequestInfo>> discoveredCommands)
         {
-            var commands = new List<ICommand<TSession, IGameRequestInfo>>
+            var commands = new List<ICommand<TSession, IPirateXRequestInfo>>
                 {
                     new SysinfoAction<TSession>(),
                     new NewSeed<TSession>(),
@@ -107,6 +105,8 @@ namespace PirateX
 
             //默认的包解析器
             builder.Register(c => new JsonPackage()).As<IProtocolPackage>();
+            //默认数据返回包装器
+            builder.Register(c => new JsonResponseConvert()).As<IResponseConvert>().SingleInstance();
 
             //全局Redis序列化/反序列化方式
             builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
@@ -129,7 +129,6 @@ namespace PirateX
             RedisDataBaseExtension.RedisSerilazer = ServerIoc.Resolve<IRedisSerializer>();
             
             ServerIoc.Resolve<IProtoService>().Init(ServerContainer.ContainerSetting.EntityAssembly);
-
 
             return base.Setup(rootConfig, config);
         }
@@ -216,7 +215,7 @@ namespace PirateX
             return $"sys:requestlist:{rid}";
         }
 
-        public virtual bool ExistsReqeust(IGameSession session, string c)
+        public virtual bool ExistsReqeust(IPirateXSession session, string c)
         {
             var rid = session.Rid;
 
@@ -251,7 +250,7 @@ namespace PirateX
             return false;
         }
 
-        public virtual void StartRequest(IGameSession session, string c)
+        public virtual void StartRequest(IPirateXSession session, string c)
         {
             var rid = session.Rid;
             if (rid <= 0 || string.IsNullOrEmpty(c))
@@ -264,7 +263,7 @@ namespace PirateX
             var onlineManager = this.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
             var onlineRole = onlineManager.GetOnlineRole(rid);
             if (onlineRole != null && !Equals(onlineRole.SessionID, session.SessionID))
-                throw new PokemonXException(ServerCode.ReLogin);
+                throw new PirateXException(StatusCode.ReLogin);
 
             var key = GetRequestKey(rid, c);
             var listkey = GetRequestListKey(rid);
@@ -285,7 +284,7 @@ namespace PirateX
             }
         }
 
-        public virtual void EndRequest(IGameSession session, string c, object response)
+        public virtual void EndRequest(IPirateXSession session, string c, object response)
         {
             var rid = session.Rid;
             if (rid <= 0 || string.IsNullOrEmpty(c))
@@ -306,7 +305,7 @@ namespace PirateX
             }
         }
 
-        public virtual TResonse GetResponse<TResonse>(IGameSession session, string c)
+        public virtual TResonse GetResponse<TResonse>(IPirateXSession session, string c)
         {
             var rid = session.Rid;
             var key = GetRequestKey(rid, c);

@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PirateX.Client.Command;
-using PirateX.Client.Protocol;
 using SuperSocket.ClientEngine;
 using ErrorEventArgs = System.IO.ErrorEventArgs;
 
@@ -50,6 +52,8 @@ namespace PirateX.Client
 
     public class PSocketClient : IDisposable
     {
+
+
         public int Id { get; set; }
 
         internal TcpClientSession Client { get; private set; }
@@ -66,6 +70,10 @@ namespace PirateX.Client
         public Uri TargetUri { get; private set; }
 
         private int O { get; set; }
+
+        public string Language => "zh-CN"; 
+
+        public string Device => Guid.NewGuid().ToString();
 
         protected int m_StateCode;
 
@@ -105,6 +113,8 @@ namespace PirateX.Client
 
         public string CurrentMethod { get; private set; }
         public DateTime SendTime { get; private set; }
+
+        private  EndPoint TargetEndPoint { get; set; }
 
         private bool sendOk { get; set; }
 
@@ -166,39 +176,64 @@ namespace PirateX.Client
 
             try
             {
-                var oData = Encoding.UTF8.GetString(DataPackage.Unpack(e.Data, PackageProcessor.ServerKeys));
+                var body = DataPackage.Unpack(e.Data, PackageProcessor.ServerKeys);
+                //header
+                byte[] headers = null;
+                byte[] contentbytes = null;
+                using (var stream = new MemoryStream(body))
+                {
+                    var headerBytes = new byte[4];
+                    var bodayByts = new byte[4];
+                    stream.Read(bodayByts, 0, 4);
+                    stream.Read(headerBytes, 0, 4);
+
+                    var bodyLen = BitConverter.ToInt32(bodayByts, 0);
+                    var headerlen = BitConverter.ToInt32(headerBytes, 0);
+
+                    //header
+                    headers = new byte[headerlen];
+                    stream.Read(headers, 0, headerlen); 
+
+                    //content
+                    contentbytes = new byte[bodyLen - headerlen - 4 - 4];
+                    stream.Read(contentbytes,0, bodyLen - headerlen - 4 - 4);
+                }
+
+                var headstr = Encoding.UTF8.GetString(headers);
+                //header
+                var header = HttpUtility.ParseQueryString(headstr);
+                //content
+                var content = Encoding.UTF8.GetString(contentbytes);
+
+                Console.WriteLine("----------------------------");
+                Console.WriteLine(content);
 
                 object response = null;
 
-                var jObject = JObject.Parse(oData);
-
-                if (OnReceiveMessage != null)
-                    OnReceiveMessage(sender, new MsgEventArgs(oData, e.Data, jObject["B"] == null));
-
                 sw.Stop();
 
-                log.Resp = jObject;
+                log.Resp = header;
 
-                if (jObject["Code"] != null)
+                if (!Equals(header["code"], "200"))
                 {
                     if (OnServerError != null)
                         OnServerError(this, new PErrorEventArgs(
-                            Convert.ToInt32(jObject["Code"]),
-                            Convert.ToString(jObject["Msg"])));
+                            Convert.ToInt32(header["errorCode"]),
+                            Convert.ToString(header["errorMessage"])));
 
                     log.Ok = false;
 
                     if (OnResponseProcessed != null)
                         OnResponseProcessed(this, log);
                 }
-                else if (jObject["B"] != null)
+                else if (Equals(header["i"],"2"))
                 {
-                    var method = jObject["B"].ToString();
-                    var data = jObject["D"].ToString();
-
+                    var method = header["c"];
                     var executor = GetBroadcastExecutor(method);
                     if (executor != null)
                     {
+                        executor.Header = header;
+
                         var type = executor.GetType();
                         var o = Activator.CreateInstance(type);
 
@@ -207,7 +242,7 @@ namespace PirateX.Client
                             var methodexec = type.GetMethod("GetData",
                                 BindingFlags.Instance | BindingFlags.Public);
 
-                            response = methodexec.Invoke(o, new[] { data });
+                            response = methodexec.Invoke(o, new[] { content });
 
                             methodexec = type.GetMethod("Execute", BindingFlags.Instance | BindingFlags.Public);
                             methodexec.Invoke(o, new[] { this, response });
@@ -218,15 +253,16 @@ namespace PirateX.Client
                         }
                     }
                 }
-                else
+                else if (Equals(header["i"], "1"))
                 {
-                    var method = jObject["C"].ToString();
-                    var data = jObject["D"].ToString();
+                    var method = header["c"].ToString();
 
                     var executor = GetExecutor(method);
 
                     if (executor != null)
                     {
+                        executor.Header = header;
+
                         var type = executor.GetType();
                         var o = Activator.CreateInstance(type);
 
@@ -235,7 +271,7 @@ namespace PirateX.Client
                             var methodexec = type.GetMethod("GetResponseInfo",
                                 BindingFlags.Instance | BindingFlags.Public);
 
-                            response = methodexec.Invoke(o, new[] { data });
+                            response = methodexec.Invoke(o, new[] { content });
 
                             methodexec = type.GetMethod("Excute", BindingFlags.Instance | BindingFlags.Public);
                             methodexec.Invoke(o, new[] { this, response });
@@ -262,7 +298,7 @@ namespace PirateX.Client
                 client_Error(this, new ErrorEventArgs(exc));
             }
         }
-
+        
         #region crate client
         private EndPoint ResolveUri(string uri, int defaultPort, out int port)
         {
@@ -290,7 +326,11 @@ namespace PirateX.Client
             int port;
             var targetEndPoint = ResolveUri(uri, m_defaultPort, out port);
 
-            return new AsyncTcpSession(targetEndPoint);
+            TargetEndPoint = targetEndPoint;
+
+            return new AsyncTcpSession()
+            {
+            };
         }
         TcpClientSession CreateSecureClient(string uri)
         {
@@ -322,7 +362,10 @@ namespace PirateX.Client
             int port;
             var targetEndPoint = ResolveUri(uri, m_SecurePort, out port);
 
-            return new SslStreamTcpSession(targetEndPoint);
+            TargetEndPoint = targetEndPoint;
+            return new SslStreamTcpSession()
+            {
+            };
         }
 
         #endregion
@@ -355,11 +398,7 @@ namespace PirateX.Client
             var clientKey = new KeyGenerator(_clientSeed);
             PackageProcessor.ClientKeys.Add(clientKey.MakeKey());
 
-            Send("NewSeed", new
-            {
-                Seed = _clientSeed,
-                Format = "JSON"
-            });
+            Send("NewSeed",$"seed={_clientSeed}");
         }
 
         private void ClearTimer()
@@ -460,61 +499,100 @@ namespace PirateX.Client
                 m_BroadcastExectorDict.Add(type.Name, Activator.CreateInstance(type) as IJsonBroadcastExecutor);
         }
 
+        public void Send(string name, string querystring, NameValueCollection exheader = null)
+        {
+            var headerNc = new NameValueCollection();
+            if(exheader!=null)
+                headerNc.Add(exheader);
+
+            headerNc.Add("o", $"{O++}"); 
+            headerNc.Add("t",$"{Utils.GetTimestamp()}");
+            headerNc.Add("language",$"{Language}");
+            headerNc.Add("device",$"{Device}");
+            
+            var headerbytes = Encoding.UTF8.GetBytes($"{name}?{String.Join("&",headerNc.AllKeys.Select(a => a + "=" + headerNc[a]))}" );
+            var contentbytes = Encoding.UTF8.GetBytes(querystring);
+
+            byte[] datas = null; 
+            using (var stream = new MemoryStream())
+            {
+                stream.Write(BitConverter.GetBytes(headerbytes.Length+ contentbytes.Length), 0, 4);
+                stream.Write(BitConverter.GetBytes(headerbytes.Length),0,4);
+                stream.Write(headerbytes,0,headerbytes.Length);
+                stream.Write(contentbytes,0,contentbytes.Length);
+
+                datas = stream.ToArray();
+            }
+
+
+            var senddatas = DataPackage.Pack(datas, PackageProcessor.ClientKeys);
+
+            Client.Send(senddatas,0, senddatas.Length);
+        }
+
+        public void Send(string name, NameValueCollection query, NameValueCollection exheader = null)
+        {
+            if(query == null)
+                Send(name,string.Empty,exheader);
+            else 
+                Send(name,query.ToString(),exheader);
+        }
+
         /// <summary>
         /// 像服务端发送信息
         /// </summary>
         /// <param name="name"></param>
         /// <param name="data"></param>
-        public void Send(string name, object data, object ex = null, bool? r = false)
+        public void Send2222(string name, object data, object ex = null, bool? r = false)
         {
-            if (name == null)
-                return;
+            //if (name == null)
+            //    return;
 
-            if (State == PSocketState.None)
-                return;
+            //if (State == PSocketState.None)
+            //    return;
 
-            var message = DataPackage.Pack(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
-            {
-                C = name,
-                D = data,
-                Ex = ex,
-                O = O++,
-                R = r
-            })), PackageProcessor.ClientKeys, false);
+            //var = DataPackage.Pack(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
+            //{
+            //    C = name,
+            //    D = data,
+            //    Ex = ex,
+            //    O = O++,
+            //    R = r
+            //})), PackageProcessor.ClientKeys, false);
 
-            if (Client != null && Client.IsConnected)
-            {
-                try
-                {
-                    ArraySegment<byte> ds = new ArraySegment<byte>(message);
+            //if (Client != null && Client.IsConnected)
+            //{
+            //    try
+            //    {
+            //        ArraySegment<byte> ds = new ArraySegment<byte>(message);
 
-                    sendOk = Client.TrySend(ds);
-                    //Client.Send(message, 0, message.Length);
+            //        sendOk = Client.TrySend(ds);
+            //        //Client.Send(message, 0, message.Length);
 
-                    CurrentMethod = name;
-                    SendTime = DateTime.Now;
-                    CurrentReq = data;
-                    if (OnSend != null)
-                        OnSend(this, new MsgEventArgs(null, message));
-                }
-                catch (Exception exception)
-                {
-                    if (OnError != null)
-                        OnError(this, new ErrorEventArgs(exception));
-                }
-            }
+            //        CurrentMethod = name;
+            //        SendTime = DateTime.Now;
+            //        CurrentReq = data;
+            //        if (OnSend != null)
+            //            OnSend(this, new MsgEventArgs(null, message));
+            //    }
+            //    catch (Exception exception)
+            //    {
+            //        if (OnError != null)
+            //            OnError(this, new ErrorEventArgs(exception));
+            //    }
+            //}
         }
 
         public void Send<T>(T data)
         {
-            Send(typeof(T).Name, data);
+            //Send(typeof(T).Name, data);
         }
 
         public void Open()
         {
             m_StateCode = PSocketStateConst.Connecting;
             if (Client != null)
-                Client.Connect();
+                Client.Connect(TargetEndPoint);
         }
 
         public virtual void Close()

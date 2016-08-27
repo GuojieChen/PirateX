@@ -17,10 +17,10 @@ using PirateX.ServiceStackV3;
 
 namespace GameServer.Console
 {
-    public class DemoServer : GameServer<DemoSession,OnlineRole>
+    public class DemoServer : PirateXServer<DemoSession,OnlineRole>
     {
         public DemoServer() 
-            : base(new DemoServerContainer(), new JsonReceiveFilterFactory())
+            : base(new DemoServerContainer(), new PirateXReceiveFilterFactory())
         {
         }
 

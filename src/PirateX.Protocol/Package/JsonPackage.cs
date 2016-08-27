@@ -39,18 +39,20 @@ namespace PirateX.Protocol.Package
             }
         }
 
-        public override byte[] SerializeObject(ProtocolMessage message)
+        public byte[] SerializeObject(ProtocolMessage message)
         {
             return base.Pack(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, JsonSettings)));
         }
 
-        public override IGameRequestInfo DeserializeObject(byte[] datas)
+        public PirateXRequestInfo DeserializeObject(byte[] datas)
         {
             var body = Encoding.UTF8.GetString(base.Unpack(datas)); 
 
             var jObject = JObject.Parse(body);
-            
-            return new JsonRequestInfo(jObject["C"]?.ToString(), jObject["D"],  Convert.ToBoolean(jObject["R"]), Convert.ToInt32(jObject["O"]));
+
+            return null;
+
+            //return new JsonRequestInfo(jObject["C"]?.ToString(), jObject["D"],  Convert.ToBoolean(jObject["R"]), Convert.ToInt32(jObject["O"]));
         }
     }
 }

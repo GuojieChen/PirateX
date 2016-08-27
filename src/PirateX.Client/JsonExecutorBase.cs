@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Specialized;
+using Newtonsoft.Json;
 
 namespace PirateX.Client
 {
@@ -10,6 +11,7 @@ namespace PirateX.Client
             return JsonConvert.DeserializeObject<TResponseInfo>(data); 
         }
 
-        public abstract void Excute(TSocketClient client, TResponseInfo data); 
+        public abstract void Excute(TSocketClient client, TResponseInfo data);
+        public NameValueCollection Header { get; set; }
     }
 }

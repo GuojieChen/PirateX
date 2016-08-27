@@ -16,7 +16,7 @@ namespace PirateX.Command
     /// <typeparam name="TLoginResponse"></typeparam>
     /// <typeparam name="TOnlineRole"></typeparam>
     public abstract class Login<TSession, TLoginRequest, TLoginResponse, TOnlineRole> : GameCommand<TSession, TLoginRequest, TLoginResponse>
-        where TSession : GameSession<TSession>, IGameSession, new()
+        where TSession : PirateXSession<TSession>, IPirateXSession, new()
         where TLoginRequest : ILoginRequest
         where TLoginResponse : ILoginResponse
         where TOnlineRole : class, IOnlineRole, new()
@@ -46,7 +46,7 @@ namespace PirateX.Command
                 
             }
 
-            var appserver = (IGameServer)session.AppServer;
+            var appserver = (IPirateXServer)session.AppServer;
 
             var onlineManager = appserver.ServerContainer.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
 
@@ -97,10 +97,10 @@ namespace PirateX.Command
 
         /*
          *  重新登陆的控制
-            if (GameServer.LoggingSet.ContainsKey(data.Rid))
-                GameServer.LoggingSet[data.Rid] = session.SessionID;
+            if (PirateXServer.LoggingSet.ContainsKey(data.Rid))
+                PirateXServer.LoggingSet[data.Rid] = session.SessionID;
             else
-                GameServer.LoggingSet.Add(data.Rid, session.SessionID);
+                PirateXServer.LoggingSet.Add(data.Rid, session.SessionID);
          * 
          */
     }

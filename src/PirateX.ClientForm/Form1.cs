@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using PirateX.Client;
-using PirateX.Client.Protocol;
 
 namespace PirateX.ClientForm
 {
@@ -67,6 +66,7 @@ namespace PirateX.ClientForm
 
         private void InitProtocol()
         {
+            /*
             var types = typeof (IProtocolPackage).Assembly.GetTypes().Where(item=> typeof(IProtocolPackage).IsAssignableFrom(item));
 
             foreach (var type in types)
@@ -78,9 +78,9 @@ namespace PirateX.ClientForm
 
                 comboBox1.Items.Add((attrs[0] as ProtocolNameAttribute).Name);
             }
+            */
 
-
-            comboBox1.Text = comboBox1.Items[0].ToString();
+            //comboBox1.Text = comboBox1.Items[0].ToString();
         }
 
         private void InitResponseHistory()
@@ -176,7 +176,7 @@ namespace PirateX.ClientForm
 
             var jObject = JObject.Parse(currentMessage);
 
-            _client.Send(jObject["C"].ToString(), jObject["D"], jObject["Ex"], Convert.ToBoolean(jObject["R"]));
+            //_client.Send(jObject["C"].ToString(), jObject["D"], jObject["Ex"], Convert.ToBoolean(jObject["R"]));
 
             this.Invoke((EventHandler)delegate
             {

@@ -12,7 +12,7 @@ namespace PirateX.Command
     /// </summary>
     [SeedCreatedFilter]
     public class NewSeed<TSession> : GameCommand<TSession, NewSeedRequestAndResponse, NewSeedRequestAndResponse>
-        where TSession : GameSession<TSession>, IAppSession<TSession, IGameRequestInfo>, new()
+        where TSession : PirateXSession<TSession>, IAppSession<TSession, IPirateXRequestInfo>, new()
     {
         public override string Name => "NewSeed"; 
 
@@ -22,11 +22,6 @@ namespace PirateX.Command
 
             var clientKey = new KeyGenerator(data.Seed);
             var serverKey = new KeyGenerator(serverSeed);
-
-            //用客户端的seed生成一个seed
-            //保存秘钥
-            if (Equals(data.Format?.ToUpper(), "JSON"))
-                session.ProtocolPackage.JsonEnable = true;
 
             session.ProtocolPackage.ClientKeys.Add(clientKey.MakeKey());
             session.ProtocolPackage.ServerKeys.Add(serverKey.MakeKey());
@@ -42,8 +37,6 @@ namespace PirateX.Command
     public class NewSeedRequestAndResponse
     {
         public int Seed { get; set; }
-
-        public string Format { get; set; }
     }
 
     public class KeyGenerator

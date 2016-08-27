@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using PirateX.Protocol.Crypto;
+using PirateX.Protocol.Package;
 using PirateX.Protocol.Zip;
 
 namespace PirateX.Protocol
@@ -31,11 +32,6 @@ namespace PirateX.Protocol
         public bool JsonEnable { get; set; }
         public IList<byte[]> ClientKeys { get; set; }
         public IList<byte[]> ServerKeys { get; set; }
-
-        public abstract byte[] SerializeObject(ProtocolMessage message);
-
-        public abstract IGameRequestInfo DeserializeObject(byte[] datas);
-
 
         public virtual byte[] Pack(byte[] datas)
         {

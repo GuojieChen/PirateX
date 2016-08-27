@@ -5,30 +5,33 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using PirateX.Protocol;
+using PirateX.Protocol.Package;
 using PirateX.Sync.ProtoSync;
 using SuperSocket.SocketBase;
 
 namespace PirateX.Command.System
 {
     public class SysinfoAction<TSession> : GameCommandBase<TSession, NoneRequest>
-        where TSession : GameSession<TSession>, IAppSession<TSession, IGameRequestInfo>, new()
+        where TSession : PirateXSession<TSession>, IAppSession<TSession, IPirateXRequestInfo>, new()
     {
         public override string Name => "_sysinfo"; 
 
         protected override void ExecuteGameCommand(TSession session, NoneRequest data)
         {
-            var protoservice = ((IGameServer) session.AppServer).ServerContainer.ServerIoc.Resolve<IProtoService>();
+            var protoservice = ((IPirateXServer) session.AppServer).ServerContainer.ServerIoc.Resolve<IProtoService>();
 
-            session.SendMessage(new ProtocolMessage()
-            {
-                C = this.Name,
-                D =new 
-                {
-                    Version = "1.0.0",
-                    protohash = protoservice.GetProtosHash(),//
-                    datahash = "",
-                }
-            });
+
+
+            //session.SendMessage(new ProtocolMessage()
+            //{
+            //    C = this.Name,
+            //    D =new 
+            //    {
+            //        Version = "1.0.0",
+            //        protohash = protoservice.GetProtosHash(),//
+            //        datahash = "",
+            //    }
+            //});
         }
     }
 }

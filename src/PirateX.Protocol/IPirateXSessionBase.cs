@@ -1,8 +1,7 @@
 ﻿using System;
-using PirateX.Protocol;
 using SuperSocket.SocketBase;
 
-namespace PirateX
+namespace PirateX.Protocol
 {
     public interface IGameSessionBase :IAppSession
     {
@@ -24,7 +23,6 @@ namespace PirateX
         /// <summary> 最后请求序列
         /// </summary>
         int MyLastO { get; set; }
-
 
         IProtocolPackage ProtocolPackage { get; set; } 
     }

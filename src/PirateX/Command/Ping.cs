@@ -1,11 +1,12 @@
 ﻿using PirateX.Core.Utils;
 using PirateX.Protocol;
+using PirateX.Protocol.Package;
 using SuperSocket.SocketBase;
 
 namespace PirateX.Command
 {
     public class Ping<TSession>: GameCommand<TSession, NoneRequest, PingResponse>
-        where TSession : GameSession<TSession>, IAppSession<TSession, IGameRequestInfo>, new()
+        where TSession : PirateXSession<TSession>, IAppSession<TSession, IPirateXRequestInfo>, new()
     {
         public override string Name => "Ping"; 
 

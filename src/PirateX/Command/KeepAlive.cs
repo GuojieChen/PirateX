@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX.Protocol;
+using PirateX.Protocol.Package;
 using SuperSocket.SocketBase;
 
 namespace PirateX.Command
 {
     public class KeepAlive<TSession> : GameCommand<TSession,NoneRequest,NoneResponse> 
-        where TSession : IGameSession, IAppSession<TSession, IGameRequestInfo>, new()
+        where TSession : IPirateXSession, IAppSession<TSession, IPirateXRequestInfo>, new()
     {
         public override string Name => "KeepAlive";
 

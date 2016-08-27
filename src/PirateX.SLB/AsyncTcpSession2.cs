@@ -8,7 +8,7 @@ namespace PirateX.SLB
 
         private string _servername; 
 
-        public AsyncTcpSession2(EndPoint remoteEndPoint) : base(remoteEndPoint)
+        public AsyncTcpSession2(EndPoint remoteEndPoint) : base()
         {
             _servername = remoteEndPoint.ToString();
         }

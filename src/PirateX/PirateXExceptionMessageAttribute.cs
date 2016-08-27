@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PirateX.GException
+namespace PirateX
 {
      [AttributeUsage(AttributeTargets.Field)]
     public class PExceptionMessageAttribute:Attribute
@@ -12,6 +12,7 @@ namespace PirateX.GException
         /// <param name="message">返回信息</param>
         public PExceptionMessageAttribute(string message)
         {
+
             this._message = message;
         }
         /// <summary>

@@ -4,7 +4,7 @@ using System.IO;
 using PirateX.Client.Crypto;
 using PirateX.Client.Zip;
 
-namespace PirateX.Client.Protocol
+namespace PirateX.Client
 {
     /// <summary>
     /// 数据包的操作

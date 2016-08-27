@@ -8,11 +8,11 @@ using SuperSocket.SocketBase;
 
 namespace PirateX.Command.System
 {
-    public class DataSyncListAction : GameCommand<GameSession,NoneRequest,NoneResponse>
+    public class DataSyncListAction : GameCommand<PirateXSession,NoneRequest,NoneResponse>
     {
         public override string Name => "_synclist"; 
 
-        protected override NoneResponse ExecuteResponseCommand(GameSession session, NoneRequest data)
+        protected override NoneResponse ExecuteResponseCommand(PirateXSession session, NoneRequest data)
         {
 
             return null; 

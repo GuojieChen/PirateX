@@ -12,7 +12,7 @@ using SuperSocket.SocketBase;
 namespace PirateX
 {
     public class SessionMessageBroadcast<TSession> : IMessageBroadcast, IDisposable
-        where TSession : GameSession<TSession>, new()
+        where TSession : PirateXSession<TSession>, new()
     {
         public IAppServer<TSession> AppServer { get; private set; }
 
@@ -57,13 +57,11 @@ namespace PirateX
                 }
 
                 if (sessions != null)
-                    foreach (var session in sessions)
+                    foreach (TSession session in sessions)
                     {
-                        session.SendMessage(new ProtocolMessage
-                        {
-                            B = message.TypeName,
-                            D = message.Message
-                        });
+                        if(session.Logger.IsWarnEnabled)
+                            session.Logger.Warn("广播数据需要考虑数据类型~");
+                        session.SendMssage(message.TypeName, message.Message);
                     }
             }
         }

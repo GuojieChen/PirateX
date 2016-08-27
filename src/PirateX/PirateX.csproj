@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=4.1.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.1.0\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -42,8 +42,8 @@
       <HintPath>..\packages\MySql.Data.6.7.9\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
@@ -74,6 +74,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -92,14 +93,14 @@
     <Compile Include="Command\NoneResponse.cs" />
     <Compile Include="Command\System\DataSyncListAction.cs" />
     <Compile Include="Command\System\SysinfoAction.cs" />
-    <Compile Include="GException\V1\ServerCode.cs" />
-    <Compile Include="IGameServer.cs" />
-    <Compile Include="IGameSession.cs" />
+    <Compile Include="IResponseConvert.cs" />
+    <Compile Include="JsonResponseConvert.cs" />
+    <Compile Include="StatusCode.cs" />
+    <Compile Include="IPirateXServer.cs" />
+    <Compile Include="IPirateXSession.cs" />
     <Compile Include="KeyStore.cs" />
-    <Compile Include="Localization\LocalizationString.cs" />
-    <Compile Include="Localization\LocalizationStringExtensions.cs" />
-    <Compile Include="GException\GameException.cs" />
-    <Compile Include="GException\GameExceptionMessageAttribute.cs" />
+    <Compile Include="PirateXException.cs" />
+    <Compile Include="PirateXExceptionMessageAttribute.cs" />
     <Compile Include="Filters\AuthorizedFilter.cs" />
     <Compile Include="Filters\IPConnectionFilter.cs" />
     <Compile Include="Filters\LoginSuccessFilter.cs" />
@@ -116,15 +117,13 @@
     <Compile Include="Command\NewSeed.cs" />
     <Compile Include="Protocol\GameCommand.cs" />
     <Compile Include="Protocol\GameCommandBase.cs" />
-    <Compile Include="Protocol\V1\PokemonXException.cs" />
-    <Compile Include="GameServer.cs" />
-    <Compile Include="GameSession.cs" />
+    <Compile Include="PirateXServer.cs" />
+    <Compile Include="PirateXSession.cs" />
     <Compile Include="Service\GameService.cs" />
     <Compile Include="Sync\ProtoSync\ProtobufService.cs" />
     <Compile Include="SessionMessageBroadcast.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

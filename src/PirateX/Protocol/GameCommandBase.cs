@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Specialized;
+using Autofac.Core.Activators;
+using PirateX.Protocol.Package;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Command;
 using SuperSocket.SocketBase.Logging;
@@ -10,20 +13,29 @@ namespace PirateX.Protocol
     /// </summary>
     /// <typeparam name="TSession">The type of the web socket session.</typeparam>
     /// <typeparam name="TRequest">The type of the request info.</typeparam>
-    public abstract class GameCommandBase<TSession, TRequest> : CommandBase<TSession, IGameRequestInfo>
-        where TSession : IGameSession, IAppSession<TSession, IGameRequestInfo>, new()
+    public abstract class GameCommandBase<TSession, TRequest> : CommandBase<TSession, IPirateXRequestInfo>
+        where TSession : IPirateXSession, IAppSession<TSession, IPirateXRequestInfo>, new()
     {
         protected ILog Logger { get; private set; }
 
-        protected object Args { get; set; }
+        public IPirateXRequestInfo Request;
+
+        public IPirateXResponseInfo Response;
 
         /// <summary>
         /// Executes the command.
         /// </summary>
         /// <param name="session">The session.</param>
         /// <param name="requestInfo">The request info.</param>
-        public override void ExecuteCommand(TSession session, IGameRequestInfo requestInfo)
+        public override void ExecuteCommand(TSession session, IPirateXRequestInfo requestInfo)
         {
+            Request = requestInfo;
+            Response = new PirateXResponse();
+            Response.Headers.Add("c", requestInfo.Key);
+            Response.Headers.Add("i","1");//返回类型 
+            Response.Headers.Add("o",Convert.ToString(requestInfo.O));
+            Response.Headers.Add("code",Convert.ToString((int)StatusCode.Ok));
+
             Logger = session.AppServer.Logger;
 
             if (session.IsClosed)
@@ -39,37 +51,42 @@ namespace PirateX.Protocol
             }
 
             var cacheName = $"{Name}_{session.CurrentO}";
-            if (requestInfo.IsRetry)
+            if (requestInfo.R)
             {
                 if (Retry(session, cacheName))
                     return;
             }
 
-            if (requestInfo.Body == null)
+            if (requestInfo.QueryString == null)
             {
                 ExecuteGameCommand(session, default(TRequest));
             }
             else
             {
-                var jsonCommandInfo = requestInfo.GetTypeBody<TRequest>();
-                Args = jsonCommandInfo;
+                var jsonCommandInfo = ConvertFromQueryString(requestInfo.QueryString);
                 ExecuteGameCommand(session, jsonCommandInfo);
             }
+        }
+
+        protected virtual TRequest ConvertFromQueryString(NameValueCollection parameters)
+        {
+            var instance = Activator.CreateInstance<TRequest>();
+            var type = typeof (TRequest);
+            foreach (string name in parameters)
+            {
+                var value = parameters[name];
+
+                //数据校验
+                var p = type.GetProperty(name);
+                p?.SetValue(instance, value);
+            }
+
+            return instance; 
         }
 
         protected virtual bool Retry(TSession session, string cacheName)
         {
             return false;
-        }
-
-        protected void SendResponse(TSession session, object response)
-        {
-            session.SendMessage(new ProtocolMessage
-            {
-                C = Name,
-                D = response,
-                O = session.CurrentO
-            });
         }
 
         /// <summary>

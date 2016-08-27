@@ -1,6 +1,4 @@
-﻿using PirateX.GException;
-using PirateX.GException.V1;
-using SuperSocket.Common;
+﻿using SuperSocket.Common;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Metadata;
 
@@ -15,7 +13,7 @@ namespace PirateX.Filters
         {
             var isLogin = commandContext.Session.Items.GetValue<bool>(KeyStore.FilterIsLogin);
             if (isLogin)
-                throw new GameException(ServerCode.NotLoginAgain);
+                throw new PirateXException(StatusCode.NotLoginAgain);
         }
 
         public override void OnCommandExecuted(CommandExecutingContext commandContext)

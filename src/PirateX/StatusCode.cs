@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PirateX.GException.V1
+﻿namespace PirateX
 {
     /// <summary>
-    /// 服务器状态码
+    /// 服务器系统状态码
     /// <b>区间是[100,599]</b>
     /// </summary>
-    public enum ServerCode : short
+    public enum StatusCode : short
     {
         /// <summary>
         /// 成功接收数据，并且正确执行业务逻辑
         /// </summary>
-        Successful = 200,
+        Ok = 200,
         /// <summary>
         /// 错误请求，可能是Json数据解析错误 或者参数错误
         /// </summary>

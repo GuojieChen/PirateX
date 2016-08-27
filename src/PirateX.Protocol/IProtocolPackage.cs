@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using PirateX.Protocol.Crypto;
+using PirateX.Protocol.Package;
 using PirateX.Protocol.Zip;
 
 namespace PirateX.Protocol
@@ -26,22 +27,9 @@ namespace PirateX.Protocol
         /// <summary> 服务端秘钥列表
         /// </summary>
         IList<byte[]> ServerKeys { get; set; }
-        /// <summary>
-        /// 强制JSON 返回
-        /// </summary>
-        bool JsonEnable { get; set; }
-        /// <summary>
-        /// 序列化包为二进制数据
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        byte[] SerializeObject(ProtocolMessage message);
-        /// <summary>
-        /// 解析数据包为请求对象
-        /// </summary>
-        /// <param name="datas"></param>
-        /// <returns></returns>
-        IGameRequestInfo DeserializeObject(byte[] datas);
+        
+        byte[] Pack(byte[] datas);
+        byte[] Unpack(byte[] datas);
     }
 
     public class ProtocolMessage

@@ -2,7 +2,7 @@
 
 namespace GameServer.Console
 {
-    public class DemoSession : GameSession<DemoSession>
+    public class DemoSession : PirateXSession<DemoSession>
     {
     }
 }

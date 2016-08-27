@@ -1,7 +1,10 @@
-﻿namespace PirateX.Client
+﻿using System.Collections.Specialized;
+
+namespace PirateX.Client
 {
     public interface IJsonExecutor
     {
+        NameValueCollection Header { get; set; }
     }
 
     /// <summary>
