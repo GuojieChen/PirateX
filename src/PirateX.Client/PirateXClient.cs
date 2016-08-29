@@ -12,6 +12,8 @@ using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PirateX.Client.Command;
+using PirateX.Protocol;
+using PirateX.Protocol.Package;
 using SuperSocket.ClientEngine;
 using ErrorEventArgs = System.IO.ErrorEventArgs;
 
@@ -50,7 +52,7 @@ namespace PirateX.Client
         }
     }
 
-    public class PSocketClient : IDisposable
+    public class PirateXClient : IDisposable
     {
 
 
@@ -109,7 +111,9 @@ namespace PirateX.Client
 
         /// <summary> 数据包处理器
         /// </summary>
-        public IPackageProcessor PackageProcessor { get; private set; }
+        public IProtocolPackage PackageProcessor { get; private set; }
+
+        public IResponseConvert ResponseConvert { get;  }
 
         public string CurrentMethod { get; private set; }
         public DateTime SendTime { get; private set; }
@@ -129,7 +133,7 @@ namespace PirateX.Client
         /// <param name="uri"></param>
         /// <param name="packageProcessor"></param>
         /// <param name="receiveBufferSize"></param>
-        public PSocketClient(string uri, int receiveBufferSize = 2048,int sendQueueSize = 3)
+        public PirateXClient(string uri, int receiveBufferSize = 2048,int sendQueueSize = 3)
         {
             TcpClientSession client;
 
@@ -142,8 +146,8 @@ namespace PirateX.Client
 
             m_ExecutorDict.Add("Ping", new Ping());
             m_ExecutorDict.Add("NewSeed", new NewSeed());
-
-            PackageProcessor = new DefaultPackageProcessor() { ZipEnable = true };
+            ResponseConvert = new JsonResponseConvert();
+            PackageProcessor = new ProtocolPackage(ResponseConvert);  //new DefaultPackageProcessor() { ZipEnable = true };
             m_StateCode = PSocketStateConst.None;
 
             client.ReceiveBufferSize = receiveBufferSize;
@@ -176,40 +180,10 @@ namespace PirateX.Client
 
             try
             {
-                var body = DataPackage.Unpack(e.Data, PackageProcessor.ServerKeys);
-                //header
-                byte[] headers = null;
-                byte[] contentbytes = null;
-                using (var stream = new MemoryStream(body))
-                {
-                    var headerBytes = new byte[4];
-                    var bodayByts = new byte[4];
-                    stream.Read(bodayByts, 0, 4);
-                    stream.Read(headerBytes, 0, 4);
+                var responsePackage = PackageProcessor.UnPackToResponsePackage(e.Data);
+                var responseInfo = new PirateXResponseInfo(responsePackage.HeaderBytes);
 
-                    var bodyLen = BitConverter.ToInt32(bodayByts, 0);
-                    var headerlen = BitConverter.ToInt32(headerBytes, 0);
-
-                    //header
-                    headers = new byte[headerlen];
-                    stream.Read(headers, 0, headerlen); 
-
-                    //content
-                    contentbytes = new byte[bodyLen - headerlen - 4 - 4];
-                    stream.Read(contentbytes,0, bodyLen - headerlen - 4 - 4);
-                }
-
-                var headstr = Encoding.UTF8.GetString(headers);
-                //header
-                var header = HttpUtility.ParseQueryString(headstr);
-                //content
-                var content = Encoding.UTF8.GetString(contentbytes);
-
-                Console.WriteLine("----------------------------");
-                Console.WriteLine(content);
-
-                object response = null;
-
+                var header = responseInfo.Headers;
                 sw.Stop();
 
                 log.Resp = header;
@@ -242,7 +216,7 @@ namespace PirateX.Client
                             var methodexec = type.GetMethod("GetData",
                                 BindingFlags.Instance | BindingFlags.Public);
 
-                            response = methodexec.Invoke(o, new[] { content });
+                            var response = methodexec.Invoke(o, new[] { responsePackage.ContentBytes });
 
                             methodexec = type.GetMethod("Execute", BindingFlags.Instance | BindingFlags.Public);
                             methodexec.Invoke(o, new[] { this, response });
@@ -271,7 +245,7 @@ namespace PirateX.Client
                             var methodexec = type.GetMethod("GetResponseInfo",
                                 BindingFlags.Instance | BindingFlags.Public);
 
-                            response = methodexec.Invoke(o, new[] { content });
+                            var response = methodexec.Invoke(o, new[] { responsePackage.ContentBytes });
 
                             methodexec = type.GetMethod("Excute", BindingFlags.Instance | BindingFlags.Public);
                             methodexec.Invoke(o, new[] { this, response });
@@ -386,7 +360,6 @@ namespace PirateX.Client
         public delegate void OnResponseProcessedHandler(object sender, ProcessLog log);
 
         public event OnResponseProcessedHandler OnResponseProcessed;
-
 
         #region connect and close
 
@@ -505,28 +478,15 @@ namespace PirateX.Client
             if(exheader!=null)
                 headerNc.Add(exheader);
 
+            headerNc.Add("c",name);
             headerNc.Add("o", $"{O++}"); 
             headerNc.Add("t",$"{Utils.GetTimestamp()}");
             headerNc.Add("language",$"{Language}");
             headerNc.Add("device",$"{Device}");
             
-            var headerbytes = Encoding.UTF8.GetBytes($"{name}?{String.Join("&",headerNc.AllKeys.Select(a => a + "=" + headerNc[a]))}" );
-            var contentbytes = Encoding.UTF8.GetBytes(querystring);
+            var reqeustInfo = new PirateXRequestInfo(headerNc,HttpUtility.ParseQueryString(querystring));
 
-            byte[] datas = null; 
-            using (var stream = new MemoryStream())
-            {
-                stream.Write(BitConverter.GetBytes(headerbytes.Length+ contentbytes.Length), 0, 4);
-                stream.Write(BitConverter.GetBytes(headerbytes.Length),0,4);
-                stream.Write(headerbytes,0,headerbytes.Length);
-                stream.Write(contentbytes,0,contentbytes.Length);
-
-                datas = stream.ToArray();
-            }
-
-
-            var senddatas = DataPackage.Pack(datas, PackageProcessor.ClientKeys);
-
+            var senddatas = PackageProcessor.PackRequestPackageToBytes(reqeustInfo.ToRequestPackage());
             Client.Send(senddatas,0, senddatas.Length);
         }
 
@@ -537,52 +497,7 @@ namespace PirateX.Client
             else 
                 Send(name,query.ToString(),exheader);
         }
-
-        /// <summary>
-        /// 像服务端发送信息
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="data"></param>
-        public void Send2222(string name, object data, object ex = null, bool? r = false)
-        {
-            //if (name == null)
-            //    return;
-
-            //if (State == PSocketState.None)
-            //    return;
-
-            //var = DataPackage.Pack(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
-            //{
-            //    C = name,
-            //    D = data,
-            //    Ex = ex,
-            //    O = O++,
-            //    R = r
-            //})), PackageProcessor.ClientKeys, false);
-
-            //if (Client != null && Client.IsConnected)
-            //{
-            //    try
-            //    {
-            //        ArraySegment<byte> ds = new ArraySegment<byte>(message);
-
-            //        sendOk = Client.TrySend(ds);
-            //        //Client.Send(message, 0, message.Length);
-
-            //        CurrentMethod = name;
-            //        SendTime = DateTime.Now;
-            //        CurrentReq = data;
-            //        if (OnSend != null)
-            //            OnSend(this, new MsgEventArgs(null, message));
-            //    }
-            //    catch (Exception exception)
-            //    {
-            //        if (OnError != null)
-            //            OnError(this, new ErrorEventArgs(exception));
-            //    }
-            //}
-        }
-
+        
         public void Send<T>(T data)
         {
             //Send(typeof(T).Name, data);

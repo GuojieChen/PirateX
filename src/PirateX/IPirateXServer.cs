@@ -4,7 +4,7 @@ using PirateX.Protocol;
 
 namespace PirateX
 {
-    public interface IPirateXServer:IPirateXServerBase
+    public interface IPirateXServer
     {
         IServerContainer ServerContainer { get; set; }
 

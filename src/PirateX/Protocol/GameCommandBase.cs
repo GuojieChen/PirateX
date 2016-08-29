@@ -18,7 +18,7 @@ namespace PirateX.Protocol
     {
         protected ILog Logger { get; private set; }
 
-        public IPirateXRequestInfo Request;
+        public IPirateXRequestInfoBase Request;
 
         public IPirateXResponseInfo Response;
 
@@ -30,7 +30,7 @@ namespace PirateX.Protocol
         public override void ExecuteCommand(TSession session, IPirateXRequestInfo requestInfo)
         {
             Request = requestInfo;
-            Response = new PirateXResponse();
+            Response = new PirateXResponseInfo();
             Response.Headers.Add("c", requestInfo.Key);
             Response.Headers.Add("i","1");//返回类型 
             Response.Headers.Add("o",Convert.ToString(requestInfo.O));
@@ -43,11 +43,6 @@ namespace PirateX.Protocol
                 if (Logger.IsDebugEnabled)
                     Logger.Debug($"ExecuteCommand[{DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss ffff")}]\t{session.SessionID}\t Session is closed!");
                 return;
-            }
-            else
-            {
-                if (Logger.IsDebugEnabled)
-                    Logger.Debug($"ExecuteCommand[{DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss ffff")}]\t{session.SessionID}\tSessionID\t{Name}\tRid:{session.Rid}");
             }
 
             var cacheName = $"{Name}_{session.CurrentO}";

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace PirateX.Client
 {
     public abstract class JsonBroadcastExecutorBase <TSocketClient,TData> : IJsonBroadcastExecutor<TSocketClient,TData>
-        where TSocketClient : PSocketClient
+        where TSocketClient : PirateXClient
     {
         public TData GetData(string data)
         {

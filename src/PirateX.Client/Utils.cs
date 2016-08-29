@@ -263,7 +263,7 @@ namespace PirateX.Client
             var md5 = Utils.GetMd5(string.Format("{0}{1}{2}{3}", rid, roomId, timestamp, "pokemonx.glee"));
 
             return string.Format("{0}-{1}", str, md5);
-            //return Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Format("{0}-{1}", str, md5))); 
+            //return SerializeObject.ToBase64String(Encoding.UTF8.GetBytes(string.Format("{0}-{1}", str, md5))); 
         }
         /// <summary>
         /// 获取本机绑定的IPv4地址，对于阿里云服务器 过滤了 10.  和 169. 开头的地址，因为需要的仅仅是外网地址。

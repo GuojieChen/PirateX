@@ -18,7 +18,7 @@ namespace PirateX.UnitTest
 
         IBootstrap bootstrap = BootstrapFactory.CreateBootstrap();
 
-        private PSocketClient client;
+        private PirateXClient client;
 
         [TestFixtureSetUp]
         public void SetUp()
@@ -35,7 +35,7 @@ namespace PirateX.UnitTest
 
             if (result == StartResult.Success)
             {
-                client = new PSocketClient("ps://localhost:3002");
+                client = new PirateXClient("ps://localhost:3002");
                 client.OnError += (sender, args) =>
                 {
                     throw new Exception(args.ToString());
@@ -58,6 +58,14 @@ namespace PirateX.UnitTest
             Console.WriteLine("OK");
         }
 
+        [Test]
+        public void Ping()
+        {
+            client.Send("ping");
+
+
+            Thread.Sleep(3000);
+        }
 
         [TestFixtureTearDown]
         public void TearDown()

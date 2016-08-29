@@ -1,8 +1,8 @@
 ﻿namespace PirateX.Client.Command
 {
-    public class NewSeed : JsonExecutorBase<PSocketClient,NewSeedResponse>
+    public class NewSeed : JsonExecutorBase<PirateXClient,NewSeedResponse>
     {
-        public override void Excute(PSocketClient pSocket, NewSeedResponse data)
+        public override void Excute(PirateXClient pSocket, NewSeedResponse data)
         {
             if (data.Seed == null)
             {

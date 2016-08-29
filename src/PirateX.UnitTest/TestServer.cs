@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using PirateX.Core;
+using PirateX.Protocol;
 using PirateX.Protocol.Package;
 using SuperSocket.SocketBase.Protocol;
 

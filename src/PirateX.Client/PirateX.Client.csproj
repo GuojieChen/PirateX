@@ -70,16 +70,14 @@
     <Compile Include="Crypto\NoneCrypto.cs" />
     <Compile Include="Crypto\XXTea.cs" />
     <Compile Include="DataPackage.cs" />
-    <Compile Include="DefaultPackageProcessor.cs" />
     <Compile Include="IJsonBroadcastExecutor.cs" />
     <Compile Include="IJsonExecutor.cs" />
-    <Compile Include="IPackageProcessor.cs" />
     <Compile Include="JsonBroadcastExecutorBase.cs" />
     <Compile Include="JsonExecutorBase.cs" />
     <Compile Include="MsgEventArgs.cs" />
     <Compile Include="PErrorEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PSocketClient.cs" />
+    <Compile Include="PirateXClient.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Zip\DefaultZip.cs" />
     <Compile Include="Zip\IZip.cs" />
@@ -87,6 +85,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PirateX.Protocol\PirateX.Protocol.csproj">
+      <Project>{ebde20ee-7293-4b51-99f4-6688ebdd3d2b}</Project>
+      <Name>PirateX.Protocol</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

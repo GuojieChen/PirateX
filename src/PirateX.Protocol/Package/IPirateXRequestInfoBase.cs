@@ -1,22 +1,17 @@
-﻿using System.Collections.Specialized;
-using SuperSocket.SocketBase.Protocol;
+using System.Collections.Specialized;
 
 namespace PirateX.Protocol.Package
 {
-    /// <summary> 协议抽象
-    /// </summary>
-    public interface IPirateXRequestInfo : IRequestInfo
+    public interface IPirateXRequestInfoBase
     {
+        string C { get; set; }
         int O { get; set; }
-
         bool R { get; set; }
-
         long Timestamp { get; set; }
-
         string Token { get; set; }
-
         NameValueCollection Headers { get; set; }
-
         NameValueCollection QueryString { get; set; }
+
+        IPirateXRequestPackage ToRequestPackage();
     }
 }

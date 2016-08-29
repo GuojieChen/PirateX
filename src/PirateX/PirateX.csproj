@@ -93,8 +93,10 @@
     <Compile Include="Command\NoneResponse.cs" />
     <Compile Include="Command\System\DataSyncListAction.cs" />
     <Compile Include="Command\System\SysinfoAction.cs" />
-    <Compile Include="IResponseConvert.cs" />
-    <Compile Include="JsonResponseConvert.cs" />
+    <Compile Include="Protocol\IPirateXRequestInfo.cs" />
+    <Compile Include="Protocol\PirateRequestInfo2.cs" />
+    <Compile Include="Protocol\PirateXReceiveFilter.cs" />
+    <Compile Include="Protocol\PirateXReceiveFilterFactory.cs" />
     <Compile Include="StatusCode.cs" />
     <Compile Include="IPirateXServer.cs" />
     <Compile Include="IPirateXSession.cs" />

@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using PirateX.Protocol.Crypto;
-using PirateX.Protocol.Package;
 using PirateX.Protocol.Zip;
 
-namespace PirateX.Protocol
+namespace PirateX.Protocol.Package
 {
     public interface IProtocolPackage
     {
@@ -27,22 +25,15 @@ namespace PirateX.Protocol
         /// <summary> 服务端秘钥列表
         /// </summary>
         IList<byte[]> ServerKeys { get; set; }
-        
-        byte[] Pack(byte[] datas);
-        byte[] Unpack(byte[] datas);
-    }
 
-    public class ProtocolMessage
-    {
-        public string B { get; set; }
-        public string C { get; set; }
+        IResponseConvert ResponseConvert { get; set; }
 
-        public object D { get; set; }
+        IPirateXRequestPackage UnPackToRequestPackage(byte[] datas);
 
-        public object Code { get; set; }
-        
-        public string Msg { get; set; }
+        byte[] PackRequestPackageToBytes(IPirateXRequestPackage requestPackage);
 
-        public int O { get; set; }
+        byte[] PackToResponseBytes(IPirateXResponsePackage respolnsePackage);
+
+        IPirateXResponsePackage UnPackToResponsePackage(byte[] datas);
     }
 }

@@ -60,13 +60,10 @@ namespace PirateX
         #endregion
         public IProtocolPackage ProtocolPackage { get; set; }
 
-        protected IResponseConvert ResponseConvert
-            => (((IPirateXServer) AppServer)).ServerIoc.Resolve<IResponseConvert>();
-
         protected override void OnSessionStarted()
         {
             if (Logger.IsDebugEnabled)
-                Logger.Debug($"OnSessionStarted - SessionId:{this.SessionID}");
+                Logger.Debug($"OnSessionStarted - SessionId:{SessionID}");
         }
 
         protected override void OnSessionClosed(CloseReason reason)
@@ -80,7 +77,7 @@ namespace PirateX
             }
         }
 
-        protected override void HandleException(System.Exception e)
+        protected override void HandleException(Exception e)
         {
             if (!(e is PirateXException))
             {
@@ -93,13 +90,13 @@ namespace PirateX
                 SendError(CurrentCommand, e);
         }
 
-        private void SendError(string cmdName, System.Exception e)
+        private void SendError(string cmdName, Exception e)
         {
             //#ERROR#
             var code = 400;
 
-            var errorCode = string.Empty;
-            var errorMsg = string.Empty;
+            string errorCode;
+            string errorMsg;
 
             if (e is PirateXException)
             {
@@ -126,56 +123,39 @@ namespace PirateX
                     Logger.Error($"Exception [{ServerId}:{Rid}] - {e.Message} ", e);
             }
 
-            var response = new PirateXResponse();
+            var response = new PirateXResponseInfo();
             response.Headers.Add("c", cmdName);
             response.Headers.Add("code", $"{Convert.ToInt32(code)}");
             response.Headers.Add("errorCode", errorCode);
             response.Headers.Add("errorMsg", errorMsg);
             response.Headers.Add("o", Convert.ToString(CurrentO));
 
-            this.SendMessage(response);
+            SendMessage(response);
         }
 
         protected override void HandleUnknownRequest(IPirateXRequestInfo requestInfo)
         {
             SendError(requestInfo.Key, new PirateXException(StatusCode.NotFound, requestInfo.Key));
         }
-
-        protected override void OnInit()
-        {
-            base.OnInit();
-        }
-
-        private void SendMessage(PirateXResponse response)
+        
+        private void SendMessage(PirateXResponseInfo response)
         {
             SendMessage<object>(response,null);
         }
 
         public void SendMessage<T>(IPirateXResponseInfo responseInfo, T data)
         {
-            var headers = responseInfo.Headers;
-
-            var headerbytes = Encoding.UTF8.GetBytes($"{String.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))}");
-            var contentbytes = (data == null) ?new byte[0] : ResponseConvert.Convert(data);
-
-            byte[] datas = null;
-            using (var stream = new MemoryStream())
+            var responsePack = new PirateXResponsePackage()
             {
-                stream.Write(BitConverter.GetBytes(headerbytes.Length + contentbytes.Length+4+4), 0, 4);
-                stream.Write(BitConverter.GetBytes(headerbytes.Length), 0, 4);
-                stream.Write(headerbytes, 0, headerbytes.Length);
-                stream.Write(contentbytes, 0, contentbytes.Length);
+                HeaderBytes = responseInfo.GetHeaderBytes(),
+                ContentBytes = ProtocolPackage.ResponseConvert.SerializeObject(data)
+            };
 
-                datas = stream.ToArray();
-            }
+            var senddatas = ProtocolPackage.PackToResponseBytes(responsePack);
 
-            var senddatas = ProtocolPackage.Pack(datas);
+            Send(senddatas, 0, senddatas.Length);
 
-            base.Send(senddatas, 0, senddatas.Length);
-
-
-            //if (Logger.IsInfoEnabled)
-            //    Logger.Info(string.Format("Response[{4}]\t#{0}#\t{1}\t{2}\t{3}", Rid, this.RemoteEndPoint, SessionID, JsonConvert.SerializeObject(message), result));
+            Logger.Debug("SEND MESSAGE!!!!");
         }
 
         /// <summary>
@@ -186,12 +166,12 @@ namespace PirateX
         /// <param name="data"></param>
         public void SendMssage<T>(string name,T data)
         {
-            var response = new PirateXResponse();
+            var response = new PirateXResponseInfo();
             response.Headers.Add("c",name);
             response.Headers.Add("i","2");
             response.Headers.Add("code",$"{StatusCode.Ok}");
 
-            SendMessage<T>(response,data);
+            SendMessage(response,data);
         }
 
 

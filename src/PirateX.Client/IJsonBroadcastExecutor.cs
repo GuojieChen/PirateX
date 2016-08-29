@@ -11,7 +11,7 @@ namespace PirateX.Client
     }
 
     public interface IJsonBroadcastExecutor<in TScoketClient, in TData> : IJsonBroadcastExecutor
-        where TScoketClient :PSocketClient
+        where TScoketClient :PirateXClient
     {
         void Execute(TScoketClient client, TData data); 
     }

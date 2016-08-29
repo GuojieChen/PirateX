@@ -13,7 +13,7 @@ namespace PirateX.Client
     /// <typeparam name="TResponseInfo"></typeparam>
     /// <typeparam name="TSocketClient"></typeparam>
     public interface IJsonExecutor<in TSocketClient, in TResponseInfo> : IJsonExecutor
-        where TSocketClient : PSocketClient
+        where TSocketClient : PirateXClient
     {
         void Excute(TSocketClient client, TResponseInfo data); 
     }

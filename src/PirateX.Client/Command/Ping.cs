@@ -1,8 +1,8 @@
 ﻿namespace PirateX.Client.Command
 {
-    public class Ping : JsonExecutorBase<PSocketClient,PingResponse>
+    public class Ping : JsonExecutorBase<PirateXClient,PingResponse>
     {
-        public override void Excute(PSocketClient pSocket, PingResponse data)
+        public override void Excute(PirateXClient pSocket, PingResponse data)
         {
             
         }

@@ -103,10 +103,10 @@ namespace PirateX
             }).As<IOnlineManager<TOnlineRole>>()
               .SingleInstance();
 
-            //默认的包解析器
-            builder.Register(c => new JsonPackage()).As<IProtocolPackage>();
             //默认数据返回包装器
             builder.Register(c => new JsonResponseConvert()).As<IResponseConvert>().SingleInstance();
+            //默认的包解析器
+            builder.Register(c => new ProtocolPackage(c.Resolve<IResponseConvert>())).As<IProtocolPackage>();
 
             //全局Redis序列化/反序列化方式
             builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
