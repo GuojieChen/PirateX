@@ -147,8 +147,8 @@ namespace PirateX.Client
             m_ExecutorDict.Add("Ping", new Ping());
             m_ExecutorDict.Add("NewSeed", new NewSeed());
 
-            ResponseConvert = new ProtoResponseConvert();
-            //ResponseConvert = new JsonResponseConvert();
+            //ResponseConvert = new ProtoResponseConvert();
+            ResponseConvert = new JsonResponseConvert();
             PackageProcessor = new ProtocolPackage(ResponseConvert);  //new DefaultPackageProcessor() { ZipEnable = true };
             m_StateCode = PSocketStateConst.None;
 

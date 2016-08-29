@@ -26,7 +26,7 @@ namespace PirateX.UnitTest
 
         public override void IocConfig(ContainerBuilder builder)
         {
-            builder.Register(c => new ProtoResponseConvert()).As<IResponseConvert>().SingleInstance();
+            //builder.Register(c => new ProtoResponseConvert()).As<IResponseConvert>().SingleInstance();
         }
     }
 }
