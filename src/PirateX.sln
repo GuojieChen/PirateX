@@ -38,8 +38,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.Core.UnitTest", "Pi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.Protocol", "PirateX.Protocol\PirateX.Protocol.csproj", "{EBDE20EE-7293-4B51-99F4-6688EBDD3D2B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "protocol", "protocol", "{ED4BA129-E16E-4272-8095-0A82C9801C1E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.Middleware", "PirateX.Middleware\PirateX.Middleware.csproj", "{5CE28119-A0F9-4EED-8624-BEC2DA406E4D}"
 EndProject
 Global

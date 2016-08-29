@@ -36,8 +36,9 @@ namespace PirateX.UnitTest.Protocol.Package
                 ContentBytes = Encoding.UTF8.GetBytes($"{String.Join("&", requestInfo.QueryString.AllKeys.Select(a => a + "=" + requestInfo.QueryString[a]))}")
             };
 
-            var bytes = piratepackage.PackRequestPackageToBytes(requestPackage);
-            var requestInfo2 = new PirateXRequestInfo(piratepackage.UnPackToRequestPackage(bytes));
+            var unpackrequestpack = piratepackage.PackRequestPackageToBytes(requestPackage);
+
+            var requestInfo2 = new PirateXRequestInfo(piratepackage.UnPackToRequestPackage(unpackrequestpack));
 
             Assert.IsNotEmpty(requestInfo.C);
             Assert.IsNotEmpty(requestInfo.Key);
@@ -50,6 +51,52 @@ namespace PirateX.UnitTest.Protocol.Package
 
             Assert.AreEqual($"{String.Join("&", requestInfo.QueryString.AllKeys.Select(a => a + "=" + requestInfo.QueryString[a]))}"
                 , $"{String.Join("&", requestInfo2.QueryString.AllKeys.Select(a => a + "=" + requestInfo2.QueryString[a]))}");
+
+        }
+
+        [Test]
+        public void pack_response_to_bytes_then_unpack_it()
+        {
+            var piratepack = new ProtocolPackage(new JsonResponseConvert());
+            var responseInfo = new PirateXResponseInfo()
+            {
+                Headers = new NameValueCollection()
+                {
+                    {"c","test" },
+                    { "t","123456"}
+                }
+            };
+
+            var responsepack = new PirateXResponsePackage()
+            {
+                HeaderBytes = responseInfo.GetHeaderBytes(),
+                ContentBytes = Encoding.UTF8.GetBytes("Hello World!")
+            };
+
+            var bytes = piratepack.PackResponsePackageToBytes(responsepack);
+
+            var unpackresponsepack = piratepack.UnPackToResponsePackage(bytes);
+
+            var responseInfo2 = new PirateXResponseInfo(unpackresponsepack.HeaderBytes);
+
+            Console.WriteLine("pack head bytes");
+            Console.WriteLine(string.Join(",", responsepack.HeaderBytes));
+
+            Console.WriteLine("unpack head bytes");
+            Console.WriteLine(string.Join(",", unpackresponsepack.HeaderBytes));
+
+            Console.WriteLine("pack content bytes");
+            Console.WriteLine(string.Join(",", responsepack.ContentBytes));
+
+            Console.WriteLine("unpack content bytes");
+            Console.WriteLine(string.Join(",", unpackresponsepack.ContentBytes));
+
+
+            Assert.IsTrue(responsepack.HeaderBytes.SequenceEqual(unpackresponsepack.HeaderBytes));
+            Assert.IsTrue(responsepack.ContentBytes.SequenceEqual(unpackresponsepack.ContentBytes));
+
+            Assert.AreEqual($"{String.Join("&", responseInfo.Headers.AllKeys.Select(a => a + "=" + responseInfo.Headers[a]))}"
+                , $"{String.Join("&", responseInfo.Headers.AllKeys.Select(a => a + "=" + responseInfo2.Headers[a]))}");
 
         }
     }

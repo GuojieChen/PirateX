@@ -71,9 +71,9 @@
     <Compile Include="Crypto\XXTea.cs" />
     <Compile Include="DataPackage.cs" />
     <Compile Include="IJsonBroadcastExecutor.cs" />
-    <Compile Include="IJsonExecutor.cs" />
+    <Compile Include="IPirateXClientExecutor.cs" />
     <Compile Include="JsonBroadcastExecutorBase.cs" />
-    <Compile Include="JsonExecutorBase.cs" />
+    <Compile Include="ExecutorBase.cs" />
     <Compile Include="MsgEventArgs.cs" />
     <Compile Include="PErrorEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

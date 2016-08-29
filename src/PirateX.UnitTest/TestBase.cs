@@ -42,12 +42,15 @@ namespace PirateX.UnitTest
                 };
                 client.OnOpen += (sender, args) =>
                 {
+                    Console.WriteLine("Connect!");
 
+                    Assert.IsTrue(true);
                 };
 
 
                 client.Open();
             }
+           
 
             Thread.Sleep(3000);
         }
@@ -55,7 +58,7 @@ namespace PirateX.UnitTest
         [Test]
         public void Connect()
         {
-            Console.WriteLine("OK");
+
         }
 
         [Test]

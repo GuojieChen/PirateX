@@ -33,6 +33,9 @@ namespace GameServer.Console
         {
             //builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
             //builder.Register(c => new JsonRedisSerializer()).As<IRedisSerializer>().SingleInstance();
+
+            //默认数据返回包装器
+            builder.Register(c => new ProtoResponseConvert()).As<IResponseConvert>().SingleInstance();
             builder.Register(c => new SessionMessageBroadcast<DemoSession>(this)).As<IMessageBroadcast>().SingleInstance();
         }
     }

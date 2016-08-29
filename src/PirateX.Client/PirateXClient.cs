@@ -101,7 +101,7 @@ namespace PirateX.Client
 
         private const string m_SecureUriPrefix = m_SecureUriScheme + "://";
 
-        private Dictionary<string, IJsonExecutor> m_ExecutorDict = new Dictionary<string, IJsonExecutor>(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, IPirateXClientExecutor> m_ExecutorDict = new Dictionary<string, IPirateXClientExecutor>(StringComparer.OrdinalIgnoreCase);
 
         private Dictionary<string, IJsonBroadcastExecutor> m_BroadcastExectorDict = new Dictionary<string, IJsonBroadcastExecutor>();
 
@@ -146,7 +146,9 @@ namespace PirateX.Client
 
             m_ExecutorDict.Add("Ping", new Ping());
             m_ExecutorDict.Add("NewSeed", new NewSeed());
-            ResponseConvert = new JsonResponseConvert();
+
+            ResponseConvert = new ProtoResponseConvert();
+            //ResponseConvert = new JsonResponseConvert();
             PackageProcessor = new ProtocolPackage(ResponseConvert);  //new DefaultPackageProcessor() { ZipEnable = true };
             m_StateCode = PSocketStateConst.None;
 
@@ -209,17 +211,13 @@ namespace PirateX.Client
                         executor.Header = header;
 
                         var type = executor.GetType();
-                        var o = Activator.CreateInstance(type);
+                        var o = (IPirateXClientExecutor)Activator.CreateInstance(type);
 
+                        o.Header = header;
+                        o.ResponseConvert = ResponseConvert;
                         try
                         {
-                            var methodexec = type.GetMethod("GetData",
-                                BindingFlags.Instance | BindingFlags.Public);
-
-                            var response = methodexec.Invoke(o, new[] { responsePackage.ContentBytes });
-
-                            methodexec = type.GetMethod("Execute", BindingFlags.Instance | BindingFlags.Public);
-                            methodexec.Invoke(o, new[] { this, response });
+                            o.Excute(this, responsePackage.ContentBytes);
                         }
                         catch (Exception exc)
                         {
@@ -235,20 +233,15 @@ namespace PirateX.Client
 
                     if (executor != null)
                     {
-                        executor.Header = header;
-
                         var type = executor.GetType();
-                        var o = Activator.CreateInstance(type);
+                        var o = (IPirateXClientExecutor)Activator.CreateInstance(type);
+
+                        o.Header = header;
+                        o.ResponseConvert = ResponseConvert;
 
                         try
                         {
-                            var methodexec = type.GetMethod("GetResponseInfo",
-                                BindingFlags.Instance | BindingFlags.Public);
-
-                            var response = methodexec.Invoke(o, new[] { responsePackage.ContentBytes });
-
-                            methodexec = type.GetMethod("Excute", BindingFlags.Instance | BindingFlags.Public);
-                            methodexec.Invoke(o, new[] { this, response });
+                            o.Excute(this, responsePackage.ContentBytes);
                         }
                         catch (Exception exc)
                         {
@@ -420,13 +413,13 @@ namespace PirateX.Client
         }
         #endregion
 
-        IJsonExecutor GetExecutor(string name)
+        IPirateXClientExecutor GetExecutor(string name)
         {
             string key = name;
 
             lock (m_ExecutorDict)
             {
-                IJsonExecutor executor;
+                IPirateXClientExecutor executor;
 
                 if (!m_ExecutorDict.TryGetValue(key, out executor))
                     return null;
@@ -457,9 +450,9 @@ namespace PirateX.Client
         /// <param name="assembly"></param>
         public void RegisterExcutor(Assembly assembly)
         {
-            var cmds = assembly.GetTypes().Where(item => typeof(IJsonExecutor).IsAssignableFrom(item));
+            var cmds = assembly.GetTypes().Where(item => typeof(IPirateXClientExecutor).IsAssignableFrom(item));
             foreach (var type in cmds)
-                m_ExecutorDict.Add(type.Name, Activator.CreateInstance(type) as IJsonExecutor);
+                m_ExecutorDict.Add(type.Name, Activator.CreateInstance(type) as IPirateXClientExecutor);
         }
 
         /// <summary> 注册广播处理模块

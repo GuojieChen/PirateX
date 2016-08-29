@@ -39,9 +39,9 @@ namespace PirateX.Protocol.Package
             this.Headers = headers;
             this.QueryString = queryString;
             this.C = this.Key = headers["c"];
-            this.O = Convert.ToInt32(headers["O"]);
-            this.R = Convert.ToBoolean(headers["R"]);
-            this.Timestamp = Convert.ToInt64(headers["T"]);
+            this.O = Convert.ToInt32(headers["o"]);
+            this.R = Convert.ToBoolean(headers["r"]);
+            this.Timestamp = Convert.ToInt64(headers["t"]);
             this.Token = Convert.ToString(headers["token"]);
         }
 

@@ -21,7 +21,10 @@ namespace PirateX.Protocol.Package
 
         public T DeserializeObject<T>(byte[] datas)
         {
-            throw new NotImplementedException();
+            using (var ms = new MemoryStream(datas))
+            {
+                return Serializer.Deserialize<T>(ms);
+            }
         }
     }
 }

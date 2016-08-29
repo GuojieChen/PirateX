@@ -132,7 +132,7 @@ namespace PirateX.Protocol.Package
             }
         }
 
-        public byte[] PackToResponseBytes(IPirateXResponsePackage respolnsePackage)
+        public byte[] PackResponsePackageToBytes(IPirateXResponsePackage respolnsePackage)
         {
             //var headers = responseInfo.Headers;
             //var headerbytes = Encoding.UTF8.GetBytes($"{String.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))}");
@@ -198,7 +198,7 @@ namespace PirateX.Protocol.Package
                 contentBytes = new byte[len - 4 - 1 - 1 - 4 - headerLen];
 
                 stream.Read(headerBytes, 0, headerLen);
-                stream.Read(headerBytes, 0, len - 4 - 1 - 1 - 4 - headerLen);
+                stream.Read(contentBytes, 0, len - 4 - 1 - 1 - 4 - headerLen);
             }
             for (var i = 0; i < 8; i++)
             {

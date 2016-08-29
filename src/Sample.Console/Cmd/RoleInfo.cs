@@ -7,6 +7,7 @@ using PirateX;
 using PirateX.Filters;
 using PirateX.Protocol;
 using ProtoBuf;
+using SuperSocket.SocketBase.Protocol;
 
 namespace GameServer.Console.Cmd
 {
@@ -26,7 +27,6 @@ namespace GameServer.Console.Cmd
 
     public class RoleInfoRequest
     {
-        
     }
 
     [Serializable]

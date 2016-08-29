@@ -151,7 +151,7 @@ namespace PirateX
                 ContentBytes = ProtocolPackage.ResponseConvert.SerializeObject(data)
             };
 
-            var senddatas = ProtocolPackage.PackToResponseBytes(responsePack);
+            var senddatas = ProtocolPackage.PackResponsePackageToBytes(responsePack);
 
             Send(senddatas, 0, senddatas.Length);
 

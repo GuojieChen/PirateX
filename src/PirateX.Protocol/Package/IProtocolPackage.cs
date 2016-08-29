@@ -32,7 +32,7 @@ namespace PirateX.Protocol.Package
 
         byte[] PackRequestPackageToBytes(IPirateXRequestPackage requestPackage);
 
-        byte[] PackToResponseBytes(IPirateXResponsePackage respolnsePackage);
+        byte[] PackResponsePackageToBytes(IPirateXResponsePackage respolnsePackage);
 
         IPirateXResponsePackage UnPackToResponsePackage(byte[] datas);
     }

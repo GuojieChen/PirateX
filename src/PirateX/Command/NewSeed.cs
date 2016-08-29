@@ -3,6 +3,7 @@ using PirateX.Core.Utils;
 using PirateX.Filters;
 using PirateX.Protocol;
 using PirateX.Protocol.Package;
+using ProtoBuf;
 using SuperSocket.SocketBase;
 
 namespace PirateX.Command
@@ -34,8 +35,10 @@ namespace PirateX.Command
 
     }
 
+    [ProtoContract]
     public class NewSeedRequestAndResponse
     {
+        [ProtoMember(1)]
         public int Seed { get; set; }
     }
 
