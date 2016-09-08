@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PirateX.Core
+namespace PirateX.Core.Domain.Entity
 {
-    
+    public interface IRoleDatasVersion:IEntity<long>,IEntityPrivate
+    {
+
+    }
 }

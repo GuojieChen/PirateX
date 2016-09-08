@@ -77,11 +77,16 @@
     <Compile Include="Config\IConfigEntity.cs" />
     <Compile Include="Config\IConfigReader.cs" />
     <Compile Include="Config\MemoryConfigReader.cs" />
-    <Compile Include="DataSync.cs" />
+    <Compile Include="DataSync\IDataSync.cs" />
     <Compile Include="DefaultServerSetting.cs" />
+    <Compile Include="Domain\Entity\IEntityPrivate.cs" />
+    <Compile Include="Domain\Entity\IEntityTimestamp.cs" />
+    <Compile Include="Domain\Entity\IRoleDatasVersion.cs" />
     <Compile Include="Domain\Repository\IRepository.cs" />
     <Compile Include="Domain\Repository\RepositoryBase.cs" />
     <Compile Include="i18n\I18N.cs" />
+    <Compile Include="IConnectionStrings.cs" />
+    <Compile Include="IDatabaseInitializer.cs" />
     <Compile Include="IDataSync.cs" />
     <Compile Include="ISyncList.cs" />
     <Compile Include="Push\IPushService.cs" />
@@ -110,7 +115,9 @@
     <Compile Include="Utils\TimeUtil.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -109,7 +109,16 @@ namespace PirateX.ServiceStackV3
 
     }
 
-    public static class SqlserverExtention
+
+    public class ServiceStackDatabaseInitializer : IDatabaseInitializer
+    {
+        public void Initialize(string connectionString)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public static class ServerExtention
     {
         private static List<string> GetSqlServerColumnNames(IDbConnection db, string tableName)
         {
@@ -128,7 +137,6 @@ namespace PirateX.ServiceStackV3
             return columns;
         }
 
-
         private static List<string> GetMySqlColumnNames(IDbConnection db, string tableName)
         {
             var columns = new List<string>();
@@ -145,7 +153,6 @@ namespace PirateX.ServiceStackV3
             }
             return columns;
         }
-
 
         public static void AlterTableSqlServer<T>(this IDbConnection db)
         {
@@ -319,7 +326,6 @@ namespace PirateX.ServiceStackV3
 #endif
         }
 
-
         internal static bool CheckForIdField(IEnumerable<PropertyInfo> objProperties)
         {
             // Not using Linq.Where() and manually iterating through objProperties just to avoid dependencies on System.Xml??
@@ -331,13 +337,11 @@ namespace PirateX.ServiceStackV3
             return false;
         }
 
-
         private static bool IsNullableType(Type theType)
         {
             return (theType.IsGenericType
                 && theType.GetGenericTypeDefinition() == typeof(Nullable<>));
         }
-
 
         private static Dictionary<Type, ModelDefinition> typeModelDefinitionMap = new Dictionary<Type, ModelDefinition>();
         public static ModelDefinition GetModelDefinition(Type modelType)

@@ -16,9 +16,6 @@ namespace PirateX.Command
 
         protected override NoneResponse ExecuteResponseCommand(TSession session, NoneRequest data)
         {
-
-
-
             return null; 
         }
     }

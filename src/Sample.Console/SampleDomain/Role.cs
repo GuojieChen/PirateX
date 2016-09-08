@@ -11,22 +11,24 @@ namespace GameServer.Console.SampleDomain
 {
     [Serializable]
     [ProtoContract]
-    public class Role:IEntity<int>
+    public class Role:IEntity<long>,IEntityTimestamp<byte[]>
     {
         [ProtoMember(1)]
         [AutoIncrement]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string Name { get; set; }
 
         [ProtoMember(2)]
         public DateTime CreateAt { get; set; }
 
-        public long Vid { get; set; }
-
         public Role()
         {
             CreateAt = DateTime.UtcNow;
         }
+        
+        public byte[] Timestamp { get; set; }
+
+        public DateTimeOffset Tt { get; set; }
     }
 }
