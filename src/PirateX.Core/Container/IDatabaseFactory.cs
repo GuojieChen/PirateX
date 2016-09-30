@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PirateX.Core
+namespace PirateX.Core.Container
 {
     /// <summary>
     /// 数据库的维护操作

@@ -41,6 +41,11 @@ namespace PirateX.Core
             return new UnitOfWork(Resolver);
         }
 
+        protected IUnitOfWork CreateUnitOfWork(string name)
+        {
+            return new UnitOfWork(Resolver,name);
+        }
+
         //TODO UnitOfWork  Repository
     }
 }

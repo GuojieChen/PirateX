@@ -9,6 +9,7 @@ using GameServer.Console.SampleService;
 using PirateX;
 using PirateX.Core;
 using PirateX.Core.Broadcas;
+using PirateX.Core.Container;
 using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Protocol;
@@ -48,7 +49,6 @@ namespace GameServer.Console
         public string ConfigConnectionString { get; set; }
         public string Redis { get; set; }
         public int RedisDb { get; set; }
-        public bool AlterTable { get; set; }
     }
 
     public class ServerSetting : IServerSetting
@@ -134,6 +134,20 @@ namespace GameServer.Console
 
         public override void BuildContainer(ContainerBuilder builder)
         {
+        }
+
+        public override IDictionary<string, string> GetConnectionStrings()
+        {
+            return new Dictionary<string, string>()
+            {
+                {"role","" },
+                
+            };
+        }
+
+        public override IDatabaseInitializer GetDatabaseInitializer(string connectionStringId)
+        {
+            throw new NotImplementedException();
         }
 
         public override IDatabaseFactory GetConfigDatabaseFactory(IDistrictConfig config)

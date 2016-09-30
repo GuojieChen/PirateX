@@ -21,6 +21,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading;
+using PirateX.Core.Container;
 
 namespace PirateX
 {
@@ -33,8 +34,6 @@ namespace PirateX
         protected static readonly IList<Thread> Workers = new List<Thread>();
         public IServerContainer ServerContainer { get; set; }
         public IDictionary<long, string> LoggingSet { get; set; }
-
-        public ILifetimeScope ServerIoc { get; private set; }
 
         protected ConnectionMultiplexer MqServer = null;
 
@@ -68,7 +67,7 @@ namespace PirateX
         {
             base.OnNewSessionConnected(session);
 
-            session.ProtocolPackage = ServerIoc.Resolve<IProtocolPackage>();
+            session.ProtocolPackage = ServerContainer.ServerIoc.Resolve<IProtocolPackage>();
         }
 
         protected override bool Setup(IRootConfig rootConfig, IServerConfig config)
@@ -105,8 +104,6 @@ namespace PirateX
             //默认的包解析器
             builder.Register(c => new ProtocolPackage(c.Resolve<IResponseConvert>())).As<IProtocolPackage>();
 
-            //全局Redis序列化/反序列化方式
-            builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
 
             builder.Register(c => rootConfig).As<IRootConfig>().SingleInstance();
             //默认消息广播
@@ -116,23 +113,26 @@ namespace PirateX
             //TODO 默认消息推送（应用级）
             //builder.Register(c =>)
             IocConfig(builder);
-            ServerIoc = builder.Build().BeginLifetimeScope();
+
+            //ServerIoc = builder.Build().BeginLifetimeScope();
 
             #endregion
-
-            ServerContainer.ServerIoc = ServerIoc;
-            ServerContainer.InitContainers();
-
-            RedisDataBaseExtension.RedisSerilazer = ServerIoc.Resolve<IRedisSerializer>();
             
-            ServerIoc.Resolve<IProtoService>().Init(ServerContainer.ContainerSetting.EntityAssembly);
+            ServerContainer.InitContainers(builder);
+
+            RedisDataBaseExtension.RedisSerilazer = ServerContainer.ServerIoc.Resolve<IRedisSerializer>();
+
+            ServerContainer.ServerIoc.Resolve<IProtoService>().Init(ServerContainer.ContainerSetting.EntityAssembly);
 
             return base.Setup(rootConfig, config);
         }
         
         public abstract Assembly ConfigAssembly();
 
-        public abstract void IocConfig(ContainerBuilder builder);
+        public virtual void IocConfig(ContainerBuilder builder)
+        {
+            
+        }
 
         public override bool Start()
         {
@@ -185,7 +185,7 @@ namespace PirateX
             if (Logger.IsDebugEnabled)
                 Logger.Debug("Close redis");
             MqServer.Close();
-            ServerIoc.Resolve<ConnectionMultiplexer>().Close();
+            ServerContainer.ServerIoc.Resolve<ConnectionMultiplexer>().Close();
         }
 
         protected override void OnSessionClosed(TSession session, CloseReason reason)
@@ -194,7 +194,7 @@ namespace PirateX
 
             if ((reason == CloseReason.ClientClosing || reason == CloseReason.TimeOut) && session.Rid > 0)
             {
-                var onlineManager = this.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
+                var onlineManager = this.ServerContainer.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
                 onlineManager.Logout(session.Rid, session.SessionID);
                 if (Logger.IsDebugEnabled)
                     Logger.Debug($"Set role offline\t:\t {session.Rid}\t:{session.SessionID}\t{reason}");
@@ -257,7 +257,7 @@ namespace PirateX
             if (db == null)
                 return;
 
-            var onlineManager = this.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
+            var onlineManager = ServerContainer.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
             var onlineRole = onlineManager.GetOnlineRole(rid);
             if (onlineRole != null && !Equals(onlineRole.SessionID, session.SessionID))
                 throw new PirateXException(StatusCode.ReLogin);

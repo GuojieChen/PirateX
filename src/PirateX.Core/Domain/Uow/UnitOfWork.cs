@@ -23,12 +23,14 @@ namespace PirateX.Core.Domain.Uow
         private bool _disposed;
         private bool _commited;
 
-
-
-        public UnitOfWork(ILifetimeScope resolver)
+        public UnitOfWork(ILifetimeScope resolver,string name = null)
         {
             this._resolver = resolver;
-            this._dbConnection = _resolver.Resolve<IDbConnection>();
+            if (string.IsNullOrEmpty(name))
+                this._dbConnection = _resolver.Resolve<IDbConnection>();
+            else
+                this._dbConnection = _resolver.Resolve<IDbConnection>(new NamedParameter("name",name));
+
             this._redisDatabase = _resolver.Resolve<IDatabase>();
 
             _dbConnection.Open();
@@ -36,10 +38,13 @@ namespace PirateX.Core.Domain.Uow
             _transaction = _dbConnection.BeginTransaction();
         }
 
-        public UnitOfWork(ILifetimeScope resolver,IsolationLevel il)
+        public UnitOfWork(ILifetimeScope resolver,IsolationLevel il, string name = null)
         {
             this._resolver = resolver;
-            this._dbConnection = _resolver.Resolve<IDbConnection>();
+            if (string.IsNullOrEmpty(name))
+                this._dbConnection = _resolver.Resolve<IDbConnection>();
+            else
+                this._dbConnection = _resolver.Resolve<IDbConnection>(new NamedParameter("name", name));
             this._redisDatabase = _resolver.Resolve<IDatabase>();
 
             _dbConnection.Open();

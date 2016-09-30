@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using PirateX.Core;
+using PirateX.Core.Container;
 using PirateX.ServiceStackV3;
 
 namespace PirateX.UnitTest
@@ -60,6 +61,16 @@ namespace PirateX.UnitTest
 
         public override void BuildContainer(ContainerBuilder builder)
         {
+        }
+
+        public override IDictionary<string, string> GetConnectionStrings()
+        {
+            return new Dictionary<string, string>();
+        }
+
+        public override IDatabaseInitializer GetDatabaseInitializer(string connectionStringId)
+        {
+            throw new NotImplementedException();
         }
 
         public override IDatabaseFactory GetConfigDatabaseFactory(IDistrictConfig config)

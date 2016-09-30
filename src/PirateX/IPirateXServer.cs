@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using PirateX.Core;
+using PirateX.Core.Container;
 using PirateX.Protocol;
 
 namespace PirateX
@@ -7,8 +8,6 @@ namespace PirateX
     public interface IPirateXServer
     {
         IServerContainer ServerContainer { get; set; }
-
-        ILifetimeScope ServerIoc { get; }
 
         #region 请求返回结果的缓存
         void StartRequest(IPirateXSession session, string c);

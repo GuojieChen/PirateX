@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using PirateX.Core.Container;
 
 namespace PirateX.Core.Config
 {

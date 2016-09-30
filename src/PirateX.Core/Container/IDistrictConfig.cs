@@ -1,10 +1,11 @@
-﻿namespace PirateX.Core
+﻿namespace PirateX.Core.Container
 {
     /// <summary> 游戏配置模型
     /// </summary>
     public interface IDistrictConfig
     {
         int Id { get; set; }
+
         /// <summary> 游戏数据库地址
         /// </summary>
         string ConnectionString { get; set; }
@@ -13,8 +14,7 @@
         string ConfigConnectionString { get; set; }
 
         string Redis { get; set; }
+
         int RedisDb { get; set; }
     }
-
-
 }

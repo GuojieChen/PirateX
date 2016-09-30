@@ -66,6 +66,11 @@ namespace GameServer.Console.SampleService
 
                 uow.Repository<RoleRepository>().GetById(1);
 
+
+                using (var now2 = CreateUnitOfWork(""))
+                {
+                }
+
                 uow.Commit();
             }
         }

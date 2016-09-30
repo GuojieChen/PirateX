@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Autofac;
 
-namespace PirateX.Core
+namespace PirateX.Core.Container
 {
-    public interface IServerContainer
+    public interface IServerContainer:IDisposable
     {
         /// <summary> 服务器容器
         /// </summary>
@@ -20,10 +21,14 @@ namespace PirateX.Core
         /// </summary>
         /// <returns></returns>
         IEnumerable<IDistrictConfig> GetDistrictConfigs();
+        
         /// <summary>
         /// 初始化容器信息
         /// </summary>
-        void InitContainers();
+        void InitContainers(ContainerBuilder builder);
+
+
+        void ServerConfig(ContainerBuilder builder);
 
         IContainerSetting ContainerSetting { get; }
 
@@ -40,6 +45,13 @@ namespace PirateX.Core
 
         void BuildContainer(ContainerBuilder builder);
 
+
+
+        /// <summary>
+        /// 用到的连接字符串列表
+        /// </summary>
+        IDictionary<string, string> GetConnectionStrings();
+            
         IDatabaseFactory GetConfigDatabaseFactory(IDistrictConfig config);
 
         IDatabaseFactory GetDistrictDatabaseFactory(IDistrictConfig config);

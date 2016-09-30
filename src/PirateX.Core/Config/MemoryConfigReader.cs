@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NLog;
 using PirateX.Core.Cache;
+using PirateX.Core.Container;
 using PirateX.Core.Utils;
 
 namespace PirateX.Core.Config
