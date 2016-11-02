@@ -20,11 +20,11 @@ namespace PirateX.UnitTest.Protocol.Package
         {
             var piratepackage = new ProtocolPackage(new JsonResponseConvert());
 
-            var requestInfo = new PirateXRequestInfo(new NameValueCollection()
+            var requestInfo = new PirateXRequestInfo(new Dictionary<string, string>()
             {
                 {"c","test" },
                 { "t","123456"}
-            },new NameValueCollection()
+            },new Dictionary<string, string>()
             {
                  {"p1","1" },
                  {"p2","2" },
@@ -32,8 +32,8 @@ namespace PirateX.UnitTest.Protocol.Package
 
             var requestPackage = new PirateXRequestPackage()
             {
-                HeaderBytes = Encoding.UTF8.GetBytes($"{String.Join("&", requestInfo.Headers.AllKeys.Select(a => a + "=" + requestInfo.Headers[a]))}"),
-                ContentBytes = Encoding.UTF8.GetBytes($"{String.Join("&", requestInfo.QueryString.AllKeys.Select(a => a + "=" + requestInfo.QueryString[a]))}")
+                HeaderBytes = Encoding.UTF8.GetBytes($"{String.Join("&", requestInfo.Headers.Keys.Select(a => a + "=" + requestInfo.Headers[a]))}"),
+                ContentBytes = Encoding.UTF8.GetBytes($"{String.Join("&", requestInfo.QueryString.Keys.Select(a => a + "=" + requestInfo.QueryString[a]))}")
             };
 
             var unpackrequestpack = piratepackage.PackRequestPackageToBytes(requestPackage);
@@ -46,11 +46,11 @@ namespace PirateX.UnitTest.Protocol.Package
             Assert.IsNotEmpty(requestInfo2.C);
 
 
-            Assert.AreEqual($"{String.Join("&", requestInfo.Headers.AllKeys.Select(a => a + "=" + requestInfo.Headers[a]))}"
-                , $"{String.Join("&", requestInfo2.Headers.AllKeys.Select(a => a + "=" + requestInfo2.Headers[a]))}");
+            Assert.AreEqual($"{String.Join("&", requestInfo.Headers.Keys.Select(a => a + "=" + requestInfo.Headers[a]))}"
+                , $"{String.Join("&", requestInfo2.Headers.Keys.Select(a => a + "=" + requestInfo2.Headers[a]))}");
 
-            Assert.AreEqual($"{String.Join("&", requestInfo.QueryString.AllKeys.Select(a => a + "=" + requestInfo.QueryString[a]))}"
-                , $"{String.Join("&", requestInfo2.QueryString.AllKeys.Select(a => a + "=" + requestInfo2.QueryString[a]))}");
+            Assert.AreEqual($"{String.Join("&", requestInfo.QueryString.Keys.Select(a => a + "=" + requestInfo.QueryString[a]))}"
+                , $"{String.Join("&", requestInfo2.QueryString.Keys.Select(a => a + "=" + requestInfo2.QueryString[a]))}");
 
         }
 

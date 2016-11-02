@@ -39,7 +39,6 @@ namespace PirateX.Core.Container
 
         public IServerSetting Settings { get; }
 
-
         public IContainerSetting ContainerSetting { get; }
 
         public DistrictContainer(IContainerSetting csetting, IServerSetting settings)

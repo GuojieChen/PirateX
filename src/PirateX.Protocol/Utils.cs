@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 
 namespace PirateX.Protocol
 {
@@ -399,6 +400,31 @@ namespace PirateX.Protocol
                 strPath = strPath.Substring(strPath.IndexOf('\\', 1)).TrimStart('\\');
             }
             return System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, strPath);
+        }
+
+
+        public static string ToQueryString(this IDictionary<string, string> queryDic)
+        {
+            return String.Join("&", queryDic.Keys.Select(a => a + "=" + queryDic[a]));
+        }
+
+        public static IDictionary<string, string> ToQueryDic(this string query)
+        {
+            if (string.IsNullOrEmpty(query))
+                return new Dictionary<string, string>();
+
+            var queryDict = new Dictionary<string, string>();
+            foreach (var token in query.TrimStart('?').Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string[] parts = token.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 2)
+                    queryDict[parts[0].Trim()] = parts[1].Trim();
+                else
+                    queryDict[parts[0].Trim()] = "";
+
+            }
+
+            return queryDict;
         }
     }
 }

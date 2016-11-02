@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using Autofac.Core.Activators;
 using PirateX.Protocol.Package;
@@ -63,17 +64,15 @@ namespace PirateX.Protocol
             }
         }
 
-        protected virtual TRequest ConvertFromQueryString(NameValueCollection parameters)
+        protected virtual TRequest ConvertFromQueryString(IDictionary<string,string> parameters)
         {
             var instance = Activator.CreateInstance<TRequest>();
             var type = typeof (TRequest);
-            foreach (string name in parameters)
+            foreach (var name in parameters)
             {
-                var value = parameters[name];
-
                 //数据校验
-                var p = type.GetProperty(name);
-                p?.SetValue(instance, value);
+                var p = type.GetProperty(name.Key);
+                p?.SetValue(instance, name.Value);
             }
 
             return instance; 

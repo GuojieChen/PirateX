@@ -60,6 +60,7 @@ namespace PirateX
         #endregion
         public IProtocolPackage ProtocolPackage { get; set; }
 
+
         protected override void OnSessionStarted()
         {
             if (Logger.IsDebugEnabled)
@@ -175,10 +176,9 @@ namespace PirateX
         }
 
 
-
-        public virtual void ProcessedRequest(string name, NameValueCollection args, long pms, long sms, long ms, DateTime start, DateTime end, string o)
+        public virtual void ProcessedRequest(string name, IDictionary<string, string> queryString, long pms, long sms, long ms, DateTime start, DateTime end,
+            string o)
         {
-
         }
     }
 

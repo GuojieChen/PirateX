@@ -12,8 +12,6 @@ namespace PirateX.Protocol.Package
         public ProtocolPackage(IZip zip, ICrypto crypto)
         {
             ZipEnable = true;
-            ClientKeys = new List<byte[]>(8); //用一个字节来表示加密算法的开关，这里用8个长度来存储秘钥
-            ServerKeys = new List<byte[]>(8);
             Zip = zip;
             Crypto = crypto;
         }
@@ -23,6 +21,12 @@ namespace PirateX.Protocol.Package
             this.ResponseConvert = responseConvert;
         }
 
+
+        public ProtocolPackage() : this(new DefaultZip(), new XXTea())
+        {
+        }
+
+
         public IZip Zip { get; private set; }
         public ICrypto Crypto { get; set; }
         public IResponseConvert ResponseConvert { get; set; }
@@ -31,8 +35,8 @@ namespace PirateX.Protocol.Package
         public bool ZipEnable { get; set; }
         public bool CryptoEnable { get; set; }
         public bool JsonEnable { get; set; }
-        public IList<byte[]> ClientKeys { get; set; }
-        public IList<byte[]> ServerKeys { get; set; }
+        public byte[] ClientKeys { get; set; }
+        public byte[] ServerKeys { get; set; }
 
         public IPirateXRequestPackage UnPackToRequestPackage(byte[] datas)
         {
@@ -66,8 +70,8 @@ namespace PirateX.Protocol.Package
                 var v = GetbitValue(cryptoBit[0], i);
                 if (v == 1)
                 {
-                    headerBytes = Crypto.Decode(headerBytes, ClientKeys[7 - i]);
-                    contentBytes = Crypto.Decode(contentBytes, ClientKeys[7 - i]);
+                    headerBytes = Crypto.Decode(headerBytes, ClientKeys);
+                    contentBytes = Crypto.Decode(contentBytes, ClientKeys);
                 }
             }
 
@@ -104,12 +108,12 @@ namespace PirateX.Protocol.Package
             //信息头压缩
             headerbytes = ZipEnable ? Zip.Compress(headerbytes) : headerbytes;
             //信息头加密
-            headerbytes = CryptoEnable ? Crypto.Encode(headerbytes, ServerKeys[0]) : headerbytes;
+            headerbytes = CryptoEnable ? Crypto.Encode(headerbytes, ServerKeys) : headerbytes;
 
             //数据体压缩
             contentbytes = ZipEnable ? Zip.Compress(contentbytes) : contentbytes;
             //数据体加密
-            contentbytes = CryptoEnable ? Crypto.Encode(contentbytes, ServerKeys[0]) : contentbytes;
+            contentbytes = CryptoEnable ? Crypto.Encode(contentbytes, ServerKeys) : contentbytes;
 
             var cryptoByte = new byte[1];
             cryptoByte[0] = CryptoEnable ? (byte)128 : (byte)0;
@@ -144,12 +148,12 @@ namespace PirateX.Protocol.Package
             //信息头压缩
             headerbytes = ZipEnable ? Zip.Compress(headerbytes) : headerbytes;
             //信息头加密
-            headerbytes = CryptoEnable ? Crypto.Encode(headerbytes, ServerKeys[0]) : headerbytes;
+            headerbytes = CryptoEnable ? Crypto.Encode(headerbytes, ServerKeys) : headerbytes;
 
             //数据体压缩
             contentbytes = ZipEnable ? Zip.Compress(contentbytes) : contentbytes;
             //数据体加密
-            contentbytes = CryptoEnable ? Crypto.Encode(contentbytes, ServerKeys[0]) : contentbytes;
+            contentbytes = CryptoEnable ? Crypto.Encode(contentbytes, ServerKeys) : contentbytes;
             
 
             var cryptoByte = new byte[1];
@@ -205,8 +209,8 @@ namespace PirateX.Protocol.Package
                 var v = GetbitValue(cryptoBit[0], i);
                 if (v == 1)
                 {
-                    headerBytes = Crypto.Decode(headerBytes, ClientKeys[7 - i]);
-                    contentBytes = Crypto.Decode(contentBytes, ClientKeys[7 - i]);
+                    headerBytes = Crypto.Decode(headerBytes, ClientKeys);
+                    contentBytes = Crypto.Decode(contentBytes, ClientKeys);
                 }
             }
 

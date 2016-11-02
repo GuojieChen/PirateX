@@ -19,34 +19,45 @@ namespace PirateX.Protocol.Package
 
         public string Token { get; set; }
 
-        public NameValueCollection Headers { get; set; }
+        public IDictionary<string, string> Headers { get; set; }
 
-        public NameValueCollection QueryString { get; set; }
+        public IDictionary<string, string> QueryString { get; set; }
 
         public IPirateXRequestPackage ToRequestPackage()
         {
             return new PirateXRequestPackage()
             {
-                HeaderBytes = Encoding.UTF8.GetBytes($"{String.Join("&", Headers.AllKeys.Select(a => a + "=" + Headers[a]))}"),
-                ContentBytes = Encoding.UTF8.GetBytes($"{String.Join("&", QueryString.AllKeys.Select(a => a + "=" + QueryString[a]))}"),
+                HeaderBytes = Encoding.UTF8.GetBytes($"{String.Join("&", Headers.Keys.Select(a => a + "=" + Headers[a]))}"),
+                ContentBytes = Encoding.UTF8.GetBytes($"{String.Join("&", QueryString.Keys.Select(a => a + "=" + QueryString[a]))}"),
             };
         }
 
         public string Key { get; set; }
 
-        public PirateXRequestInfo(NameValueCollection headers,NameValueCollection queryString)
+        public PirateXRequestInfo(IDictionary<string, string> headers, IDictionary<string, string> queryString)
         {
             this.Headers = headers;
             this.QueryString = queryString;
-            this.C = this.Key = headers["c"];
-            this.O = Convert.ToInt32(headers["o"]);
-            this.R = Convert.ToBoolean(headers["r"]);
-            this.Timestamp = Convert.ToInt64(headers["t"]);
-            this.Token = Convert.ToString(headers["token"]);
+            if (headers.ContainsKey("c"))
+                this.C = this.Key =  headers["c"];
+            if (headers.ContainsKey("o"))
+                this.O = Convert.ToInt32(headers["o"]);
+            if(headers.ContainsKey("r"))
+                this.R = Convert.ToBoolean(headers["r"]);
+            if (headers.ContainsKey("t"))
+                this.Timestamp = Convert.ToInt64(headers["t"]);
+            if (headers.ContainsKey("token"))
+                this.Token = Convert.ToString(headers["token"]);
+        }
+
+        public PirateXRequestInfo(string headerStr, string contentStr)
+            :this(headerStr.ToQueryDic(), contentStr.ToQueryDic())
+        {
+            
         }
 
         public PirateXRequestInfo(byte[] headerBytes, byte[] contentBytes)
-            :this(HttpUtility.ParseQueryString(Encoding.UTF8.GetString(headerBytes)), HttpUtility.ParseQueryString(Encoding.UTF8.GetString(contentBytes)) )
+            :this(Encoding.UTF8.GetString(headerBytes), Encoding.UTF8.GetString(contentBytes) )
         {
             
         }
@@ -56,5 +67,6 @@ namespace PirateX.Protocol.Package
         {
             
         }
+        
     }
 }

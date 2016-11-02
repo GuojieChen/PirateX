@@ -21,10 +21,10 @@ namespace PirateX.Protocol.Package
         bool CryptoEnable { get; set; }
         /// <summary> 客户端秘钥列表
         /// </summary>
-        IList<byte[]> ClientKeys { get; set; }
+        byte[] ClientKeys { get; set; }
         /// <summary> 服务端秘钥列表
         /// </summary>
-        IList<byte[]> ServerKeys { get; set; }
+        byte[] ServerKeys { get; set; }
 
         IResponseConvert ResponseConvert { get; set; }
 

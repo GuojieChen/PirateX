@@ -362,7 +362,7 @@ namespace PirateX.Client
             //ProtocolProcessor.SendHandshake(this);
             _clientSeed = Utils.GetTimestampAsSecond();
             var clientKey = new KeyGenerator(_clientSeed);
-            PackageProcessor.ClientKeys.Add(clientKey.MakeKey());
+            PackageProcessor.ClientKeys = clientKey.MakeKey();
 
             Send("NewSeed",$"seed={_clientSeed}");
         }
@@ -465,11 +465,14 @@ namespace PirateX.Client
                 m_BroadcastExectorDict.Add(type.Name, Activator.CreateInstance(type) as IJsonBroadcastExecutor);
         }
 
-        public void Send(string name, string querystring, NameValueCollection exheader = null)
+        public void Send(string name, string querystring, IDictionary<string,string> exheader = null)
         {
-            var headerNc = new NameValueCollection();
-            if(exheader!=null)
-                headerNc.Add(exheader);
+            var headerNc = new Dictionary<string, string>();
+            if (exheader != null)
+            {
+                foreach (var item in exheader)
+                    headerNc.Add(item.Key,item.Value);
+            }
 
             headerNc.Add("c",name);
             headerNc.Add("o", $"{O++}"); 
@@ -477,20 +480,17 @@ namespace PirateX.Client
             headerNc.Add("language",$"{Language}");
             headerNc.Add("device",$"{Device}");
             
-            var reqeustInfo = new PirateXRequestInfo(headerNc,HttpUtility.ParseQueryString(querystring));
+            var reqeustInfo = new PirateXRequestInfo(headerNc, querystring.ToQueryDic());
 
             var senddatas = PackageProcessor.PackRequestPackageToBytes(reqeustInfo.ToRequestPackage());
             Client.Send(senddatas,0, senddatas.Length);
         }
 
-        public void Send(string name, NameValueCollection query, NameValueCollection exheader = null)
+        public void Send(string name, IDictionary<string,string> query, IDictionary<string, string> exheader = null)
         {
-            if(query == null)
-                Send(name,string.Empty,exheader);
-            else 
-                Send(name,query.ToString(),exheader);
+            Send(name, query?.ToQueryString() ?? string.Empty, exheader);
         }
-        
+
         public void Send<T>(T data)
         {
             //Send(typeof(T).Name, data);

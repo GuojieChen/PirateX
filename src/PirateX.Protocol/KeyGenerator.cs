@@ -1,12 +1,18 @@
-﻿namespace PirateX.Client.Command
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PirateX.Protocol
 {
     public class KeyGenerator
     {
-        public int Seed { get; private set; } 
+        public int Seed { get; private set; }
 
         public KeyGenerator(int seed)
         {
-            this.Seed = seed; 
+            this.Seed = seed;
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using PirateX.Protocol;
+using ProtoBuf;
 
 namespace PirateX.Client.Command
 {
@@ -8,7 +9,7 @@ namespace PirateX.Client.Command
         {
             var serverKey = new KeyGenerator(data.Seed); 
 
-            pSocket.PackageProcessor.ServerKeys.Add(serverKey.MakeKey());
+            pSocket.PackageProcessor.ServerKeys = serverKey.MakeKey();
             pSocket.PackageProcessor.CryptoEnable = true;
 
         }

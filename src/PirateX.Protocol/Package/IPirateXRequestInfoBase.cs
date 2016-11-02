@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 namespace PirateX.Protocol.Package
@@ -9,8 +10,8 @@ namespace PirateX.Protocol.Package
         bool R { get; set; }
         long Timestamp { get; set; }
         string Token { get; set; }
-        NameValueCollection Headers { get; set; }
-        NameValueCollection QueryString { get; set; }
+        IDictionary<string,string> Headers { get; set; }
+        IDictionary<string, string> QueryString { get; set; }
 
         IPirateXRequestPackage ToRequestPackage();
     }

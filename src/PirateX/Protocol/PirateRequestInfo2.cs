@@ -12,10 +12,6 @@ namespace PirateX.Protocol
     public class PirateRequestInfo2: PirateXRequestInfo, IPirateXRequestInfo
     {
 
-        public PirateRequestInfo2(NameValueCollection headers, NameValueCollection queryString) : base(headers, queryString)
-        {
-        }
-
         public PirateRequestInfo2(byte[] headerBytes, byte[] contentBytes) : base(headerBytes, contentBytes)
         {
         }

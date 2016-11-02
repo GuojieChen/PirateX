@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using Autofac;
 using PirateX.Protocol;
@@ -51,7 +52,7 @@ namespace PirateX
         /// <param name="name">请求方法名</param>
         /// <param name="start">请求接收时间（服务器本地时间）</param>
         /// <param name="end">请求处理结束时间（服务器本地时间）</param>
-        void ProcessedRequest(string name,NameValueCollection queryString, long pms, long sms, long ms,DateTime start,DateTime end,string o);
+        void ProcessedRequest(string name,IDictionary<string,string> queryString, long pms, long sms, long ms,DateTime start,DateTime end,string o);
         
     }
 } 
