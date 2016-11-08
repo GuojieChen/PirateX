@@ -20,6 +20,10 @@ namespace EntityFrameworkTest.Domain
         public byte[] Timestamp { get; set; }
 
         public int Age { get; set; }
+        [StringLength(100)]
+        public string Address { get; set; }
+        [StringLength(100)]
+        public string NickName { get; set; }
     }
 
 }

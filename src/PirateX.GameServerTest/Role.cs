@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using PirateX.Core.Domain.Entity;
 using ProtoBuf;
 

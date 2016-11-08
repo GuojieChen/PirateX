@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Data;
+using Autofac;
 using NetMQ;
 using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
@@ -15,7 +16,7 @@ namespace PirateX.Net.Actor.Actions
 
         public IRedisSerializer RedisSerializer => ServerReslover.Resolve<IRedisSerializer>();
         public IDatabase Redis => Reslover.Resolve<IDatabase>();
-
+        public IDbConnection DbConnection => Reslover.Resolve<IDbConnection>();
         public ILifetimeScope ServerReslover { get; set; }
         public ILifetimeScope Reslover { get; set; }
         public string Name { get; set; }

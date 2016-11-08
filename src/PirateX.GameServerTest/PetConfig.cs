@@ -1,4 +1,5 @@
-﻿using PirateX.Core.Config;
+﻿using System;
+using PirateX.Core.Config;
 
 namespace PirateX.GameServerTest
 {
@@ -9,7 +10,7 @@ namespace PirateX.GameServerTest
 
         public string Name { get; set; }
 
-        public int AwakeCost { get; set; }
+        public string AwakeCost { get; set; }
 
         public int ElementType { get; set; }
     }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 using NLog;
 using PirateX.Core.Cache;
 using PirateX.Core.Container;
@@ -24,16 +26,19 @@ namespace PirateX.Core.Config
 
         private object _lockHelper = new object();
 
+        private Func<IDbConnection> getconnection { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="configAssembly">配置模型所在的程序集</param>
-        public MemoryConfigReader(Assembly configAssembly)
+        public MemoryConfigReader(Assembly configAssembly,Func<IDbConnection> getconnection)
         {
             _configAssembly = configAssembly;
+            this.getconnection = getconnection;
         }
 
-        public void Load(IDatabaseFactory connection)
+        public void Load()
         {
             if (isLoaded)
                 return;
@@ -59,13 +64,13 @@ namespace PirateX.Core.Config
                             {
                                 this.GetType().GetMethod("LoadKeyValueConfigData", BindingFlags.Instance | BindingFlags.NonPublic)
                                                         .MakeGenericMethod(type)
-                                                        .Invoke(this, new object[] { connection });
+                                                        .Invoke(this, new object[] { getconnection(),  });
                             }
                             else if (typeof(IConfigIdEntity).IsAssignableFrom(type))
                             {
                                 this.GetType().GetMethod("LoadConfigData", BindingFlags.Instance | BindingFlags.NonPublic)
                                                         .MakeGenericMethod(type)
-                                                        .Invoke(this, new object[] { connection });
+                                                        .Invoke(this, new object[] { getconnection() });
                             }
                         }));
                     }
@@ -78,19 +83,16 @@ namespace PirateX.Core.Config
                     {
                         Logger.Error(exception);
                         throw;
-                    }
+                   } 
                 }
 
                 isLoaded = true;
             }
         }
         #region Load Methods
-        private void LoadConfigData<T>(IDatabaseFactory connection) where T : IConfigIdEntity
+        private void LoadConfigData<T>(IDbConnection connection) where T : IConfigIdEntity
         {
-            var list = connection.Select<T>();
-
-            if (!list.Any())
-                return;
+            var list = connection.Query<T>($"select * from {typeof(T).Name}");
 
             var type = typeof (T);
 
@@ -119,13 +121,9 @@ namespace PirateX.Core.Config
                 _cacheClient.Add(GetCacheKeyListKey<T>() , listkeys);
         }
 
-        private void LoadKeyValueConfigData<T>(IDatabaseFactory connection) where T : IConfigKeyValueEntity
+        private void LoadKeyValueConfigData<T>(IDbConnection connection) where T : IConfigKeyValueEntity
         {
-            
-            var list = connection.Select<T>();
-
-            if (!list.Any())
-                return;
+            var list = connection.Query<T>($"select * from {typeof(T).Name}",typeof(T));
 
             foreach (var item in list)
             {
@@ -133,7 +131,7 @@ namespace PirateX.Core.Config
                     continue;
 
                 var key = GetCacheKey<T>(item.Id);
-                _cacheClient.Set(key, item.V); 
+                _cacheClient.Set(key, item.V);
             }
         }
         #endregion

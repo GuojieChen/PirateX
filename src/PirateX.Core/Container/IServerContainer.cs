@@ -51,10 +51,6 @@ namespace PirateX.Core.Container
         /// 用到的连接字符串列表
         /// </summary>
         IDictionary<string, string> GetConnectionStrings();
-            
-        IDatabaseFactory GetConfigDatabaseFactory(IDistrictConfig config);
-
-        IDatabaseFactory GetDistrictDatabaseFactory(IDistrictConfig config);
     }
 
 

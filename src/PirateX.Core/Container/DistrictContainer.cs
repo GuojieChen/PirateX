@@ -207,7 +207,7 @@ namespace PirateX.Core.Container
                 if (_configReaderDic.ContainsKey(configDbKey))
                     return _configReaderDic[configDbKey];
 
-                var newReader = new MemoryConfigReader(ContainerSetting.ConfigAssembly);
+                var newReader = new MemoryConfigReader(ContainerSetting.ConfigAssembly, () => new SqlConnection(districtConfig.ConfigConnectionString));
                 _configReaderDic.Add(configDbKey, newReader);
                 return newReader;
             })
@@ -231,17 +231,17 @@ namespace PirateX.Core.Container
                     .InstancePerLifetimeScope();
             }
 
-            builder.Register(c => GetDistrictDatabaseFactory(districtConfig)).As<IDatabaseFactory>().SingleInstance();
-
             var container = builder.Build();
 
-            if (Log.IsTraceEnabled)
-                Log.Trace("CreateAndAlterTable");
-            if (ContainerSetting.EntityAssembly != null)
-                container.Resolve<IDatabaseFactory>().CreateAndAlterTable(ContainerSetting.EntityAssembly.GetTypes().Where(item => typeof(IEntity).IsAssignableFrom(item)));
+            if (container.IsRegistered<IDatabaseInitializer>())
+            {
+                //判断是否有更新 ？
+                //更新数据库
+                container.Resolve<IDatabaseInitializer>().Initialize(districtConfig.ConnectionString);
+            }
 
             if (ContainerSetting.ConfigAssembly != null)
-                container.Resolve<IConfigReader>().Load(GetConfigDatabaseFactory(districtConfig));
+                container.Resolve<IConfigReader>().Load();
 
             return container;
         }
@@ -289,13 +289,8 @@ namespace PirateX.Core.Container
         public abstract void BuildContainer(ContainerBuilder builder);
 
         public abstract IDictionary<string, string> GetConnectionStrings();
-
-        public abstract IDatabaseInitializer GetDatabaseInitializer(string connectionStringId);
-
-        public abstract IDatabaseFactory GetConfigDatabaseFactory(IDistrictConfig config);
-
-        public abstract IDatabaseFactory GetDistrictDatabaseFactory(IDistrictConfig config);
         #endregion
+        
 
         public void Dispose()
         {
@@ -307,8 +302,6 @@ namespace PirateX.Core.Container
     public interface IContainerSetting
     {
         Assembly ConfigAssembly { get; }
-
-        Assembly EntityAssembly { get; }
 
         Assembly ServiceAssembly { get; }
     }

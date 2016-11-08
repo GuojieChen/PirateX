@@ -88,12 +88,6 @@
     <None Include="supersocket.cmd" />
     <None Include="supersocket.sh" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PirateX.SLB\PirateX.SLB.csproj">
-      <Project>{42d72bec-9f9b-4dfd-9a79-9833da34ecc6}</Project>
-      <Name>PirateX.SLB</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

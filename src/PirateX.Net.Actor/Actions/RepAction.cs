@@ -46,8 +46,6 @@ namespace PirateX.Net.Actor.Actions
 
         protected virtual TResponse GetFromCache(string key)
         {
-            Console.WriteLine("GetFromCache");
-
             var data = Redis.StringGet(key);
             return RedisSerializer.Deserialize<TResponse>(data);
         }
@@ -59,18 +57,13 @@ namespace PirateX.Net.Actor.Actions
             var trans = Redis.CreateTransaction();
             trans.StringSetAsync(key, RedisSerializer.Serilazer(response),new TimeSpan(0,0,30));
             trans.ListRightPushAsync(GetResponseListUrn(), key);
-            var f = trans.Execute();
-
-            Console.WriteLine(f);
-            Console.WriteLine("trans.Execute()");
+            trans.Execute();
 
             if (Redis.ListLength(listurn) >= 4)
             {//保存4条
                 var removekey = Redis.ListLeftPop(listurn);
                 Redis.KeyDelete(removekey.ToString());
             }
-
-            Console.WriteLine("Redis.KeyDelete");
         }
 
 

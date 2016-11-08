@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using PirateX.Core.Container;
+using PirateX.Core.Domain.Entity;
 using PirateX.ServiceStackV3;
 
 namespace PirateX.GameServerTest
@@ -41,11 +42,6 @@ namespace PirateX.GameServerTest
         public Assembly ConfigAssembly
         {
             get { return typeof (PetConfig).Assembly; }
-        }
-
-        public Assembly EntityAssembly
-        {
-            get { return typeof (Role).Assembly; }
         }
 
         public Assembly ServiceAssembly
@@ -120,6 +116,13 @@ namespace PirateX.GameServerTest
 
         public override void BuildContainer(ContainerBuilder builder)
         {
+            //builder.Register<IDatabaseInitializer>(
+            //    c =>
+            //        new ServiceStackDatabaseInitializer(
+            //            typeof (PetConfig).Assembly.GetTypes().Where(item => typeof (IEntity).IsAssignableFrom(item))))
+            //            .SingleInstance();
+
+            builder.Register<IDatabaseInitializer>(c=>new EntityFrameworkDatabaseInitializer());
         }
 
         public override IDictionary<string, string> GetConnectionStrings()
@@ -127,25 +130,7 @@ namespace PirateX.GameServerTest
             return new Dictionary<string, string>()
             {
                 {"role", ""},
-
             };
-        }
-
-
-        //TODO 数据库升级还需要进一步抽象，以支持EntityFramework框架
-        public override IDatabaseFactory GetConfigDatabaseFactory(IDistrictConfig config)
-        {
-            return new ServiceStackDatabaseFactory(config.ConfigConnectionString);
-        }
-
-        public override IDatabaseFactory GetDistrictDatabaseFactory(IDistrictConfig config)
-        {
-            return new ServiceStackDatabaseFactory(config.ConnectionString);
-        }
-
-        public override IDatabaseInitializer GetDatabaseInitializer(string connectionStringId)
-        {
-            throw new NotImplementedException();
         }
     }
 }

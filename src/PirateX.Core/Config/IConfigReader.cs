@@ -8,7 +8,7 @@ namespace PirateX.Core.Config
     /// </summary>
     public interface IConfigReader
     {
-        void Load(IDatabaseFactory connection);
+        void Load();
         /// <summary> 根据关键字获取数据
         /// </summary>
         /// <typeparam name="T"></typeparam>

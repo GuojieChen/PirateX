@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Autofac;
 using Dapper;
 using PirateX.Core.Domain.Entity;
-using DapperExtensions;
 
 namespace PirateX.Core.Domain.Repository
 {
@@ -25,17 +24,18 @@ namespace PirateX.Core.Domain.Repository
 
         public T GetById(object id)
         {
-            return DbConnection.Get<T>(id,DbTransaction);
+            //return DbConnection.Get<T>(id,DbTransaction);
+            return default(T);
         }
 
         public void Insert(T t)
         {
-            DbConnection.Insert(t,DbTransaction);
+            //DbConnection.Insert(t,DbTransaction);
         }
 
         public void Insert(IEnumerable<T> ts)
         {
-            DbConnection.Insert(ts, DbTransaction);
+            //DbConnection.Insert(ts, DbTransaction);
         }
     }
 }

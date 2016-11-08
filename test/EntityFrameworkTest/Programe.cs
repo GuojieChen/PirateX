@@ -14,9 +14,9 @@ namespace EntityFrameworkTest
     {
         public static void Main(string[] args)
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<BlogContext, Configuration>("Default"));
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<BlogContext, Configuration>(true));
 
-            using (var db = new BlogContext())
+            using (var db = new BlogContext("Server=192.168.1.213; Database=pirate.core;User ID=pokemonx;Password=123456;"))
             {
                 db.Database.Initialize(true);
             }

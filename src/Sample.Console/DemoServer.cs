@@ -145,20 +145,5 @@ namespace GameServer.Console
                 
             };
         }
-
-        public override IDatabaseInitializer GetDatabaseInitializer(string connectionStringId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IDatabaseFactory GetConfigDatabaseFactory(IDistrictConfig config)
-        {
-            return new ServiceStackDatabaseFactory(config.ConnectionString);
-        }
-
-        public override IDatabaseFactory GetDistrictDatabaseFactory(IDistrictConfig config)
-        {
-            return new ServiceStackDatabaseFactory(config.ConfigConnectionString);
-        }
     }
 }

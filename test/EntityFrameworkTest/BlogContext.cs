@@ -13,9 +13,10 @@ namespace EntityFrameworkTest
     {
         public DbSet<Users> Users { get; set; }
 
-        public BlogContext():base("Default")
-        {
 
+        public BlogContext(string connectionString):base(connectionString)
+        {
+            
         }
     }
 }
