@@ -48,7 +48,7 @@ namespace PirateX.Command
 
             var appserver = (IPirateXServer)session.AppServer;
 
-            var onlineManager = appserver.ServerContainer.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
+            var onlineManager = appserver.ServerContainer.ServerIoc.Resolve<IOnlineManager>();
 
             #region 实行登陆排队，并且排除同一时间同一个账号的可能
             lock (LoggingHelper)
@@ -98,9 +98,9 @@ namespace PirateX.Command
         /*
          *  重新登陆的控制
             if (PirateXServer.LoggingSet.ContainsKey(data.Rid))
-                PirateXServer.LoggingSet[data.Rid] = session.SessionID;
+                PirateXServer.LoggingSet[data.Rid] = session.SessionId;
             else
-                PirateXServer.LoggingSet.Add(data.Rid, session.SessionID);
+                PirateXServer.LoggingSet.Add(data.Rid, session.SessionId);
          * 
          */
     }

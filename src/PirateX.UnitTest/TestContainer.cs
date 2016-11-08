@@ -93,6 +93,7 @@ namespace PirateX.UnitTest
         public string ConfigConnectionString { get; set; }
         public string Redis { get; set; }
         public int RedisDb { get; set; }
+        public string SecretKey { get; set; }
         public bool AlterTable { get; set; }
     }
 

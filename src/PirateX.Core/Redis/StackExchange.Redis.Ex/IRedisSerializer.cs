@@ -2,8 +2,8 @@
 {
     public interface IRedisSerializer
     {
-        string Serilazer<T>(T obj);
+        byte[] Serilazer<T>(T obj);
 
-        T Deserialize<T>(string value);
+        T Deserialize<T>(byte[] value);
     }
 }

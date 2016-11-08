@@ -12,24 +12,21 @@ namespace PirateX.Core.Redis.StackExchange.Redis.Ex
 {
     public class ProtobufRedisSerializer : IRedisSerializer
     {
-
-        public string Serilazer<T>(T obj)
+        public byte[] Serilazer<T>(T obj)
         {
-            byte[] bytes = null; 
+            byte[] bytes = null;
             using (var ms = new MemoryStream())
             {
                 Serializer.Serialize(ms, obj);
                 bytes = ms.ToArray();
             }
 
-            return Encoding.Default.GetString(bytes); 
+            return bytes;
         }
 
-        public T Deserialize<T>(string value)
+        public T Deserialize<T>(byte[] value)
         {
-            var bytes = Encoding.Default.GetBytes(value); 
-
-            using (var ms = new MemoryStream(bytes))
+            using (var ms = new MemoryStream(value))
             {
                 return Serializer.Deserialize<T>(ms);
             }

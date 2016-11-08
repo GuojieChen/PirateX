@@ -43,7 +43,7 @@ namespace PirateX.Core.UnitTest.Redis.StackExchange.Redis.Ex
         {
             var jsonstr = "{\"Id\":1,\"Name\":\"Test\",\"Items\":[{\"Id\":1,\"Name\":\"Item_1\"},{\"Id\":2,\"Name\":\"Item_2\"},{\"Id\":3,\"Name\":\"Item_3\"},{\"Id\":4,\"Name\":\"Item_4\"}]}";
 
-            var obj = serializer.Deserialize<SerializerObject>(jsonstr);
+            var obj = serializer.Deserialize<SerializerObject>(Encoding.UTF8.GetBytes(jsonstr));
 
             Assert.IsNotNull(obj);
         }

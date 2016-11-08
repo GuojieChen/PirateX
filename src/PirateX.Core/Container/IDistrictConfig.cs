@@ -16,5 +16,7 @@
         string Redis { get; set; }
 
         int RedisDb { get; set; }
+
+        string SecretKey { get; set; }
     }
 }

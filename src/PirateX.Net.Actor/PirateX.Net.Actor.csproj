@@ -53,6 +53,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -67,12 +68,17 @@
   <ItemGroup>
     <Compile Include="Actions\ActionBase.cs" />
     <Compile Include="Actions\IAction.cs" />
+    <Compile Include="Actions\Login.cs" />
     <Compile Include="Actions\NewSeed.cs" />
     <Compile Include="Actions\RepAction.cs" />
+    <Compile Include="IMessageSender.cs" />
+    <Compile Include="PirateXException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ActorConfig.cs" />
     <Compile Include="ActorContext.cs" />
     <Compile Include="ActorService.cs" />
+    <Compile Include="StatusCode.cs" />
+    <Compile Include="Token.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

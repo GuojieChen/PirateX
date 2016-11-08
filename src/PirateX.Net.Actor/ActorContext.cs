@@ -6,8 +6,6 @@ namespace PirateX.Net.Actor
     {
         public byte Version { get; set; }
 
-        public string ActionName { get; set; }
-
         public string SessionId { get; set; }
 
         public byte[] ClientKeys { get; set; }

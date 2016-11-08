@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac;
 using NetMQ;
+using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Protocol.Package;
+using StackExchange.Redis;
 
 namespace PirateX.Net.Actor.Actions
 {
@@ -13,12 +16,14 @@ namespace PirateX.Net.Actor.Actions
         public override void Execute()
         {
             var response = Play();
-
+            var cachekey = GetResponseUrn();
 
             if (Context.Request.R)
             {
                 //r == trye //拿之前的数据
                 //获取和保存需要保持一致
+
+                MessageSender.SendMessage(base.Context, GetFromCache(cachekey) );
             }
             else
             {
@@ -26,60 +31,60 @@ namespace PirateX.Net.Actor.Actions
                 {
                     //有值，返回
 
-                    SendMessage(response);
+                    MessageSender.SendMessage(base.Context,response);
                 }
                 else
                 {
                     //返回默认值
-
                 }
 
                 //缓存返回值
+                SetToCache(cachekey,response);
             }
         }
 
-        protected void SendMessage<T>(IDictionary<string,string> header,T rep)
-        {
-            var repMsg = new NetMQMessage(); 
-            repMsg.Append(new byte[] { Context.Version });//版本号
-            repMsg.Append("action");//动作
-            repMsg.Append(Context.SessionId);//sessionid
-            repMsg.Append(Context.ClientKeys);//客户端密钥
-            repMsg.Append(Context.ServerKeys);//服务端密钥
-            repMsg.Append(GetHeaderBytes(header));//信息头
-            repMsg.Append(ProtocolPackage.ResponseConvert.SerializeObject(rep));//信息体
 
-            base.MessageQeue.Enqueue(repMsg);
+        protected virtual TResponse GetFromCache(string key)
+        {
+            Console.WriteLine("GetFromCache");
+
+            var data = Redis.StringGet(key);
+            return RedisSerializer.Deserialize<TResponse>(data);
         }
 
-        protected void SendMessage(TResponse rep)
+        protected virtual void SetToCache(string key, TResponse response)
         {
-            var headers = new Dictionary<string,string>();
-            headers.Add("c", Context.Request.C);
-            headers.Add("i", "1");//返回类型 
-            headers.Add("o", Convert.ToString(Context.Request.O));
-            headers.Add("code", Convert.ToString((int)200));
+            var listurn = GetResponseListUrn();
 
-            SendMessage(headers,rep);
+            var trans = Redis.CreateTransaction();
+            trans.StringSetAsync(key, RedisSerializer.Serilazer(response),new TimeSpan(0,0,30));
+            trans.ListRightPushAsync(GetResponseListUrn(), key);
+            var f = trans.Execute();
+
+            Console.WriteLine(f);
+            Console.WriteLine("trans.Execute()");
+
+            if (Redis.ListLength(listurn) >= 4)
+            {//保存4条
+                var removekey = Redis.ListLeftPop(listurn);
+                Redis.KeyDelete(removekey.ToString());
+            }
+
+            Console.WriteLine("Redis.KeyDelete");
         }
 
 
-        protected void SendMessage<T>(string name, T data)
+        private string GetResponseUrn()
         {
-            var headers = new Dictionary<string, string>();
-            headers.Add("c", Context.Request.C);
-            headers.Add("i", "2");//返回类型 
-            headers.Add("o", Convert.ToString(Context.Request.O));
-            headers.Add("code", Convert.ToString((int)200));
-
-            SendMessage(headers, data);
+            return $"rep:{base.OnlieRole.Id}:{base.Context.Request.C}_{base.Context.Request.O}";
         }
 
-        private byte[] GetHeaderBytes(IDictionary<string,string> headers)
+        private string GetResponseListUrn()
         {
-            return Encoding.UTF8.GetBytes($"{String.Join("&", headers.Keys.Select(a => a + "=" + headers[a]))}");
+            return $"replist:{base.OnlieRole.Id}";
         }
 
+        
         public abstract TResponse Play();
     }
 }

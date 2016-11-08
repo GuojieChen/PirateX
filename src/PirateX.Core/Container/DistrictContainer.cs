@@ -178,6 +178,7 @@ namespace PirateX.Core.Container
                 .SingleInstance();
 
             builder.Register(c => ConnectionMultiplexer.Connect(districtConfig.Redis))
+                .SingleInstance()
                 .AsSelf();
 
             builder.Register(c => c.Resolve<ConnectionMultiplexer>().GetDatabase(districtConfig.RedisDb))

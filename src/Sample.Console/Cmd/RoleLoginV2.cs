@@ -34,8 +34,7 @@ namespace GameServer.Console.Cmd
             {
                 Id = request.Rid,
                 Did = request.Did,
-                HotName = Dns.GetHostName(),
-                SessionID = session.SessionID
+                SessionId = session.SessionID
             };
         }
 

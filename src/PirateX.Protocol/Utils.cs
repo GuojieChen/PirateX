@@ -405,7 +405,7 @@ namespace PirateX.Protocol
 
         public static string ToQueryString(this IDictionary<string, string> queryDic)
         {
-            return String.Join("&", queryDic.Keys.Select(a => a + "=" + queryDic[a]));
+            return string.Join("&", queryDic.Keys.Select(a => a + "=" + queryDic[a]));
         }
 
         public static IDictionary<string, string> ToQueryDic(this string query)
@@ -413,12 +413,12 @@ namespace PirateX.Protocol
             if (string.IsNullOrEmpty(query))
                 return new Dictionary<string, string>();
 
-            var queryDict = new Dictionary<string, string>();
+            var queryDict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var token in query.TrimStart('?').Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 string[] parts = token.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length == 2)
-                    queryDict[parts[0].Trim()] = parts[1].Trim();
+                    queryDict[parts[0].Trim()] = HttpUtility.UrlDecode(parts[1].Trim());
                 else
                     queryDict[parts[0].Trim()] = "";
 

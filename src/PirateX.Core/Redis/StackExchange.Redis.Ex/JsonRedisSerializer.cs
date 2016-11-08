@@ -1,18 +1,21 @@
 ﻿using System;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace PirateX.Core.Redis.StackExchange.Redis.Ex
 {
     public class JsonRedisSerializer : IRedisSerializer
     {
-        public string Serilazer<T>(T obj)
+        public byte[] Serilazer<T>(T obj)
         {
-            return JsonConvert.SerializeObject(obj);
+            return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj));
         }
 
-        public T Deserialize<T>(string value)
+        public T Deserialize<T>(byte[] value)
         {
-            return JsonConvert.DeserializeObject<T>(value);
+            
+
+            return JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(value));
         }
     }
 }

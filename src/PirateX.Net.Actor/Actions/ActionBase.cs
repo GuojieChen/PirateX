@@ -1,17 +1,31 @@
-﻿using NetMQ;
+﻿using Autofac;
+using NetMQ;
+using PirateX.Core.Online;
+using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Protocol.Package;
+using StackExchange.Redis;
 using Topshelf.Logging;
 
 namespace PirateX.Net.Actor.Actions
 {
     public abstract class ActionBase:IAction
     {
-        public IProtocolPackage ProtocolPackage { get; set; }
+        public IMessageSender MessageSender { get; set; }
         public LogWriter Logger { get; set; }
+
+        public IRedisSerializer RedisSerializer => ServerReslover.Resolve<IRedisSerializer>();
+        public IDatabase Redis => Reslover.Resolve<IDatabase>();
+
+        public ILifetimeScope ServerReslover { get; set; }
+        public ILifetimeScope Reslover { get; set; }
         public string Name { get; set; }
+        public IOnlineRole OnlieRole { get; set; }
         public ActorContext Context { get; set; }
         public abstract void Execute();
 
-        public NetMQQueue<NetMQMessage> MessageQeue { get; set; }
+        public void Dispose()
+        {
+            Reslover?.Dispose();
+        }
     }
 }

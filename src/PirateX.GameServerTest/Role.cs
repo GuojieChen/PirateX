@@ -22,7 +22,5 @@ namespace PirateX.GameServerTest
         }
         
         public byte[] Timestamp { get; set; }
-
-        public DateTimeOffset Tt { get; set; }
     }
 }

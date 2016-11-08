@@ -2,20 +2,12 @@
 
 namespace PirateX.Core.Online
 {
-    /// <summary> 在线管理抽象类
-    /// </summary>
-    public interface IOnlineManager<TOnlineRole>
-         where TOnlineRole : IOnlineRole
+
+    public interface IOnlineManager
     {
-        /// <summary> 服务器上线
-        /// </summary>
-        void ServerOnline();
-        /// <summary> 服务器下线
-        /// </summary>
-        void ServerOffline();
         /// <summary> 角色登录
         /// </summary>
-        void Login(TOnlineRole onlineRole);
+        void Login(IOnlineRole onlineRole);
         /// <summary> 角色登出
         /// </summary>
         void Logout(long rid, string sessionid);
@@ -24,11 +16,15 @@ namespace PirateX.Core.Online
         /// <param name="rid">角色ID</param>
         /// <returns></returns>
         bool IsOnline(long rid);
+
+        
         /// <summary> 获取在线角色信息
         /// </summary>
         /// <param name="rid"></param>
         /// <returns></returns>
-        TOnlineRole GetOnlineRole(long rid);
+        IOnlineRole GetOnlineRole(long rid);
+
+        IOnlineRole GetOnlineRole(string sessionid);
     }
 
     /// <summary> 抽象的在线角色信息
@@ -40,12 +36,20 @@ namespace PirateX.Core.Online
         /// </summary>
         int Did { get; set; }
         /// <summary>
-        /// 区服NAME
-        /// </summary>
-        string HotName { get; set; }
-        /// <summary>
         /// Session ID
         /// </summary>
-        string SessionID { get; set; }
+        string SessionId { get; set; }
+        /// <summary>
+        /// 第三方账号标识
+        /// </summary>
+        string Uid { get; set; }
+        /// <summary>
+        /// 建立时间
+        /// </summary>
+        DateTime StartUtcAt { get; set; }
+        /// <summary>
+        /// 账号服用以授权的token信息
+        /// </summary>
+        string Token { get; set; }
     }
 }

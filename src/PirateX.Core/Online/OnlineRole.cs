@@ -7,13 +7,17 @@ namespace PirateX.Core.Online
     [ProtoContract]
     public class OnlineRole  :IOnlineRole
     {
-        [ProtoMember(1)]
+        [ProtoMember(1)] //role id
         public long Id { get; set; }
         [ProtoMember(2)]
         public int Did { get; set; }
         [ProtoMember(3)]
-        public string HotName { get; set; }
+        public string SessionId { get; set; }
         [ProtoMember(4)]
-        public string SessionID { get; set; }
+        public string Uid { get; set; }
+        [ProtoMember(5)]
+        public DateTime StartUtcAt { get; set; }
+        [ProtoMember(6)]
+        public string Token { get; set; }
     }
 }

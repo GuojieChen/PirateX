@@ -8,6 +8,7 @@ namespace PirateX.Core.Redis.StackExchange.Redis.Ex
     {
         private static IRedisSerializer _redisSerilazer;
 
+
         public static IRedisSerializer RedisSerilazer
         {
             get
@@ -35,7 +36,7 @@ namespace PirateX.Core.Redis.StackExchange.Redis.Ex
         public static bool Set<T>(this IDatabase db,RedisKey key, T t,TimeSpan? expire = null)
         {
             var value = RedisSerilazer.Serilazer<T>(t);
-            if (string.IsNullOrEmpty(value))
+            if (value == null)
                 return false;
 
             return db.StringSet(key, value, expire);

@@ -95,8 +95,8 @@ namespace PirateX
             //在线管理
             builder.Register(c => new RedisOnlineManager<TOnlineRole>(c.Resolve<ConnectionMultiplexer>())
             {
-                Serializer = c.Resolve<IRedisSerializer>()
-            }).As<IOnlineManager<TOnlineRole>>()
+                //Serializer = c.Resolve<IRedisSerializer>()
+            }).As<IOnlineManager>()
               .SingleInstance();
 
             //默认数据返回包装器
@@ -194,7 +194,7 @@ namespace PirateX
 
             if ((reason == CloseReason.ClientClosing || reason == CloseReason.TimeOut) && session.Rid > 0)
             {
-                var onlineManager = this.ServerContainer.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
+                var onlineManager = this.ServerContainer.ServerIoc.Resolve<IOnlineManager>();
                 onlineManager.Logout(session.Rid, session.SessionID);
                 if (Logger.IsDebugEnabled)
                     Logger.Debug($"Set role offline\t:\t {session.Rid}\t:{session.SessionID}\t{reason}");
@@ -257,9 +257,9 @@ namespace PirateX
             if (db == null)
                 return;
 
-            var onlineManager = ServerContainer.ServerIoc.Resolve<IOnlineManager<TOnlineRole>>();
+            var onlineManager = ServerContainer.ServerIoc.Resolve<IOnlineManager>();
             var onlineRole = onlineManager.GetOnlineRole(rid);
-            if (onlineRole != null && !Equals(onlineRole.SessionID, session.SessionID))
+            if (onlineRole != null && !Equals(onlineRole.SessionId, session.SessionID))
                 throw new PirateXException(StatusCode.ReLogin);
 
             var key = GetRequestKey(rid, c);

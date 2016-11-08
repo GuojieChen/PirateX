@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using PirateX.Core.Container;
+using PirateX.ServiceStackV3;
 
 namespace PirateX.GameServerTest
 {
@@ -17,6 +18,7 @@ namespace PirateX.GameServerTest
         public string ConfigConnectionString { get; set; }
         public string Redis { get; set; }
         public int RedisDb { get; set; }
+        public string SecretKey { get; set; }
     }
 
     public class ServerSetting : IServerSetting
@@ -57,50 +59,54 @@ namespace PirateX.GameServerTest
         public TestContainer() : base(new ContainerSetting(), new ServerSetting
         {
             Id = "PirateX.VS-DEV",
-            RedisHost = "127.0.0.1"
+            RedisHost = "localhost:6379"
         })
         {
 
         }
 
-        private static readonly IEnumerable<DistrictConfig> ServerConfigs = new DistrictConfig[] {};
-        //{
-        //    new DistrictConfig
-        //    {
-        //        Id = 1,
-        //        Name = "test 01",
-        //        Redis = "127.0.0.1",
-        //        RedisDb = 1,
-        //        ConfigConnectionString =
-        //            "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
-        //        ConnectionString =
-        //            "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"
-        //    },
+        private static readonly IEnumerable<DistrictConfig> ServerConfigs = new DistrictConfig[] 
+        {
+            new DistrictConfig
+            {
+                Id = 1,
+                Name = "test 01",
+                Redis = "127.0.0.1",
+                RedisDb = 1,
+                ConfigConnectionString =
+                    "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
+                ConnectionString =
+                    "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
+                SecretKey = Guid.NewGuid().ToString()
+                
+            },
 
-        //    new DistrictConfig
-        //    {
-        //        Id = 2,
-        //        Name = "test 02",
-        //        Redis = "127.0.0.1",
-        //        RedisDb = 2,
-        //        ConfigConnectionString =
-        //            "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
-        //        ConnectionString =
-        //            "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"
-        //    },
+            new DistrictConfig
+            {
+                Id = 2,
+                Name = "test 02",
+                Redis = "127.0.0.1",
+                RedisDb = 2,
+                ConfigConnectionString =
+                    "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
+                ConnectionString =
+                    "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
+                SecretKey = Guid.NewGuid().ToString()
+            },
 
-        //    new DistrictConfig
-        //    {
-        //        Id = 3,
-        //        Name = "test 02",
-        //        Redis = "127.0.0.1",
-        //        RedisDb = 3,
-        //        ConfigConnectionString =
-        //            "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
-        //        ConnectionString =
-        //            "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"
-        //    },
-        //};
+            new DistrictConfig
+            {
+                Id = 3,
+                Name = "test 02",
+                Redis = "127.0.0.1",
+                RedisDb = 3,
+                ConfigConnectionString =
+                    "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
+                ConnectionString =
+                    "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
+                SecretKey = Guid.NewGuid().ToString()
+            },
+        };
 
         public override IEnumerable<IDistrictConfig> LoadDistrictConfigs()
         {
@@ -125,14 +131,16 @@ namespace PirateX.GameServerTest
             };
         }
 
+
+        //TODO 数据库升级还需要进一步抽象，以支持EntityFramework框架
         public override IDatabaseFactory GetConfigDatabaseFactory(IDistrictConfig config)
         {
-            throw new NotImplementedException();
+            return new ServiceStackDatabaseFactory(config.ConfigConnectionString);
         }
 
         public override IDatabaseFactory GetDistrictDatabaseFactory(IDistrictConfig config)
         {
-            throw new NotImplementedException();
+            return new ServiceStackDatabaseFactory(config.ConnectionString);
         }
 
         public override IDatabaseInitializer GetDatabaseInitializer(string connectionStringId)
