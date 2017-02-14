@@ -39,6 +39,19 @@ namespace PirateX.GameServerTest
         {
             return typeof (TestActorService).Assembly.GetTypes();
         }
+
+        protected override OnlineRole CreateOnlineRole(ActorContext context, IToken token)
+        {
+            return new OnlineRole()
+            {
+                Id = token.Rid,
+                Did = token.Did,
+                SessionId = context.SessionId,
+                StartUtcAt = DateTime.UtcNow,
+                Token = context.Request.Token,
+                Uid = context.Request.QueryString["uid"]
+            };
+        }
     }
 
     [TestFixture]
@@ -135,6 +148,11 @@ namespace PirateX.GameServerTest
             return HttpUtility.UrlEncode(Convert.ToBase64String(bytes));
         }
 
+        [Test]
+        public void setup()
+        {
+            
+        }
 
         [Test]
         [Repeat(10)]

@@ -19,7 +19,7 @@ namespace PirateX.Net.Actor.Actions
         public IDbConnection DbConnection => Reslover.Resolve<IDbConnection>();
         public ILifetimeScope ServerReslover { get; set; }
         public ILifetimeScope Reslover { get; set; }
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
         public IOnlineRole OnlieRole { get; set; }
         public ActorContext Context { get; set; }
         public abstract void Execute();

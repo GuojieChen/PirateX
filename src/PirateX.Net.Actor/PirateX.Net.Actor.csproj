@@ -70,13 +70,17 @@
     <Compile Include="Actions\IAction.cs" />
     <Compile Include="Actions\Login.cs" />
     <Compile Include="Actions\NewSeed.cs" />
+    <Compile Include="Actions\Ping.cs" />
     <Compile Include="Actions\RepAction.cs" />
+    <Compile Include="Actions\System\SysInfo.cs" />
     <Compile Include="IMessageSender.cs" />
     <Compile Include="PirateXException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ActorConfig.cs" />
     <Compile Include="ActorContext.cs" />
     <Compile Include="ActorService.cs" />
+    <Compile Include="ProtoSync\IProtoService.cs" />
+    <Compile Include="ProtoSync\ProtobufService.cs" />
     <Compile Include="StatusCode.cs" />
     <Compile Include="Token.cs" />
   </ItemGroup>

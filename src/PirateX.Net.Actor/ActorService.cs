@@ -15,6 +15,7 @@ using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Net.Actor.Actions;
 using PirateX.Protocol;
 using PirateX.Protocol.Package;
+using PirateX.Sync.ProtoSync;
 using ProtoBuf;
 using StackExchange.Redis;
 using Topshelf.Logging;
@@ -27,10 +28,10 @@ namespace PirateX.Net.Actor
         void Stop();
     }
 
-    public class ActorService<TOnlineRole>:IMessageSender, IActorService
+    public abstract class ActorService<TOnlineRole> : IMessageSender, IActorService
         where TOnlineRole : class, IOnlineRole, new()
     {
-        public static LogWriter Logger = HostLogger.Get(typeof (ActorService<TOnlineRole>));
+        public static LogWriter Logger = HostLogger.Get(typeof(ActorService<TOnlineRole>));
 
         private PullSocket PullSocket { get; set; }
         private PushSocket PushSocket { get; set; }
@@ -46,7 +47,7 @@ namespace PirateX.Net.Actor
 
         private ActorConfig Config { get; }
 
-        protected IOnlineManager OnlineManager { get; set; } 
+        protected IOnlineManager OnlineManager { get; set; }
 
         public ActorService(ActorConfig config, IServerContainer serverContainer)
         {
@@ -69,11 +70,11 @@ namespace PirateX.Net.Actor
             PullSocket.ReceiveReady += ProcessTaskPullSocket;
 
             PushSocket = new PushSocket(Config.PushConnectHost);
-            Poller = new NetMQPoller() { PullSocket , PushSocket, MessageQueue };
+            Poller = new NetMQPoller() { PullSocket, PushSocket, MessageQueue };
 
             //var builder = new ContainerBuilder();
             MessageQueue.ReceiveReady += ProcessSend;
-            
+
             var builder = new ContainerBuilder();
             //Redis连接池  管理全局信息
             builder.Register(c => ConnectionMultiplexer.Connect(ServerContainer.Settings.RedisHost))
@@ -92,14 +93,16 @@ namespace PirateX.Net.Actor
             builder.Register(c => new ProtocolPackage(c.Resolve<IResponseConvert>()))
                 .InstancePerDependency()
                 .As<IProtocolPackage>();
-            
+
             //默认消息广播
             builder.Register(c => new DefaultMessageBroadcast()).SingleInstance();
 
-            //builder.Register(c => new ProtobufService()).As<IProtoService>().SingleInstance();
+            builder.Register(c => new ProtobufService()).As<IProtoService>().SingleInstance();
 
             IocConfig(builder);
             ServerContainer.InitContainers(builder);
+
+            ServerContainer.ServerIoc.Resolve<IProtoService>().Init(ServerContainer.ContainerSetting.EntityAssembly);
 
             RedisDataBaseExtension.RedisSerilazer = ServerContainer.ServerIoc.Resolve<IRedisSerializer>();
 
@@ -109,8 +112,8 @@ namespace PirateX.Net.Actor
             //加入内置命令
             var currentaddembly = typeof(ActorService<TOnlineRole>).Assembly;
             var actions = new List<Type>(currentaddembly.GetTypes());
-            var ass  = GetActions();
-            if(ass!=null)
+            var ass = GetActions();
+            if (ass != null)
                 actions.AddRange(ass);
 
             foreach (var type in actions)
@@ -151,7 +154,7 @@ namespace PirateX.Net.Actor
             Task.Factory.StartNew(() => ProcessReceive(msg)).ContinueWith(t =>
             {
                 //发生内部错误
-                if(Logger.IsErrorEnabled)
+                if (Logger.IsErrorEnabled)
                     Logger.Error(t.Exception);
 
                 //发生异常需要处理
@@ -179,56 +182,48 @@ namespace PirateX.Net.Actor
             {
                 if (action != null)
                 {
-                    //context.Request.Token
-                    //获取session信息  从缓存中去获取session信息  session没有的时候需要提示客户端重新连接
+                    try
+                    {
+                        //context.Request.Token
+                        //获取session信息  从缓存中去获取session信息  session没有的时候需要提示客户端重新连接
 
-                    var onlinerole = OnlineManager.GetOnlineRole(context.SessionId);
-                    var token = GetToken(context.Request.Token);
-                    if (onlinerole == null)
-                    {   //一般在第一次登陆的时候
-                        //验证token
-                        action.Reslover = ServerContainer.GetDistrictContainer(token.Did).BeginLifetimeScope();
-                        if (!VerifyToken(action.Reslover.Resolve<IDistrictConfig>(), token))
+                        var token = GetToken(context.Request.Token);
+                        var onlinerole = OnlineManager.GetOnlineRole(token.Rid);
+                        if (onlinerole == null)
+                        {   //一般在第一次登陆的时候
+                            //验证token
+                            action.Reslover = ServerContainer.GetDistrictContainer(token.Did).BeginLifetimeScope();
+                            if (!VerifyToken(action.Reslover.Resolve<IDistrictConfig>(), token))
+                            {
+                                //验证不通过
+                                throw new PirateXException("AuthError", "授权失败") { Code = StatusCode.Unauthorized };
+                            }
+
+                            onlinerole = CreateOnlineRole(context, token);
+
+                            ServerContainer.ServerIoc.Resolve<IOnlineManager>().Login(onlinerole);
+                        }
+                        else //TOKEN 验证过了
                         {
-                            //验证不通过
-                            HandleException(context, new PirateXException("AuthError", "授权失败"));
-                            return;
+                            action.Reslover = ServerContainer.GetDistrictContainer(token.Did).BeginLifetimeScope();
+
+                            //单设备登陆控制
+                            if (!Equals(onlinerole.SessionId, context.SessionId))
+                                throw new PirateXException("ReLogin", "ReLogin") {Code = StatusCode.ReLogin };
                         }
 
-                        onlinerole = new OnlineRole()
-                        {
-                            Id = token.Did,
-                            Did = token.Did,
-                            StartUtcAt = DateTime.UtcNow,
-                            Token = context.Request.Token,
-                            SessionId = context.SessionId
-                        };
+                        action.OnlieRole = onlinerole;
+                        action.ServerReslover = ServerContainer.ServerIoc;
+                        action.Context = context;
+                        action.Logger = Logger;
+                        action.MessageSender = this;
 
-                        ServerContainer.ServerIoc.Resolve<IOnlineManager>().Login(onlinerole);
+                        action.Execute();
                     }
-                    else //TOKEN 验证过了
+                    catch (Exception exception)
                     {
-                        action.Reslover = ServerContainer.GetDistrictContainer(token.Did).BeginLifetimeScope();
+                        HandleException(context, exception);
                     }
-
-
-                    action.OnlieRole = onlinerole;
-                    //TODO action filters
-                    action.ServerReslover = ServerContainer.ServerIoc;
-                    action.Context = context;
-                    action.Logger = Logger;
-                    action.MessageSender = this;
-
-                    //try
-                    //{
-                    //    action.Execute();
-                    //}
-                    //catch (Exception exception)
-                    //{
-                    //    HandleException(context, exception);
-                    //}
-
-                    action.Execute();
                 }
                 else
                 {
@@ -243,11 +238,13 @@ namespace PirateX.Net.Actor
                     };
                     //返回类型 
 
-                    SendMessage<string>(context,headers,null);
+                    SendMessage<string>(context, headers, null);
                 }
             }
-            
+
         }
+
+        protected abstract TOnlineRole CreateOnlineRole(ActorContext context, IToken token);
 
         /// <summary>
         /// 解析token信息
@@ -264,12 +261,12 @@ namespace PirateX.Net.Actor
             }
         }
         /// <summary>
-        /// 验证token
+        /// 验证token 默认是不验证
         /// </summary>
         /// <param name="config"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        protected virtual bool VerifyToken(IDistrictConfig config,IToken token)
+        protected virtual bool VerifyToken(IDistrictConfig config, IToken token)
         {
             //var signstr = $"{token.Did}{token.Rid}{token.Ts}{config.SecretKey}";
 
@@ -292,6 +289,7 @@ namespace PirateX.Net.Actor
             {
                 var pe = (e as PirateXException);
 
+                code = pe.Code;
                 errorCode = pe.ErrorCode;
                 errorMsg = pe.ErrorMsg;
             }
@@ -358,7 +356,7 @@ namespace PirateX.Net.Actor
             headers.Add("o", Convert.ToString(context.Request.O));
             headers.Add("code", Convert.ToString((int)StatusCode.Ok));
 
-            SendMessage(context,headers,t);
+            SendMessage(context, headers, t);
         }
 
         public void SendMessage<T>(ActorContext context, string name, T t)
@@ -381,7 +379,7 @@ namespace PirateX.Net.Actor
             repMsg.Append(context.ClientKeys);//客户端密钥
             repMsg.Append(context.ServerKeys);//服务端密钥
             repMsg.Append(GetHeaderBytes(header));//信息头
-            if(!Equals(rep,default(T)))
+            if (!Equals(rep, default(T)))
                 repMsg.Append(ProtocolPackage.ResponseConvert.SerializeObject(rep));//信息体
 
             MessageQueue.Enqueue(repMsg);

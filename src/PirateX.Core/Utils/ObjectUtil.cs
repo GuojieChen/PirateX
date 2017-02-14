@@ -13,7 +13,7 @@ namespace PirateX.Core.Utils
         {
             var dic = new Dictionary<string,object>();
 
-            foreach (var propertyInfo in typeof(T).GetProperties())
+            foreach (var propertyInfo in obj.GetType().GetProperties())
             {
                 dic.Add(propertyInfo.Name,propertyInfo.GetValue(obj));
             }

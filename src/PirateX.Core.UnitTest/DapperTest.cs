@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using NUnit.Framework;
+using StackExchange.Redis;
 
 namespace PirateX.Core.UnitTest
 {
@@ -49,6 +50,16 @@ namespace PirateX.Core.UnitTest
                 var list = dapper.Query<PetConfig>($"select * from {typeof(PetConfig).Name}");
                 Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} : {list.Count()}");
             }
+        }
+
+        [Test]
+        public void redis()
+        {
+            var db = ConnectionMultiplexer.Connect("192.168.1.216").GetDatabase(2);
+            Console.WriteLine(db.KeyExists("j#team_list:2457"));
+            Console.WriteLine(db.SetMembers("j#team_list:2457").Count());
+
+
         }
     }
 }

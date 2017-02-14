@@ -4,7 +4,6 @@ namespace PirateX.Core.Utils
 {
     public static class TimeUtil
     {
-
         /// <summary>
         /// 获取时间戳
         /// </summary>

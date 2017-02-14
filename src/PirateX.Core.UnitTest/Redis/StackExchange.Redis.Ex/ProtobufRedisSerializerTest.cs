@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using ProtoBuf;
+using ServiceStack;
 using StackExchange.Redis;
 
 namespace PirateX.Core.UnitTest.Redis.StackExchange.Redis.Ex
@@ -42,6 +45,9 @@ namespace PirateX.Core.UnitTest.Redis.StackExchange.Redis.Ex
             var obj2 = serializer.Deserialize<SerializerObject>(data);
 
             Assert.IsNotNull(obj2);
+
+            Console.WriteLine(JsonConvert.SerializeObject(obj));
+            Console.WriteLine(JsonConvert.SerializeObject(obj2));
         }
 
         [Test]
@@ -57,7 +63,7 @@ namespace PirateX.Core.UnitTest.Redis.StackExchange.Redis.Ex
         public void Redis_Serializer_Deserialize_Object()
         {
             var db = ConnectionMultiplexer.Connect("localhost").GetDatabase();
-            var urn = Guid.NewGuid().ToString();
+            var urn = "test"; //Guid.NewGuid().ToString();
 
             var obj = new SerializerObject()
             {
@@ -69,36 +75,78 @@ namespace PirateX.Core.UnitTest.Redis.StackExchange.Redis.Ex
                     new SerializerObjectItem() {Id =2,Name = "Item_2" },
                     new SerializerObjectItem() {Id =3,Name = "Item_3" },
                     new SerializerObjectItem() {Id =4,Name = "Item_4" }
-                }
+                },
+                List = new List<int>()
+                {
+                    3,4
+                },
+                MyBoolean = false,
+                //Dic = new Dictionary<string, int>()
+                //{
+                //    {"A",1 },
+                //    {"B",2 }
+                //}
             };
-
-
 
 
             var data = serializer.Serilazer(obj);
 
-            using (var ms = new MemoryStream())
-            {
-                Serializer.Serialize(ms, obj);
-                //db.StringSet(urn, ms.ToArray());
-            }
+            //using (var ms = new MemoryStream())
+            //{
+            //    Serializer.Serialize(ms, obj);
+            //    db.StringSet(urn, ms.ToArray());
+            //}
 
 
             db.StringSet(urn, data);
 
             var dataFromRedis = db.StringGet(urn);
+            db.StringSet($"urn_json", obj.ToJson());
+            Console.WriteLine("Json");
+            Console.WriteLine(db.StringGet($"urn_json"));
 
             //Assert.AreEqual(data,dataFromRedis);
 
-            Console.WriteLine(data);
+            //Console.WriteLine(data);
 
             using (var ms = new MemoryStream(dataFromRedis))
             {
                 var obj2 = Serializer.Deserialize<SerializerObject>(ms);
 
-                Console.WriteLine(serializer.Serilazer(obj2));
+                //Console.WriteLine(serializer.Serilazer(obj2));
+
+                Console.WriteLine("Protobuf");
+                Console.WriteLine(obj2.ToJson());
+
             }
 
+
+
+        }
+
+
+        [Test]
+        public void print_test()
+        {
+            Console.WriteLine("a");
+            print();
+            Console.WriteLine("b");
+        }
+
+        public async Task print()
+        {
+            Console.WriteLine("1");
+            Thread.Sleep(3000);
+
+            await subprint();
+            Console.WriteLine("2");
+        }
+
+        public async Task subprint()
+        {
+            Console.WriteLine("3");
+            Thread.Sleep(3000);
+            Console.WriteLine("4");
         }
     }
 }

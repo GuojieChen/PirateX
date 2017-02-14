@@ -38,8 +38,6 @@ namespace PirateX.Net
 
         protected override bool Setup(IRootConfig rootConfig, IServerConfig config)
         {
-
-
             PushQueue.ReceiveReady += (o, args) =>
             {
                 var msg = PushQueue.Dequeue();

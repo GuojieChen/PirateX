@@ -12,6 +12,8 @@ namespace PirateX.Net.Actor
 
         public string ErrorMsg { get; set; }
 
+        public int Code { get; set; }
+
         public PirateXException(string errorCode, string errorMsg)
         {
             this.ErrorCode = errorCode;

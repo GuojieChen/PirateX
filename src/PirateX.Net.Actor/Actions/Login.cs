@@ -26,7 +26,6 @@ namespace PirateX.Net.Actor.Actions
             }
             #endregion
 
-
             return default(TResponse);
         }
 

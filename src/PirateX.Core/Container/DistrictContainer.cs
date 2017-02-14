@@ -304,5 +304,7 @@ namespace PirateX.Core.Container
         Assembly ConfigAssembly { get; }
 
         Assembly ServiceAssembly { get; }
+
+        Assembly EntityAssembly { get; }
     }
 }

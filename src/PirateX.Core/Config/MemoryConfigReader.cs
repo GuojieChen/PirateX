@@ -18,6 +18,8 @@ namespace PirateX.Core.Config
     {
         private readonly MemoryCacheClient _cacheClient = new MemoryCacheClient();
 
+        private readonly IDictionary<string,MemoryCacheClient> Cache = new Dictionary<string, MemoryCacheClient>();
+
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly Assembly _configAssembly;
@@ -32,7 +34,7 @@ namespace PirateX.Core.Config
         /// 
         /// </summary>
         /// <param name="configAssembly">配置模型所在的程序集</param>
-        public MemoryConfigReader(Assembly configAssembly,Func<IDbConnection> getconnection)
+        public MemoryConfigReader(Assembly configAssembly, Func<IDbConnection> getconnection)
         {
             _configAssembly = configAssembly;
             this.getconnection = getconnection;
@@ -64,7 +66,7 @@ namespace PirateX.Core.Config
                             {
                                 this.GetType().GetMethod("LoadKeyValueConfigData", BindingFlags.Instance | BindingFlags.NonPublic)
                                                         .MakeGenericMethod(type)
-                                                        .Invoke(this, new object[] { getconnection(),  });
+                                                        .Invoke(this, new object[] { getconnection(), });
                             }
                             else if (typeof(IConfigIdEntity).IsAssignableFrom(type))
                             {
@@ -83,7 +85,7 @@ namespace PirateX.Core.Config
                     {
                         Logger.Error(exception);
                         throw;
-                   } 
+                    }
                 }
 
                 isLoaded = true;
@@ -94,7 +96,7 @@ namespace PirateX.Core.Config
         {
             var list = connection.Query<T>($"select * from {typeof(T).Name}");
 
-            var type = typeof (T);
+            var type = typeof(T);
 
             var listkeys = new List<string>();
 
@@ -106,24 +108,39 @@ namespace PirateX.Core.Config
                 _cacheClient.Set(key, item);
                 listkeys.Add(key);
 
-                foreach (var attr in type.GetCustomAttributes().Where(x=>x.GetType() == typeof(ConfigIndex)))
-                {// 添加索引
-                    var configindex = (ConfigIndex) attr;
+                foreach (var attr in type.GetCustomAttributes().Where(x => x is ConfigIndex))
+                {
+                    var configindex = (ConfigIndex)attr;
                     //获取 对应的字段列表
                     var ps = type.GetProperties().Where(p => configindex.Names.Contains(p.Name));
                     var dic = ps.ToDictionary(info => info.Name, info => info.GetValue(item));
-                    //这里只存根据ID生成的KEY
-                    _cacheClient.Set(GetCacheIndexKey<T>(dic), key);
+
+
+                    if (configindex.IsUnique)
+                    {
+                        var urn = GetCacheIndexKey<T>(dic);
+                        //这里只存根据ID生成的KEY
+                        _cacheClient.Set(urn, key);
+                    }
+                    else
+                    {
+                        var urn = GetCacheIndexKey2<T>(dic);
+                        var urnlist = _cacheClient.Get<IList<string>>(urn) ?? new List<string>();
+
+                        urnlist.Add(key);
+
+                        _cacheClient.Set(urn, urnlist);
+                    }
                 }
             }
 
             if (listkeys.Any())
-                _cacheClient.Add(GetCacheKeyListKey<T>() , listkeys);
+                _cacheClient.Add(GetCacheKeyListKey<T>(), listkeys);
         }
 
         private void LoadKeyValueConfigData<T>(IDbConnection connection) where T : IConfigKeyValueEntity
         {
-            var list = connection.Query<T>($"select * from {typeof(T).Name}",typeof(T));
+            var list = connection.Query<T>($"select * from {typeof(T).Name}", typeof(T));
 
             foreach (var item in list)
             {
@@ -145,7 +162,7 @@ namespace PirateX.Core.Config
         private static string GetCacheKeyId<T>(object id)
         {
             var key = $"systemconfig:_id_:{typeof(T).Name}:{id}";
-            return key; 
+            return key;
         }
 
         private static string GetCacheKeyListKey<T>()
@@ -157,13 +174,13 @@ namespace PirateX.Core.Config
         /// </summary>
         /// <param name="dic"></param>
         /// <returns></returns>
-        private static string GetCacheIndexKey<T>(IDictionary<string,object> dic) where T : IConfigIdEntity
+        private static string GetCacheIndexKey<T>(IDictionary<string, object> dic) where T : IConfigIdEntity
         {
-            var builder = new StringBuilder("systemconfig:_indexes_:");
-            builder.Append(typeof (T).Name);
+            var builder = new StringBuilder("sysconfig:_unique_:");
+            builder.Append(typeof(T).Name);
             builder.Append(":");
             bool isFirst = true;
-            foreach (var keyValue in dic.OrderBy(item=>item.Key))
+            foreach (var keyValue in dic.OrderBy(item => item.Key))
             {
                 if (!isFirst)
                 {
@@ -175,6 +192,23 @@ namespace PirateX.Core.Config
             return builder.ToString();
         }
 
+        private static string GetCacheIndexKey2<T>(IDictionary<string, object> dic) where T : IConfigIdEntity
+        {
+            var builder = new StringBuilder("sysconfig:_indexes_:");
+            builder.Append(typeof(T).Name);
+            builder.Append(":");
+            bool isFirst = true;
+            foreach (var keyValue in dic.OrderBy(item => item.Key))
+            {
+                if (!isFirst)
+                {
+                    builder.Append("_");
+                }
+                isFirst = false;
+                builder.Append(keyValue.Value);
+            }
+            return builder.ToString();
+        }
 
         private static string GetCacheKey<T>(string key)
         {
@@ -187,13 +221,13 @@ namespace PirateX.Core.Config
 
         public T SingleById<T>(object id) where T : IConfigEntity
         {
-            return _cacheClient.Get<T>(GetCacheKeyId<T>(id)); 
+            return _cacheClient.Get<T>(GetCacheKeyId<T>(id));
         }
 
         public IEnumerable<T> Select<T>() where T : IConfigEntity
         {
             var listkeys = _cacheClient.Get<IList<string>>(GetCacheKeyListKey<T>());
-            if (listkeys.Any())
+            if (listkeys != null)
                 return _cacheClient.GetAll<T>(listkeys).Values;
 
             return new T[0];
@@ -210,11 +244,23 @@ namespace PirateX.Core.Config
             var indexkey = GetCacheIndexKey<T>(dic);
 
             var key = _cacheClient.Get<string>(indexkey);
-            if(!string.IsNullOrEmpty(key))
+            if (!string.IsNullOrEmpty(key))
                 return _cacheClient.Get<T>(key);
             return default(T);
         }
 
+        public IEnumerable<T> SelectByIndexes<T>(object index) where T : IConfigIdEntity
+        {
+            var dic = index.ToDictionary();
+            var urn = GetCacheIndexKey2<T>(dic);
+
+            var keys = _cacheClient.Get<IList<string>>(urn);
+            if (keys != null)
+                return _cacheClient.GetAll<T>(keys).Values;
+
+            return new T[0];
+
+        }
         #endregion
     }
 }

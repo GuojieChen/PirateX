@@ -29,11 +29,20 @@ namespace PirateX.Core.Config
         /// <returns></returns>
         TValue GetValue<T,TValue>(string key);
 
-        /// <summary> 通过组合索引的方式进行查找 
+        /// <summary> 通过唯一索引的方式进行查找 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="index"></param>
         /// <returns></returns>
         T SingleByIndexes<T>(object index) where T : IConfigIdEntity;
+
+
+        /// <summary>
+        /// 通过组合索引的方式查询获得列表
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        IEnumerable<T> SelectByIndexes<T>(object index) where T : IConfigIdEntity;
     }
 }

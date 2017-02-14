@@ -48,6 +48,11 @@ namespace PirateX.GameServerTest
         {
             get { return typeof (RoleService).Assembly; }
         }
+
+        public Assembly EntityAssembly
+        {
+            get { return typeof (Role).Assembly; }
+        }
     }
 
     public class TestContainer : DistrictContainer
