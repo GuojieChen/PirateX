@@ -9,6 +9,8 @@ namespace PirateX.Protocol.Package
     public class ProtocolPackage : IProtocolPackage
 
     {
+        public string SessionID { get; set; } = Guid.NewGuid().ToString("N");
+
         public ProtocolPackage(IZip zip, ICrypto crypto)
         {
             ZipEnable = true;

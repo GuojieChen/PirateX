@@ -2,7 +2,10 @@
 .NET FrameWrok : 4.5.2
 
 
-PirateX
+PirateX   
+
+轻量级游戏服务器引擎
+
 
 > TODO    框架目标     
 更加快速的重连机制   
@@ -19,9 +22,6 @@ DDD的实践
 静态数据静默重载     
 
 >TODO SubscribeAsync 需要看看是否用对了   
-
-
-
 
 ## 协议说明
 ### 请求
@@ -67,7 +67,7 @@ username=xxx&password=xxx
 | A       | 4字节      |  数据整体长度  |
 | B       | 1字节      | 是否启用压缩   |
 | C       | 1字节      | 加密描述符       |
-| D       | 4字节      | 信息头长度       |
+| D       | 4字节      | 消息头长度       |
 | E       |  D描述大小     | 消息头数据       |
 | F       |  A大小 - 4 -1-1 -4-D大小     | 请求数据       |
 
@@ -98,7 +98,9 @@ errorMsg : （ * ） 错误消息
 同步发生在以下几个地方：   
 3.1、登陆：客户端询问服务器当前玩家数据版本号，处理以下两种情况：   
 3.1.1、一致，不做后续同步   
-3.1.2、不一致，询问玩家模型版本列表，返回的信息是一个字典，KEY：模型Name，VALUE：模型版本号。   
+3.1.2、不一致，询问玩家模型版本列表，返回的信息是一个字典，KEY：模型Name，VALUE：模型版本号。    
+然后再依次比对模型，依次下载需要的模型数据，根据模型状态维护本地数据
+
 模型数据状态：   
 新增：客户端没有该数据标识，服务器返回的列表中有   
 修改：客户端有该数据标识，服务器返回的列表中也有   
@@ -347,3 +349,4 @@ new
 - [ServiceStack-V3](https://github.com/ServiceStack/ServiceStack)
 - [ServiceStack.Text-V3](https://github.com/ServiceStack/ServiceStack.Text)
 - [ServiceStack.Redis-V3](https://github.com/ServiceStack/ServiceStack.Redis)
+

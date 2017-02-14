@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NetMQ;
 using PirateX.Protocol.Package;
 using SuperSocket;
 using SuperSocket.SocketBase;
@@ -13,11 +12,14 @@ namespace PirateX.Net
 {
     public class ProxySession:AppSession<ProxySession,BinaryRequestInfo>
     {
-        public IProtocolPackage ProtocolPackage { get; set; }
+        public ProtocolPackage ProtocolPackage { get; private set; }
 
         public ProxySession()
         {
-            ProtocolPackage = new ProtocolPackage();
+            this.ProtocolPackage = new ProtocolPackage()
+            {
+                SessionID = this.SessionID
+            };
         }
     }
 }

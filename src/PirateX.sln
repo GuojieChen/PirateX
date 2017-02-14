@@ -48,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.GameServerTest", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.Net.Actor", "PirateX.Net.Actor\PirateX.Net.Actor.csproj", "{66C911AF-FC4E-4DAA-94BE-49EDBEC1C0C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.Net.SuperSocket", "PirateX.Net.SuperSocket\PirateX.Net.SuperSocket.csproj", "{B7F6062E-033C-420C-B575-0A619655CBE5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,6 +120,10 @@ Global
 		{66C911AF-FC4E-4DAA-94BE-49EDBEC1C0C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66C911AF-FC4E-4DAA-94BE-49EDBEC1C0C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66C911AF-FC4E-4DAA-94BE-49EDBEC1C0C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7F6062E-033C-420C-B575-0A619655CBE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7F6062E-033C-420C-B575-0A619655CBE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7F6062E-033C-420C-B575-0A619655CBE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7F6062E-033C-420C-B575-0A619655CBE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -139,5 +145,6 @@ Global
 		{BDEF7259-1875-4FE3-88F3-DF431117FBA7} = {0562008F-2F99-4D9C-924E-903518BC6D21}
 		{C8073093-2DDF-412F-80F5-CC28C82AE631} = {CB3452E6-7B7B-46FC-8F90-D92DB4A29E06}
 		{66C911AF-FC4E-4DAA-94BE-49EDBEC1C0C3} = {2827A0D1-32C1-4B18-94BC-91CC1E3A90A6}
+		{B7F6062E-033C-420C-B575-0A619655CBE5} = {2827A0D1-32C1-4B18-94BC-91CC1E3A90A6}
 	EndGlobalSection
 EndGlobal
