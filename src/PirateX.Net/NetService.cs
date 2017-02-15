@@ -11,7 +11,7 @@ namespace PirateX.Net
 {
     public class NetService
     {
-        private INetSend NetSend { get; set; }
+        private INetManager NetSend { get; set; }
 
         /// <summary>
         /// 下发任务
@@ -23,23 +23,35 @@ namespace PirateX.Net
         /// </summary>
         private PullSocket responseSocket;
 
+        //接收全局信息，可能是tool 、gm等后台，广播给worker
+        private Proxy GlobalServerProxy { get; set; }
+
         public NetMQQueue<NetMQMessage> PushQueue = new NetMQQueue<NetMQMessage>();
 
         private NetMQPoller Poller;
 
         private bool IsSetuped { get; set; }
 
-        public virtual void Setup(string pushsocket, string pullsocket, INetSend netSend)
+        public virtual void Setup(INetManager netManager)
         {
-            if (string.IsNullOrEmpty(pushsocket))
-                throw new ArgumentNullException(nameof(pushsocket));
-            if (string.IsNullOrEmpty(pullsocket))
-                throw new ArgumentNullException(nameof(pullsocket));
-            if (netSend == null)
-                throw new ArgumentNullException(nameof(netSend));
+            if (string.IsNullOrEmpty(netManager.PushsocketString))
+                throw new ArgumentNullException(nameof(netManager.PushsocketString));
+            if (string.IsNullOrEmpty(netManager.PullSocketString))
+                throw new ArgumentNullException(nameof(netManager.PullSocketString));
+            if (netManager == null)
+                throw new ArgumentNullException(nameof(netManager));
 
-            sender = new PushSocket(pushsocket);
-            responseSocket = new PullSocket(pullsocket);
+            if (!string.IsNullOrEmpty(netManager.XPubSocketString) && !string.IsNullOrEmpty(netManager.XSubSocketString))
+            {
+                var PublisherSocket = new XPublisherSocket(netManager.XPubSocketString);
+
+                var SubscriberSocket = new XSubscriberSocket(netManager.XSubSocketString);
+
+                GlobalServerProxy = new Proxy(SubscriberSocket,PublisherSocket);
+            }
+
+            sender = new PushSocket(netManager.PushsocketString);
+            responseSocket = new PullSocket(netManager.PullSocketString);
 
             Poller = new NetMQPoller()
             {
@@ -48,7 +60,7 @@ namespace PirateX.Net
                 PushQueue
             };
 
-            NetSend = netSend;
+            NetSend = netManager;
 
             PushQueue.ReceiveReady += (o, args) =>
             {
@@ -64,7 +76,8 @@ namespace PirateX.Net
         //服务器向客户端下发数据
         public virtual void ProcessResponse(object o, NetMQSocketEventArgs e)
         {
-            var msg = responseSocket.ReceiveMultipartMessage();
+            //TODO https://netmq.readthedocs.io/en/latest/poller/   #Performance
+            var msg = responseSocket.ReceiveMultipartMessage();//TryReceiveMultipartMessage();
             //msg[0].Buffer //版本号
             var action = msg[1].ConvertToString();
             var sessionid = msg[2].ConvertToString();
@@ -110,7 +123,7 @@ namespace PirateX.Net
 
             var msg = new NetMQMessage();
             msg.Append(new byte[] { 1 });//版本号
-            msg.Append("action");//动作
+            msg.Append("req");//动作
             msg.Append(protocolPackage.SessionID);//sessionid
             msg.Append(protocolPackage.ClientKeys);//客户端密钥
             msg.Append(protocolPackage.ServerKeys);//服务端密钥
@@ -126,11 +139,16 @@ namespace PirateX.Net
                 throw new ApplicationException("Please Setup firset!");
 
             Poller.RunAsync();
+            GlobalServerProxy?.Start();
         }
 
         public virtual void Stop()
         {
-            Poller.Stop();
+            GlobalServerProxy?.Stop();
+
+            Poller?.Stop();
+            Poller?.Dispose();
+            Poller = null;
         }
     }
 }

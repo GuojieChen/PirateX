@@ -49,7 +49,7 @@ namespace PirateX.GameServerTest
                 SessionId = context.SessionId,
                 StartUtcAt = DateTime.UtcNow,
                 Token = context.Request.Token,
-                Uid = context.Request.QueryString["uid"]
+                Uid = token.Uid
             };
         }
     }
@@ -71,7 +71,8 @@ namespace PirateX.GameServerTest
             Rid = 2457,
             Did = 1,
             Sign = "",
-            Ts = 123456
+            Ts = 123456,
+            Uid = "xxxxxx"
         };
 
         private static int O = 0; 
@@ -81,8 +82,8 @@ namespace PirateX.GameServerTest
         [SetUp]
         public void SetUp()
         {
-            PushSocket = new PushSocket("@tcp://*:5556");
-            PullSocket = new PullSocket("@tcp://*:5557");
+            PushSocket = new PushSocket("@tcp://*:4556");
+            PullSocket = new PullSocket("@tcp://*:4557");
 
             Poller = new NetMQPoller()
             {
@@ -114,8 +115,8 @@ namespace PirateX.GameServerTest
 
             _actorService = new TestActorService(new ActorConfig()
             {
-                PullConnectHost = ">tcp://localhost:5556",
-                PushConnectHost = ">tcp://localhost:5557"
+                PullConnectHost = ">tcp://localhost:4556",
+                PushConnectHost = ">tcp://localhost:4557"
 
             }, ServerContainer);
 
@@ -165,22 +166,25 @@ namespace PirateX.GameServerTest
             msg.Append(new byte[] { version });//版本号
             msg.Append("action");//动作
             msg.Append(sessionid);//sessionid
+            msg.Append(new byte[] { 61, 2, 3 });//客户端密钥
             msg.AppendEmptyFrame();
-            msg.Append(new byte[] { 61, 2, 3 });//服务端密钥
-            msg.Append(Encoding.UTF8.GetBytes($"c=newseed&r=false&o={++O}&t=123123&token={GetToken(Token)}"));//信息头
+            msg.Append(Encoding.UTF8.GetBytes($"c=newseed&r=false&o={++O}&uid=xxxxxx&t=123123&token={GetToken(Token)}"));//信息头
             msg.Append(Encoding.UTF8.GetBytes("seed=123123"));//信息体
 
             PushSocket.SendMultipartMessage(msg);
 
-            var receiveMsg = PullSocket.ReceiveMultipartMessage();
+            NetMQMessage receiveMsg = null;
+
+            PullSocket.TryReceiveMultipartMessage(new TimeSpan(0,0,0,20),ref receiveMsg);
+
             Console.WriteLine(receiveMsg);
 
             Assert.IsNotNull(receiveMsg);
 
             Assert.AreEqual(version, receiveMsg[0].Buffer[0]);
             Assert.AreEqual("action", receiveMsg[1].ConvertToString());
-            Assert.AreEqual(sessionid,receiveMsg[2].ConvertToString());
-            Assert.GreaterOrEqual(receiveMsg[3].BufferSize,1);
+            Assert.AreEqual(sessionid, receiveMsg[2].ConvertToString());
+            Assert.GreaterOrEqual(receiveMsg[3].BufferSize, 1);
 
             var headers = receiveMsg[5].ConvertToString().ToQueryDic();
             Assert.AreEqual(Convert.ToString((int)StatusCode.Ok), headers["code"]);
@@ -200,11 +204,11 @@ namespace PirateX.GameServerTest
 
             PushSocket.SendMultipartMessage(msg);
 
-            var receiveMsg = PullSocket.ReceiveMultipartMessage();
+            NetMQMessage receiveMsg = null;
+            PullSocket.TryReceiveMultipartMessage(new TimeSpan(0, 0, 0, 20), ref receiveMsg);
             Console.WriteLine(receiveMsg);
             var headers = receiveMsg[5].ConvertToString().ToQueryDic();
             Assert.AreEqual(Convert.ToString((int)StatusCode.NotFound), headers["code"]);
-            Assert.AreEqual(Convert.ToString(StatusCode.NotFound), headers["errorCode"]);
         }
 
         [Test]
@@ -217,7 +221,7 @@ namespace PirateX.GameServerTest
             msg.Append(new byte[] { version });//版本号
             msg.Append("action");//动作
             msg.Append(sessionid);//sessionid
-            msg.Append(new byte[0]);//客户端密钥
+            msg.Append(new byte[] { 14, 2, 3 });//客户端密钥
             msg.Append(new byte[] { 61, 2, 3 });//服务端密钥
             msg.Append(Encoding.UTF8.GetBytes($"c=exceptionaction&o=123&r=false&t=123123&token={GetToken(Token)}"));//信息头
             msg.Append(Encoding.UTF8.GetBytes("seed=123123"));//信息体

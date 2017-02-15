@@ -25,6 +25,10 @@ namespace PirateX.Net.Actor
         /// 密钥 需要验证
         /// </summary>
         string Sign { get; set; }
+        /// <summary>
+        /// 第三方UID
+        /// </summary>
+        string Uid { get; set; }
     }
     
     [Serializable]
@@ -51,5 +55,8 @@ namespace PirateX.Net.Actor
         /// </summary>
         [ProtoMember(4)]
         public string Sign { get; set; }
+
+        [ProtoMember(6)]
+        public string Uid { get; set; }
     }
 }

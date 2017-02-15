@@ -4,11 +4,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using PirateX.Core.Domain.Entity;
-using PirateX.Net.Actor;
 using ProtoBuf;
 using Topshelf.Logging;
 
-namespace PirateX.Sync.ProtoSync
+namespace PirateX.Net.Actor.ProtoSync
 {
     /// <summary>
     /// proto协议描述同步服务

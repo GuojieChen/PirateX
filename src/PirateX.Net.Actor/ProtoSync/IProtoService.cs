@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 
-namespace PirateX.Sync.ProtoSync
+namespace PirateX.Net.Actor.ProtoSync
 {
     public interface IProtoService
     {

@@ -13,9 +13,9 @@ using PirateX.Core.Container;
 using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Net.Actor.Actions;
+using PirateX.Net.Actor.ProtoSync;
 using PirateX.Protocol;
 using PirateX.Protocol.Package;
-using PirateX.Sync.ProtoSync;
 using ProtoBuf;
 using StackExchange.Redis;
 using Topshelf.Logging;
@@ -109,13 +109,15 @@ namespace PirateX.Net.Actor
             ProtocolPackage = ServerContainer.ServerIoc.Resolve<IProtocolPackage>();
             OnlineManager = ServerContainer.ServerIoc.Resolve<IOnlineManager>();
 
-            //加入内置命令
-            var currentaddembly = typeof(ActorService<TOnlineRole>).Assembly;
-            var actions = new List<Type>(currentaddembly.GetTypes());
-            var ass = GetActions();
-            if (ass != null)
-                actions.AddRange(ass);
+            //注册内置命令
+            RegisterActions(typeof(ActorService<TOnlineRole>).Assembly.GetTypes());
+            //注册外置命令
+            RegisterActions(GetActions());
+        }
 
+
+        private void RegisterActions(IEnumerable<Type> actions)
+        {
             foreach (var type in actions)
             {
                 if (type.IsInterface || type.IsAbstract)
@@ -189,10 +191,10 @@ namespace PirateX.Net.Actor
 
                         var token = GetToken(context.Request.Token);
                         var onlinerole = OnlineManager.GetOnlineRole(token.Rid);
-                        if (onlinerole == null)
+                        action.Reslover = ServerContainer.GetDistrictContainer(token.Did).BeginLifetimeScope();
+                        if (!context.ServerKeys.Any())
                         {   //一般在第一次登陆的时候
                             //验证token
-                            action.Reslover = ServerContainer.GetDistrictContainer(token.Did).BeginLifetimeScope();
                             if (!VerifyToken(action.Reslover.Resolve<IDistrictConfig>(), token))
                             {
                                 //验证不通过
@@ -200,16 +202,19 @@ namespace PirateX.Net.Actor
                             }
 
                             onlinerole = CreateOnlineRole(context, token);
-
                             ServerContainer.ServerIoc.Resolve<IOnlineManager>().Login(onlinerole);
                         }
                         else //TOKEN 验证过了
                         {
-                            action.Reslover = ServerContainer.GetDistrictContainer(token.Did).BeginLifetimeScope();
+                            if (onlinerole == null)
+                            {
+                                onlinerole = CreateOnlineRole(context, token);
+                                ServerContainer.ServerIoc.Resolve<IOnlineManager>().Login(onlinerole);
+                            }
 
                             //单设备登陆控制
                             if (!Equals(onlinerole.SessionId, context.SessionId))
-                                throw new PirateXException("ReLogin", "ReLogin") {Code = StatusCode.ReLogin };
+                                throw new PirateXException("ReLogin", "ReLogin") { Code = StatusCode.ReLogin };
                         }
 
                         action.OnlieRole = onlinerole;
@@ -295,14 +300,17 @@ namespace PirateX.Net.Actor
             }
             else if (e is WebException)
             {
-                //code = (short)StatusCode.RemoteError;
-                //errorCode = StatusCode.RemoteError.ToString();
+                code = (short)StatusCode.RemoteError;
+                errorCode = StatusCode.RemoteError.ToString();
                 errorMsg = e.Message;
             }
             else
             {
                 errorCode = "ServerError";
-                errorMsg = "ServerError"; //e.Message;
+                errorMsg = e.StackTrace; //e.Message;
+
+                if (Logger.IsErrorEnabled)
+                    Logger.Error(e);
             }
 
             if (!(e is PirateXException))

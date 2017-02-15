@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
-using PirateX.Sync.ProtoSync;
+using PirateX.Net.Actor.ProtoSync;
 
 namespace PirateX.Net.Actor.Actions.System
 {

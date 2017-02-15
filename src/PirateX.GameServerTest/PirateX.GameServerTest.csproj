@@ -98,6 +98,7 @@
     <Compile Include="DefaultConfig.cs" />
     <Compile Include="EntityFrameworkDatabaseInitializer.cs" />
     <Compile Include="ExceptionAction.cs" />
+    <Compile Include="NetMqTest.cs" />
     <Compile Include="PetConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RedisTest.cs" />

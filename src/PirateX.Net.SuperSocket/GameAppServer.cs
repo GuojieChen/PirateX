@@ -10,7 +10,7 @@ using SuperSocket.SocketBase.Protocol;
 
 namespace PirateX.Net.SuperSocket
 {
-    public sealed class GameAppServer:AppServer<ProxySession,BinaryRequestInfo>,INetSend
+    public sealed class GameAppServer:AppServer<ProxySession,BinaryRequestInfo>,INetManager
     {
         private NetService NetService { get; set; }
 
@@ -25,7 +25,7 @@ namespace PirateX.Net.SuperSocket
 
         protected override bool Setup(IRootConfig rootConfig, IServerConfig config)
         {
-            NetService.Setup(config.Options.Get("PullSocket"), config.Options.Get("PushSocket"), this);
+            NetService.Setup(config.Options.Get("PullSocketString"), config.Options.Get("PushSocket"), this);
             return base.Setup(rootConfig, config);
         }
 

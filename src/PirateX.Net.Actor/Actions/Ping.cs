@@ -11,7 +11,7 @@ namespace PirateX.Net.Actor.Actions
     {
         public override NewSeedResponse Play()
         {
-            return new NewSeedResponse() {Seed = TimeUtil.GetTimestampAsSecond() };
+            return new NewSeedResponse() { Seed = TimeUtil.GetTimestampAsSecond() };
         }
     }
 }

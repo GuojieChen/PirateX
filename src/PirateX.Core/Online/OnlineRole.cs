@@ -14,10 +14,10 @@ namespace PirateX.Core.Online
         [ProtoMember(3)]
         public string SessionId { get; set; }
         [ProtoMember(4)]
-        public string Uid { get; set; }
-        [ProtoMember(5)]
         public DateTime StartUtcAt { get; set; }
-        [ProtoMember(6)]
+        [ProtoMember(5)]
         public string Token { get; set; }
+        [ProtoMember(6)]
+        public string Uid { get; set; }
     }
 }
