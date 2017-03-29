@@ -2,7 +2,7 @@
 
 namespace PirateX.Core.DataSync
 {
-    public interface IDataSync<T>
+    public interface IDataSync<out T>
     {
         /// <summary> 获取玩家同步数据列表
         /// </summary>

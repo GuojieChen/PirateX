@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PirateX.Protocol.Package;
-using SuperSocket;
+﻿using PirateX.Protocol.Package;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Protocol;
 
-namespace PirateX.Net
+namespace PirateX.Net.SuperSocket
 {
     public class ProxySession:AppSession<ProxySession,BinaryRequestInfo>
     {
         public ProtocolPackage ProtocolPackage { get; private set; }
+
+
+        public new GameAppServer AppServer => (GameAppServer) base.AppServer;
 
         public ProxySession()
         {

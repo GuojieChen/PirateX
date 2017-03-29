@@ -6,16 +6,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using PirateX.Core;
+using PirateX.Core.Container;
+using PirateX.Net.Actor;
 using PirateX.Protocol;
 using PirateX.Protocol.Package;
 using SuperSocket.SocketBase.Protocol;
 
 namespace PirateX.UnitTest
 {
-    public class TestServer: PirateXServer<TestSession,OnlineRole>
+    public class TestServer: ActorService<OnlineRole>
     {
-        public TestServer()
-             : base(new TestContainer(), new PirateXReceiveFilterFactory())
+        public TestServer(Net.ActorConfig config, IServerContainer serverContainer) : base(config, serverContainer)
         {
         }
 

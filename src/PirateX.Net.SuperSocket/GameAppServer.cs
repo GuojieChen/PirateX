@@ -12,20 +12,17 @@ namespace PirateX.Net.SuperSocket
 {
     public sealed class GameAppServer:AppServer<ProxySession,BinaryRequestInfo>,INetManager
     {
-        private NetService NetService { get; set; }
+        public INetService NetService { get; set; }
 
-        public GameAppServer(NetService netService)
+        public GameAppServer(INetService netService):base(new ProxyReceiveFilterFactory())
         {
             NetService = netService;
 
-            this.NewSessionConnected += new SessionHandler<ProxySession>(appServer_NewSessionConnected);
-            this.SessionClosed += new SessionHandler<ProxySession, CloseReason>(appserver_SessionClosed);
-            this.NewRequestReceived += new RequestHandler<ProxySession, BinaryRequestInfo>(appServer_NewRequestReceived);
         }
 
         protected override bool Setup(IRootConfig rootConfig, IServerConfig config)
         {
-            NetService.Setup(config.Options.Get("PullSocketString"), config.Options.Get("PushSocket"), this);
+            NetService.Setup(this);
             return base.Setup(rootConfig, config);
         }
 
@@ -41,19 +38,16 @@ namespace PirateX.Net.SuperSocket
             base.Stop();
         }
 
-        private void appserver_SessionClosed(ProxySession session, CloseReason value)
+        protected override void OnNewSessionConnected(ProxySession session)
         {
-
+            Console.WriteLine($"New Session Connected!{session.SessionID}");
+            base.OnNewSessionConnected(session);
         }
 
-        private void appServer_NewSessionConnected(ProxySession session)
+        protected override void OnSessionClosed(ProxySession session, CloseReason reason)
         {
-
-        }
-
-        private void appServer_NewRequestReceived(ProxySession session, BinaryRequestInfo requestinfo)
-        {
-            NetService.ProcessRequest(session.ProtocolPackage,requestinfo.Body);
+            Console.WriteLine($"New Session Closed!{session.SessionID}");
+            base.OnSessionClosed(session, reason);
         }
 
         public ProtocolPackage GetProtocolPackage(string sessionid)

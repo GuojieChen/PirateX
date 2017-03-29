@@ -11,6 +11,11 @@ using StackExchange.Redis;
 
 namespace PirateX.Net.Actor.Actions
 {
+    public abstract class RepAction : ActionBase
+    {
+        
+    }
+
     public abstract class RepAction<TResponse>:ActionBase
     {
         public override void Execute()

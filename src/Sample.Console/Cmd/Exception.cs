@@ -4,15 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX;
+using PirateX.Net.Actor;
+using PirateX.Net.Actor.Actions;
 using PirateX.Protocol;
 
 namespace GameServer.Console.Cmd
 {
-    public class Exception : GameCommand<DemoSession, RoleInfoRequest, RoleInfoResponse>
+    public class Exception : RepAction
     {
-        protected override RoleInfoResponse ExecuteResponseCommand(DemoSession session, RoleInfoRequest data)
+        public override void Execute()
         {
-            throw new PirateXException(StatusCode.NotFound);
+            throw new PirateXException("CustomeException", "CustomeException");
         }
     }
 }

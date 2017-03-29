@@ -12,6 +12,7 @@ using NLog;
 using NUnit.Framework;
 using PirateX.Core.Container;
 using PirateX.Core.Online;
+using PirateX.Net;
 using PirateX.Net.Actor;
 using PirateX.Net.Actor.Actions;
 using PirateX.Protocol;
@@ -115,9 +116,8 @@ namespace PirateX.GameServerTest
 
             _actorService = new TestActorService(new ActorConfig()
             {
-                PullConnectHost = ">tcp://localhost:4556",
-                PushConnectHost = ">tcp://localhost:4557"
-
+                PullSocketString = ">tcp://localhost:4556",
+                PushsocketString = ">tcp://localhost:4557"
             }, ServerContainer);
 
             var districtConfig = ServerContainer.GetDistrictConfig(1);

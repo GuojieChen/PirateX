@@ -14,7 +14,7 @@ namespace GameServer.Console.SampleConfig
 
         public string Name { get; set; }
 
-        public int AwakeCost { get; set; }
+        public string AwakeCost { get; set; }
 
         public int ElementType { get; set; }
     }

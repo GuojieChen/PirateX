@@ -4,25 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
-using PirateX.Command;
 using PirateX.Core.Broadcas;
+using PirateX.Net.Actor.Actions;
 using PirateX.Protocol;
 
 namespace GameServer.Console.Cmd
 {
-    public class Broadcast : GameCommand<DemoSession, BroadcastRequest, NoneResponse>
+    public class Broadcast : RepAction
     {
-        protected override NoneResponse ExecuteResponseCommand(DemoSession session, BroadcastRequest data)
+        public override void Execute()
         {
-            var b = session.Reslover.Resolve<IMessageBroadcast>();
-            b.Send(data,1,2,3);
 
-            return null; 
+            var b = Reslover.Resolve<IMessageBroadcast>();
+            b.Send(Context.Request, 1, 2, 3);
         }
     }
 
-    public class BroadcastRequest
-    {
-        public string Message { get; set; }
-    }
 }

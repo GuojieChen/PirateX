@@ -134,7 +134,7 @@ namespace PirateX.GameServerTest
         {
             return new Dictionary<string, string>()
             {
-                {"role", ""},
+                {"role", "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"},
             };
         }
     }

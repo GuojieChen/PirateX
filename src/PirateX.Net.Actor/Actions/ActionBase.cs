@@ -24,6 +24,19 @@ namespace PirateX.Net.Actor.Actions
         public ActorContext Context { get; set; }
         public abstract void Execute();
 
+
+        /// <summary>
+        /// 获取公共服连接
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        protected IDbConnection GetPublicDbConnection(string name)
+        {
+            var dbconnection = ServerReslover.ResolveNamed<IDbConnection>(name);
+
+            return dbconnection;
+        }
+
         public void Dispose()
         {
             Reslover?.Dispose();

@@ -19,5 +19,8 @@ namespace PirateX.Core.Online
         public string Token { get; set; }
         [ProtoMember(6)]
         public string Uid { get; set; }
+        [ProtoMember(7)]
+        public string DeviceId { get; set; }
+
     }
 }

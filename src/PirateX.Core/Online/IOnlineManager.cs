@@ -16,8 +16,6 @@ namespace PirateX.Core.Online
         /// <param name="rid">角色ID</param>
         /// <returns></returns>
         bool IsOnline(long rid);
-
-        
         /// <summary> 获取在线角色信息
         /// </summary>
         /// <param name="rid"></param>
@@ -51,5 +49,9 @@ namespace PirateX.Core.Online
         /// 账号服用以授权的token信息
         /// </summary>
         string Token { get; set; }
+        /// <summary>
+        /// 设备标识
+        /// </summary>
+        string DeviceId { get; set; }
     }
 }

@@ -28,16 +28,12 @@ namespace PirateX.Net.Actor
         void Stop();
     }
 
-    public abstract class ActorService<TOnlineRole> : IMessageSender, IActorService
+    public abstract class ActorService<TOnlineRole> : ActorNetService, IMessageSender, IActorService
         where TOnlineRole : class, IOnlineRole, new()
     {
         public static LogWriter Logger = HostLogger.Get(typeof(ActorService<TOnlineRole>));
 
-        private PullSocket PullSocket { get; set; }
-        private PushSocket PushSocket { get; set; }
-
-        private NetMQPoller Poller { get; set; }
-        private readonly NetMQQueue<NetMQMessage> MessageQueue = new NetMQQueue<NetMQMessage>();
+        protected IActorNetService NetService { get; set; }
 
         private IDictionary<string, IAction> Actions = new Dictionary<string, IAction>(StringComparer.OrdinalIgnoreCase);
 
@@ -45,20 +41,21 @@ namespace PirateX.Net.Actor
 
         public IProtocolPackage ProtocolPackage { get; set; }
 
-        private ActorConfig Config { get; }
-
         protected IOnlineManager OnlineManager { get; set; }
 
         public ActorService(ActorConfig config, IServerContainer serverContainer)
+            : base(config)
         {
             ServerContainer = serverContainer;
-            Config = config;
         }
 
-        public void Start()
+        public override void Start()
         {
-            Setup();
-            Poller.RunAsync();
+            base.SetUp();
+
+            this.Setup();
+            
+            base.Start();
         }
 
         /// <summary>
@@ -66,15 +63,6 @@ namespace PirateX.Net.Actor
         /// </summary>
         public virtual void Setup()
         {
-            PullSocket = new PullSocket(Config.PullConnectHost);
-            PullSocket.ReceiveReady += ProcessTaskPullSocket;
-
-            PushSocket = new PushSocket(Config.PushConnectHost);
-            Poller = new NetMQPoller() { PullSocket, PushSocket, MessageQueue };
-
-            //var builder = new ContainerBuilder();
-            MessageQueue.ReceiveReady += ProcessSend;
-
             var builder = new ContainerBuilder();
             //Redis连接池  管理全局信息
             builder.Register(c => ConnectionMultiplexer.Connect(ServerContainer.Settings.RedisHost))
@@ -118,6 +106,9 @@ namespace PirateX.Net.Actor
 
         private void RegisterActions(IEnumerable<Type> actions)
         {
+            if (actions == null)
+                return;
+
             foreach (var type in actions)
             {
                 if (type.IsInterface || type.IsAbstract)
@@ -129,11 +120,6 @@ namespace PirateX.Net.Actor
                 var action = ((IAction)Activator.CreateInstance(type));
                 Actions.Add(string.IsNullOrEmpty(action.Name) ? type.Name : action.Name, action);
             }
-        }
-
-        private void ProcessSend(object sender, NetMQQueueEventArgs<NetMQMessage> e)
-        {
-            PushSocket.SendMultipartMessage(e.Queue.Dequeue());
         }
 
         /// <summary>
@@ -149,7 +135,7 @@ namespace PirateX.Net.Actor
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ProcessTaskPullSocket(object sender, NetMQSocketEventArgs e)
+        protected override void ProcessTaskPullSocket(object sender, NetMQSocketEventArgs e)
         {
             var msg = e.Socket.ReceiveMultipartMessage();
 
@@ -349,10 +335,9 @@ namespace PirateX.Net.Actor
 
         }
 
-        public void Stop()
+        public override void Stop()
         {
-            Poller?.Stop();
-            PullSocket?.Close();
+            base.Stop();
         }
 
         #region send message
@@ -390,7 +375,7 @@ namespace PirateX.Net.Actor
             if (!Equals(rep, default(T)))
                 repMsg.Append(ProtocolPackage.ResponseConvert.SerializeObject(rep));//信息体
 
-            MessageQueue.Enqueue(repMsg);
+            base.EnqueueMessage(repMsg);
         }
 
         private byte[] GetHeaderBytes(IDictionary<string, string> headers)

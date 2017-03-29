@@ -50,7 +50,7 @@ namespace PirateX.GameServerTest
     {
         public void Initialize(string connectionString)
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<TestDbContext, TestConfiguration>(true));
+            Database.SetInitializer<TestDbContext>(new MigrateDatabaseToLatestVersion<TestDbContext, TestConfiguration>(true));
 
             using (var db = new TestDbContext(connectionString))
             {

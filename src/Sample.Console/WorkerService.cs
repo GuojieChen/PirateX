@@ -12,22 +12,20 @@ using PirateX.Core.Broadcas;
 using PirateX.Core.Container;
 using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
+using PirateX.Net;
+using PirateX.Net.Actor;
 using PirateX.Protocol;
-using PirateX.Protocol.Package;
 using PirateX.ServiceStackV3;
+using PirateX.Net.SuperSocket;
+using PirateX.Protocol.Package;
 
 namespace GameServer.Console
 {
-    public class DemoServer : PirateXServer<DemoSession,OnlineRole>
+    public class WorkerService : ActorService<OnlineRole>
     {
-        public DemoServer() 
-            : base(new DemoServerContainer(), new PirateXReceiveFilterFactory())
+        protected override OnlineRole CreateOnlineRole(ActorContext context, IToken token)
         {
-        }
-
-        public override Assembly ConfigAssembly()
-        {
-            return this.GetType().Assembly;
+            throw new NotImplementedException();
         }
 
         public override void IocConfig(ContainerBuilder builder)
@@ -37,7 +35,11 @@ namespace GameServer.Console
 
             //默认数据返回包装器
             builder.Register(c => new ProtoResponseConvert()).As<IResponseConvert>().SingleInstance();
-            builder.Register(c => new SessionMessageBroadcast<DemoSession>(this)).As<IMessageBroadcast>().SingleInstance();
+            //builder.Register(c => new SessionMessageBroadcast<DemoSession>(this)).As<IMessageBroadcast>().SingleInstance();
+        }
+
+        public WorkerService(ActorConfig config) : base(config, new DemoServerContainer())
+        {
         }
     }
 
@@ -141,7 +143,7 @@ namespace GameServer.Console
         {
             return new Dictionary<string, string>()
             {
-                {"role","" },
+                {"role","Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;" },
                 
             };
         }

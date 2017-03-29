@@ -87,6 +87,7 @@ namespace PirateX.Core.Container
 
         public void InitContainers(ContainerBuilder builder)
         {
+            //TODO 这样的话就没办法支持动态修改了。。。
             ConnectionStrings = GetConnectionStrings();
 
             ServerConfig(builder);
@@ -117,7 +118,7 @@ namespace PirateX.Core.Container
 
                 var connectionstring = ConnectionStrings[name];
 
-                return new SqlConnection(connectionstring);
+                return GetDbConnection(connectionstring);
             }).InstancePerDependency();
         }
 
@@ -207,15 +208,16 @@ namespace PirateX.Core.Container
                 if (_configReaderDic.ContainsKey(configDbKey))
                     return _configReaderDic[configDbKey];
 
-                var newReader = new MemoryConfigReader(ContainerSetting.ConfigAssembly, () => new SqlConnection(districtConfig.ConfigConnectionString));
+                var newReader = new MemoryConfigReader(ContainerSetting.ConfigAssembly, () => GetDbConnection(districtConfig.ConfigConnectionString));
                 _configReaderDic.Add(configDbKey, newReader);
                 return newReader;
             })
                 .As<IConfigReader>()
                 .SingleInstance();
 
-            builder.Register(c => new SqlConnection(districtConfig.ConnectionString))
-                .As<IDbConnection>().InstancePerDependency();
+            builder.Register(c => GetDbConnection(districtConfig.ConnectionString))
+                .As<IDbConnection>()
+                .InstancePerDependency();
 
             builder.Register<IDbConnection>((c, p) => ServerIoc.Resolve<IDbConnection>(p));
 
@@ -244,6 +246,17 @@ namespace PirateX.Core.Container
                 container.Resolve<IConfigReader>().Load();
 
             return container;
+        }
+
+        /// <summary>
+        /// 创建数据库连接对象
+        /// 默认为sqlserver数据库，如果其他或者是混合情况下，需要额外处理
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
+        protected virtual IDbConnection GetDbConnection(string connectionString)
+        {
+            return new SqlConnection(connectionString);
         }
 
         /// <summary>
@@ -290,7 +303,7 @@ namespace PirateX.Core.Container
 
         public abstract IDictionary<string, string> GetConnectionStrings();
         #endregion
-        
+
 
         public void Dispose()
         {

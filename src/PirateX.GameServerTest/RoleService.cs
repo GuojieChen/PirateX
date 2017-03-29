@@ -54,8 +54,12 @@ namespace PirateX.GameServerTest
                 uow.Repository<RoleRepository>().GetById(1);
 
 
-                using (var now2 = CreateUnitOfWork(""))
+                using (var now2 = CreateUnitOfWork("role"))
                 {
+
+
+
+                    now2.Commit();
                 }
 
                 uow.Commit();

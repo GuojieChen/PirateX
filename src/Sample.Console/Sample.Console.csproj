@@ -98,14 +98,18 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Topshelf, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Topshelf.4.0.3\lib\net452\Topshelf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AllServices.cs" />
     <Compile Include="Cmd\Broadcast.cs" />
     <Compile Include="Cmd\Exception.cs" />
     <Compile Include="Cmd\RoleInfo.cs" />
     <Compile Include="Cmd\RoleLoginV2.cs" />
-    <Compile Include="DemoServer.cs" />
-    <Compile Include="DemoSession.cs" />
+    <Compile Include="WorkerService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleConfig\DefaultConfig.cs" />
@@ -134,13 +138,21 @@
     <None Include="supersocket.sh" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\PirateX\PirateX.csproj">
-      <Project>{3efd3b67-334f-4a08-9a7e-75fd9b50d03a}</Project>
-      <Name>PirateX</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PirateX.Core\PirateX.Core.csproj">
       <Project>{af6f5077-f2f6-4293-afd2-21c9e1ebc296}</Project>
       <Name>PirateX.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PirateX.Net.Actor\PirateX.Net.Actor.csproj">
+      <Project>{66c911af-fc4e-4daa-94be-49edbec1c0c3}</Project>
+      <Name>PirateX.Net.Actor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PirateX.Net.SuperSocket\PirateX.Net.SuperSocket.csproj">
+      <Project>{b7f6062e-033c-420c-b575-0a619655cbe5}</Project>
+      <Name>PirateX.Net.SuperSocket</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PirateX.Net\PirateX.Net.csproj">
+      <Project>{dd53e6b5-890d-4b52-990e-d4331ad997ba}</Project>
+      <Name>PirateX.Net</Name>
     </ProjectReference>
     <ProjectReference Include="..\PirateX.Protocol\PirateX.Protocol.csproj">
       <Project>{ebde20ee-7293-4b51-99f4-6688ebdd3d2b}</Project>

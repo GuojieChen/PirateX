@@ -4,30 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX;
-using PirateX.Filters;
+using PirateX.Net.Actor.Actions;
 using PirateX.Protocol;
 using ProtoBuf;
 using SuperSocket.SocketBase.Protocol;
 
 namespace GameServer.Console.Cmd
 {
-    [AuthorizedFilterBase]
-    public class RoleInfo: GameCommand<DemoSession,RoleInfoRequest,RoleInfoResponse>
+    public class RoleInfo: RepAction<RoleInfoResponse>
     {
-        protected override RoleInfoResponse ExecuteResponseCommand(DemoSession session, RoleInfoRequest data)
+        public override RoleInfoResponse Play()
         {
             return new RoleInfoResponse()
             {
                 Name = "mrglee",
-                Lv = 2 ,
+                Lv = 2,
                 CreateAt = DateTime.UtcNow
             };
         }
     }
 
-    public class RoleInfoRequest
-    {
-    }
 
     [Serializable]
     [ProtoContract(Name = "RoleInfoResponse")]

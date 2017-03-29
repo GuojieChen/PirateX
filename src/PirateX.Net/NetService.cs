@@ -9,9 +9,33 @@ using PirateX.Protocol.Package;
 
 namespace PirateX.Net
 {
-    public class NetService
+    public interface INetService
+    {
+        void Setup(INetManager netManager);
+        void ProcessResponse(object o, NetMQSocketEventArgs e);
+
+        /// <summary>
+        /// 收到客户端请求，交由Actor进行处理
+        /// </summary>
+        /// <param name="protocolPackage"></param>
+        /// <param name="body"></param>
+        void ProcessRequest(ProtocolPackage protocolPackage, byte[] body);
+
+        void Start();
+
+        void Stop();
+    }
+
+    public class NetService : INetService
     {
         private INetManager NetSend { get; set; }
+
+
+        public string PushsocketString { get; set; }
+        public string PullSocketString { get; set; }
+        public string XPubSocketString { get; set; }
+        public string XSubSocketString { get; set; }
+
 
         /// <summary>
         /// 下发任务
@@ -34,24 +58,24 @@ namespace PirateX.Net
 
         public virtual void Setup(INetManager netManager)
         {
-            if (string.IsNullOrEmpty(netManager.PushsocketString))
-                throw new ArgumentNullException(nameof(netManager.PushsocketString));
-            if (string.IsNullOrEmpty(netManager.PullSocketString))
-                throw new ArgumentNullException(nameof(netManager.PullSocketString));
+            if (string.IsNullOrEmpty(PushsocketString))
+                throw new ArgumentNullException(nameof(PushsocketString));
+            if (string.IsNullOrEmpty(PullSocketString))
+                throw new ArgumentNullException(nameof(PullSocketString));
             if (netManager == null)
                 throw new ArgumentNullException(nameof(netManager));
 
-            if (!string.IsNullOrEmpty(netManager.XPubSocketString) && !string.IsNullOrEmpty(netManager.XSubSocketString))
+            if (!string.IsNullOrEmpty(XPubSocketString) && !string.IsNullOrEmpty(XSubSocketString))
             {
-                var PublisherSocket = new XPublisherSocket(netManager.XPubSocketString);
+                var PublisherSocket = new XPublisherSocket(XPubSocketString);
 
-                var SubscriberSocket = new XSubscriberSocket(netManager.XSubSocketString);
+                var SubscriberSocket = new XSubscriberSocket(XSubSocketString);
 
                 GlobalServerProxy = new Proxy(SubscriberSocket,PublisherSocket);
             }
 
-            sender = new PushSocket(netManager.PushsocketString);
-            responseSocket = new PullSocket(netManager.PullSocketString);
+            sender = new PushSocket(PushsocketString);
+            responseSocket = new PullSocket(PullSocketString);
 
             Poller = new NetMQPoller()
             {

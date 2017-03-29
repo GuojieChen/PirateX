@@ -5,12 +5,13 @@ using System.Resources;
 using System.Threading;
 using System.Threading.Tasks;
 using GameServer.Console.Cmd;
-using PirateX.Command;
 using PirateX.Core.i18n;
 using PirateX.Core.Utils;
+using PirateX.Net;
 using ProtoBuf;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketEngine;
+using Topshelf;
 
 namespace GameServer.Console
 {
@@ -18,49 +19,21 @@ namespace GameServer.Console
     {
         private static void Main(string[] args)
         {
-            var bootstrap = BootstrapFactory.CreateBootstrap();
 
-            if (!bootstrap.Initialize())
+            var host = HostFactory.New(c =>
             {
-                System.Console.WriteLine("Failed to initialize!");
-                System.Console.ReadKey();
-                return;
-            }
+                
+                c.Service<AllServices>(s =>
+                {
+                    s.ConstructUsing(name => new AllServices());
+                    
+                    s.WhenStarted(t => t.Start());
 
-            var result = bootstrap.Start();
+                    s.WhenStopped(t => t.Stop());
+                });
+            });
 
-            System.Console.WriteLine("Start result: {0}!", result);
-
-            if (result == StartResult.Failed)
-            {
-                System.Console.WriteLine("Failed to start!");
-                System.Console.WriteLine(result);
-                System.Console.ReadKey();
-                return;
-            }
-            foreach (var appServer in bootstrap.AppServers)
-            {
-                var a = System.Console.ForegroundColor;
-                System.Console.ForegroundColor = ConsoleColor.Green;
-                System.Console.WriteLine("{0,20}\t{1,-4}", appServer.Name, appServer.State);
-                System.Console.ForegroundColor = a;
-            }
-
-            System.Console.WriteLine("Press key 'q' to stop it!");
-
-            while (System.Console.ReadKey().KeyChar != 'q')
-            {
-                System.Console.WriteLine();
-            }
-
-            System.Console.WriteLine();
-
-            //GameStop the appServer
-            bootstrap.Stop();
-
-            System.Console.WriteLine("The server was stopped!");
-
-            System.Console.Read();
+            host.Run();
         }
     }
 }

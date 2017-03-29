@@ -13,12 +13,11 @@ using PirateX.Core.Broadcas;
 using PirateX.Core.Config;
 using PirateX.Core.Domain.Uow;
 using PirateX.Core.Push;
-using PirateX.Service;
 using StackExchange.Redis;
 
 namespace GameServer.Console.SampleService
 {
-    public class RoleService : GameService
+    public class RoleService : ServiceBase
     {
         public IMessageBroadcast MessageBroadcast { get; set; }
 
