@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
@@ -8,9 +9,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows.Forms;
 using PirateX.Client;
 using PirateX.Protocol.Package;
+using PirateX.Protocol.Package.ResponseConvert;
 
 namespace PirateX.WinClient
 {
@@ -41,9 +44,26 @@ namespace PirateX.WinClient
 
         private void btnConn_Click(object sender, EventArgs e)
         {
-            _client = new PirateXClient($"ps://{txtHost.Text.Trim()}:{txtPort.Text.Trim()}");
+            //var headerQuery = new Name
+            var tokenQuery = HttpUtility.ParseQueryString(txtToken.Text.Trim());
+            var token = new Token()
+            {
+                Did = Convert.ToInt32(tokenQuery["did"]),
+                Rid = Convert.ToInt32(tokenQuery["rid"]),
+                Uid = tokenQuery["uid"]
+            };
+
+            var pbCovnert = new PirateX.Protocol.Package.ResponseConvert.ProtoResponseConvert();
+
+            _client = new PirateXClient($"ps://{txtHost.Text.Trim()}:{txtPort.Text.Trim()}", Convert.ToBase64String(pbCovnert.SerializeObject(token)));
             _client.OnOpen += OnOpen;
             _client.OnError += OnError;
+            _client.OnReceiveMessage += (o, args) =>
+            {
+                this.Invoke((EventHandler)delegate
+                {
+                });
+            };
             _client.Open();
 
             this.Invoke((EventHandler)delegate
@@ -51,6 +71,7 @@ namespace PirateX.WinClient
                 txtHost.Enabled = false;
                 txtPort.Enabled = false;
                 btnConn.Enabled = false;
+                txtToken.Enabled = false;
             });
         }
 
@@ -69,9 +90,9 @@ namespace PirateX.WinClient
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            //var headerQuery = new Name
+            
 
-            //_client.Send("", "",new Dictionary<string, string>(){{"format",comboBox1.Text.Trim()}});
+            _client.Send("RoleInfo",txtQuery.Text.Trim(),new NameValueCollection(){ { "format", comboBox1.Text.Trim() } });
         }
     }
 }

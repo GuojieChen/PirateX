@@ -2,6 +2,7 @@
 using System.Text;
 using Newtonsoft.Json;
 using PirateX.Protocol.Package;
+using PirateX.Protocol.Package.ResponseConvert;
 
 namespace PirateX.Client
 {

@@ -20,6 +20,7 @@ namespace PirateX.Client
 
         public MsgEventArgs(string msg,byte[] originalBytes) :this(msg,originalBytes,true)
         {
+
         }
     }
 }

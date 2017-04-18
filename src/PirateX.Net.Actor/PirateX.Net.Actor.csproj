@@ -82,7 +82,6 @@
     <Compile Include="ProtoSync\IProtoService.cs" />
     <Compile Include="ProtoSync\ProtobufService.cs" />
     <Compile Include="StatusCode.cs" />
-    <Compile Include="Token.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

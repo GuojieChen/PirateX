@@ -6,7 +6,5 @@ using System.Threading.Tasks;
 
 namespace PirateX.UnitTest
 {
-    public class TestSession:PirateXSession<TestSession>
-    {
-    }
+    
 }

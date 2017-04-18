@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PirateX.Net;
 using PirateX.Net.SuperSocket;
+using ServiceStack.Common.Extensions;
 using ServiceStack.Text;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketEngine.Configuration;
@@ -17,7 +18,7 @@ namespace GameServer.Console
     {
         private GameAppServer HostServer;
 
-        private WorkerService WorkerServer;
+        private WorkerService[] WorkerServer;
 
         public AllServices()
         {
@@ -34,11 +35,19 @@ namespace GameServer.Console
                 Ip = "192.168.1.34"
             });
 
-            WorkerServer = new WorkerService(new ActorConfig()
+            WorkerServer = new WorkerService[]
             {
-                PushsocketString = ">tcp://localhost:5001",
-                PullSocketString = ">tcp://localhost:5002",
-            });
+                new WorkerService(new ActorConfig()
+                {
+                    PushsocketString = ">tcp://localhost:5001",
+                    PullSocketString = ">tcp://localhost:5002",
+                }),
+                new WorkerService(new ActorConfig()
+                {
+                    PushsocketString = ">tcp://localhost:5001",
+                    PullSocketString = ">tcp://localhost:5002",
+                })
+            };
         }
 
 
@@ -47,13 +56,13 @@ namespace GameServer.Console
             System.Console.WriteLine("start!");
             HostServer.Start();
 
-            WorkerServer.Start();
+            WorkerServer.ForEach(item=>item.Start());
         }
 
         public void Stop()
         {
             HostServer.Stop();
-            WorkerServer.Stop();
+            WorkerServer.ForEach(item => item.Stop());
         }
     }
 }

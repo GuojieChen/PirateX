@@ -16,6 +16,9 @@ namespace PirateX.UnitTest
         public string Uid { get; set; }
         public DateTime StartUtcAt { get; set; }
         public string Token { get; set; }
+        public string ResponseConvert { get; set; }
+        public byte[] ClientKeys { get; set; }
+        public byte[] ServerKeys { get; set; }
         public string DeviceId { get; set; }
     }
 }

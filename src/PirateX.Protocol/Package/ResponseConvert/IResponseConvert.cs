@@ -1,4 +1,4 @@
-﻿namespace PirateX.Protocol.Package
+﻿namespace PirateX.Protocol.Package.ResponseConvert
 {
     public interface IResponseConvert
     {

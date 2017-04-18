@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using PirateX.Client.Command;
 using PirateX.Protocol;
 using PirateX.Protocol.Package;
+using PirateX.Protocol.Package.ResponseConvert;
 using SuperSocket.ClientEngine;
 using ErrorEventArgs = System.IO.ErrorEventArgs;
 
@@ -73,7 +74,7 @@ namespace PirateX.Client
 
         private int O { get; set; }
 
-        public string Language => "zh-CN"; 
+        public string Language => "zh-CN";
 
         public string Device => Guid.NewGuid().ToString();
 
@@ -113,16 +114,18 @@ namespace PirateX.Client
         /// </summary>
         public IProtocolPackage PackageProcessor { get; private set; }
 
-        public IResponseConvert ResponseConvert { get;  }
+        public IResponseConvert ResponseConvert { get; }
 
         public string CurrentMethod { get; private set; }
         public DateTime SendTime { get; private set; }
 
-        private  EndPoint TargetEndPoint { get; set; }
+        private EndPoint TargetEndPoint { get; set; }
 
         private bool sendOk { get; set; }
 
         public object CurrentReq { get; set; }
+
+        private string _token;
 
         /// <summary>
         /// 构造一个PSocket 有两种方式
@@ -131,10 +134,12 @@ namespace PirateX.Client
         /// 2 : pss://host:port/   安全型Socket
         /// </summary>
         /// <param name="uri"></param>
-        /// <param name="packageProcessor"></param>
-        /// <param name="receiveBufferSize"></param>
-        public PirateXClient(string uri, int receiveBufferSize = 2048,int sendQueueSize = 3)
+        /// <param name="token"></param>
+        /// <param name="sendQueueSize"></param>
+        public PirateXClient(string uri, string token = "", int sendQueueSize = 3)
         {
+            this._token = token;
+
             TcpClientSession client;
 
             if (uri.StartsWith(m_UriPrefix, StringComparison.OrdinalIgnoreCase))
@@ -152,7 +157,7 @@ namespace PirateX.Client
             PackageProcessor = new ProtocolPackage();  //new DefaultPackageProcessor() { ZipEnable = true };
             m_StateCode = PSocketStateConst.None;
 
-            client.ReceiveBufferSize = receiveBufferSize;
+            client.ReceiveBufferSize = 2048;
             client.Connected += new EventHandler(client_Connected);
             client.Closed += new EventHandler(client_Closed);
             client.Error += (sender, args) => { };
@@ -182,13 +187,16 @@ namespace PirateX.Client
 
             try
             {
-                var responsePackage = PackageProcessor.UnPackToResponsePackage(e.Data);
+                var responsePackage = PackageProcessor.UnPackToPacket(e.Data);
                 var responseInfo = new PirateXResponseInfo(responsePackage.HeaderBytes);
 
                 var header = responseInfo.Headers;
                 sw.Stop();
 
                 log.Resp = header;
+
+                if (OnReceiveMessage != null)
+                    OnReceiveMessage(this, new MsgEventArgs(header["c"], responsePackage.ContentBytes));
 
                 if (!Equals(header["code"], "200"))
                 {
@@ -202,7 +210,7 @@ namespace PirateX.Client
                     if (OnResponseProcessed != null)
                         OnResponseProcessed(this, log);
                 }
-                else if (Equals(header["i"],"2"))
+                else if (Equals(header["i"], "2"))
                 {
                     var method = header["c"];
                     var executor = GetBroadcastExecutor(method);
@@ -265,7 +273,7 @@ namespace PirateX.Client
                 client_Error(this, new ErrorEventArgs(exc));
             }
         }
-        
+
         #region crate client
         private EndPoint ResolveUri(string uri, int defaultPort, out int port)
         {
@@ -362,9 +370,9 @@ namespace PirateX.Client
             //ProtocolProcessor.SendHandshake(this);
             _clientSeed = Utils.GetTimestampAsSecond();
             var clientKey = new KeyGenerator(_clientSeed);
-            PackageProcessor.ClientKeys = clientKey.MakeKey();
+            PackageProcessor.PackKeys = clientKey.MakeKey();
 
-            Send("NewSeed",$"seed={_clientSeed}");
+            Send("NewSeed", $"seed={_clientSeed}");
         }
 
         private void ClearTimer()
@@ -407,7 +415,7 @@ namespace PirateX.Client
             if (m_StateCode == PSocketStateConst.Connecting)
             {
                 m_StateCode = PSocketStateConst.Closing;
-                if(Client!=null)
+                if (Client != null)
                     Client.Close();
             }
         }
@@ -467,32 +475,27 @@ namespace PirateX.Client
 
         public void Send(string name, string querystring, NameValueCollection exheader = null)
         {
-            var headerNc = new NameValueCollection();
-
-            headerNc.Add("c",name);
-            headerNc.Add("o", $"{O++}"); 
-            headerNc.Add("t",$"{Utils.GetTimestamp()}");
-            headerNc.Add("language",$"{Language}");
-            headerNc.Add("device",$"{Device}");
-            headerNc.Add("foramt","protobuf");
+            var headerNc = new NameValueCollection
+            {
+                {"c", name},
+                {"o", $"{O++}"},
+                {"t", $"{Utils.GetTimestamp()}"},
+                {"language", $"{Language}"},
+                {"device", $"{Device}"},
+                {"format", "protobuf"},
+                { "token",_token}
+            };
 
             if (exheader != null)
             {
                 foreach (var item in exheader.AllKeys)
-                    headerNc.Add(item, exheader[item]);
+                    headerNc[item] = exheader[item];
             }
-
-
 
             var reqeustInfo = new PirateXRequestInfo(headerNc, HttpUtility.ParseQueryString(querystring));
 
-            var senddatas = PackageProcessor.PackRequestPackageToBytes(reqeustInfo.ToRequestPackage());
-            Client.Send(senddatas,0, senddatas.Length);
-        }
-
-        public void Send(string name, NameValueCollection query, NameValueCollection exheader = null)
-        {
-            Send(name, query, exheader);
+            var senddatas = PackageProcessor.PackPacketToBytes(reqeustInfo.ToRequestPackage());
+            Client.Send(senddatas, 0, senddatas.Length);
         }
 
         public void Send<T>(T data)

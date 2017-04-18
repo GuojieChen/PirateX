@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Autofac;
 using PirateX.Core;
 using PirateX.Core.Container;
+using PirateX.Net;
 using PirateX.Net.Actor;
 using PirateX.Protocol;
 using PirateX.Protocol.Package;
@@ -14,15 +15,15 @@ using SuperSocket.SocketBase.Protocol;
 
 namespace PirateX.UnitTest
 {
-    public class TestServer: ActorService<OnlineRole>
+    public class TestServer: ActorService<TestServer,OnlineRole>
     {
-        public TestServer(Net.ActorConfig config, IServerContainer serverContainer) : base(config, serverContainer)
+        public TestServer(ActorConfig config, IServerContainer serverContainer) : base(config, serverContainer)
         {
         }
 
-        public override Assembly ConfigAssembly()
+        protected override OnlineRole CreateOnlineRole(ActorContext context, IToken token)
         {
-            return typeof (TestServer).GetType().Assembly;
+            return new OnlineRole();
         }
 
         public override void IocConfig(ContainerBuilder builder)

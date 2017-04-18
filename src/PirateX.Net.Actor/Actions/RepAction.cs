@@ -92,7 +92,6 @@ namespace PirateX.Net.Actor.Actions
             return $"replist:{base.OnlieRole.Id}";
         }
 
-        
         public abstract TResponse Play();
     }
 }

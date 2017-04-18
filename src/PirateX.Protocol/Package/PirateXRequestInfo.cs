@@ -46,19 +46,13 @@ namespace PirateX.Protocol.Package
             this.Token = Convert.ToString(headers["token"]);
         }
 
-        //public PirateXRequestInfo(NameValueCollection headerStr, NameValueCollection contentStr)
-        //    : this(, contentStr.ToQueryDic())
-        //{
-
-        //}
-
         public PirateXRequestInfo(byte[] headerBytes, byte[] contentBytes)
             : this(HttpUtility.ParseQueryString((Encoding.UTF8.GetString(headerBytes))), HttpUtility.ParseQueryString(Encoding.UTF8.GetString(contentBytes)))
         {
 
         }
 
-        public PirateXRequestInfo(IPirateXRequestPackage requestPackage) :
+        public PirateXRequestInfo(IPirateXPackage requestPackage) :
             this(requestPackage.HeaderBytes, requestPackage.ContentBytes)
         {
 

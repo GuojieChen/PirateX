@@ -4,7 +4,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace PirateX.Protocol.Package
+namespace PirateX.Protocol.Package.ResponseConvert
 {
     [DisplayColumn("json")]
     public class JsonResponseConvert : IResponseConvert

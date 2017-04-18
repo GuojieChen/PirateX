@@ -30,12 +30,10 @@ namespace PirateX.Net
     {
         private INetManager NetSend { get; set; }
 
-
         public string PushsocketString { get; set; }
         public string PullSocketString { get; set; }
         public string XPubSocketString { get; set; }
         public string XSubSocketString { get; set; }
-
 
         /// <summary>
         /// 下发任务
@@ -53,9 +51,7 @@ namespace PirateX.Net
         public NetMQQueue<NetMQMessage> PushQueue = new NetMQQueue<NetMQMessage>();
 
         private NetMQPoller Poller;
-
         private bool IsSetuped { get; set; }
-
         public virtual void Setup(INetManager netManager)
         {
             if (string.IsNullOrEmpty(PushsocketString))
@@ -96,7 +92,6 @@ namespace PirateX.Net
 
             IsSetuped = true;
         }
-
         //服务器向客户端下发数据
         public virtual void ProcessResponse(object o, NetMQSocketEventArgs e)
         {
@@ -123,12 +118,12 @@ namespace PirateX.Net
             //将消息下发到客户端
             if (protocolPackage == null)
                 return;
-            if (protocolPackage.ClientKeys == null)
-                protocolPackage.ClientKeys = clientkey;
-            if (protocolPackage.ServerKeys == null)
-                protocolPackage.ServerKeys = serverkey;
+            if (protocolPackage.PackKeys == null)
+                protocolPackage.PackKeys = serverkey;
+            if (protocolPackage.UnPackKeys == null)
+                protocolPackage.UnPackKeys = clientkey;
 
-            var bytes = protocolPackage.PackResponsePackageToBytes(response);
+            var bytes = protocolPackage.PackPacketToBytes(response);
 
             NetSend.Send(sessionid, bytes);
         }
@@ -143,14 +138,14 @@ namespace PirateX.Net
             if (protocolPackage == null)
                 return;
 
-            var request = protocolPackage.UnPackToRequestPackage(body);
+            var request = protocolPackage.UnPackToPacket(body);
 
             var msg = new NetMQMessage();
             msg.Append(new byte[] { 1 });//版本号
             msg.Append("req");//动作
             msg.Append(protocolPackage.SessionID);//sessionid
-            msg.Append(protocolPackage.ClientKeys);//客户端密钥
-            msg.Append(protocolPackage.ServerKeys);//服务端密钥
+            msg.Append(protocolPackage.PackKeys);//客户端密钥
+            msg.Append(protocolPackage.UnPackKeys);//服务端密钥
             msg.Append(request.HeaderBytes);//信息头
             msg.Append(request.ContentBytes);//信息体
             //加入队列

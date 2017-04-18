@@ -9,9 +9,8 @@ namespace PirateX.Client.Command
         {
             var serverKey = new KeyGenerator(data.Seed); 
 
-            pSocket.PackageProcessor.ServerKeys = serverKey.MakeKey();
+            pSocket.PackageProcessor.UnPackKeys = serverKey.MakeKey();
             pSocket.PackageProcessor.CryptoEnable = true;
-
         }
     }
 

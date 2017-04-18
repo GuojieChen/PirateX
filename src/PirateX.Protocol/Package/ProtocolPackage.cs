@@ -7,7 +7,6 @@ using PirateX.Protocol.Zip;
 namespace PirateX.Protocol.Package
 {
     public class ProtocolPackage : IProtocolPackage
-
     {
         public string SessionID { get; set; } = Guid.NewGuid().ToString("N");
 
@@ -22,18 +21,17 @@ namespace PirateX.Protocol.Package
         {
         }
 
-
         public IZip Zip { get; private set; }
         public ICrypto Crypto { get; set; }
         //public IResponseConvert ResponseConvert { get; set; }
 
-
         public bool ZipEnable { get; set; }
         public bool CryptoEnable { get; set; }
         public bool JsonEnable { get; set; }
-        public byte[] ClientKeys { get; set; }
-        public byte[] ServerKeys { get; set; }
+        public byte[] PackKeys { get; set; }
+        public byte[] UnPackKeys { get; set; }
 
+        /*
         public IPirateXRequestPackage UnPackToRequestPackage(byte[] datas)
         {
             byte[] headerBytes = null;
@@ -66,8 +64,8 @@ namespace PirateX.Protocol.Package
                 var v = GetbitValue(cryptoBit[0], i);
                 if (v == 1)
                 {
-                    headerBytes = Crypto.Decode(headerBytes, ClientKeys);
-                    contentBytes = Crypto.Decode(contentBytes, ClientKeys);
+                    headerBytes = Crypto.Decode(headerBytes, UnPackKeys);
+                    contentBytes = Crypto.Decode(contentBytes, UnPackKeys);
                 }
             }
 
@@ -88,8 +86,8 @@ namespace PirateX.Protocol.Package
                 ContentBytes = contentBytes
             };
         }
-
-        public byte[] PackRequestPackageToBytes(IPirateXRequestPackage requestPackage)
+        */
+        public byte[] PackPacketToBytes(IPirateXPackage requestPackage)
         {
             if (requestPackage == null)
                 return null;
@@ -104,12 +102,12 @@ namespace PirateX.Protocol.Package
             //信息头压缩
             headerbytes = ZipEnable ? Zip.Compress(headerbytes) : headerbytes;
             //信息头加密
-            headerbytes = CryptoEnable ? Crypto.Encode(headerbytes, ServerKeys) : headerbytes;
+            headerbytes = CryptoEnable ? Crypto.Encode(headerbytes, PackKeys) : headerbytes;
 
             //数据体压缩
             contentbytes = ZipEnable ? Zip.Compress(contentbytes) : contentbytes;
             //数据体加密
-            contentbytes = CryptoEnable ? Crypto.Encode(contentbytes, ServerKeys) : contentbytes;
+            contentbytes = CryptoEnable ? Crypto.Encode(contentbytes, PackKeys) : contentbytes;
 
             var cryptoByte = new byte[1];
             cryptoByte[0] = CryptoEnable ? (byte)128 : (byte)0;
@@ -131,7 +129,7 @@ namespace PirateX.Protocol.Package
                 return stream.ToArray();
             }
         }
-
+        /*
         public byte[] PackResponsePackageToBytes(IPirateXResponsePackage respolnsePackage)
         {
             //var headers = responseInfo.Headers;
@@ -144,13 +142,13 @@ namespace PirateX.Protocol.Package
             //信息头压缩
             headerbytes = ZipEnable ? Zip.Compress(headerbytes) : headerbytes;
             //信息头加密
-            headerbytes = CryptoEnable ? Crypto.Encode(headerbytes, ServerKeys) : headerbytes;
+            headerbytes = CryptoEnable ? Crypto.Encode(headerbytes, PackKeys) : headerbytes;
 
             //数据体压缩
             contentbytes = ZipEnable ? Zip.Compress(contentbytes) : contentbytes;
             //数据体加密
-            contentbytes = CryptoEnable ? Crypto.Encode(contentbytes, ServerKeys) : contentbytes;
-            
+            contentbytes = CryptoEnable ? Crypto.Encode(contentbytes, PackKeys) : contentbytes;
+
 
             var cryptoByte = new byte[1];
             cryptoByte[0] = CryptoEnable ? (byte)128 : (byte)0;
@@ -163,17 +161,17 @@ namespace PirateX.Protocol.Package
 
             using (var stream = new MemoryStream())
             {
-                stream.Write(BitConverter.GetBytes(headerLen+ contentLen+4+1+1+4), 0, 4);
+                stream.Write(BitConverter.GetBytes(headerLen + contentLen + 4 + 1 + 1 + 4), 0, 4);
                 stream.Write(zipByte, 0, 1);
                 stream.Write(cryptoByte, 0, 1);
                 stream.Write(BitConverter.GetBytes(headerLen), 0, 4);
-                stream.Write(headerbytes,0,headerLen);
-                stream.Write(contentbytes,0,contentLen);
+                stream.Write(headerbytes, 0, headerLen);
+                stream.Write(contentbytes, 0, contentLen);
                 return stream.ToArray();
             }
         }
-
-        public IPirateXResponsePackage UnPackToResponsePackage(byte[] datas)
+        */
+        public IPirateXPackage UnPackToPacket(byte[] datas)
         {
             byte[] headerBytes = null;
             byte[] contentBytes = null;
@@ -205,8 +203,8 @@ namespace PirateX.Protocol.Package
                 var v = GetbitValue(cryptoBit[0], i);
                 if (v == 1)
                 {
-                    headerBytes = Crypto.Decode(headerBytes, ClientKeys);
-                    contentBytes = Crypto.Decode(contentBytes, ClientKeys);
+                    headerBytes = Crypto.Decode(headerBytes, UnPackKeys);
+                    contentBytes = Crypto.Decode(contentBytes, UnPackKeys);
                 }
             }
 

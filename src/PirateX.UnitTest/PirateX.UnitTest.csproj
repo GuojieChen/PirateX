@@ -137,6 +137,10 @@
       <Project>{66c911af-fc4e-4daa-94be-49edbec1c0c3}</Project>
       <Name>PirateX.Net.Actor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PirateX.Net\PirateX.Net.csproj">
+      <Project>{dd53e6b5-890d-4b52-990e-d4331ad997ba}</Project>
+      <Name>PirateX.Net</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PirateX.Protocol\PirateX.Protocol.csproj">
       <Project>{ebde20ee-7293-4b51-99f4-6688ebdd3d2b}</Project>
       <Name>PirateX.Protocol</Name>

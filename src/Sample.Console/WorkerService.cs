@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Autofac;
+using GameServer.Console.Cmd;
 using GameServer.Console.SampleConfig;
 using GameServer.Console.SampleDomain;
 using GameServer.Console.SampleService;
@@ -21,11 +22,22 @@ using PirateX.Protocol.Package;
 
 namespace GameServer.Console
 {
-    public class WorkerService : ActorService<OnlineRole>
+    public class WorkerService : ActorService<WorkerService, OnlineRole>
     {
         protected override OnlineRole CreateOnlineRole(ActorContext context, IToken token)
         {
-            throw new NotImplementedException();
+            return new OnlineRole()
+            {
+                ClientKeys = context.ClientKeys,
+                ServerKeys = context.ServerKeys,
+                Did = token.Did,
+                Id = token.Rid,
+                ResponseConvert = context.ResponseCovnert,
+                SessionId = context.SessionId,
+                StartUtcAt = DateTime.UtcNow,
+                Token = context.Request.Token,
+                Uid = token.Uid,
+            };
         }
 
         public override void IocConfig(ContainerBuilder builder)

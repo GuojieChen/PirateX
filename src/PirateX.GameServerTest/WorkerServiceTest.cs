@@ -16,6 +16,7 @@ using PirateX.Net;
 using PirateX.Net.Actor;
 using PirateX.Net.Actor.Actions;
 using PirateX.Protocol;
+using PirateX.Protocol.Package;
 using PirateX.ServiceStackV3;
 using ProtoBuf;
 using Topshelf.Logging;
@@ -30,15 +31,10 @@ namespace PirateX.GameServerTest
         }
     }
 
-    public class TestActorService : ActorService<OnlineRole>
+    public class TestActorService : ActorService<TestActorService,OnlineRole>
     {
         public TestActorService(ActorConfig config, IServerContainer serverContainer) : base(config, serverContainer)
         {
-        }
-
-        public override IEnumerable<Type> GetActions()
-        {
-            return typeof (TestActorService).Assembly.GetTypes();
         }
 
         protected override OnlineRole CreateOnlineRole(ActorContext context, IToken token)

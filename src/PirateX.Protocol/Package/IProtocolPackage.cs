@@ -21,19 +21,19 @@ namespace PirateX.Protocol.Package
         bool CryptoEnable { get; set; }
         /// <summary> 客户端秘钥列表
         /// </summary>
-        byte[] ClientKeys { get; set; }
+        byte[] PackKeys { get; set; }
         /// <summary> 服务端秘钥列表
         /// </summary>
-        byte[] ServerKeys { get; set; }
+        byte[] UnPackKeys { get; set; }
 
         //IResponseConvert ResponseConvert { get; set; }
 
-        IPirateXRequestPackage UnPackToRequestPackage(byte[] datas);
+        //IPirateXRequestPackage UnPackToRequestPackage(byte[] datas);
 
-        byte[] PackRequestPackageToBytes(IPirateXRequestPackage requestPackage);
+        byte[] PackPacketToBytes(IPirateXPackage requestPackage);
 
-        byte[] PackResponsePackageToBytes(IPirateXResponsePackage respolnsePackage);
+        //byte[] PackResponsePackageToBytes(IPirateXResponsePackage respolnsePackage);
 
-        IPirateXResponsePackage UnPackToResponsePackage(byte[] datas);
+        IPirateXPackage UnPackToPacket(byte[] datas);
     }
 }

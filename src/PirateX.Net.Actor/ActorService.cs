@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using NetMQ;
@@ -17,6 +19,7 @@ using PirateX.Net.Actor.Actions;
 using PirateX.Net.Actor.ProtoSync;
 using PirateX.Protocol;
 using PirateX.Protocol.Package;
+using PirateX.Protocol.Package.ResponseConvert;
 using ProtoBuf;
 using StackExchange.Redis;
 using Topshelf.Logging;
@@ -29,10 +32,12 @@ namespace PirateX.Net.Actor
         void Stop();
     }
 
-    public abstract class ActorService<TOnlineRole> : ActorNetService, IMessageSender, IActorService
+    public abstract class ActorService<TActorService,TOnlineRole> : ActorNetService, IMessageSender, IActorService
         where TOnlineRole : class, IOnlineRole, new()
     {
-        public static LogWriter Logger = HostLogger.Get(typeof(ActorService<TOnlineRole>));
+        private Guid _id = Guid.NewGuid();
+
+        public static LogWriter Logger = HostLogger.Get(typeof(ActorService<TActorService,TOnlineRole>));
 
         protected IActorNetService NetService { get; set; }
 
@@ -99,9 +104,8 @@ namespace PirateX.Net.Actor
                 {
                     var convertName = ((DisplayColumnAttribute)attrs[0]).DisplayColumn;
                     if(!string.IsNullOrEmpty(convertName))
-                        builder.Register(c => new ProtoResponseConvert())
+                        builder.Register(c => Activator.CreateInstance(responseConvert))
                             .Keyed<IResponseConvert>(convertName.ToLower())
-                            //.As<IResponseConvert>()
                             .SingleInstance();
                 }
             }
@@ -117,7 +121,7 @@ namespace PirateX.Net.Actor
             OnlineManager = ServerContainer.ServerIoc.Resolve<IOnlineManager>();
 
             //注册内置命令
-            RegisterActions(typeof(ActorService<TOnlineRole>).Assembly.GetTypes());
+            RegisterActions(typeof(ActorService<TActorService,TOnlineRole>).Assembly.GetTypes());
             //注册外置命令
             RegisterActions(GetActions());
         }
@@ -147,7 +151,7 @@ namespace PirateX.Net.Actor
         /// <returns></returns>
         public virtual IEnumerable<Type> GetActions()
         {
-            return null;
+            return typeof(TActorService).Assembly.GetTypes();
         }
         /// <summary>
         /// 多线程处理请求
@@ -157,6 +161,8 @@ namespace PirateX.Net.Actor
         protected override void ProcessTaskPullSocket(object sender, NetMQSocketEventArgs e)
         {
             var msg = e.Socket.ReceiveMultipartMessage();
+            if(Logger.IsDebugEnabled)
+                Logger.Debug($"Pull,ActorService[{_id}],ThreadID:{Thread.CurrentThread.ManagedThreadId}");
 
             Task.Factory.StartNew(() => ProcessReceive(msg)).ContinueWith(t =>
             {
@@ -196,44 +202,53 @@ namespace PirateX.Net.Actor
                 {
                     try
                     {
+                        var token = GetToken(context.Request.Token);
+                        context.Token = token;
+
+                        //授权检查
+                        if (!VerifyToken(ServerContainer.GetDistrictConfig(token.Did), token))
+                            throw new PirateXException("AuthError", "授权失败") { Code = StatusCode.Unauthorized };
+
                         //context.Request.Token
                         //获取session信息  从缓存中去获取session信息  session没有的时候需要提示客户端重新连接
 
                         if (Equals(actionname, "NewSeed"))
                         {
+                            var onlinerole2 = CreateOnlineRole(context, token);
+                            onlinerole2.ClientKeys = context.ClientKeys;
+                            onlinerole2.ServerKeys = context.ServerKeys;
 
+                            ServerContainer.ServerIoc.Resolve<IOnlineManager>().Login(onlinerole2);
                         }
                         else
                         {
-                            var token = GetToken(context.Request.Token);
-                            context.Token = token;
-
-                            //授权检查
-                            if (!VerifyToken(ServerContainer.GetDistrictConfig(token.Did), token))
-                                throw new PirateXException("AuthError", "授权失败") { Code = StatusCode.Unauthorized };
-
                             var onlinerole = OnlineManager.GetOnlineRole(token.Rid);
                             action.Reslover = ServerContainer.GetDistrictContainer(token.Did).BeginLifetimeScope();
 
-                            if (!context.ServerKeys.Any() || onlinerole == null)
+                            if (onlinerole == null)
                             {
-                                onlinerole = CreateOnlineRole(context, token);
-                                onlinerole.ClientKeys = context.ClientKeys;
-                                onlinerole.ServerKeys = context.ServerKeys;
+                                var onlinerole2 = CreateOnlineRole(context, token);
+                                onlinerole2.ClientKeys = context.ClientKeys;
+                                onlinerole2.ServerKeys = context.ServerKeys;
 
-                                ServerContainer.ServerIoc.Resolve<IOnlineManager>().Login(onlinerole);
+                                ServerContainer.ServerIoc.Resolve<IOnlineManager>().Login(onlinerole2);
                             }
-
-                            if (!context.ServerKeys.Any())
-                            {   //第一次请求
-
-                            }
-                            else
+                            else if (!Equals(onlinerole.SessionId, context.SessionId))
                             {
                                 //单设备登陆控制
-                                if (!Equals(onlinerole.SessionId, context.SessionId))
-                                    throw new PirateXException("ReLogin", "ReLogin") { Code = StatusCode.ReLogin };
+                                throw new PirateXException("ReLogin", "ReLogin") { Code = StatusCode.ReLogin };
                             }
+
+                            //if (!context.ServerKeys.Any())
+                            //{   //第一次请求
+
+                            //}
+                            //else
+                            //{
+                            //    //单设备登陆控制
+                            //    if (!Equals(onlinerole.SessionId, context.SessionId))
+                            //        throw new PirateXException("ReLogin", "ReLogin") { Code = StatusCode.ReLogin };
+                            //}
 
                             action.OnlieRole = onlinerole;
                         }
@@ -252,7 +267,7 @@ namespace PirateX.Net.Actor
                 }
                 else
                 {
-                    var headers = new Dictionary<string, string>
+                    var headers = new NameValueCollection()
                     {
                         {"c", context.Request.C},
                         {"i", MessageType.Rep},
@@ -343,13 +358,16 @@ namespace PirateX.Net.Actor
             }
 
 
-            var headers = new Dictionary<string, string>();
-            headers.Add("c", context.Request.C);
-            headers.Add("i", MessageType.Rep);//返回类型 
-            headers.Add("o", Convert.ToString(context.Request.O));
-            headers.Add("code", Convert.ToString(code));
-            headers.Add("errorCode", errorCode);
-            headers.Add("errorMsg", errorMsg);
+            var headers = new NameValueCollection
+            {
+                {"c", context.Request.C},
+                {"i", MessageType.Rep},
+                {"o", Convert.ToString(context.Request.O)},
+                {"code", Convert.ToString(code)},
+                {"errorCode", errorCode},
+                {"errorMsg", errorMsg}
+            };
+            //返回类型 
 
             SendMessage<string>(context, headers, null);
         }
@@ -380,20 +398,26 @@ namespace PirateX.Net.Actor
         #region send message
         public void SendMessage<T>(ActorContext context, T t)
         {
-            var headers = new Dictionary<string, string>();
-            headers.Add("c", context.Request.C);
-            headers.Add("i", MessageType.Rep);//返回类型 
-            headers.Add("o", Convert.ToString(context.Request.O));
-            headers.Add("code", Convert.ToString((int)StatusCode.Ok));
+            var headers = new NameValueCollection
+            {
+                {"c", context.Request.C},
+                {"i", MessageType.Rep},
+                {"o", Convert.ToString(context.Request.O)},
+                {"code", Convert.ToString((int) StatusCode.Ok)}
+            };
+            //返回类型 
 
             SendMessage(context, headers, t);
         }
 
         public void PushMessage<T>(IOnlineRole role, T t)
         {
-            var headers = new Dictionary<string, string>();
-            headers.Add("c", typeof(T).Name);
-            headers.Add("i", MessageType.Boradcast);//返回类型 
+            var headers = new NameValueCollection
+            {
+                {"c", typeof(T).Name},
+                { "i", MessageType.Boradcast},
+                {"format",role.ResponseConvert}
+            };
 
             var repMsg = new NetMQMessage();
             repMsg.Append(new byte[] { 1 });//版本号
@@ -410,17 +434,22 @@ namespace PirateX.Net.Actor
 
         public void SendMessage<T>(ActorContext context, string name, T t)
         {
-            var headers = new Dictionary<string, string>();
-            headers.Add("c", context.Request.C);
-            headers.Add("i", MessageType.Boradcast);//通知类型 
-            headers.Add("o", Convert.ToString(context.Request.O));
-            headers.Add("code", Convert.ToString((int)StatusCode.Ok));
+            var headers = new NameValueCollection
+            {
+                {"c", context.Request.C},
+                {"i", MessageType.Boradcast},
+                {"o", Convert.ToString(context.Request.O)},
+                {"code", Convert.ToString((int) StatusCode.Ok)}
+            };
+            //通知类型 
 
             SendMessage(context, headers, t);
         }
 
-        private void SendMessage<T>(ActorContext context, IDictionary<string, string> header, T rep)
+        private void SendMessage<T>(ActorContext context, NameValueCollection header, T rep)
         {
+            header["format"] = context.ResponseCovnert;
+
             var repMsg = new NetMQMessage();
             repMsg.Append(new byte[] { context.Version });//版本号
             repMsg.Append("action");//动作
@@ -436,10 +465,9 @@ namespace PirateX.Net.Actor
             base.EnqueueMessage(repMsg);
         }
 
-
-        private byte[] GetHeaderBytes(IDictionary<string, string> headers)
+        private byte[] GetHeaderBytes(NameValueCollection headers)
         {
-            return Encoding.UTF8.GetBytes(string.Join("&", headers.Keys.Select(a => a + "=" + headers[a])));
+            return Encoding.UTF8.GetBytes(string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a])));
         }
 
         #endregion

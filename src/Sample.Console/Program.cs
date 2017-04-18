@@ -22,6 +22,7 @@ namespace GameServer.Console
 
             var host = HostFactory.New(c =>
             {
+                c.UseNLog();
                 
                 c.Service<AllServices>(s =>
                 {
