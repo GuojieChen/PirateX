@@ -11,8 +11,6 @@ namespace PirateX.Core.Container
         /// </summary>
         ILifetimeScope ServerIoc { get; set; }
 
-        IServerSetting Settings { get; }
-
         /// <summary> 获取游戏服容器
         /// </summary>
         /// <param name="districtid"></param>
@@ -46,6 +44,8 @@ namespace PirateX.Core.Container
         IDictionary<string, string> GetConnectionStrings();
 
         List<Assembly> GetEntityAssemblyList();
+
+        IServerSetting GetServerSetting();
     }
 
 

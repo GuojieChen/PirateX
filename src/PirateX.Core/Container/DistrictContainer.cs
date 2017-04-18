@@ -37,34 +37,38 @@ namespace PirateX.Core.Container
 
         public ILifetimeScope ServerIoc { get; set; }
 
-        public IServerSetting Settings { get; }
+        //public IServerSetting Settings { get; }
 
-        public DistrictContainer(IServerSetting settings)
+        //public DistrictContainer(IServerSetting settings)
+        //{
+        //    Settings = settings;
+        //    if (Settings == null)
+        //    {
+        //        if (Log.IsTraceEnabled)
+        //            Log.Trace("Settings is NULL");
+
+        //        Settings = GetDefaultSeting();
+        //    }
+
+        //    if (Log.IsTraceEnabled)
+        //    {
+        //        Log.Trace("Settings values:");
+        //        Log.Trace(Settings.ToLogString());
+        //    }
+
+        //}
+
+        public DistrictContainer()
         {
-            Settings = settings;
-            if (Settings == null)
-            {
-                if (Log.IsTraceEnabled)
-                    Log.Trace("Settings is NULL");
-
-                Settings = GetDefaultSeting();
-            }
-
-            if (Log.IsTraceEnabled)
-            {
-                Log.Trace("Settings values:");
-                Log.Trace(Settings.ToLogString());
-            }
 
         }
 
-        public DistrictContainer() : this(null)
+        private IServerSetting _defaultSetting;
+        private IServerSetting GetDefaultSeting()
         {
+            if (_defaultSetting != null)
+                return _defaultSetting;
 
-        }
-
-        private static DefaultServerSetting GetDefaultSeting()
-        {
             var ps = typeof(DefaultServerSetting).GetProperties();
             var defaultServerSetting = Activator.CreateInstance(typeof(DefaultServerSetting), null);
 
@@ -74,7 +78,9 @@ namespace PirateX.Core.Container
                 propertyInfo.SetValue(defaultServerSetting, value);
             }
 
-            return (DefaultServerSetting)defaultServerSetting;
+            _defaultSetting = (DefaultServerSetting)defaultServerSetting;
+
+            return _defaultSetting;
         }
 
         public void InitContainers(ContainerBuilder builder)
@@ -169,10 +175,12 @@ namespace PirateX.Core.Container
         public IEnumerable<IDistrictConfig> GetDistrictConfigs()
         {
             var list = LoadDistrictConfigs();
-            if (Settings.Districts == null)
-                return list;
+            //if (Settings.Districts == null)
+            //    return list;
 
-            return list.Where(item => Settings.Districts.Select(d => d.ServerId).Contains(item.Id));
+            //return list.Where(item => Settings.Districts.Select(d => d.ServerId).Contains(item.Id));
+
+            return list;
         }
 
         private IContainer LoadDistrictContainer(IDistrictConfig districtConfig)
@@ -277,6 +285,11 @@ namespace PirateX.Core.Container
         public virtual List<Assembly> GetEntityAssemblyList()
         {
             return new List<Assembly>() { typeof(IEntity).Assembly };
+        }
+
+        public virtual IServerSetting GetServerSetting()
+        {
+            return GetDefaultSeting();
         }
 
         /// <summary>

@@ -72,20 +72,10 @@ namespace GameServer.Console
         public string RedisHost { get; set; }
         public bool AlterTable { get; set; }
         public bool IsMetricOpen { get; set; }
-        public List<AppServer> Districts { get; set; }
     }
     
     internal class DemoServerContainer : DistrictContainer<DemoServerContainer>
     {
-        public DemoServerContainer() : base(new ServerSetting
-        {
-            Id = "PirateX.VS-DEV",
-            RedisHost = "192.168.1.34:6379,password=glee1234"
-        })
-        {
-            
-        }
-
         private static readonly IEnumerable<DistrictConfig> ServerConfigs = new[]
         {
             new DistrictConfig {

@@ -9,8 +9,6 @@ using PirateX.ServiceStackV3;
 
 namespace PirateX.GameServerTest
 {
-
-
     public class DistrictConfig : IDistrictConfig
     {
         public string Name { get; set; }
@@ -33,20 +31,10 @@ namespace PirateX.GameServerTest
         public string RedisHost { get; set; }
         public bool AlterTable { get; set; }
         public bool IsMetricOpen { get; set; }
-        public List<AppServer> Districts { get; set; }
     }
     
     public class TestContainer : DistrictContainer<TestContainer>
     {
-        public TestContainer() : base(new ServerSetting
-        {
-            Id = "PirateX.VS-DEV",
-            RedisHost = "localhost:6379"
-        })
-        {
-
-        }
-
         private static readonly IEnumerable<DistrictConfig> ServerConfigs = new DistrictConfig[] 
         {
             new DistrictConfig

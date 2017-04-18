@@ -43,7 +43,7 @@ namespace PirateX.Net.Actor
 
         private IDictionary<string, IAction> Actions = new Dictionary<string, IAction>(StringComparer.OrdinalIgnoreCase);
 
-        public static IServerContainer ServerContainer { get; set; }
+        public IServerContainer ServerContainer { get; set; }
 
         public IProtocolPackage ProtocolPackage { get; set; }
 
@@ -71,7 +71,7 @@ namespace PirateX.Net.Actor
         {
             var builder = new ContainerBuilder();
             //Redis连接池  管理全局信息
-            builder.Register(c => ConnectionMultiplexer.Connect(ServerContainer.Settings.RedisHost))
+            builder.Register(c => ConnectionMultiplexer.Connect(ServerContainer.GetServerSetting().RedisHost))
                 .As<ConnectionMultiplexer>()
                 .SingleInstance();
 

@@ -11,13 +11,6 @@ namespace PirateX.Core
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public string Des { get; set; }
-        public string PublicIp { get; set; }
-        public string PrivateIp { get; set; }
-        public int C { get; set; }
         public string RedisHost { get; set; }
-        public bool AlterTable { get; set; }
-        public bool IsMetricOpen { get; set; }
-        public List<AppServer> Districts { get; set; }
     }
 }

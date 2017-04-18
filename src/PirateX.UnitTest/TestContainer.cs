@@ -13,15 +13,6 @@ namespace PirateX.UnitTest
 {
     public class TestContainer: DistrictContainer<TestContainer>
     {
-        public TestContainer() : base(new ServerSetting
-        {
-            Id = "PirateX.VS-DEV",
-            RedisHost = "127.0.0.1"
-        })
-        {
-
-        }
-
         private static readonly IEnumerable<DistrictConfig> ServerConfigs = new[]
         {
             new DistrictConfig {
@@ -94,7 +85,6 @@ namespace PirateX.UnitTest
         public bool IsSingle { get; set; }
         public bool AlterTable { get; set; }
         public bool IsMetricOpen { get; set; }
-        public List<AppServer> Districts { get; set; }
     }
     
 }
