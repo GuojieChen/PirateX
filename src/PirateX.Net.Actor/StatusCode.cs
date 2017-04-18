@@ -1,4 +1,4 @@
-﻿namespace PirateX
+﻿namespace PirateX.Net.Actor
 {
     /// <summary>
     /// 服务器系统状态码

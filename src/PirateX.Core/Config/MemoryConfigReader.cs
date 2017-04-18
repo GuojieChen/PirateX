@@ -22,7 +22,7 @@ namespace PirateX.Core.Config
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly Assembly _configAssembly;
+        private readonly List<Assembly> _configAssembly;
 
         private bool isLoaded;
 
@@ -34,7 +34,7 @@ namespace PirateX.Core.Config
         /// 
         /// </summary>
         /// <param name="configAssembly">配置模型所在的程序集</param>
-        public MemoryConfigReader(Assembly configAssembly, Func<IDbConnection> getconnection)
+        public MemoryConfigReader(List<Assembly> configAssembly, Func<IDbConnection> getconnection)
         {
             _configAssembly = configAssembly;
             this.getconnection = getconnection;
@@ -49,8 +49,12 @@ namespace PirateX.Core.Config
             {
                 if (isLoaded)
                     return;
+                var types = new List<Type>();
+                _configAssembly.ForEach(a => types.AddRange(a.GetTypes()
+                    .Where(item => typeof(IConfigEntity).IsAssignableFrom(item)))) ;
 
-                var queue = new Queue<Type>(_configAssembly.GetTypes().Where(item => typeof(IConfigEntity).IsAssignableFrom(item)));
+
+                var queue = new Queue<Type>(types);
                 if (Logger.IsTraceEnabled)
                     Logger.Trace($"Loading config datas({queue.Count})");
                 while (queue.Any())

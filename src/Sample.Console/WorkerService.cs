@@ -74,28 +74,10 @@ namespace GameServer.Console
         public bool IsMetricOpen { get; set; }
         public List<AppServer> Districts { get; set; }
     }
-
-    public class ContainerSetting : IContainerSetting
+    
+    internal class DemoServerContainer : DistrictContainer<DemoServerContainer>
     {
-        public Assembly ConfigAssembly
-        {
-            get { return typeof (PetConfig).Assembly; }
-        }
-
-        public Assembly EntityAssembly
-        {
-            get { return typeof (Role).Assembly; }
-        }
-
-        public Assembly ServiceAssembly
-        {
-            get { return typeof (RoleService).Assembly; }
-        }
-    }
-
-    internal class DemoServerContainer : DistrictContainer
-    {
-        public DemoServerContainer() : base(new ContainerSetting(), new ServerSetting
+        public DemoServerContainer() : base(new ServerSetting
         {
             Id = "PirateX.VS-DEV",
             RedisHost = "192.168.1.34:6379,password=glee1234"

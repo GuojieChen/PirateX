@@ -8,7 +8,7 @@ namespace PirateX.Net.Actor.ProtoSync
         /// <summary>
         /// 
         /// </summary>
-        void Init(Assembly assembly);
+        void Init(List<Assembly> assembly);
         /// <summary>
         /// 获取总的描述
         /// </summary>

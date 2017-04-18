@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Autofac;
 
 namespace PirateX.Core.Container
@@ -27,12 +28,6 @@ namespace PirateX.Core.Container
         /// </summary>
         void InitContainers(ContainerBuilder builder);
 
-
-        void ServerConfig(ContainerBuilder builder);
-
-        IContainerSetting ContainerSetting { get; }
-
-
         /// <summary> 加载配置列表
         /// </summary>
         /// <returns></returns>
@@ -45,12 +40,12 @@ namespace PirateX.Core.Container
 
         void BuildContainer(ContainerBuilder builder);
 
-
-
         /// <summary>
         /// 用到的连接字符串列表
         /// </summary>
         IDictionary<string, string> GetConnectionStrings();
+
+        List<Assembly> GetEntityAssemblyList();
     }
 
 

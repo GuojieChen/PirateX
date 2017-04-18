@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using ProtoBuf;
 
 namespace PirateX.Core.Utils
 {
@@ -31,6 +34,25 @@ namespace PirateX.Core.Utils
             }
 
             return logBuilder.ToString();
+        }
+
+        public static string GetMD5(this string str)
+        {
+            var sessionkeyBuilder = new StringBuilder();
+
+            foreach (byte b in MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(str)))
+                sessionkeyBuilder.Append(b.ToString("x2"));
+
+            return sessionkeyBuilder.ToString();
+        }
+
+        public static byte[] ToProtobuf<T>(this T t) 
+        {
+            using (var ms = new MemoryStream())
+            {
+                Serializer.Serialize(ms, t);
+                return ms.ToArray();
+            }
         }
     }
 }

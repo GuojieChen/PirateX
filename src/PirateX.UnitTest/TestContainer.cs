@@ -11,9 +11,9 @@ using PirateX.ServiceStackV3;
 
 namespace PirateX.UnitTest
 {
-    public class TestContainer: DistrictContainer
+    public class TestContainer: DistrictContainer<TestContainer>
     {
-        public TestContainer() : base(new ContainerSetting(), new ServerSetting
+        public TestContainer() : base(new ServerSetting
         {
             Id = "PirateX.VS-DEV",
             RedisHost = "127.0.0.1"
@@ -96,22 +96,5 @@ namespace PirateX.UnitTest
         public bool IsMetricOpen { get; set; }
         public List<AppServer> Districts { get; set; }
     }
-
-    public class ContainerSetting : IContainerSetting
-    {
-        public Assembly ConfigAssembly
-        {
-            get { return typeof(ContainerSetting).Assembly; }
-        }
-
-        public Assembly EntityAssembly
-        {
-            get { return typeof(ContainerSetting).Assembly; }
-        }
-
-        public Assembly ServiceAssembly
-        {
-            get { return typeof(ContainerSetting).Assembly; }
-        }
-    }
+    
 }

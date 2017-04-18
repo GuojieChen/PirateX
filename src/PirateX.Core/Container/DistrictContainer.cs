@@ -19,7 +19,7 @@ namespace PirateX.Core.Container
 {
     /// <summary> 默认的游戏容器实现
     /// </summary>
-    public abstract class DistrictContainer : IServerContainer
+    public abstract class DistrictContainer<TDistrictContainer> : IServerContainer
     {
         protected static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -39,16 +39,9 @@ namespace PirateX.Core.Container
 
         public IServerSetting Settings { get; }
 
-        public IContainerSetting ContainerSetting { get; }
-
-        public DistrictContainer(IContainerSetting csetting, IServerSetting settings)
+        public DistrictContainer(IServerSetting settings)
         {
             Settings = settings;
-            ContainerSetting = csetting;
-
-            if (ContainerSetting == null)
-                throw new ArgumentException("ContainerSetting");
-
             if (Settings == null)
             {
                 if (Log.IsTraceEnabled)
@@ -56,7 +49,6 @@ namespace PirateX.Core.Container
 
                 Settings = GetDefaultSeting();
             }
-
 
             if (Log.IsTraceEnabled)
             {
@@ -66,7 +58,7 @@ namespace PirateX.Core.Container
 
         }
 
-        public DistrictContainer(IContainerSetting csetting) : this(csetting, null)
+        public DistrictContainer() : this(null)
         {
 
         }
@@ -90,11 +82,14 @@ namespace PirateX.Core.Container
             //TODO 这样的话就没办法支持动态修改了。。。
             ConnectionStrings = GetConnectionStrings();
 
-            ServerConfig(builder);
+            var districtConfigs = GetDistrictConfigs();
+
+            ServerConfig(builder, districtConfigs);
+
             _serverContainer = builder.Build();
             ServerIoc = _serverContainer.BeginLifetimeScope();
 
-            foreach (var config in GetDistrictConfigs())
+            foreach (var config in districtConfigs)
             {
                 if (_containers.ContainsKey(config.Id))
                     continue;
@@ -108,18 +103,33 @@ namespace PirateX.Core.Container
             }
         }
 
-        public void ServerConfig(ContainerBuilder builder)
-        {//全局Redis序列化/反序列化方式
-            builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
+        private void ServerConfig(ContainerBuilder builder, IEnumerable<IDistrictConfig> configs)
+        {
+            //全局Redis序列化/反序列化方式
+            builder.Register(c => new ProtobufRedisSerializer())
+                .As<IRedisSerializer>()
+                .SingleInstance();
 
-            builder.Register<IDbConnection>((c, p) =>
+            foreach (var config in configs)
             {
-                var name = p.Named<string>("name");
+                builder.Register(c => config)
+                    .Keyed<IDistrictConfig>(config.Id)
+                    .AsSelf()
+                    .SingleInstance();
 
-                var connectionstring = ConnectionStrings[name];
+                builder.Register(c => GetDbConnection(config.ConnectionString))
+                    .Keyed<IDbConnection>(config.Id)
+                    .InstancePerDependency();
+            }
 
-                return GetDbConnection(connectionstring);
-            }).InstancePerDependency();
+            //builder.Register<IDbConnection>((c, p) =>
+            //{
+            //    var name = p.Named<string>("name");
+
+            //    var connectionstring = ConnectionStrings[name];
+
+            //    return GetDbConnection(connectionstring);
+            //}).InstancePerDependency();
         }
 
         public IContainer GetDistrictContainer(int districtid)
@@ -208,7 +218,7 @@ namespace PirateX.Core.Container
                 if (_configReaderDic.ContainsKey(configDbKey))
                     return _configReaderDic[configDbKey];
 
-                var newReader = new MemoryConfigReader(ContainerSetting.ConfigAssembly, () => GetDbConnection(districtConfig.ConfigConnectionString));
+                var newReader = new MemoryConfigReader(GetConfigAssemblyList(), () => GetDbConnection(districtConfig.ConfigConnectionString));
                 _configReaderDic.Add(configDbKey, newReader);
                 return newReader;
             })
@@ -221,16 +231,22 @@ namespace PirateX.Core.Container
 
             builder.Register<IDbConnection>((c, p) => ServerIoc.Resolve<IDbConnection>(p));
 
-            if (ContainerSetting.ServiceAssembly != null)
+
+            var services = GetServiceAssemblyList();
+
+            if (!services.Any())
             {
-                builder.RegisterAssemblyTypes(ContainerSetting.ServiceAssembly)
-                    .Where(item => typeof(IService).IsAssignableFrom(item))
-                    //.WithProperty("Test",123)
-                    .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
-                    //.WithProperty(new ResolvedParameter((pi, context) => pi.Name == "Resolver", (pi, ctx) => ctx))
-                    .AsSelf()
-                    //.AsImplementedInterfaces()
-                    .InstancePerLifetimeScope();
+                services.ForEach(x =>
+                {
+                    builder.RegisterAssemblyTypes(x)
+                        .Where(item => typeof(IService).IsAssignableFrom(item))
+                        //.WithProperty("Test",123)
+                        .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
+                        //.WithProperty(new ResolvedParameter((pi, context) => pi.Name == "Resolver", (pi, ctx) => ctx))
+                        .AsSelf()
+                        //.AsImplementedInterfaces()
+                        .InstancePerLifetimeScope();
+                });
             }
 
             var container = builder.Build();
@@ -242,10 +258,25 @@ namespace PirateX.Core.Container
                 container.Resolve<IDatabaseInitializer>().Initialize(districtConfig.ConnectionString);
             }
 
-            if (ContainerSetting.ConfigAssembly != null)
-                container.Resolve<IConfigReader>().Load();
+            container.Resolve<IConfigReader>()?.Load();
 
             return container;
+        }
+
+
+        protected virtual List<Assembly> GetConfigAssemblyList()
+        {
+            return new List<Assembly>() { typeof(TDistrictContainer).Assembly };
+        }
+
+        protected virtual List<Assembly> GetServiceAssemblyList()
+        {
+            return new List<Assembly>() { typeof(IService).Assembly };
+        }
+
+        public virtual List<Assembly> GetEntityAssemblyList()
+        {
+            return new List<Assembly>() { typeof(IEntity).Assembly };
         }
 
         /// <summary>
@@ -309,15 +340,5 @@ namespace PirateX.Core.Container
         {
             ServerIoc?.Dispose();
         }
-    }
-
-
-    public interface IContainerSetting
-    {
-        Assembly ConfigAssembly { get; }
-
-        Assembly ServiceAssembly { get; }
-
-        Assembly EntityAssembly { get; }
     }
 }

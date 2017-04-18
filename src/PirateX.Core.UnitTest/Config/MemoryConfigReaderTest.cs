@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -28,7 +29,7 @@ namespace PirateX.Core.UnitTest.Config
 
             Console.WriteLine("init datas....");
             dbConnectionFactory = new OrmLiteConnectionFactory(":memory:", SqliteDialect.Provider);
-            MemoryConfigReader = new MemoryConfigReader(typeof(TestConfig).Assembly, () =>
+            MemoryConfigReader = new MemoryConfigReader(new List<Assembly>(){ typeof(TestConfig).Assembly }, () =>
             {
                 return dbConnectionFactory.OpenDbConnection();
             });

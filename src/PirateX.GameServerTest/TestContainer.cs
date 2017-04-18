@@ -35,28 +35,10 @@ namespace PirateX.GameServerTest
         public bool IsMetricOpen { get; set; }
         public List<AppServer> Districts { get; set; }
     }
-
-    public class ContainerSetting : IContainerSetting
+    
+    public class TestContainer : DistrictContainer<TestContainer>
     {
-        public Assembly ConfigAssembly
-        {
-            get { return typeof (PetConfig).Assembly; }
-        }
-
-        public Assembly ServiceAssembly
-        {
-            get { return typeof (RoleService).Assembly; }
-        }
-
-        public Assembly EntityAssembly
-        {
-            get { return typeof (Role).Assembly; }
-        }
-    }
-
-    public class TestContainer : DistrictContainer
-    {
-        public TestContainer() : base(new ContainerSetting(), new ServerSetting
+        public TestContainer() : base(new ServerSetting
         {
             Id = "PirateX.VS-DEV",
             RedisHost = "localhost:6379"

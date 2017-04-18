@@ -31,6 +31,12 @@ namespace PirateX.Net.Actor.ProtoSync
         private static IDictionary<string, string> _protoshash = new Dictionary<string, string>();
 
         private bool _isInitOk = false;
+
+        public void Init(List<Assembly> list)
+        {
+            list.ForEach(Init);
+        }
+
         public void Init(Assembly assembly)
         {
             var types = assembly.GetTypes()

@@ -113,7 +113,7 @@ namespace PirateX.Net.Actor
             IocConfig(builder);
             ServerContainer.InitContainers(builder);
 
-            ServerContainer.ServerIoc.Resolve<IProtoService>().Init(ServerContainer.ContainerSetting.EntityAssembly);
+            ServerContainer.ServerIoc.Resolve<IProtoService>().Init(ServerContainer.GetEntityAssemblyList());
 
             RedisDataBaseExtension.RedisSerilazer = ServerContainer.ServerIoc.Resolve<IRedisSerializer>();
 
