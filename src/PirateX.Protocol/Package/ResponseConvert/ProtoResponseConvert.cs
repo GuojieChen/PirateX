@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ProtoBuf;
+using System.ComponentModel.DataAnnotations;
 
 namespace PirateX.Protocol.Package
 {
+    [DisplayColumn("protobuf")]
     public class ProtoResponseConvert: IResponseConvert
     {
         public byte[] SerializeObject<T>(T message)

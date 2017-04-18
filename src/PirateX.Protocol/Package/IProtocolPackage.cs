@@ -26,7 +26,7 @@ namespace PirateX.Protocol.Package
         /// </summary>
         byte[] ServerKeys { get; set; }
 
-        IResponseConvert ResponseConvert { get; set; }
+        //IResponseConvert ResponseConvert { get; set; }
 
         IPirateXRequestPackage UnPackToRequestPackage(byte[] datas);
 

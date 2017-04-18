@@ -30,11 +30,6 @@ namespace GameServer.Console
 
         public override void IocConfig(ContainerBuilder builder)
         {
-            //builder.Register(c => new ProtobufRedisSerializer()).As<IRedisSerializer>().SingleInstance();
-            //builder.Register(c => new JsonRedisSerializer()).As<IRedisSerializer>().SingleInstance();
-
-            //默认数据返回包装器
-            builder.Register(c => new ProtoResponseConvert()).As<IResponseConvert>().SingleInstance();
             //builder.Register(c => new SessionMessageBroadcast<DemoSession>(this)).As<IMessageBroadcast>().SingleInstance();
         }
 
@@ -63,7 +58,6 @@ namespace GameServer.Console
         public string PrivateIp { get; set; }
         public int C { get; set; }
         public string RedisHost { get; set; }
-        public bool IsSingle { get; set; }
         public bool AlterTable { get; set; }
         public bool IsMetricOpen { get; set; }
         public List<AppServer> Districts { get; set; }
@@ -92,7 +86,7 @@ namespace GameServer.Console
         public DemoServerContainer() : base(new ContainerSetting(), new ServerSetting
         {
             Id = "PirateX.VS-DEV",
-            RedisHost = "127.0.0.1"
+            RedisHost = "192.168.1.34:6379,password=glee1234"
         })
         {
             
@@ -103,24 +97,16 @@ namespace GameServer.Console
             new DistrictConfig {
                 Id = 1,
                 Name = "test 01",
-                Redis = "127.0.0.1",
-                RedisDb = 1 ,
+                Redis = "192.168.1.34:6379,password=glee1234",
+                RedisDb = 11 ,
                 ConfigConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
                 ConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"},
 
             new DistrictConfig {
                 Id = 2,
                 Name = "test 02",
-                Redis = "127.0.0.1",
-                RedisDb = 2 ,
-                ConfigConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
-                ConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"},
-
-            new DistrictConfig {
-                Id = 3,
-                Name = "test 02",
-                Redis = "127.0.0.1",
-                RedisDb = 3,
+                Redis = "192.168.1.34:6379,password=glee1234",
+                RedisDb = 12 ,
                 ConfigConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
                 ConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"},
         };

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PirateX.Core.Online;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,7 @@ namespace PirateX.Net.Actor
         void SendMessage<T>(ActorContext context, T t);
 
         void SendMessage<T>(ActorContext context, string name, T t);
+
+        void PushMessage<T>(IOnlineRole role,T t);
     }
 }

@@ -147,9 +147,9 @@ namespace PirateX.Client
             m_ExecutorDict.Add("Ping", new Ping());
             m_ExecutorDict.Add("NewSeed", new NewSeed());
 
-            //ResponseConvert = new ProtoResponseConvert();
-            ResponseConvert = new JsonResponseConvert();
-            PackageProcessor = new ProtocolPackage(ResponseConvert);  //new DefaultPackageProcessor() { ZipEnable = true };
+            ResponseConvert = new ProtoResponseConvert();
+            //ResponseConvert = new JsonResponseConvert();
+            PackageProcessor = new ProtocolPackage();  //new DefaultPackageProcessor() { ZipEnable = true };
             m_StateCode = PSocketStateConst.None;
 
             client.ReceiveBufferSize = receiveBufferSize;
@@ -465,30 +465,34 @@ namespace PirateX.Client
                 m_BroadcastExectorDict.Add(type.Name, Activator.CreateInstance(type) as IJsonBroadcastExecutor);
         }
 
-        public void Send(string name, string querystring, IDictionary<string,string> exheader = null)
+        public void Send(string name, string querystring, NameValueCollection exheader = null)
         {
-            var headerNc = new Dictionary<string, string>();
-            if (exheader != null)
-            {
-                foreach (var item in exheader)
-                    headerNc.Add(item.Key,item.Value);
-            }
+            var headerNc = new NameValueCollection();
 
             headerNc.Add("c",name);
             headerNc.Add("o", $"{O++}"); 
             headerNc.Add("t",$"{Utils.GetTimestamp()}");
             headerNc.Add("language",$"{Language}");
             headerNc.Add("device",$"{Device}");
-            
-            var reqeustInfo = new PirateXRequestInfo(headerNc, querystring.ToQueryDic());
+            headerNc.Add("foramt","protobuf");
+
+            if (exheader != null)
+            {
+                foreach (var item in exheader.AllKeys)
+                    headerNc.Add(item, exheader[item]);
+            }
+
+
+
+            var reqeustInfo = new PirateXRequestInfo(headerNc, HttpUtility.ParseQueryString(querystring));
 
             var senddatas = PackageProcessor.PackRequestPackageToBytes(reqeustInfo.ToRequestPackage());
             Client.Send(senddatas,0, senddatas.Length);
         }
 
-        public void Send(string name, IDictionary<string,string> query, IDictionary<string, string> exheader = null)
+        public void Send(string name, NameValueCollection query, NameValueCollection exheader = null)
         {
-            Send(name, query?.ToQueryString() ?? string.Empty, exheader);
+            Send(name, query, exheader);
         }
 
         public void Send<T>(T data)

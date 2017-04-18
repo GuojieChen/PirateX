@@ -17,10 +17,15 @@ namespace PirateX.Core.Online
         public DateTime StartUtcAt { get; set; }
         [ProtoMember(5)]
         public string Token { get; set; }
+
         [ProtoMember(6)]
         public string Uid { get; set; }
         [ProtoMember(7)]
-        public string DeviceId { get; set; }
+        public byte[] ClientKeys { get; set; }
+        [ProtoMember(8)]
+        public byte[] ServerKeys { get; set; }
 
+        [ProtoMember(9)]
+        public string ResponseConvert { get; set; }
     }
 }

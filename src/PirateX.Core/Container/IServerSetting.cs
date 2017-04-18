@@ -28,8 +28,6 @@ namespace PirateX.Core.Container
         /// </summary>
         string RedisHost { get; set; } 
 
-        bool IsSingle { get; set; }
-
         List<AppServer> Districts { get; set; }
     }
 

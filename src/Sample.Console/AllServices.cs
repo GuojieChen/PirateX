@@ -31,7 +31,7 @@ namespace GameServer.Console
             var b = HostServer.Setup(new ServerConfig()
             {
                 Port = 4012,
-                Ip = "127.0.0.1"
+                Ip = "192.168.1.34"
             });
 
             WorkerServer = new WorkerService(new ActorConfig()

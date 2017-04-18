@@ -18,12 +18,6 @@ namespace PirateX.Protocol.Package
             Crypto = crypto;
         }
 
-        public ProtocolPackage(IResponseConvert responseConvert) : this(new DefaultZip(), new XXTea())
-        {
-            this.ResponseConvert = responseConvert;
-        }
-
-
         public ProtocolPackage() : this(new DefaultZip(), new XXTea())
         {
         }
@@ -31,7 +25,7 @@ namespace PirateX.Protocol.Package
 
         public IZip Zip { get; private set; }
         public ICrypto Crypto { get; set; }
-        public IResponseConvert ResponseConvert { get; set; }
+        //public IResponseConvert ResponseConvert { get; set; }
 
 
         public bool ZipEnable { get; set; }

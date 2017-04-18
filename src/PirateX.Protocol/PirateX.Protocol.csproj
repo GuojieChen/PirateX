@@ -39,6 +39,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
@@ -57,11 +58,11 @@
     <Compile Include="Package\IPirateXPackage.cs" />
     <Compile Include="Package\IPirateXRequestInfoBase.cs" />
     <Compile Include="Package\IPirateXResponseInfo.cs" />
-    <Compile Include="Package\IResponseConvert.cs" />
-    <Compile Include="Package\JsonResponseConvert.cs" />
+    <Compile Include="Package\ResponseConvert\IResponseConvert.cs" />
+    <Compile Include="Package\ResponseConvert\JsonResponseConvert.cs" />
     <Compile Include="Package\PirateXRequestPackage.cs" />
     <Compile Include="Package\PirateXResponsePackage.cs" />
-    <Compile Include="Package\ProtoResponseConvert.cs" />
+    <Compile Include="Package\ResponseConvert\ProtoResponseConvert.cs" />
     <Compile Include="Package\ProtocolPackage.cs" />
     <Compile Include="Crypto\CryptoAttribute.cs" />
     <Compile Include="Crypto\CryptoFactory.cs" />

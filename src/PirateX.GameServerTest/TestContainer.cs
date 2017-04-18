@@ -31,7 +31,6 @@ namespace PirateX.GameServerTest
         public string PrivateIp { get; set; }
         public int C { get; set; }
         public string RedisHost { get; set; }
-        public bool IsSingle { get; set; }
         public bool AlterTable { get; set; }
         public bool IsMetricOpen { get; set; }
         public List<AppServer> Districts { get; set; }

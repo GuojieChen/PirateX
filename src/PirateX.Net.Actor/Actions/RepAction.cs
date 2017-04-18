@@ -28,7 +28,8 @@ namespace PirateX.Net.Actor.Actions
                 //r == trye //拿之前的数据
                 //获取和保存需要保持一致
 
-                MessageSender.SendMessage(base.Context, GetFromCache(cachekey) );
+                if(!string.IsNullOrEmpty(cachekey))
+                    MessageSender.SendMessage(base.Context, GetFromCache(cachekey) );
             }
             else
             {
@@ -44,7 +45,8 @@ namespace PirateX.Net.Actor.Actions
                 }
 
                 //缓存返回值
-                SetToCache(cachekey,response);
+                if(!string.IsNullOrEmpty(cachekey))
+                    SetToCache(cachekey,response);
             }
         }
 
@@ -58,6 +60,8 @@ namespace PirateX.Net.Actor.Actions
         protected virtual void SetToCache(string key, TResponse response)
         {
             var listurn = GetResponseListUrn();
+            if (string.IsNullOrEmpty(listurn))
+                return;
 
             var trans = Redis.CreateTransaction();
             trans.StringSetAsync(key, RedisSerializer.Serilazer(response),new TimeSpan(0,0,30));
@@ -74,11 +78,17 @@ namespace PirateX.Net.Actor.Actions
 
         private string GetResponseUrn()
         {
+            if (base.OnlieRole == null)
+                return string.Empty;
+
             return $"rep:{base.OnlieRole.Id}:{base.Context.Request.C}_{base.Context.Request.O}";
         }
 
         private string GetResponseListUrn()
         {
+            if (base.OnlieRole == null)
+                return string.Empty;
+
             return $"replist:{base.OnlieRole.Id}";
         }
 

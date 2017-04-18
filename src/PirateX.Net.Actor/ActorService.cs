@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -76,9 +77,9 @@ namespace PirateX.Net.Actor
             }).As<IOnlineManager>()
               .SingleInstance();
 
-            builder.Register(c => new ProtoResponseConvert()).As<IResponseConvert>().SingleInstance();
-            //默认的包解析器
-            builder.Register(c => new ProtocolPackage(c.Resolve<IResponseConvert>()))
+            //builder.Register(c => new ProtoResponseConvert()).As<IResponseConvert>().SingleInstance();
+            ////默认的包解析器
+            builder.Register(c => new ProtocolPackage())
                 .InstancePerDependency()
                 .As<IProtocolPackage>();
 
@@ -86,6 +87,24 @@ namespace PirateX.Net.Actor
             builder.Register(c => new DefaultMessageBroadcast()).SingleInstance();
 
             builder.Register(c => new ProtobufService()).As<IProtoService>().SingleInstance();
+
+
+            foreach (var responseConvert in typeof(IResponseConvert).Assembly.GetTypes().Where(item => typeof(IResponseConvert).IsAssignableFrom(item)))
+            {
+                if (responseConvert.IsInterface)
+                    continue;
+
+                var attrs = responseConvert.GetCustomAttributes(typeof(DisplayColumnAttribute), false);
+                if (attrs.Any())
+                {
+                    var convertName = ((DisplayColumnAttribute)attrs[0]).DisplayColumn;
+                    if(!string.IsNullOrEmpty(convertName))
+                        builder.Register(c => new ProtoResponseConvert())
+                            .Keyed<IResponseConvert>(convertName.ToLower())
+                            //.As<IResponseConvert>()
+                            .SingleInstance();
+                }
+            }
 
             IocConfig(builder);
             ServerContainer.InitContainers(builder);
@@ -163,7 +182,12 @@ namespace PirateX.Net.Actor
                 Request = new PirateXRequestInfo(
                         msg[5].Buffer, //信息头
                         msg[6].Buffer)//信息体
+                        ,ResponseCovnert = "protobuf"
             };
+            var format = context.Request.Headers["format"];
+            if (!string.IsNullOrEmpty(format))
+                context.ResponseCovnert = format;
+
             //执行动作
             var actionname = context.Request.C;
             using (var action = GetActionInstanceByName(actionname))
@@ -175,35 +199,45 @@ namespace PirateX.Net.Actor
                         //context.Request.Token
                         //获取session信息  从缓存中去获取session信息  session没有的时候需要提示客户端重新连接
 
-                        var token = GetToken(context.Request.Token);
-                        var onlinerole = OnlineManager.GetOnlineRole(token.Rid);
-                        action.Reslover = ServerContainer.GetDistrictContainer(token.Did).BeginLifetimeScope();
-                        if (!context.ServerKeys.Any())
-                        {   //一般在第一次登陆的时候
-                            //验证token
-                            if (!VerifyToken(action.Reslover.Resolve<IDistrictConfig>(), token))
-                            {
-                                //验证不通过
-                                throw new PirateXException("AuthError", "授权失败") { Code = StatusCode.Unauthorized };
-                            }
-
-                            onlinerole = CreateOnlineRole(context, token);
-                            ServerContainer.ServerIoc.Resolve<IOnlineManager>().Login(onlinerole);
-                        }
-                        else //TOKEN 验证过了
+                        if (Equals(actionname, "NewSeed"))
                         {
-                            if (onlinerole == null)
+
+                        }
+                        else
+                        {
+                            var token = GetToken(context.Request.Token);
+                            context.Token = token;
+
+                            //授权检查
+                            if (!VerifyToken(ServerContainer.GetDistrictConfig(token.Did), token))
+                                throw new PirateXException("AuthError", "授权失败") { Code = StatusCode.Unauthorized };
+
+                            var onlinerole = OnlineManager.GetOnlineRole(token.Rid);
+                            action.Reslover = ServerContainer.GetDistrictContainer(token.Did).BeginLifetimeScope();
+
+                            if (!context.ServerKeys.Any() || onlinerole == null)
                             {
                                 onlinerole = CreateOnlineRole(context, token);
+                                onlinerole.ClientKeys = context.ClientKeys;
+                                onlinerole.ServerKeys = context.ServerKeys;
+
                                 ServerContainer.ServerIoc.Resolve<IOnlineManager>().Login(onlinerole);
                             }
 
-                            //单设备登陆控制
-                            if (!Equals(onlinerole.SessionId, context.SessionId))
-                                throw new PirateXException("ReLogin", "ReLogin") { Code = StatusCode.ReLogin };
+                            if (!context.ServerKeys.Any())
+                            {   //第一次请求
+
+                            }
+                            else
+                            {
+                                //单设备登陆控制
+                                if (!Equals(onlinerole.SessionId, context.SessionId))
+                                    throw new PirateXException("ReLogin", "ReLogin") { Code = StatusCode.ReLogin };
+                            }
+
+                            action.OnlieRole = onlinerole;
                         }
 
-                        action.OnlieRole = onlinerole;
                         action.ServerReslover = ServerContainer.ServerIoc;
                         action.Context = context;
                         action.Logger = Logger;
@@ -244,6 +278,9 @@ namespace PirateX.Net.Actor
         /// <returns></returns>
         protected virtual IToken GetToken(string token)
         {
+            if (string.IsNullOrEmpty(token))
+                throw new PirateXException($"{StatusCode.BadRequest}", "invalidToken");
+
             var odatas = Convert.FromBase64String(token);
 
             using (var ms = new MemoryStream(odatas))
@@ -352,6 +389,25 @@ namespace PirateX.Net.Actor
             SendMessage(context, headers, t);
         }
 
+        public void PushMessage<T>(IOnlineRole role, T t)
+        {
+            var headers = new Dictionary<string, string>();
+            headers.Add("c", typeof(T).Name);
+            headers.Add("i", MessageType.Boradcast);//返回类型 
+
+            var repMsg = new NetMQMessage();
+            repMsg.Append(new byte[] { 1 });//版本号
+            repMsg.Append("action");//动作
+            repMsg.Append(role.SessionId);//sessionid
+            repMsg.Append(role.ClientKeys);//客户端密钥
+            repMsg.Append(role.ServerKeys);//服务端密钥
+            repMsg.Append(GetHeaderBytes(headers));//信息头
+            if (!Equals(t, default(T)))
+                repMsg.Append(ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(role.ResponseConvert).SerializeObject(t));//信息体
+
+            base.EnqueueMessage(repMsg);
+        }
+
         public void SendMessage<T>(ActorContext context, string name, T t)
         {
             var headers = new Dictionary<string, string>();
@@ -373,15 +429,19 @@ namespace PirateX.Net.Actor
             repMsg.Append(context.ServerKeys);//服务端密钥
             repMsg.Append(GetHeaderBytes(header));//信息头
             if (!Equals(rep, default(T)))
-                repMsg.Append(ProtocolPackage.ResponseConvert.SerializeObject(rep));//信息体
+                repMsg.Append(ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(context.ResponseCovnert).SerializeObject(rep));//信息体
+            else
+                repMsg.AppendEmptyFrame();
 
             base.EnqueueMessage(repMsg);
         }
+
 
         private byte[] GetHeaderBytes(IDictionary<string, string> headers)
         {
             return Encoding.UTF8.GetBytes(string.Join("&", headers.Keys.Select(a => a + "=" + headers[a])));
         }
+
         #endregion
     }
 
