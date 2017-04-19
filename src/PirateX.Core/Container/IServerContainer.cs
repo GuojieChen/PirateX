@@ -40,8 +40,11 @@ namespace PirateX.Core.Container
 
         /// <summary>
         /// 用到的连接字符串列表
+        /// 
+        /// 可以通过全局容器或者服容器获取相应的链接
+        /// Reslover.KeyedResolveNamed&lt;IDbConnection&gt;(name)
         /// </summary>
-        IDictionary<string, string> GetConnectionStrings();
+        IDictionary<string, string> GetNamedConnectionStrings();
 
         List<Assembly> GetEntityAssemblyList();
 

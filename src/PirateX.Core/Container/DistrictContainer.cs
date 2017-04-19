@@ -31,37 +31,9 @@ namespace PirateX.Core.Container
 
         private readonly IDictionary<string, IConfigReader> _configReaderDic = new Dictionary<string, IConfigReader>();
 
-        private IDictionary<string, string> ConnectionStrings { get; set; }
-
         private IContainer _serverContainer;
 
         public ILifetimeScope ServerIoc { get; set; }
-
-        //public IServerSetting Settings { get; }
-
-        //public DistrictContainer(IServerSetting settings)
-        //{
-        //    Settings = settings;
-        //    if (Settings == null)
-        //    {
-        //        if (Log.IsTraceEnabled)
-        //            Log.Trace("Settings is NULL");
-
-        //        Settings = GetDefaultSeting();
-        //    }
-
-        //    if (Log.IsTraceEnabled)
-        //    {
-        //        Log.Trace("Settings values:");
-        //        Log.Trace(Settings.ToLogString());
-        //    }
-
-        //}
-
-        public DistrictContainer()
-        {
-
-        }
 
         private IServerSetting _defaultSetting;
         private IServerSetting GetDefaultSeting()
@@ -85,9 +57,6 @@ namespace PirateX.Core.Container
 
         public void InitContainers(ContainerBuilder builder)
         {
-            //TODO 这样的话就没办法支持动态修改了。。。
-            ConnectionStrings = GetConnectionStrings();
-
             var districtConfigs = GetDistrictConfigs();
 
             ServerConfig(builder, districtConfigs);
@@ -116,6 +85,8 @@ namespace PirateX.Core.Container
                 .As<IRedisSerializer>()
                 .SingleInstance();
 
+            SetUpConnectionStrings(builder);
+
             foreach (var config in configs)
             {
                 builder.Register(c => config)
@@ -127,16 +98,19 @@ namespace PirateX.Core.Container
                     .Keyed<IDbConnection>(config.Id)
                     .InstancePerDependency();
             }
-
-            //builder.Register<IDbConnection>((c, p) =>
-            //{
-            //    var name = p.Named<string>("name");
-
-            //    var connectionstring = ConnectionStrings[name];
-
-            //    return GetDbConnection(connectionstring);
-            //}).InstancePerDependency();
         }
+
+        private void SetUpConnectionStrings(ContainerBuilder builder)
+        {
+            foreach (var kp in GetNamedConnectionStrings())
+            {
+
+                builder.Register(c => GetDbConnection(kp.Value))
+                    .Keyed<IDbConnection>(kp.Key)
+                    .InstancePerDependency();
+            }
+        }
+
 
         public IContainer GetDistrictContainer(int districtid)
         {
@@ -206,6 +180,8 @@ namespace PirateX.Core.Container
 
             builder.Register(c => districtConfig).As<IDistrictConfig>()
                 .SingleInstance();
+
+            //SetUpConnectionStrings(builder);//全局性的由全局管理
 
             if (ServerIoc.IsRegistered<IMessageBroadcast>())
                 builder.Register(c => ServerIoc.Resolve<IMessageBroadcast>()).As<IMessageBroadcast>().SingleInstance();
@@ -345,7 +321,11 @@ namespace PirateX.Core.Container
         /// <param name="builder"></param>
         public abstract void BuildContainer(ContainerBuilder builder);
 
-        public abstract IDictionary<string, string> GetConnectionStrings();
+        public virtual IDictionary<string, string> GetNamedConnectionStrings()
+        {
+            return new Dictionary<string, string>();
+        }
+
         #endregion
 
 

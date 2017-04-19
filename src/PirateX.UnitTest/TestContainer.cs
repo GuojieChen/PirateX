@@ -54,7 +54,7 @@ namespace PirateX.UnitTest
         {
         }
 
-        public override IDictionary<string, string> GetConnectionStrings()
+        public override IDictionary<string, string> GetNamedConnectionStrings()
         {
             return new Dictionary<string, string>();
         }

@@ -29,7 +29,7 @@ namespace PirateX.Core.Domain.Uow
             if (string.IsNullOrEmpty(name))
                 this._dbConnection = _resolver.Resolve<IDbConnection>();
             else
-                this._dbConnection = _resolver.Resolve<IDbConnection>(new NamedParameter("name",name));
+                this._dbConnection = _resolver.ResolveNamed<IDbConnection>(name);
 
             this._redisDatabase = _resolver.Resolve<IDatabase>();
 
@@ -44,7 +44,7 @@ namespace PirateX.Core.Domain.Uow
             if (string.IsNullOrEmpty(name))
                 this._dbConnection = _resolver.Resolve<IDbConnection>();
             else
-                this._dbConnection = _resolver.Resolve<IDbConnection>(new NamedParameter("name", name));
+                this._dbConnection = _resolver.ResolveNamed<IDbConnection>(name);
             this._redisDatabase = _resolver.Resolve<IDatabase>();
 
             _dbConnection.Open();
