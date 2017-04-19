@@ -9,12 +9,12 @@ using GameServer.Console.SampleDomain;
 using GameServer.Console.SampleService;
 using PirateX;
 using PirateX.Core;
+using PirateX.Core.Actor;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Container;
 using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Net;
-using PirateX.Net.Actor;
 using PirateX.Protocol;
 using PirateX.ServiceStackV3;
 using PirateX.Net.SuperSocket;
@@ -45,7 +45,7 @@ namespace GameServer.Console
             //builder.Register(c => new SessionMessageBroadcast<DemoSession>(this)).As<IMessageBroadcast>().SingleInstance();
         }
 
-        public WorkerService(ActorConfig config) : base(config, new DemoServerContainer())
+        public WorkerService():base(new DemoServerContainer())
         {
         }
     }

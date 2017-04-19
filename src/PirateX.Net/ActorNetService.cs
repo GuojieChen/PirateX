@@ -66,5 +66,6 @@ namespace PirateX.Net
             Poller?.Stop();
             PullSocket?.Close();
         }
+
     }
 }

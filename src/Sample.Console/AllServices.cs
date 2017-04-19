@@ -4,7 +4,9 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PirateX.Core.Actor;
 using PirateX.Net;
+using PirateX.Net.NetMQ;
 using PirateX.Net.SuperSocket;
 using ServiceStack.Common.Extensions;
 using ServiceStack.Text;
@@ -18,7 +20,7 @@ namespace GameServer.Console
     {
         private GameAppServer HostServer;
 
-        private WorkerService[] WorkerServer;
+        private ActorNetService[] WorkerServer;
 
         public AllServices()
         {
@@ -35,14 +37,14 @@ namespace GameServer.Console
                 Ip = "192.168.1.34"
             });
 
-            WorkerServer = new WorkerService[]
+            WorkerServer = new ActorNetService[]
             {
-                new WorkerService(new ActorConfig()
+                new ActorNetService(new WorkerService(),new ActorConfig
                 {
                     PushsocketString = ">tcp://localhost:5001",
                     PullSocketString = ">tcp://localhost:5002",
                 }),
-                new WorkerService(new ActorConfig()
+                new ActorNetService(new WorkerService(),new ActorConfig()
                 {
                     PushsocketString = ">tcp://localhost:5001",
                     PullSocketString = ">tcp://localhost:5002",

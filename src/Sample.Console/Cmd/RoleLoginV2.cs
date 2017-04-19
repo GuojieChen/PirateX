@@ -6,10 +6,9 @@ using Autofac;
 using GameServer.Console.SampleConfig;
 using GameServer.Console.SampleService;
 using PirateX.Core;
+using PirateX.Core.Actor;
 using PirateX.Core.Config;
 using PirateX.Core.Online;
-using PirateX.Net.Actor;
-using PirateX.Net.Actor.Actions;
 using ProtoBuf;
 
 namespace GameServer.Console.Cmd

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX;
-using PirateX.Net.Actor.Actions;
+using PirateX.Core.Actor;
 using PirateX.Protocol;
 using ProtoBuf;
 using SuperSocket.SocketBase.Protocol;

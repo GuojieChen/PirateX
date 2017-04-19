@@ -59,6 +59,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -69,6 +70,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actor\ActionBase.cs" />
+    <Compile Include="Actor\IAction.cs" />
+    <Compile Include="Actor\IMessageSender.cs" />
+    <Compile Include="Actor\Login.cs" />
+    <Compile Include="Actor\NewSeed.cs" />
+    <Compile Include="Actor\Ping.cs" />
+    <Compile Include="Actor\PirateXException.cs" />
+    <Compile Include="Actor\ProtoSync\IProtoService.cs" />
+    <Compile Include="Actor\ProtoSync\ProtobufService.cs" />
+    <Compile Include="Actor\RepAction.cs" />
+    <Compile Include="Actor\StatusCode.cs" />
+    <Compile Include="Actor\System\SysInfo.cs" />
     <Compile Include="Broadcas\IMessageBroadcast.cs" />
     <Compile Include="Broadcas\DefaultMessageBroadcast.cs" />
     <Compile Include="Broadcas\RedisMqMessageBroadcast.cs" />
@@ -89,6 +102,12 @@
     <Compile Include="Container\IDatabaseInitializer.cs" />
     <Compile Include="IDataSync.cs" />
     <Compile Include="ISyncList.cs" />
+    <Compile Include="Actor\ActorConfig.cs" />
+    <Compile Include="Actor\ActorContext.cs" />
+    <Compile Include="Actor\ActorService.cs" />
+    <Compile Include="Actor\IActorNetService.cs" />
+    <Compile Include="Net\INetManager.cs" />
+    <Compile Include="Net\INetService.cs" />
     <Compile Include="Push\IPushService.cs" />
     <Compile Include="Push\LogToFilePushService.cs" />
     <Compile Include="Container\DistrictContainer.cs" />
@@ -117,6 +136,13 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\PirateX.Protocol\PirateX.Protocol.csproj">
+      <Project>{ebde20ee-7293-4b51-99f4-6688ebdd3d2b}</Project>
+      <Name>PirateX.Protocol</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX;
-using PirateX.Net.Actor;
-using PirateX.Net.Actor.Actions;
+using PirateX.Core.Actor;
 using PirateX.Protocol;
 
 namespace GameServer.Console.Cmd

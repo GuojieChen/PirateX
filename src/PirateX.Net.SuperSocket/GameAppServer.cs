@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PirateX.Core.Net;
 using PirateX.Protocol.Package;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
