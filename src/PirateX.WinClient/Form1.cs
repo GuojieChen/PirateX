@@ -62,6 +62,7 @@ namespace PirateX.WinClient
             {
                 this.Invoke((EventHandler)delegate
                 {
+                    this.jsonViewer1.Json = Encoding.UTF8.GetString(args.OriginalBytes);
                 });
             };
             _client.Open();

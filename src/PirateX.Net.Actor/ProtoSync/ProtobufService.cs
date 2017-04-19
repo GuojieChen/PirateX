@@ -76,6 +76,9 @@ namespace PirateX.Net.Actor.ProtoSync
 
                 foreach (var type in types)
                 {
+                    if (type.IsInterface || type.IsAbstract)
+                        continue;
+
                     var guid = type.GUID.ToString();
 
                     if (_protoshash.ContainsKey(type.Name) && Equals(_protoshash[type.Name], guid))

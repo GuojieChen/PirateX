@@ -69,6 +69,8 @@ namespace EPocalipse.Json.Viewer
             this.pnlVisualizer = new System.Windows.Forms.Panel();
             this.cbVisualizers = new System.Windows.Forms.ComboBox();
             this.tabControl = new System.Windows.Forms.TabControl();
+            this.pageRawView = new System.Windows.Forms.TabPage();
+            this.txtRaw = new System.Windows.Forms.TextBox();
             this.mnuTree.SuspendLayout();
             this.mnuVisualizerPnl.SuspendLayout();
             this.pageTextView.SuspendLayout();
@@ -80,6 +82,7 @@ namespace EPocalipse.Json.Viewer
             this.spcViewer.SuspendLayout();
             this.pnlFind.SuspendLayout();
             this.tabControl.SuspendLayout();
+            this.pageRawView.SuspendLayout();
             this.SuspendLayout();
             // 
             // mnuTree
@@ -450,12 +453,32 @@ namespace EPocalipse.Json.Viewer
             // 
             this.tabControl.Controls.Add(this.pageTreeView);
             this.tabControl.Controls.Add(this.pageTextView);
+            this.tabControl.Controls.Add(this.pageRawView);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(792, 558);
             this.tabControl.TabIndex = 6;
+            // 
+            // pageRawView
+            // 
+            this.pageRawView.Controls.Add(this.txtRaw);
+            this.pageRawView.Location = new System.Drawing.Point(4, 22);
+            this.pageRawView.Name = "pageRawView";
+            this.pageRawView.Size = new System.Drawing.Size(784, 532);
+            this.pageRawView.TabIndex = 2;
+            this.pageRawView.Text = "Raw";
+            this.pageRawView.UseVisualStyleBackColor = true;
+            // 
+            // txtRaw
+            // 
+            this.txtRaw.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtRaw.Location = new System.Drawing.Point(0, 0);
+            this.txtRaw.Multiline = true;
+            this.txtRaw.Name = "txtRaw";
+            this.txtRaw.Size = new System.Drawing.Size(784, 532);
+            this.txtRaw.TabIndex = 0;
             // 
             // JsonViewer
             // 
@@ -479,6 +502,8 @@ namespace EPocalipse.Json.Viewer
             this.pnlFind.ResumeLayout(false);
             this.pnlFind.PerformLayout();
             this.tabControl.ResumeLayout(false);
+            this.pageRawView.ResumeLayout(false);
+            this.pageRawView.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -522,5 +547,7 @@ namespace EPocalipse.Json.Viewer
         private System.Windows.Forms.Panel pnlVisualizer;
         private System.Windows.Forms.ComboBox cbVisualizers;
         public TabControl tabControl;
+        private TabPage pageRawView;
+        private TextBox txtRaw;
     }
 }
