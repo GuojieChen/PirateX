@@ -10,11 +10,9 @@ using NetMQ;
 using NetMQ.Sockets;
 using NLog;
 using NUnit.Framework;
+using PirateX.Core.Actor;
 using PirateX.Core.Container;
 using PirateX.Core.Online;
-using PirateX.Net;
-using PirateX.Net.Actor;
-using PirateX.Net.Actor.Actions;
 using PirateX.Protocol;
 using PirateX.Protocol.Package;
 using PirateX.ServiceStackV3;
@@ -33,7 +31,7 @@ namespace PirateX.GameServerTest
 
     public class TestActorService : ActorService<TestActorService,OnlineRole>
     {
-        public TestActorService(ActorConfig config, IServerContainer serverContainer) : base(config, serverContainer)
+        public TestActorService(ActorConfig config, IServerContainer serverContainer) : base(serverContainer)
         {
         }
 

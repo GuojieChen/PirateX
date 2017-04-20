@@ -24,7 +24,7 @@ namespace PirateX.Protocol.Package
 
         public NameValueCollection QueryString { get; set; }
 
-        public IPirateXRequestPackage ToRequestPackage()
+        public IPirateXPackage ToRequestPackage()
         {
             return new PirateXRequestPackage()
             {

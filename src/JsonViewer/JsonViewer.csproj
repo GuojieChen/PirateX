@@ -163,6 +163,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PirateX.Protocol\PirateX.Protocol.csproj">
+      <Project>{ebde20ee-7293-4b51-99f4-6688ebdd3d2b}</Project>
+      <Name>PirateX.Protocol</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

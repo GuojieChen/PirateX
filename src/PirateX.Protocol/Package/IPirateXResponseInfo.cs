@@ -8,5 +8,7 @@ namespace PirateX.Protocol.Package
         bool AddHeader(string key, string value);
 
         byte[] GetHeaderBytes();
+
+        byte[] ContentBytes { get; set; }
     }
 }

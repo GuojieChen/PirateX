@@ -217,7 +217,6 @@
             // jsonViewer1
             // 
             this.jsonViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.jsonViewer1.Json = null;
             this.jsonViewer1.Location = new System.Drawing.Point(3, 17);
             this.jsonViewer1.Name = "jsonViewer1";
             this.jsonViewer1.Size = new System.Drawing.Size(638, 396);

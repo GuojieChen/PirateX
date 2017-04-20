@@ -13,6 +13,6 @@ namespace PirateX.Protocol.Package
         NameValueCollection Headers { get; set; }
         NameValueCollection QueryString { get; set; }
 
-        IPirateXRequestPackage ToRequestPackage();
+        IPirateXPackage ToRequestPackage();
     }
 }

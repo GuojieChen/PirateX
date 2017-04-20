@@ -27,6 +27,8 @@ namespace PirateX.Protocol.Package
             return Encoding.UTF8.GetBytes($"{String.Join("&", Headers.AllKeys.Select(a => a + "=" + Headers[a]))}");
         }
 
+        public byte[] ContentBytes { get; set; }
+
         public PirateXResponseInfo()
         {
             Headers = new NameValueCollection();
@@ -37,10 +39,10 @@ namespace PirateX.Protocol.Package
             Headers = HttpUtility.ParseQueryString(Encoding.UTF8.GetString(headerBytes));
         }
 
-        public PirateXResponseInfo(IPirateXResponsePackage responsePackage) 
+        public PirateXResponseInfo(IPirateXPackage responsePackage) 
             :this(responsePackage.HeaderBytes)
         {
-            
+            this.ContentBytes = responsePackage.ContentBytes;
         }
     }
     

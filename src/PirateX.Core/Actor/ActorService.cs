@@ -175,6 +175,9 @@ namespace PirateX.Core.Actor
 
         public void OnReceive(ActorContext context)
         {
+            if(Logger.IsDebugEnabled)
+                Logger.Debug($"OnReceive,TrheadID:{Thread.CurrentThread.ManagedThreadId}");
+
             var format = context.Request.Headers["format"];
             if (!string.IsNullOrEmpty(format))
                 context.ResponseCovnert = format;

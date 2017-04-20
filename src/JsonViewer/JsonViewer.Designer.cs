@@ -69,8 +69,16 @@ namespace EPocalipse.Json.Viewer
             this.pnlVisualizer = new System.Windows.Forms.Panel();
             this.cbVisualizers = new System.Windows.Forms.ComboBox();
             this.tabControl = new System.Windows.Forms.TabControl();
-            this.pageRawView = new System.Windows.Forms.TabPage();
-            this.txtRaw = new System.Windows.Forms.TextBox();
+            this.tabPageIn = new System.Windows.Forms.TabPage();
+            this.listViewIn = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tabPageOut = new System.Windows.Forms.TabPage();
+            this.listViewOut = new System.Windows.Forms.ListView();
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.mnuTree.SuspendLayout();
             this.mnuVisualizerPnl.SuspendLayout();
             this.pageTextView.SuspendLayout();
@@ -82,7 +90,8 @@ namespace EPocalipse.Json.Viewer
             this.spcViewer.SuspendLayout();
             this.pnlFind.SuspendLayout();
             this.tabControl.SuspendLayout();
-            this.pageRawView.SuspendLayout();
+            this.tabPageIn.SuspendLayout();
+            this.tabPageOut.SuspendLayout();
             this.SuspendLayout();
             // 
             // mnuTree
@@ -453,7 +462,8 @@ namespace EPocalipse.Json.Viewer
             // 
             this.tabControl.Controls.Add(this.pageTreeView);
             this.tabControl.Controls.Add(this.pageTextView);
-            this.tabControl.Controls.Add(this.pageRawView);
+            this.tabControl.Controls.Add(this.tabPageIn);
+            this.tabControl.Controls.Add(this.tabPageOut);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
@@ -461,24 +471,89 @@ namespace EPocalipse.Json.Viewer
             this.tabControl.Size = new System.Drawing.Size(792, 558);
             this.tabControl.TabIndex = 6;
             // 
-            // pageRawView
+            // tabPageIn
             // 
-            this.pageRawView.Controls.Add(this.txtRaw);
-            this.pageRawView.Location = new System.Drawing.Point(4, 22);
-            this.pageRawView.Name = "pageRawView";
-            this.pageRawView.Size = new System.Drawing.Size(784, 532);
-            this.pageRawView.TabIndex = 2;
-            this.pageRawView.Text = "Raw";
-            this.pageRawView.UseVisualStyleBackColor = true;
+            this.tabPageIn.Controls.Add(this.listViewIn);
+            this.tabPageIn.Location = new System.Drawing.Point(4, 22);
+            this.tabPageIn.Name = "tabPageIn";
+            this.tabPageIn.Size = new System.Drawing.Size(784, 532);
+            this.tabPageIn.TabIndex = 3;
+            this.tabPageIn.Text = "In";
+            this.tabPageIn.UseVisualStyleBackColor = true;
             // 
-            // txtRaw
+            // listViewIn
             // 
-            this.txtRaw.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtRaw.Location = new System.Drawing.Point(0, 0);
-            this.txtRaw.Multiline = true;
-            this.txtRaw.Name = "txtRaw";
-            this.txtRaw.Size = new System.Drawing.Size(784, 532);
-            this.txtRaw.TabIndex = 0;
+            this.listViewIn.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.listViewIn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewIn.FullRowSelect = true;
+            this.listViewIn.GridLines = true;
+            this.listViewIn.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listViewIn.Location = new System.Drawing.Point(0, 0);
+            this.listViewIn.Name = "listViewIn";
+            this.listViewIn.Size = new System.Drawing.Size(784, 532);
+            this.listViewIn.TabIndex = 0;
+            this.listViewIn.UseCompatibleStateImageBehavior = false;
+            this.listViewIn.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Time";
+            this.columnHeader1.Width = 151;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Header";
+            this.columnHeader2.Width = 224;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Body";
+            this.columnHeader3.Width = 387;
+            // 
+            // tabPageOut
+            // 
+            this.tabPageOut.Controls.Add(this.listViewOut);
+            this.tabPageOut.Location = new System.Drawing.Point(4, 22);
+            this.tabPageOut.Name = "tabPageOut";
+            this.tabPageOut.Size = new System.Drawing.Size(784, 532);
+            this.tabPageOut.TabIndex = 4;
+            this.tabPageOut.Text = "Out";
+            this.tabPageOut.UseVisualStyleBackColor = true;
+            // 
+            // listViewOut
+            // 
+            this.listViewOut.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader4,
+            this.columnHeader5,
+            this.columnHeader6});
+            this.listViewOut.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewOut.FullRowSelect = true;
+            this.listViewOut.GridLines = true;
+            this.listViewOut.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.listViewOut.Location = new System.Drawing.Point(0, 0);
+            this.listViewOut.Name = "listViewOut";
+            this.listViewOut.Size = new System.Drawing.Size(784, 532);
+            this.listViewOut.TabIndex = 0;
+            this.listViewOut.UseCompatibleStateImageBehavior = false;
+            this.listViewOut.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Time";
+            this.columnHeader4.Width = 105;
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "Headers";
+            this.columnHeader5.Width = 199;
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "QueryString";
+            this.columnHeader6.Width = 460;
             // 
             // JsonViewer
             // 
@@ -502,8 +577,8 @@ namespace EPocalipse.Json.Viewer
             this.pnlFind.ResumeLayout(false);
             this.pnlFind.PerformLayout();
             this.tabControl.ResumeLayout(false);
-            this.pageRawView.ResumeLayout(false);
-            this.pageRawView.PerformLayout();
+            this.tabPageIn.ResumeLayout(false);
+            this.tabPageOut.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -547,7 +622,15 @@ namespace EPocalipse.Json.Viewer
         private System.Windows.Forms.Panel pnlVisualizer;
         private System.Windows.Forms.ComboBox cbVisualizers;
         public TabControl tabControl;
-        private TabPage pageRawView;
-        private TextBox txtRaw;
+        private TabPage tabPageIn;
+        private ListView listViewIn;
+        private ColumnHeader columnHeader1;
+        private ColumnHeader columnHeader2;
+        private ColumnHeader columnHeader3;
+        private ColumnHeader columnHeader4;
+        private ColumnHeader columnHeader5;
+        private ColumnHeader columnHeader6;
+        private TabPage tabPageOut;
+        public ListView listViewOut;
     }
 }

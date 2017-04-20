@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using PirateX;
 using PirateX.Core.Actor;
@@ -15,6 +16,10 @@ namespace GameServer.Console.Cmd
     {
         public override RoleInfoResponse Play()
         {
+            MessageSender.PushMessage(this.OnlieRole,new{A="111",B="222"});
+
+            Thread.Sleep(2000);
+
             return new RoleInfoResponse()
             {
                 Name = "mrglee",

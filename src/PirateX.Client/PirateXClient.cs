@@ -188,7 +188,7 @@ namespace PirateX.Client
             try
             {
                 var responsePackage = PackageProcessor.UnPackToPacket(e.Data);
-                var responseInfo = new PirateXResponseInfo(responsePackage.HeaderBytes);
+                var responseInfo = new PirateXResponseInfo(responsePackage);
 
                 var header = responseInfo.Headers;
                 sw.Stop();
@@ -196,7 +196,7 @@ namespace PirateX.Client
                 log.Resp = header;
 
                 if (OnReceiveMessage != null)
-                    OnReceiveMessage(this, new MsgEventArgs(header["c"], responsePackage.ContentBytes));
+                    OnReceiveMessage(this, new MsgEventArgs(responseInfo.Headers["c"], responsePackage));
 
                 if (!Equals(header["code"], "200"))
                 {
@@ -494,8 +494,12 @@ namespace PirateX.Client
 
             var reqeustInfo = new PirateXRequestInfo(headerNc, HttpUtility.ParseQueryString(querystring));
 
-            var senddatas = PackageProcessor.PackPacketToBytes(reqeustInfo.ToRequestPackage());
+            var package = reqeustInfo.ToRequestPackage();
+            var senddatas = PackageProcessor.PackPacketToBytes(package);
             Client.Send(senddatas, 0, senddatas.Length);
+
+            if (OnSend != null)
+                OnSend(this, new MsgEventArgs(name, package));
         }
 
         public void Send<T>(T data)

@@ -7,16 +7,18 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Design;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using EPocalipse.Json.Viewer.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PirateX.Protocol.Package;
 
 namespace EPocalipse.Json.Viewer
 {
     public partial class JsonViewer : UserControl
     {
-        private string _json;
+        private string _json { get; set; }
         private int _maxErrorCount = 25;
         private ErrorDetails _errorDetails;
         private PluginsManager _pluginsManager = new PluginsManager();
@@ -26,6 +28,7 @@ namespace EPocalipse.Json.Viewer
         public JsonViewer()
         {
             InitializeComponent();
+
             try
             {
                 _pluginsManager.Initialize();
@@ -37,21 +40,16 @@ namespace EPocalipse.Json.Viewer
         }
 
         //[Editor("System.ComponentModel.Design.MultilineStringEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(UITypeEditor))]
-        public string Json
-        {
-            get
-            {
-                return _json;
-            }
+
+        private IPirateXResponseInfo _pirateXPackage;
+
+        public IPirateXResponseInfo ResponseInfo {
+            get { return _pirateXPackage; }
             set
             {
-                if (_json != value)
-                {
-                    _json = value.Trim();
-                    txtJson.Text = _json;
-                    txtRaw.Text = _json;
-                    Redraw();
-                }
+                _pirateXPackage = value;
+
+                Redraw();
             }
         }
 
@@ -70,6 +68,14 @@ namespace EPocalipse.Json.Viewer
 
         private void Redraw()
         {
+            var response = _pirateXPackage;
+            var text = _pirateXPackage.ContentBytes== null?string.Empty: Encoding.UTF8.GetString(_pirateXPackage.ContentBytes);
+
+            _json = text;
+            var viewitem = listViewIn.Items.Add(DateTime.Now.ToString());
+            viewitem.SubItems.Add($"{string.Join("&", response.Headers.AllKeys.Select(a=>a+"="+ response.Headers[a]))}");
+            viewitem.SubItems.Add(text);
+
             try
             {
                 tvJson.BeginUpdate();
@@ -133,6 +139,18 @@ namespace EPocalipse.Json.Viewer
             ShowInfo(_errorDetails);
         }
 
+
+        public void NewOut(IPirateXPackage package)
+        {
+            var request = new PirateXRequestInfo(package);
+            var text = package.ContentBytes == null ? string.Empty : Encoding.UTF8.GetString(package.ContentBytes);
+
+            _json = text;
+            var viewitem = listViewOut.Items.Add(DateTime.Now.ToString());
+            viewitem.SubItems.Add($"{string.Join("&", request.Headers.AllKeys.Select(a => a + "=" + request.Headers[a]))}");
+            viewitem.SubItems.Add($"{string.Join("&", request.QueryString.AllKeys.Select(a => a + "=" + request.QueryString[a]))}");
+        }
+
         private void MarkError(ErrorDetails _errorDetails)
         {
             txtJson.Select(Math.Max(0, _errorDetails.Position - 1), 10);
@@ -173,7 +191,7 @@ namespace EPocalipse.Json.Viewer
 
         public void Clear()
         {
-            Json = String.Empty;
+            //Json = String.Empty;
         }
 
         public void ShowInfo(string info)
@@ -181,7 +199,7 @@ namespace EPocalipse.Json.Viewer
             lblError.Text = info;
             lblError.Tag = null;
             lblError.Enabled = false;
-            tabControl.SelectedTab = pageTextView;
+            //tabControl.SelectedTab = pageTextView;
         }
 
         public void ShowInfo(ErrorDetails error)
@@ -190,7 +208,7 @@ namespace EPocalipse.Json.Viewer
             lblError.Text = error.Error;
             lblError.Tag = error;
             lblError.Enabled = true;
-            tabControl.SelectedTab = pageTextView;
+            //tabControl.SelectedTab = pageTextView;
         }
 
         public void ClearInfo()
@@ -208,7 +226,7 @@ namespace EPocalipse.Json.Viewer
 
         private void txtJson_TextChanged(object sender, EventArgs e)
         {
-            Json = txtJson.Text;
+            //Json = txtJson.Text;
         }
 
         private void txtFind_TextChanged(object sender, EventArgs e)

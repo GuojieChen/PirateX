@@ -69,8 +69,6 @@
     <Compile Include="Crypto\ICrypto.cs" />
     <Compile Include="Crypto\NoneCrypto.cs" />
     <Compile Include="Crypto\XXTea.cs" />
-    <Compile Include="Package\IPirateXRequestPackage.cs" />
-    <Compile Include="Package\IPirateXResponsePackage.cs" />
     <Compile Include="Package\PirateXResponseInfo.cs" />
     <Compile Include="Package\PirateXRequestInfo.cs" />
     <Compile Include="Package\Token.cs" />

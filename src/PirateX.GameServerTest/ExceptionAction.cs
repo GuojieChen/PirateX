@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PirateX.Net.Actor;
-using PirateX.Net.Actor.Actions;
+using PirateX.Core.Actor;
 
 namespace PirateX.GameServerTest
 {
