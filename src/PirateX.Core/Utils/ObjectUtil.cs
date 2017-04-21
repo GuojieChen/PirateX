@@ -54,5 +54,30 @@ namespace PirateX.Core.Utils
                 return ms.ToArray();
             }
         }
+
+        /// <summary>
+        /// 获取配置连接的信息摘要
+        /// 这个后期是否需要非内置？
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
+        public static string GetConfigDbKey(this string connectionString)
+        {
+            var items = connectionString.Split(new char[] { ';' });
+            var builder = new StringBuilder();
+            foreach (var item in items)
+            {
+                var ss = item.Split(new char[] { '=' });
+                switch (ss[0].Trim().ToLower())
+                {
+                    case "database":
+                    case "server":
+                        builder.Append(ss[1].Trim().ToLower());
+                        break;
+                }
+            }
+
+            return builder.ToString();
+        }
     }
 }

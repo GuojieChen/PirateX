@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using Autofac;
 using NLog;
 using PirateX.Core.Actor.ProtoSync;
@@ -182,6 +184,10 @@ namespace PirateX.Core.Actor
             if (!string.IsNullOrEmpty(format))
                 context.ResponseCovnert = format;
 
+            var lang = context.Request.Headers["lang"];
+            if (!string.IsNullOrEmpty(lang))
+                Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
+
             //执行动作
             var actionname = context.Request.C;
             using (var action = GetActionInstanceByName(actionname))
@@ -211,7 +217,10 @@ namespace PirateX.Core.Actor
                         else
                         {
                             var onlinerole = OnlineManager.GetOnlineRole(token.Rid);
-                            action.Reslover = ServerContainer.GetDistrictContainer(token.Did).BeginLifetimeScope();
+                            var container = ServerContainer.GetDistrictContainer(token.Did);
+                            if (container == null)
+                                throw new PirateXException("ContainerNull", "容器未定义") { Code = StatusCode.ContainerNull };
+                            action.Reslover = container.BeginLifetimeScope();
 
                             if (onlinerole == null)
                             {
@@ -369,7 +378,7 @@ namespace PirateX.Core.Actor
                 {"o", Convert.ToString(context.Request.O)},
                 {"code", Convert.ToString(code)},
                 {"errorCode", errorCode},
-                {"errorMsg", errorMsg}
+                {"errorMsg", HttpUtility.UrlEncode(errorMsg)}
             };
             //返回类型 
 
@@ -425,18 +434,6 @@ namespace PirateX.Core.Actor
             };
 
             NetService.PushMessage(role, headers, ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(role.ResponseConvert).SerializeObject(t));
-
-            //var repMsg = new NetMQMessage();
-            //repMsg.Append(new byte[] { 1 });//版本号
-            //repMsg.Append("action");//动作
-            //repMsg.Append(role.SessionId);//sessionid
-            //repMsg.Append(role.ClientKeys);//客户端密钥
-            //repMsg.Append(role.ServerKeys);//服务端密钥
-            //repMsg.Append(GetHeaderBytes(headers));//信息头
-            //if (!Equals(t, default(T)))
-            //    repMsg.Append(ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(role.ResponseConvert).SerializeObject(t));//信息体
-
-            //base.EnqueueMessage(repMsg);
         }
 
         public void SendMessage<T>(ActorContext context, string name, T t)
@@ -458,20 +455,6 @@ namespace PirateX.Core.Actor
             header["format"] = context.ResponseCovnert;
 
             NetService.SendMessage(context, header, ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(context.ResponseCovnert).SerializeObject(rep));
-
-            //var repMsg = new NetMQMessage();
-            //repMsg.Append(new byte[] { context.Version });//版本号
-            //repMsg.Append("action");//动作
-            //repMsg.Append(context.SessionId);//sessionid
-            //repMsg.Append(context.ClientKeys);//客户端密钥
-            //repMsg.Append(context.ServerKeys);//服务端密钥
-            //repMsg.Append(GetHeaderBytes(header));//信息头
-            //if (!Equals(rep, default(T)))
-            //    repMsg.Append(ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(context.ResponseCovnert).SerializeObject(rep));//信息体
-            //else
-            //    repMsg.AppendEmptyFrame();
-
-            //base.EnqueueMessage(repMsg);
         }
 
         private byte[] GetHeaderBytes(NameValueCollection headers)

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -55,8 +57,6 @@ namespace PirateX.Client
 
     public class PirateXClient : IDisposable
     {
-
-
         public int Id { get; set; }
 
         internal TcpClientSession Client { get; private set; }
@@ -73,8 +73,12 @@ namespace PirateX.Client
         public Uri TargetUri { get; private set; }
 
         private int O { get; set; }
+        /// <summary>
+        /// 语言
+        /// </summary>
+        public string Lang => "zh-CN";
 
-        public string Language => "zh-CN";
+        public string DefaultFormat = "protobuf";
 
         public string Device => Guid.NewGuid().ToString();
 
@@ -113,9 +117,7 @@ namespace PirateX.Client
         /// <summary> 数据包处理器
         /// </summary>
         public IProtocolPackage PackageProcessor { get; private set; }
-
-        public IResponseConvert ResponseConvert { get; }
-
+        
         public string CurrentMethod { get; private set; }
         public DateTime SendTime { get; private set; }
 
@@ -126,6 +128,9 @@ namespace PirateX.Client
         public object CurrentReq { get; set; }
 
         private string _token;
+
+
+        private IDictionary<string, IResponseConvert> _responseConverts = new Dictionary<string, IResponseConvert>();
 
         /// <summary>
         /// 构造一个PSocket 有两种方式
@@ -151,9 +156,22 @@ namespace PirateX.Client
 
             m_ExecutorDict.Add("Ping", new Ping());
             m_ExecutorDict.Add("NewSeed", new NewSeed());
+            
+            foreach (var responseConvert in typeof(IResponseConvert).Assembly.GetTypes().Where(item => typeof(IResponseConvert).IsAssignableFrom(item)))
+            {
+                if (responseConvert.IsInterface)
+                    continue;
 
-            ResponseConvert = new ProtoResponseConvert();
-            //ResponseConvert = new JsonResponseConvert();
+                var attrs = responseConvert.GetCustomAttributes(typeof(DisplayColumnAttribute), false);
+                if (attrs.Any())
+                {
+                    var convertName = ((DisplayColumnAttribute)attrs[0]).DisplayColumn;
+                    if (!string.IsNullOrEmpty(convertName))
+                        _responseConverts.Add(convertName.ToLower(), (IResponseConvert)Activator.CreateInstance(responseConvert));
+                }
+            }
+
+
             PackageProcessor = new ProtocolPackage();  //new DefaultPackageProcessor() { ZipEnable = true };
             m_StateCode = PSocketStateConst.None;
 
@@ -203,7 +221,7 @@ namespace PirateX.Client
                     if (OnServerError != null)
                         OnServerError(this, new PErrorEventArgs(
                             Convert.ToInt32(header["errorCode"]),
-                            Convert.ToString(header["errorMessage"])));
+                            HttpUtility.UrlDecode(Convert.ToString(header["errorMessage"]))));
 
                     log.Ok = false;
 
@@ -222,7 +240,7 @@ namespace PirateX.Client
                         var o = (IPirateXClientExecutor)Activator.CreateInstance(type);
 
                         o.Header = header;
-                        o.ResponseConvert = ResponseConvert;
+                        o.ResponseConvert = _responseConverts[responseInfo.Headers["format"]??DefaultFormat];
                         try
                         {
                             o.Excute(this, responsePackage.ContentBytes);
@@ -245,7 +263,7 @@ namespace PirateX.Client
                         var o = (IPirateXClientExecutor)Activator.CreateInstance(type);
 
                         o.Header = header;
-                        o.ResponseConvert = ResponseConvert;
+                        o.ResponseConvert = _responseConverts[responseInfo.Headers["format"] ?? DefaultFormat];
 
                         try
                         {
@@ -372,7 +390,7 @@ namespace PirateX.Client
             var clientKey = new KeyGenerator(_clientSeed);
             PackageProcessor.PackKeys = clientKey.MakeKey();
 
-            Send("NewSeed", $"seed={_clientSeed}");
+            Send("NewSeed", $"seed={_clientSeed}",new NameValueCollection(){{"format",DefaultFormat}});
         }
 
         private void ClearTimer()
@@ -480,10 +498,10 @@ namespace PirateX.Client
                 {"c", name},
                 {"o", $"{O++}"},
                 {"t", $"{Utils.GetTimestamp()}"},
-                {"language", $"{Language}"},
-                {"device", $"{Device}"},
+                {"lang", $"{Lang}"},
+                {"device", $"{HttpUtility.UrlEncode(Device)}"},
                 {"format", "protobuf"},
-                { "token",_token}
+                { "token",HttpUtility.UrlEncode(_token)}
             };
 
             if (exheader != null)

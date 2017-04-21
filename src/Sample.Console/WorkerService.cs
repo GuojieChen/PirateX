@@ -12,6 +12,7 @@ using PirateX.Core;
 using PirateX.Core.Actor;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Container;
+using PirateX.Core.Container.Register;
 using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Net;
@@ -29,17 +30,15 @@ namespace GameServer.Console
             //builder.Register(c => new SessionMessageBroadcast<DemoSession>(this)).As<IMessageBroadcast>().SingleInstance();
         }
 
-        public WorkerService():base(new DemoServerContainer())
+        public WorkerService() : base(new DemoServerContainer())
         {
         }
     }
 
-    public class DistrictConfig : IDistrictConfig
+    public class DistrictConfig : IDistrictConfig,IRedisDistrictConfig
     {
         public string Name { get; set; }
         public int Id { get; set; }
-        public string ConnectionString { get; set; }
-        public string ConfigConnectionString { get; set; }
         public string Redis { get; set; }
         public int RedisDb { get; set; }
         public string SecretKey { get; set; }
@@ -57,7 +56,7 @@ namespace GameServer.Console
         public bool AlterTable { get; set; }
         public bool IsMetricOpen { get; set; }
     }
-    
+
     internal class DemoServerContainer : DistrictContainer<DemoServerContainer>
     {
         private static readonly IEnumerable<DistrictConfig> ServerConfigs = new[]
@@ -67,16 +66,13 @@ namespace GameServer.Console
                 Name = "test 01",
                 Redis = "192.168.1.34:6379,password=glee1234",
                 RedisDb = 11 ,
-                ConfigConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
-                ConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"},
-
+                },
             new DistrictConfig {
                 Id = 2,
                 Name = "test 02",
                 Redis = "192.168.1.34:6379,password=glee1234",
                 RedisDb = 12 ,
-                ConfigConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;",
-                ConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"},
+                }
         };
 
         public override IEnumerable<IDistrictConfig> LoadDistrictConfigs()
@@ -98,7 +94,7 @@ namespace GameServer.Console
             return new Dictionary<string, string>()
             {
                 {"role","Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;" },
-                
+
             };
         }
     }

@@ -9,6 +9,9 @@ namespace PirateX.Protocol.Package.ResponseConvert
     {
         public byte[] SerializeObject<T>(T message)
         {
+            if (Equals(message,default(T)))
+                return null; 
+
             using (var ms = new MemoryStream())
             {
                 Serializer.Serialize(ms, message);
@@ -18,6 +21,9 @@ namespace PirateX.Protocol.Package.ResponseConvert
 
         public T DeserializeObject<T>(byte[] datas)
         {
+            if (datas == null)
+                return default(T);
+
             using (var ms = new MemoryStream(datas))
             {
                 return Serializer.Deserialize<T>(ms);

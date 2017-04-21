@@ -93,10 +93,6 @@ namespace PirateX.Core.Container
                     .Keyed<IDistrictConfig>(config.Id)
                     .AsSelf()
                     .SingleInstance();
-
-                builder.Register(c => GetDbConnection(config.ConnectionString))
-                    .Keyed<IDbConnection>(config.Id)
-                    .InstancePerDependency();
             }
         }
 
@@ -165,23 +161,35 @@ namespace PirateX.Core.Container
             if (Log.IsTraceEnabled)
                 Log.Trace($"Init district container\t{districtConfig.Id}");
 
+            var configtypes = districtConfig.GetType().GetInterfaces();
+
             var builder = new ContainerBuilder();
 
+            foreach (var type in configtypes)
+            {
+                var attrs = type.GetCustomAttributes(typeof(DistrictConfigRegisterAttribute), false);
+                if (!attrs.Any())
+                    continue;
+                var attr = attrs[0] as DistrictConfigRegisterAttribute;
+                if (attr != null)
+                    ((IDistrictConfigRegister) Activator.CreateInstance(attr.RegisterType))
+                        .Register(builder,districtConfig);
+            }
+
+
             builder.Register(c => districtConfig).As<IDistrictConfig>()
                 .SingleInstance();
 
-            builder.Register(c => ConnectionMultiplexer.Connect(districtConfig.Redis))
-                .SingleInstance()
-                .AsSelf();
-
-            builder.Register(c => c.Resolve<ConnectionMultiplexer>().GetDatabase(districtConfig.RedisDb))
-                .As<IDatabase>()
-                .InstancePerDependency();
-
             builder.Register(c => districtConfig).As<IDistrictConfig>()
                 .SingleInstance();
 
-            //SetUpConnectionStrings(builder);//全局性的由全局管理
+            builder.Register(c => GetConfigAssemblyList())
+                .Keyed<List<Assembly>>("ConfigAssemblyList")
+                .SingleInstance();
+
+            builder.Register(c => GetServiceAssemblyList())
+                .Keyed<List<Assembly>>("ServiceAssemblyList")
+                .SingleInstance();
 
             if (ServerIoc.IsRegistered<IMessageBroadcast>())
                 builder.Register(c => ServerIoc.Resolve<IMessageBroadcast>()).As<IMessageBroadcast>().SingleInstance();
@@ -194,27 +202,6 @@ namespace PirateX.Core.Container
                     .SingleInstance();
 
             BuildContainer(builder);
-
-            //默认Config内存数据处理器
-            builder.Register(c =>
-            {
-                var configDbKey = GetConfigDbKey(districtConfig.ConfigConnectionString);
-                if (_configReaderDic.ContainsKey(configDbKey))
-                    return _configReaderDic[configDbKey];
-
-                var newReader = new MemoryConfigReader(GetConfigAssemblyList(), () => GetDbConnection(districtConfig.ConfigConnectionString));
-                _configReaderDic.Add(configDbKey, newReader);
-                return newReader;
-            })
-                .As<IConfigReader>()
-                .SingleInstance();
-
-            builder.Register(c => GetDbConnection(districtConfig.ConnectionString))
-                .As<IDbConnection>()
-                .InstancePerDependency();
-
-            builder.Register<IDbConnection>((c, p) => ServerIoc.Resolve<IDbConnection>(p));
-
 
             var services = GetServiceAssemblyList();
 
@@ -235,14 +222,17 @@ namespace PirateX.Core.Container
 
             var container = builder.Build();
 
-            if (container.IsRegistered<IDatabaseInitializer>())
+            foreach (var type in configtypes)
             {
-                //判断是否有更新 ？
-                //更新数据库
-                container.Resolve<IDatabaseInitializer>().Initialize(districtConfig.ConnectionString);
+                var attrs = type.GetCustomAttributes(typeof(DistrictConfigRegisterAttribute), false);
+                if (!attrs.Any())
+                    continue;
+                var attr = attrs[0] as DistrictConfigRegisterAttribute;
+                if (attr != null)
+                    ((IDistrictConfigRegister)Activator.CreateInstance(attr.RegisterType))
+                        .SetUp(container,districtConfig);
             }
 
-            container.Resolve<IConfigReader>()?.Load();
 
             return container;
         }
@@ -279,30 +269,7 @@ namespace PirateX.Core.Container
             return new SqlConnection(connectionString);
         }
 
-        /// <summary>
-        /// 获取配置连接的信息摘要
-        /// 这个后期是否需要非内置？
-        /// </summary>
-        /// <param name="connectionString"></param>
-        /// <returns></returns>
-        private static string GetConfigDbKey(string connectionString)
-        {
-            var items = connectionString.Split(new char[] { ';' });
-            var builder = new StringBuilder();
-            foreach (var item in items)
-            {
-                var ss = item.Split(new char[] { '=' });
-                switch (ss[0].Trim().ToLower())
-                {
-                    case "database":
-                    case "server":
-                        builder.Append(ss[1].Trim().ToLower());
-                        break;
-                }
-            }
-
-            return builder.ToString();
-        }
+        
 
         #region abstract methods
         /// <summary> 加载配置列表

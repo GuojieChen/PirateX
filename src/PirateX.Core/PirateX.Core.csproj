@@ -62,6 +62,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -75,6 +76,7 @@
     <Compile Include="Actor\IMessageSender.cs" />
     <Compile Include="Actor\Login.cs" />
     <Compile Include="Actor\NewSeed.cs" />
+    <Compile Include="Actor\EmptyBodyResponse.cs" />
     <Compile Include="Actor\Ping.cs" />
     <Compile Include="Actor\PirateXException.cs" />
     <Compile Include="Actor\ProtoSync\IProtoService.cs" />
@@ -91,6 +93,10 @@
     <Compile Include="Config\IConfigReader.cs" />
     <Compile Include="Config\MemoryConfigReader.cs" />
     <Compile Include="Container\ConnectionStringAttribute.cs" />
+    <Compile Include="Container\IDistrictConfigRegister.cs" />
+    <Compile Include="Container\Register\ConfigRegister.cs" />
+    <Compile Include="Container\Register\ConnectionRegister.cs" />
+    <Compile Include="Container\Register\RedisRegister.cs" />
     <Compile Include="DataSync\IDataSync.cs" />
     <Compile Include="DefaultServerSetting.cs" />
     <Compile Include="Domain\Entity\IEntityPrivate.cs" />

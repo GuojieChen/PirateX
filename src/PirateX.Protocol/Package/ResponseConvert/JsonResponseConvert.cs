@@ -11,12 +11,18 @@ namespace PirateX.Protocol.Package.ResponseConvert
     {
         public byte[] SerializeObject<T>(T t)
         {
+            if (Equals(t, default(T)))
+                return null;
+
             var jsonStr = JsonConvert.SerializeObject(t,JsonSettings);
             return Encoding.UTF8.GetBytes(jsonStr);
         }
 
         public T DeserializeObject<T>(byte[] datas)
         {
+            if (datas == null)
+                return default(T);
+
             var str = Encoding.UTF8.GetString(datas);
 
             return JsonConvert.DeserializeObject<T>(str);

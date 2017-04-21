@@ -130,6 +130,9 @@ namespace PirateX.Core.Actor.ProtoSync
 
         private static IDictionary<string, string> ConvertToDic(string str)
         {
+            if (string.IsNullOrEmpty(str))
+                return null;
+
             var dic = new Dictionary<string,string>();
 
             var ss = str.Trim(' ').Split(new char[] {'&'});

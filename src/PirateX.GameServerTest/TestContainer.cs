@@ -4,12 +4,13 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using PirateX.Core.Container;
+using PirateX.Core.Container.Register;
 using PirateX.Core.Domain.Entity;
 using PirateX.ServiceStackV3;
 
 namespace PirateX.GameServerTest
 {
-    public class DistrictConfig : IDistrictConfig
+    public class DistrictConfig : IDistrictConfig,IRedisDistrictConfig,IConfigConnectionDistrictConfig,IConnectionDistrictConfig
     {
         public string Name { get; set; }
         public int Id { get; set; }

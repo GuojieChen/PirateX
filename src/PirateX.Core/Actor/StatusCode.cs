@@ -21,6 +21,11 @@
         /// </summary>
         public const short Unauthorized = 401;
         /// <summary>
+        /// 容器未定义
+        /// </summary>
+        public const short ContainerNull = 402;
+
+        /// <summary>
         /// 无效的请求，可能是没有找到对应的方法
         /// </summary>
         public const short NotFound = 404;

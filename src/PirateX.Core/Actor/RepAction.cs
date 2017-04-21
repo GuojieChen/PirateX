@@ -12,6 +12,7 @@ namespace PirateX.Core.Actor
         public override void Execute()
         {
             var response = Play();
+
             var cachekey = GetResponseUrn();
 
             if (Context.Request.R)
@@ -28,15 +29,18 @@ namespace PirateX.Core.Actor
                 {
                     //有值，返回
 
-                    MessageSender.SendMessage(base.Context,response);
+                    
                 }
                 else
                 {
                     //返回默认值
                 }
 
+
+                MessageSender.SendMessage(base.Context, response);
+
                 //缓存返回值
-                if(!string.IsNullOrEmpty(cachekey))
+                if (!string.IsNullOrEmpty(cachekey))
                     SetToCache(cachekey,response);
             }
         }

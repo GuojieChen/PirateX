@@ -56,6 +56,8 @@ namespace PirateX.WinClient
             var pbCovnert = new PirateX.Protocol.Package.ResponseConvert.ProtoResponseConvert();
 
             _client = new PirateXClient($"ps://{txtHost.Text.Trim()}:{txtPort.Text.Trim()}", Convert.ToBase64String(pbCovnert.SerializeObject(token)));
+            if (!string.IsNullOrEmpty(comboBox1.Text))
+                _client.DefaultFormat = comboBox1.Text;
             _client.OnOpen += OnOpen;
             _client.OnError += OnError;
             _client.OnReceiveMessage += (o, args) =>
@@ -100,9 +102,11 @@ namespace PirateX.WinClient
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            
 
-            _client.Send("RoleInfo",txtQuery.Text.Trim(),new NameValueCollection(){ { "format", comboBox1.Text.Trim() } });
+            var exHeaders = HttpUtility.ParseQueryString(txtHeader.Text.Trim());
+            exHeaders.Add("format", comboBox1.Text.Trim());
+
+            _client.Send("RoleInfo",txtQuery.Text.Trim(), exHeaders);
         }
     }
 }
