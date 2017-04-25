@@ -12,7 +12,7 @@ using NLog;
 using NUnit.Framework;
 using PirateX.Core.Actor;
 using PirateX.Core.Container;
-using PirateX.Core.Online;
+using PirateX.Core.Session;
 using PirateX.Protocol;
 using PirateX.Protocol.Package;
 using PirateX.ServiceStackV3;
@@ -29,15 +29,15 @@ namespace PirateX.GameServerTest
         }
     }
 
-    public class TestActorService : ActorService<TestActorService,OnlineRole>
+    public class TestActorService : ActorService<TestActorService>
     {
         public TestActorService(ActorConfig config, IServerContainer serverContainer) : base(serverContainer)
         {
         }
 
-        protected override OnlineRole CreateOnlineRole(ActorContext context, IToken token)
+        protected override PirateSession CreateOnlineRole(ActorContext context, IToken token)
         {
-            return new OnlineRole()
+            return new PirateSession()
             {
                 Id = token.Rid,
                 Did = token.Did,

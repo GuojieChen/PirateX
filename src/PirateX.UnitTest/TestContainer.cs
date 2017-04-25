@@ -54,6 +54,11 @@ namespace PirateX.UnitTest
         {
         }
 
+        protected override void BuildServerContainer(ContainerBuilder builder)
+        {
+            throw new NotImplementedException();
+        }
+
         public override IDictionary<string, string> GetNamedConnectionStrings()
         {
             return new Dictionary<string, string>();

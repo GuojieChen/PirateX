@@ -93,6 +93,11 @@ namespace PirateX.GameServerTest
             builder.Register<IDatabaseInitializer>(c=>new EntityFrameworkDatabaseInitializer());
         }
 
+        protected override void BuildServerContainer(ContainerBuilder builder)
+        {
+            
+        }
+
         public override IDictionary<string, string> GetNamedConnectionStrings()
         {
             return new Dictionary<string, string>()

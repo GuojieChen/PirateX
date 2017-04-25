@@ -226,7 +226,6 @@ namespace PirateX.Core.Container
                         .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
                         //.WithProperty(new ResolvedParameter((pi, context) => pi.Name == "Resolver", (pi, ctx) => ctx))
                         .AsSelf()
-                        //.AsImplementedInterfaces()
                         .InstancePerLifetimeScope();
                 });
             }

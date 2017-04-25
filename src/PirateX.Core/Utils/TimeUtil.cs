@@ -10,22 +10,28 @@ namespace PirateX.Core.Utils
         /// <returns></returns>
         public static long GetTimestamp()
         {
-            return GetTimestamp(DateTime.UtcNow);
+            return DateTime.UtcNow.GetTimestamp();
         }
 
         public static int GetTimestampAsSecond()
         {
-            return (int)(GetTimestamp(DateTime.UtcNow) / 1000);
+            return (int)(DateTime.UtcNow.GetTimestamp() / 1000);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="dateTimeUtc"></param>
-        /// <returns></returns>
-        public static long GetTimestamp(DateTime dateTimeUtc)
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="dateTimeUtc"></param>
+        ///// <returns></returns>
+        //public static long GetTimestamp(DateTime dateTimeUtc)
+        //{
+        //    return (dateTimeUtc.Ticks - DateTime.Parse("1970-01-01 00:00:00").Ticks) / 10000;
+        //}
+
+
+        public static long GetTimestamp(this DateTime dateTime)
         {
-            return (dateTimeUtc.Ticks - DateTime.Parse("1970-01-01 00:00:00").Ticks) / 10000;
+            return (dateTime.ToUniversalTime().Ticks - DateTime.Parse("1970-01-01 00:00:00").Ticks) / 10000;
         }
     }
 }

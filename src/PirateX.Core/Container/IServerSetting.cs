@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Autofac;
-using PirateX.Core.Online;
 using StackExchange.Redis;
 
 namespace PirateX.Core.Container

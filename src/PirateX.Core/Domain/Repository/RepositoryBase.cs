@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Dapper;
 using PirateX.Core.Domain.Entity;
+using StackExchange.Redis;
 
 namespace PirateX.Core.Domain.Repository
 {
@@ -17,8 +18,7 @@ namespace PirateX.Core.Domain.Repository
         public IDbTransaction DbTransaction { get; set; }
 
         public IDbConnection DbConnection { get; set; }
-
-        public StackExchange.Redis.ITransaction RedisTransaction { get; set; }
+        public IDatabase Redis { get; set; }
 
         protected StackExchange.Redis.IDatabase RedisDatabase { get; set; }
 

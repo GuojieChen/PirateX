@@ -11,7 +11,7 @@ namespace PirateX.Core.Actor
         {
             var seed = Convert.ToInt32(Context.Request.QueryString["seed"]);
 
-            var serverSeed = (int)(TimeUtil.GetTimestamp(new DateTime(DateTime.Now.Ticks + RandomUtil.Random.Next(-10001, 10001))) / 1000);
+            var serverSeed = (int)(new DateTime(DateTime.Now.Ticks + RandomUtil.Random.Next(-10001, 10001)).GetTimestamp() / 1000);
 
             Context.ClientKeys = new KeyGenerator(seed).MakeKey();
             Context.ServerKeys = new KeyGenerator(serverSeed).MakeKey();

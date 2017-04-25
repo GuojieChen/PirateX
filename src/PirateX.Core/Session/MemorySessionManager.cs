@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PirateX.Core.Online
+namespace PirateX.Core.Session
 {
-    public class MemoryOnlineManager<TOnlineRole> : IOnlineManager
-        where TOnlineRole : class, IOnlineRole, new()
+    public class MemorySessionManager : ISessionManager
     {
-        public void Login(IOnlineRole onlineRole)
+        public void Login(PirateSession pirateSession)
         {
             throw new NotImplementedException();
         }
@@ -24,12 +19,12 @@ namespace PirateX.Core.Online
             throw new NotImplementedException();
         }
 
-        public IOnlineRole GetOnlineRole(long rid)
+        public PirateSession GetOnlineRole(long rid)
         {
             throw new NotImplementedException();
         }
 
-        public IOnlineRole GetOnlineRole(string sessionid)
+        public PirateSession GetOnlineRole(string sessionid)
         {
             throw new NotImplementedException();
         }

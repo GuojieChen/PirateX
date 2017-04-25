@@ -8,7 +8,7 @@ using NetMQ;
 using NetMQ.Sockets;
 using PirateX.Core.Actor;
 using PirateX.Core.Net;
-using PirateX.Core.Online;
+using PirateX.Core.Session;
 using PirateX.Protocol.Package;
 using PirateX.Protocol.Package.ResponseConvert;
 
@@ -98,7 +98,7 @@ namespace PirateX.Net.NetMQ
             _actorService.Stop();
         }
 
-        public void PushMessage(IOnlineRole role, NameValueCollection headers, byte[] body)
+        public void PushMessage(PirateSession role, NameValueCollection headers, byte[] body)
         {
             var repMsg = new NetMQMessage();
             repMsg.Append(new byte[] { 1 });//版本号

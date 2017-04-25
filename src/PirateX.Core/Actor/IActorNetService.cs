@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
-using PirateX.Core.Online;
+using PirateX.Core.Session;
 
 namespace PirateX.Core.Actor
 {
@@ -9,7 +9,7 @@ namespace PirateX.Core.Actor
         void Start();
         void Stop();
 
-        void PushMessage(IOnlineRole role,NameValueCollection headers,byte[] body);
+        void PushMessage(PirateSession role,NameValueCollection headers,byte[] body);
 
         void SendMessage(ActorContext context, NameValueCollection headers, byte[] body);
     }

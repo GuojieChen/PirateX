@@ -8,7 +8,7 @@ using GameServer.Console.SampleService;
 using PirateX.Core;
 using PirateX.Core.Actor;
 using PirateX.Core.Config;
-using PirateX.Core.Online;
+using PirateX.Core.Session;
 using ProtoBuf;
 
 namespace GameServer.Console.Cmd
@@ -32,13 +32,13 @@ namespace GameServer.Console.Cmd
             };
         }
 
-        public override IOnlineRole GetOnlineRole()
+        public override PirateSession GetOnlineRole()
         {
-            return new OnlineRole
+            return new PirateSession
             {
                 //Id = Context.Request.Headers.
                 //Did = request.Did,
-                //SessionId = session.SessionID
+                //SessionId = pirateSession.SessionID
             };
         }
     }

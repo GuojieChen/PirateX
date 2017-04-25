@@ -14,8 +14,8 @@ using PirateX.Core.Broadcas;
 using PirateX.Core.Container;
 using PirateX.Core.Container.Register;
 using PirateX.Core.Container.ServerSettingRegister;
-using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
+using PirateX.Core.Session;
 using PirateX.Net;
 using PirateX.Protocol;
 using PirateX.ServiceStackV3;
@@ -24,13 +24,8 @@ using PirateX.Protocol.Package;
 
 namespace GameServer.Console
 {
-    public class WorkerService : ActorService<WorkerService, OnlineRole>
+    public class WorkerService : ActorService<WorkerService>
     {
-        public override void IocConfig(ContainerBuilder builder)
-        {
-            //builder.Register(c => new SessionMessageBroadcast<DemoSession>(this)).As<IMessageBroadcast>().SingleInstance();
-        }
-
         public WorkerService() : base(new DemoServerContainer())
         {
         }

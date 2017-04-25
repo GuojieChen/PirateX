@@ -1,8 +1,8 @@
 ﻿using System.Data;
 using Autofac;
 using NLog;
-using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
+using PirateX.Core.Session;
 using StackExchange.Redis;
 
 namespace PirateX.Core.Actor
@@ -18,7 +18,7 @@ namespace PirateX.Core.Actor
         public ILifetimeScope ServerReslover { get; set; }
         public ILifetimeScope Reslover { get; set; }
         public virtual string Name { get; set; }
-        public IOnlineRole OnlieRole { get; set; }
+        public PirateSession OnlieRole { get; set; }
         public ActorContext Context { get; set; }
         public abstract void Execute();
 

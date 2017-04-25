@@ -16,8 +16,8 @@ using PirateX.Core.Actor.ProtoSync;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Container;
 using PirateX.Core.Net;
-using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
+using PirateX.Core.Session;
 using PirateX.Protocol.Package;
 using PirateX.Protocol.Package.ResponseConvert;
 using ProtoBuf;
@@ -37,8 +37,7 @@ namespace PirateX.Core.Actor
         void OnReceive(ActorContext context);
     }
 
-    public class ActorService<TActorService,TOnlineRole> :IMessageSender, IActorService
-        where TOnlineRole : class, IOnlineRole, new()
+    public class ActorService<TActorService> :IMessageSender, IActorService
     {
         public static Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -50,7 +49,7 @@ namespace PirateX.Core.Actor
 
         public IProtocolPackage ProtocolPackage { get; set; }
 
-        protected IOnlineManager OnlineManager { get; set; }
+        protected ISessionManager OnlineManager { get; set; }
 
 
         public ActorService(IServerContainer serverContainer)
@@ -82,8 +81,8 @@ namespace PirateX.Core.Actor
             }
 
             //在线管理  TODO ,,,,,
-            builder.Register(c =>  new RedisOnlineManager<TOnlineRole>(c.Resolve<ConnectionMultiplexer>()))
-                .As<IOnlineManager>()
+            builder.Register(c =>  new RedisOnlineManager(c.Resolve<ConnectionMultiplexer>()))
+                .As<ISessionManager>()
                 .SingleInstance();
 
             ////默认的包解析器
@@ -112,8 +111,7 @@ namespace PirateX.Core.Actor
                             .SingleInstance();
                 }
             }
-
-            IocConfig(builder);
+            
             ServerContainer.InitContainers(builder);
 
             ServerContainer.ServerIoc.Resolve<IProtoService>().Init(ServerContainer.GetEntityAssemblyList());
@@ -121,10 +119,10 @@ namespace PirateX.Core.Actor
             RedisDataBaseExtension.RedisSerilazer = ServerContainer.ServerIoc.Resolve<IRedisSerializer>();
 
             ProtocolPackage = ServerContainer.ServerIoc.Resolve<IProtocolPackage>();
-            OnlineManager = ServerContainer.ServerIoc.Resolve<IOnlineManager>();
+            OnlineManager = ServerContainer.ServerIoc.Resolve<ISessionManager>();
 
             //注册内置命令
-            RegisterActions(typeof(ActorService<TActorService,TOnlineRole>).Assembly.GetTypes());
+            RegisterActions(typeof(ActorService<TActorService>).Assembly.GetTypes());
             //注册外置命令
             RegisterActions(GetActions());
         }
@@ -220,7 +218,7 @@ namespace PirateX.Core.Actor
                             onlinerole2.ClientKeys = context.ClientKeys;
                             onlinerole2.ServerKeys = context.ServerKeys;
 
-                            ServerContainer.ServerIoc.Resolve<IOnlineManager>().Login(onlinerole2);
+                            ServerContainer.ServerIoc.Resolve<ISessionManager>().Login(onlinerole2);
                         }
                         else
                         {
@@ -236,7 +234,7 @@ namespace PirateX.Core.Actor
                                 onlinerole2.ClientKeys = context.ClientKeys;
                                 onlinerole2.ServerKeys = context.ServerKeys;
 
-                                ServerContainer.ServerIoc.Resolve<IOnlineManager>().Login(onlinerole2);
+                                ServerContainer.ServerIoc.Resolve<ISessionManager>().Login(onlinerole2);
                             }
                             else if (!Equals(onlinerole.SessionId, context.SessionId))
                             {
@@ -278,20 +276,20 @@ namespace PirateX.Core.Actor
 
         }
 
-        protected virtual TOnlineRole CreateOnlineRole(ActorContext context, IToken token)
+        protected virtual PirateSession CreateOnlineRole(ActorContext context, IToken token)
         {
-            var onlineRole = Activator.CreateInstance<TOnlineRole>();
-
-            onlineRole.Id = token.Rid;
-            onlineRole.Did = token.Did;
-            onlineRole.Token = context.Request.Token;
-            onlineRole.Uid = token.Uid;
-
-            onlineRole.ClientKeys = context.ClientKeys;
-            onlineRole.ServerKeys = context.ServerKeys;
-            onlineRole.SessionId = context.SessionId;
-            onlineRole.StartUtcAt = DateTime.UtcNow;
-            onlineRole.ResponseConvert = context.ResponseCovnert;
+            var onlineRole = new PirateSession
+            {
+                Id = token.Rid,
+                Did = token.Did,
+                Token = context.Request.Token,
+                Uid = token.Uid,
+                ClientKeys = context.ClientKeys,
+                ServerKeys = context.ServerKeys,
+                SessionId = context.SessionId,
+                StartUtcAt = DateTime.UtcNow,
+                ResponseConvert = context.ResponseCovnert
+            };
 
             return onlineRole;
         }
@@ -389,12 +387,7 @@ namespace PirateX.Core.Actor
             }
             return null;
         }
-
-        public virtual void IocConfig(ContainerBuilder builder)
-        {
-
-        }
-
+        
         public virtual void Stop()
         {
 
@@ -416,7 +409,7 @@ namespace PirateX.Core.Actor
             SendMessage(context, headers, t);
         }
 
-        public void PushMessage<T>(IOnlineRole role, T t)
+        public void PushMessage<T>(PirateSession role, T t)
         {
             var headers = new NameValueCollection
             {

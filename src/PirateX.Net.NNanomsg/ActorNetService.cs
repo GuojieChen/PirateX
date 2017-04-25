@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NNanomsg.Protocols;
 using PirateX.Core.Actor;
-using PirateX.Core.Online;
+using PirateX.Core.Session;
 using PirateX.Core.Utils;
 
 namespace PirateX.Net.NNanomsg
@@ -53,7 +53,7 @@ namespace PirateX.Net.NNanomsg
             _actorService.Stop();
         }
 
-        public void PushMessage(IOnlineRole role, NameValueCollection headers, byte[] body)
+        public void PushMessage(PirateSession role, NameValueCollection headers, byte[] body)
         {
             PushSocket.SendImmediate(new GmaeMail()
             {

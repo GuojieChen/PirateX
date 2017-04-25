@@ -10,7 +10,6 @@ using PirateX.Core.Config;
 using PirateX.Core.Domain.Uow;
 using PirateX.Core.Push;
 using StackExchange.Redis;
-using PirateX.Core.Redis.StackExchange.Redis.Ex;
 
 namespace PirateX.Core
 {

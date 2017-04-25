@@ -1,4 +1,4 @@
-﻿using PirateX.Core.Online;
+﻿using PirateX.Core.Session;
 
 namespace PirateX.Core.Actor
 {
@@ -8,6 +8,6 @@ namespace PirateX.Core.Actor
 
         void SendMessage<T>(ActorContext context, string name, T t);
 
-        void PushMessage<T>(IOnlineRole role,T t);
+        void PushMessage<T>(PirateSession session, T t);
     }
 }

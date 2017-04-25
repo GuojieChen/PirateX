@@ -1,7 +1,7 @@
 ﻿using System;
 using Autofac;
 using NLog;
-using PirateX.Core.Online;
+using PirateX.Core.Session;
 
 namespace PirateX.Core.Actor
 {
@@ -16,7 +16,7 @@ namespace PirateX.Core.Actor
         /// </summary>
         string Name { get; set; }
 
-        IOnlineRole OnlieRole { get; set; }
+        PirateSession OnlieRole { get; set; }
         ActorContext Context { get; set; }
 
         void Execute();

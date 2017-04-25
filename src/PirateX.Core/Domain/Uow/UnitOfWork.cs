@@ -18,10 +18,10 @@ namespace PirateX.Core.Domain.Uow
         private IDbConnection _dbConnection;
         private IDbTransaction _transaction;
         private IDatabase _redisDatabase;
-        private ITransaction _redisTransaction;
 
         private bool _disposed;
         private bool _commited;
+        private bool _isTrassactionOpend; 
 
         public UnitOfWork(ILifetimeScope resolver,string name = null)
         {
@@ -34,22 +34,18 @@ namespace PirateX.Core.Domain.Uow
             this._redisDatabase = _resolver.Resolve<IDatabase>();
 
             _dbConnection.Open();
-            _redisTransaction = _redisDatabase.CreateTransaction();
-            _transaction = _dbConnection.BeginTransaction();
         }
 
-        public UnitOfWork(ILifetimeScope resolver,IsolationLevel il, string name = null)
+        public void BeginTrasaction()
         {
-            this._resolver = resolver;
-            if (string.IsNullOrEmpty(name))
-                this._dbConnection = _resolver.Resolve<IDbConnection>();
-            else
-                this._dbConnection = _resolver.ResolveNamed<IDbConnection>(name);
-            this._redisDatabase = _resolver.Resolve<IDatabase>();
+            _transaction = _dbConnection.BeginTransaction();
+            _isTrassactionOpend = true;
+        }
 
-            _dbConnection.Open();
+        public void BeginTrasaction(IsolationLevel il)
+        {
             _transaction = _dbConnection.BeginTransaction(il);
-            _redisTransaction = _redisDatabase.CreateTransaction();
+            _isTrassactionOpend = true;
         }
 
         public void Commit()
@@ -61,9 +57,12 @@ namespace PirateX.Core.Domain.Uow
 
         private void icommit()
         {
+            if (!_isTrassactionOpend)
+                return;
 
             try
             {
+                
                 _transaction.Commit();
                 _commited = true;
             }
@@ -83,13 +82,12 @@ namespace PirateX.Core.Domain.Uow
             {
                 var instance = Activator.CreateInstance<T>();
                 instance.DbConnection = _dbConnection;
-                instance.RedisTransaction = _redisTransaction;
                 instance.DbTransaction = _transaction;
+                instance.Redis = _redisDatabase;
                 _repoDic.Add(name,instance);
 
                 return instance;
             }
-            
         }
 
         public void Dispose()

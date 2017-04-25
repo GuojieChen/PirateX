@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Net;
-using Autofac;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using StackExchange.Redis;
 
-namespace PirateX.Core.Online
+namespace PirateX.Core.Session
 {
-    public class RedisOnlineManager<TOnlineRole> : IOnlineManager
-        where TOnlineRole : class, IOnlineRole, new()
+    public class RedisOnlineManager : ISessionManager
     {
         private readonly ConnectionMultiplexer _connectionMultiplexer;
         /// <summary> 序列化方式
@@ -24,24 +21,24 @@ namespace PirateX.Core.Online
             Expiry = new TimeSpan(1,0,0,0);//1 day
         }
 
-        public void Login(IOnlineRole onlineRole)
+        public void Login(PirateSession pirateSession)
         {
-            if (onlineRole == null)
+            if (pirateSession == null)
                 return;
 
-            if (onlineRole.Id <= 0)
+            if (pirateSession.Id <= 0)
                 return;
 
-            var urn = GetUrnOnlineRole(onlineRole.Id);
+            var urn = GetUrnOnlineRole(pirateSession.Id);
 
             var db = _connectionMultiplexer.GetDatabase();
 
             var trans = db.CreateTransaction();
 
-            trans.StringSetAsync(urn, Serializer.Serilazer(onlineRole), Expiry);
-            trans.StringSetAsync(GetUrnOnlineRole(onlineRole.SessionId), urn, Expiry);
+            trans.StringSetAsync(urn, Serializer.Serilazer(pirateSession), Expiry);
+            trans.StringSetAsync(GetUrnOnlineRole(pirateSession.SessionId), urn, Expiry);
 
-            trans.HashSetAsync(GetDidUrn(onlineRole.Did), Convert.ToString(onlineRole.Id), urn);//TODO 需要定时清理
+            trans.HashSetAsync(GetDidUrn(pirateSession.Did), Convert.ToString(pirateSession.Id), urn);//TODO 需要定时清理
             trans.Execute();
         }
 
@@ -56,7 +53,7 @@ namespace PirateX.Core.Online
             var onlineRoleStr = db.StringGet(urn);
             if (!onlineRoleStr.HasValue)
                 return;
-            var onlineRole = Serializer.Deserialize<TOnlineRole>(onlineRoleStr);
+            var onlineRole = Serializer.Deserialize<PirateSession>(onlineRoleStr);
             if (Equals(onlineRole.SessionId, sessionid))
             {
                 var trans = db.CreateTransaction();
@@ -75,26 +72,26 @@ namespace PirateX.Core.Online
             return db.KeyExists(urn);
         }
 
-        public IOnlineRole GetOnlineRole(long rid)
+        public PirateSession GetOnlineRole(long rid)
         {
             var urn = GetUrnOnlineRole(rid);
             var db = _connectionMultiplexer.GetDatabase();
             var onlineRoleStr = db.StringGet(urn);
             if (!onlineRoleStr.HasValue)
-                return default (TOnlineRole);
-            return Serializer.Deserialize<TOnlineRole>(onlineRoleStr);
+                return default (PirateSession);
+            return Serializer.Deserialize<PirateSession>(onlineRoleStr);
         }
 
-        public IOnlineRole GetOnlineRole(string sessionid)
+        public PirateSession GetOnlineRole(string sessionid)
         {
             var db = _connectionMultiplexer.GetDatabase();
             var urn = db.StringGet(GetUrnOnlineRole(sessionid));
             if(!urn.HasValue)
-                return default(TOnlineRole);
+                return default(PirateSession);
             var data = db.StringGet(urn.ToString());
 
 
-            return Serializer.Deserialize<TOnlineRole>(data);
+            return Serializer.Deserialize<PirateSession>(data);
         }
 
         private static string GetUrnOnlineRole(long rid)

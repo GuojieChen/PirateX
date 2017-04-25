@@ -1,5 +1,5 @@
 ﻿using Autofac;
-using PirateX.Core.Online;
+using PirateX.Core.Session;
 
 namespace PirateX.Core.Actor
 {
@@ -8,7 +8,7 @@ namespace PirateX.Core.Actor
         private static readonly object LoggingHelper = new object();
         public override TResponse Play()
         {
-            var onlineManager = base.Reslover.Resolve<IOnlineManager>();
+            var onlineManager = base.Reslover.Resolve<ISessionManager>();
 
             #region 实行登陆排队，并且排除同一时间同一个账号的可能
             lock (LoggingHelper)
@@ -28,6 +28,6 @@ namespace PirateX.Core.Actor
         /// <summary> 获取在线玩家在线信息
         /// </summary>
         /// <returns></returns>
-        public abstract IOnlineRole GetOnlineRole();
+        public abstract PirateSession GetOnlineRole();
     }
 }

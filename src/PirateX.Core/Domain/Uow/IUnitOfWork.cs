@@ -8,6 +8,8 @@ namespace PirateX.Core.Domain.Uow
     /// </summary>
     public interface IUnitOfWork:IDisposable
     {
+        void BeginTrasaction();
+
         /// <summary> 提交
         /// </summary>
         void Commit();

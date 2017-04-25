@@ -17,6 +17,6 @@ namespace PirateX.Core.Domain.Repository
 
         IDbConnection DbConnection { get; set; }
 
-        ITransaction RedisTransaction { get; set; }
+        IDatabase Redis { get; set; }
     }
 }
