@@ -8,24 +8,22 @@ using Autofac;
 namespace PirateX.Core.Container
 {
     [AttributeUsage(AttributeTargets.Interface)]
-    public class DistrictConfigRegisterAttribute : Attribute
+    public class ServerSettingRegisterAttribute : Attribute
     {
         public Type RegisterType { get; private set; }
 
-        public DistrictConfigRegisterAttribute(Type type)
+        public ServerSettingRegisterAttribute(Type type)
         {
-            if (!(typeof(IDistrictConfigRegister).IsAssignableFrom(type)))
+            if (!(typeof(IServerSettingRegister).IsAssignableFrom(type)))
                 throw new InvalidCastException(type.FullName);
 
             RegisterType = type;
         }
     }
 
-    public interface IDistrictConfigRegister
+
+    public interface IServerSettingRegister
     {
-        void Register(ContainerBuilder builder,IDistrictConfig config);
-
-
-        void SetUp(IContainer container,IDistrictConfig config);
+        void Register(ContainerBuilder builder, IServerSetting setting);
     }
 }

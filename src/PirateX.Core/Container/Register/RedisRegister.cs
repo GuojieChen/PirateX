@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using PirateX.Core.Container.ServerSettingRegister;
 using StackExchange.Redis;
 
 namespace PirateX.Core.Container.Register
@@ -28,7 +29,7 @@ namespace PirateX.Core.Container.Register
 
         public void SetUp(IContainer container, IDistrictConfig config)
         {
-
+            
         }
     }
 

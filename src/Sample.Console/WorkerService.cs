@@ -13,6 +13,7 @@ using PirateX.Core.Actor;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Container;
 using PirateX.Core.Container.Register;
+using PirateX.Core.Container.ServerSettingRegister;
 using PirateX.Core.Online;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Net;
@@ -44,17 +45,14 @@ namespace GameServer.Console
         public string SecretKey { get; set; }
     }
 
-    public class ServerSetting : IServerSetting
+    public class ServerSetting : IServerSetting, IRedisServerSetting
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public string Des { get; set; }
-        public string PublicIp { get; set; }
-        public string PrivateIp { get; set; }
-        public int C { get; set; }
+
         public string RedisHost { get; set; }
-        public bool AlterTable { get; set; }
-        public bool IsMetricOpen { get; set; }
+        public int RedisDb { get; set; }
+
     }
 
     internal class DemoServerContainer : DistrictContainer<DemoServerContainer>

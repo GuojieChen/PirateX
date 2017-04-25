@@ -106,12 +106,12 @@ namespace PirateX.UnitTest.Protocol.Package
         {
             var clientPackage = new ProtocolPackage()
             {
-                CryptoEnable = true,
+                CryptoByte = new byte[8]{1,0,0,0,0,0,0,0},
             };
 
             var serverPackage = new ProtocolPackage()
             {
-                CryptoEnable = true,
+                CryptoByte = new byte[8] { 1, 0, 0, 0, 0, 0, 0, 0 },
             };
 
             var clientKeys = new KeyGenerator(100).MakeKey();

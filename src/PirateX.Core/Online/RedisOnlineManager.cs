@@ -18,17 +18,11 @@ namespace PirateX.Core.Online
 
         public RedisOnlineManager(ConnectionMultiplexer connectionMultiplexer)
         {
-            if (connectionMultiplexer == null)
-                throw new ArgumentNullException(nameof(connectionMultiplexer));
-
-            _connectionMultiplexer = connectionMultiplexer;
+            _connectionMultiplexer = connectionMultiplexer ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
             Serializer = new ProtobufRedisSerializer();
 
             Expiry = new TimeSpan(1,0,0,0);//1 day
         }
-
-
-
 
         public void Login(IOnlineRole onlineRole)
         {

@@ -30,6 +30,8 @@
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.btnConn = new System.Windows.Forms.Button();
             this.txtPort = new System.Windows.Forms.TextBox();
@@ -46,8 +48,6 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.jsonViewer1 = new EPocalipse.Json.Viewer.JsonViewer();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -81,6 +81,23 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(233, 169);
             this.panel2.TabIndex = 1;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(19, 93);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(41, 12);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "Format";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(73, 90);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(139, 20);
+            this.comboBox1.TabIndex = 6;
             // 
             // btnSend
             // 
@@ -166,7 +183,7 @@
             this.txtHeader.Name = "txtHeader";
             this.txtHeader.Size = new System.Drawing.Size(279, 21);
             this.txtHeader.TabIndex = 10;
-            this.txtHeader.Text = "c=getlist";
+            this.txtHeader.Text = "c=_sysinfo";
             // 
             // txtToken
             // 
@@ -219,6 +236,7 @@
             this.jsonViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.jsonViewer1.Location = new System.Drawing.Point(3, 17);
             this.jsonViewer1.Name = "jsonViewer1";
+            this.jsonViewer1.ResponseInfo = null;
             this.jsonViewer1.Size = new System.Drawing.Size(638, 396);
             this.jsonViewer1.TabIndex = 0;
             // 
@@ -229,23 +247,6 @@
             this.statusStrip1.Size = new System.Drawing.Size(644, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(73, 90);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(139, 20);
-            this.comboBox1.TabIndex = 6;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(19, 93);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(41, 12);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "Format";
             // 
             // Form1
             // 

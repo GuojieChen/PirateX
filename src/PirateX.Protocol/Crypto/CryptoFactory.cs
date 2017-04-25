@@ -2,13 +2,20 @@
 {
     public static class CryptoFactory
     {
-        private readonly static ICrypto Default = new NoneCrypto();
+        private static readonly ICrypto Default = new NoneCrypto();
 
-		private readonly static ICrypto XXTEA = new XXTea() ; 
-        
+        private static readonly ICrypto XXTEA = new XXTea();
+
         public static ICrypto GetCrypto(byte index)
         {
-            return XXTEA; 
+            switch (index)
+            {
+                case 0:
+                    return XXTEA;
+
+                default:
+                    return Default;
+            }
         }
     }
 }

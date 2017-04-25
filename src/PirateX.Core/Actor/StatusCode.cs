@@ -26,6 +26,11 @@
         public const short ContainerNull = 402;
 
         /// <summary>
+        /// 返回格式是ProtoBuf，需要设置属性
+        /// </summary>
+        public const short ProtobufData = 403;
+
+        /// <summary>
         /// 无效的请求，可能是没有找到对应的方法
         /// </summary>
         public const short NotFound = 404;

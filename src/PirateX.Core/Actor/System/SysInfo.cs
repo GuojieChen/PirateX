@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using ProtoBuf;
 using PirateX.Core.Actor.ProtoSync;
 
 namespace PirateX.Core.Actor.System
@@ -9,7 +10,7 @@ namespace PirateX.Core.Actor.System
 
         public override SystemInfoResponse Play()
         {
-            var protoservice = base.Reslover.Resolve<IProtoService>();
+            var protoservice = base.ServerReslover.Resolve<IProtoService>();
             return new SystemInfoResponse()
             {
                 ProtoHash = protoservice.GetProtosHash()
@@ -17,9 +18,10 @@ namespace PirateX.Core.Actor.System
         }
     }
 
-
+    [ProtoContract]
     public class SystemInfoResponse
     {
+        [ProtoMember(1)]
         public string ProtoHash { get; set; } 
     }
 }

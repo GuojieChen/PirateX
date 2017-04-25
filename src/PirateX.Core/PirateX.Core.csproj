@@ -92,11 +92,12 @@
     <Compile Include="Config\IConfigEntity.cs" />
     <Compile Include="Config\IConfigReader.cs" />
     <Compile Include="Config\MemoryConfigReader.cs" />
-    <Compile Include="Container\ConnectionStringAttribute.cs" />
     <Compile Include="Container\IDistrictConfigRegister.cs" />
-    <Compile Include="Container\Register\ConfigRegister.cs" />
+    <Compile Include="Container\IServerSettingRegister.cs" />
+    <Compile Include="Container\Register\ConfigConnectionRegister.cs" />
     <Compile Include="Container\Register\ConnectionRegister.cs" />
     <Compile Include="Container\Register\RedisRegister.cs" />
+    <Compile Include="Container\ServerSettingRegister\RedisServerSettingRegister.cs" />
     <Compile Include="DataSync\IDataSync.cs" />
     <Compile Include="DefaultServerSetting.cs" />
     <Compile Include="Domain\Entity\IEntityPrivate.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Actor\IActorNetService.cs" />
     <Compile Include="Net\INetManager.cs" />
     <Compile Include="Net\INetService.cs" />
+    <Compile Include="Online\MemoryOnlineManager.cs" />
     <Compile Include="Push\IPushService.cs" />
     <Compile Include="Push\LogToFilePushService.cs" />
     <Compile Include="Container\DistrictContainer.cs" />

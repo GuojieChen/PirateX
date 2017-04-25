@@ -22,7 +22,6 @@ namespace PirateX.Core.Actor
         public ActorContext Context { get; set; }
         public abstract void Execute();
 
-
         /// <summary>
         /// 获取公共服连接
         /// </summary>

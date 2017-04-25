@@ -12,7 +12,7 @@ using PirateX.Core.Utils;
 
 namespace PirateX.Core.Container.Register
 {
-    public class ConfigRegister:IDistrictConfigRegister
+    public class ConfigConnectionRegister:IDistrictConfigRegister
     {
         private readonly IDictionary<string, IConfigReader> _configReaderDic = new Dictionary<string, IConfigReader>();
 
@@ -54,7 +54,7 @@ namespace PirateX.Core.Container.Register
     }
 
 
-    [DistrictConfigRegister(typeof(ConfigRegister))]
+    [DistrictConfigRegister(typeof(ConfigConnectionRegister))]
     public interface IConfigConnectionDistrictConfig
     {
         string ConfigConnectionString { get; set; }

@@ -68,6 +68,9 @@ namespace EPocalipse.Json.Viewer
 
         private void Redraw()
         {
+            if (_pirateXPackage == null)
+                return;
+
             var response = _pirateXPackage;
             var text = _pirateXPackage.ContentBytes== null?string.Empty: Encoding.UTF8.GetString(_pirateXPackage.ContentBytes);
 

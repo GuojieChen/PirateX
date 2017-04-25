@@ -46,8 +46,8 @@ namespace PirateX.Core.Container
 
             foreach (var propertyInfo in ps)
             {
-                var value = System.Configuration.ConfigurationManager.AppSettings.Get(propertyInfo.Name.ToLower());
-                propertyInfo.SetValue(defaultServerSetting, value);
+                var value = System.Configuration.ConfigurationManager.AppSettings.Get(propertyInfo.Name);
+                propertyInfo.SetValue(defaultServerSetting, Convert.ChangeType(value,propertyInfo.PropertyType));
             }
 
             _defaultSetting = (DefaultServerSetting)defaultServerSetting;
@@ -106,7 +106,6 @@ namespace PirateX.Core.Container
                     .InstancePerDependency();
             }
         }
-
 
         public IContainer GetDistrictContainer(int districtid)
         {
@@ -237,7 +236,6 @@ namespace PirateX.Core.Container
             return container;
         }
 
-
         protected virtual List<Assembly> GetConfigAssemblyList()
         {
             return new List<Assembly>() { typeof(TDistrictContainer).Assembly };
@@ -268,8 +266,6 @@ namespace PirateX.Core.Container
         {
             return new SqlConnection(connectionString);
         }
-
-        
 
         #region abstract methods
         /// <summary> 加载配置列表

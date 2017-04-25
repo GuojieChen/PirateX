@@ -9,22 +9,16 @@ namespace PirateX.Protocol.Package
         /// <summary> 数据压缩操作类
         /// </summary>
         IZip Zip { get; }
-        /// <summary> 数据加密解密操作类
-        /// </summary>
-        ICrypto Crypto { get; }
-
         /// <summary> 压缩是否启用
         /// </summary>
         bool ZipEnable { get; set; }
-        /// <summary> 加密是否启用
-        /// </summary>
-        bool CryptoEnable { get; set; }
         /// <summary> 客户端秘钥列表
         /// </summary>
         byte[] PackKeys { get; set; }
         /// <summary> 服务端秘钥列表
         /// </summary>
         byte[] UnPackKeys { get; set; }
+        byte[] CryptoByte { get; set; }
 
         //IResponseConvert ResponseConvert { get; set; }
 

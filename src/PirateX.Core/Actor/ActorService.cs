@@ -64,20 +64,28 @@ namespace PirateX.Core.Actor
         /// </summary>
         public virtual void Setup()
         {
+            var serverSetting = ServerContainer.GetServerSetting();
+
+            var configtypes = serverSetting.GetType().GetInterfaces();
+
             var builder = new ContainerBuilder();
-            //Redis连接池  管理全局信息
-            builder.Register(c => ConnectionMultiplexer.Connect(ServerContainer.GetServerSetting().RedisHost))
-                .As<ConnectionMultiplexer>()
+
+            foreach (var type in configtypes)
+            {
+                var attrs = type.GetCustomAttributes(typeof(ServerSettingRegisterAttribute), false);
+                if (!attrs.Any())
+                    continue;
+                var attr = attrs[0] as ServerSettingRegisterAttribute;
+                if (attr != null)
+                    ((IServerSettingRegister)Activator.CreateInstance(attr.RegisterType))
+                        .Register(builder, serverSetting);
+            }
+
+            //在线管理  TODO ,,,,,
+            builder.Register(c =>  new RedisOnlineManager<TOnlineRole>(c.Resolve<ConnectionMultiplexer>()))
+                .As<IOnlineManager>()
                 .SingleInstance();
 
-            //在线管理
-            builder.Register(c => new RedisOnlineManager<TOnlineRole>(c.Resolve<ConnectionMultiplexer>())
-            {
-                //Serializer = c.Resolve<IRedisSerializer>()
-            }).As<IOnlineManager>()
-              .SingleInstance();
-
-            //builder.Register(c => new ProtoResponseConvert()).As<IResponseConvert>().SingleInstance();
             ////默认的包解析器
             builder.Register(c => new ProtocolPackage())
                 .InstancePerDependency()
@@ -88,7 +96,7 @@ namespace PirateX.Core.Actor
 
             builder.Register(c => new ProtobufService()).As<IProtoService>().SingleInstance();
 
-
+            //数据格式
             foreach (var responseConvert in typeof(IResponseConvert).Assembly.GetTypes().Where(item => typeof(IResponseConvert).IsAssignableFrom(item)))
             {
                 if (responseConvert.IsInterface)
@@ -235,18 +243,7 @@ namespace PirateX.Core.Actor
                                 //单设备登陆控制
                                 throw new PirateXException("ReLogin", "ReLogin") { Code = StatusCode.ReLogin };
                             }
-
-                            //if (!context.ServerKeys.Any())
-                            //{   //第一次请求
-
-                            //}
-                            //else
-                            //{
-                            //    //单设备登陆控制
-                            //    if (!Equals(onlinerole.SessionId, context.SessionId))
-                            //        throw new PirateXException("ReLogin", "ReLogin") { Code = StatusCode.ReLogin };
-                            //}
-
+                            
                             action.OnlieRole = onlinerole;
                         }
 
@@ -324,12 +321,6 @@ namespace PirateX.Core.Actor
         /// <returns></returns>
         protected virtual bool VerifyToken(IDistrictConfig config, IToken token)
         {
-            //var signstr = $"{token.Did}{token.Rid}{token.Ts}{config.SecretKey}";
-
-            //var isign = Utils.GetMd5(signstr);
-
-            //return Equals(token.Sign, isign);
-
             return true;
         }
 
@@ -358,7 +349,7 @@ namespace PirateX.Core.Actor
             else
             {
                 errorCode = "ServerError";
-                errorMsg = e.StackTrace; //e.Message;
+                errorMsg = e.Message; //e.Message;
 
                 if (Logger.IsErrorEnabled)
                     Logger.Error(e);
@@ -378,6 +369,7 @@ namespace PirateX.Core.Actor
                 {"o", Convert.ToString(context.Request.O)},
                 {"code", Convert.ToString(code)},
                 {"errorCode", errorCode},
+                {"guid",Guid.NewGuid().ToString("N")},
                 {"errorMsg", HttpUtility.UrlEncode(errorMsg)}
             };
             //返回类型 
