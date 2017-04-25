@@ -15,7 +15,7 @@ namespace PirateX.Core.Container.Register
         {
             var connectionString = (config as IConnectionDistrictConfig).ConnectionString;
 
-            builder.Register(c => GetDbConnection(connectionString))
+            builder.Register(c => c.Resolve<IDbConnection>(new NamedParameter("ConnectionString", connectionString)))
                 .As<IDbConnection>()
                 .InstancePerDependency();
         }
@@ -30,18 +30,6 @@ namespace PirateX.Core.Container.Register
                 //更新数据库
                 container.Resolve<IDatabaseInitializer>().Initialize(connectionString);
             }
-        }
-
-        /// <summary>
-        /// 创建数据库连接对象
-        /// 默认为sqlserver数据库，如果其他或者是混合情况下，需要额外处理
-        /// </summary>
-        /// <param name="connectionString"></param>
-        /// <returns></returns>
-        protected virtual IDbConnection GetDbConnection(string connectionString)
-        {
-            //TODO 这个不能这里写死
-            return new SqlConnection(connectionString);
         }
     }
 

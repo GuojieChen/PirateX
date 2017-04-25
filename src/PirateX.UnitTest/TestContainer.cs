@@ -50,7 +50,7 @@ namespace PirateX.UnitTest
             return ServerConfigs.FirstOrDefault(item => item.Id == id);
         }
 
-        public override void BuildContainer(ContainerBuilder builder)
+        protected override void BuildDistrictContainer(ContainerBuilder builder)
         {
         }
 

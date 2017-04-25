@@ -36,8 +36,6 @@ namespace PirateX.Core.Container
         /// <returns></returns>
         IDistrictConfig GetDistrictConfig(int id);
 
-        void BuildContainer(ContainerBuilder builder);
-
         /// <summary>
         /// 用到的连接字符串列表
         /// 

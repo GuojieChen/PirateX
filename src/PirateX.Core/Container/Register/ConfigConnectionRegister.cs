@@ -27,7 +27,7 @@ namespace PirateX.Core.Container.Register
                     if (_configReaderDic.ContainsKey(configDbKey))
                         return _configReaderDic[configDbKey];
 
-                    var newReader = new MemoryConfigReader(c.Resolve<List<Assembly>>(), () => GetDbConnection(configConnectionString));
+                    var newReader = new MemoryConfigReader(c.Resolve<List<Assembly>>(), () => c.Resolve<IDbConnection>(new NamedParameter("ConnectionString", configConnectionString)));
                     _configReaderDic.Add(configDbKey, newReader);
                     return newReader;
                 })
@@ -38,18 +38,6 @@ namespace PirateX.Core.Container.Register
         public void SetUp(IContainer container, IDistrictConfig config)
         {
             container.Resolve<IConfigReader>()?.Load();
-        }
-
-        /// <summary>
-        /// 创建数据库连接对象
-        /// 默认为sqlserver数据库，如果其他或者是混合情况下，需要额外处理
-        /// </summary>
-        /// <param name="connectionString"></param>
-        /// <returns></returns>
-        protected virtual IDbConnection GetDbConnection(string connectionString)
-        {
-            //TODO 这个不能这里写死
-            return new SqlConnection(connectionString);
         }
     }
 

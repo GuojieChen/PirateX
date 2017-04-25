@@ -83,8 +83,13 @@ namespace GameServer.Console
             return ServerConfigs.FirstOrDefault(item => item.Id == id);
         }
 
-        public override void BuildContainer(ContainerBuilder builder)
+        protected override void BuildDistrictContainer(ContainerBuilder builder)
         {
+        }
+
+        protected override void BuildServerContainer(ContainerBuilder builder)
+        {
+            
         }
 
         public override IDictionary<string, string> GetNamedConnectionStrings()

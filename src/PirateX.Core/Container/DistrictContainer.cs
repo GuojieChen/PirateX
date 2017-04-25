@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Autofac;
+using Autofac.Builder;
 using NLog;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Config;
@@ -61,6 +62,7 @@ namespace PirateX.Core.Container
 
             ServerConfig(builder, districtConfigs);
 
+            BuildServerContainer(builder);
             _serverContainer = builder.Build();
             ServerIoc = _serverContainer.BeginLifetimeScope();
 
@@ -76,14 +78,22 @@ namespace PirateX.Core.Container
 
                 _containers.Add(config.Id, c);
             }
+
         }
 
         private void ServerConfig(ContainerBuilder builder, IEnumerable<IDistrictConfig> configs)
         {
+
+            builder.Register((c, p) => new SqlConnection(p.Named<string>("ConnectionString")))
+                .As<IDbConnection>()
+                .InstancePerDependency();
+            
+
             //全局Redis序列化/反序列化方式
             builder.Register(c => new ProtobufRedisSerializer())
                 .As<IRedisSerializer>()
                 .SingleInstance();
+
 
             SetUpConnectionStrings(builder);
 
@@ -100,8 +110,7 @@ namespace PirateX.Core.Container
         {
             foreach (var kp in GetNamedConnectionStrings())
             {
-
-                builder.Register(c => GetDbConnection(kp.Value))
+                builder.Register(c => c.Resolve<IDbConnection>(new NamedParameter("ConnectionString",kp.Value)))
                     .Keyed<IDbConnection>(kp.Key)
                     .InstancePerDependency();
             }
@@ -175,6 +184,9 @@ namespace PirateX.Core.Container
                         .Register(builder,districtConfig);
             }
 
+            builder.Register((c, p) => new SqlConnection(p.Named<string>("ConnectionString")))
+                .As<IDbConnection>()
+                .InstancePerDependency();
 
             builder.Register(c => districtConfig).As<IDistrictConfig>()
                 .SingleInstance();
@@ -200,7 +212,7 @@ namespace PirateX.Core.Container
                     .As<IPushService>()
                     .SingleInstance();
 
-            BuildContainer(builder);
+            BuildDistrictContainer(builder);
 
             var services = GetServiceAssemblyList();
 
@@ -256,17 +268,6 @@ namespace PirateX.Core.Container
             return GetDefaultSeting();
         }
 
-        /// <summary>
-        /// 创建数据库连接对象
-        /// 默认为sqlserver数据库，如果其他或者是混合情况下，需要额外处理
-        /// </summary>
-        /// <param name="connectionString"></param>
-        /// <returns></returns>
-        protected virtual IDbConnection GetDbConnection(string connectionString)
-        {
-            return new SqlConnection(connectionString);
-        }
-
         #region abstract methods
         /// <summary> 加载配置列表
         /// </summary>
@@ -282,7 +283,10 @@ namespace PirateX.Core.Container
         /// 创建游戏容器
         /// </summary>
         /// <param name="builder"></param>
-        public abstract void BuildContainer(ContainerBuilder builder);
+        protected abstract void BuildDistrictContainer(ContainerBuilder builder);
+
+        protected abstract void BuildServerContainer(ContainerBuilder builder);
+
 
         public virtual IDictionary<string, string> GetNamedConnectionStrings()
         {
