@@ -18,17 +18,6 @@ namespace PirateX.Core.Utils
             return (int)(DateTime.UtcNow.GetTimestamp() / 1000);
         }
 
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="dateTimeUtc"></param>
-        ///// <returns></returns>
-        //public static long GetTimestamp(DateTime dateTimeUtc)
-        //{
-        //    return (dateTimeUtc.Ticks - DateTime.Parse("1970-01-01 00:00:00").Ticks) / 10000;
-        //}
-
-
         public static long GetTimestamp(this DateTime dateTime)
         {
             return (dateTime.ToUniversalTime().Ticks - DateTime.Parse("1970-01-01 00:00:00").Ticks) / 10000;

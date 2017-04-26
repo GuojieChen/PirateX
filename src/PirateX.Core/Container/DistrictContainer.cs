@@ -87,13 +87,11 @@ namespace PirateX.Core.Container
             builder.Register((c, p) => new SqlConnection(p.Named<string>("ConnectionString")))
                 .As<IDbConnection>()
                 .InstancePerDependency();
-            
 
             //全局Redis序列化/反序列化方式
             builder.Register(c => new ProtobufRedisSerializer())
                 .As<IRedisSerializer>()
                 .SingleInstance();
-
 
             SetUpConnectionStrings(builder);
 

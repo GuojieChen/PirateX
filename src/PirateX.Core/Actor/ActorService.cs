@@ -69,6 +69,11 @@ namespace PirateX.Core.Actor
 
             var builder = new ContainerBuilder();
 
+            //默认在线管理  
+            builder.Register(c => new MemorySessionManager())
+                .As<ISessionManager>()
+                .SingleInstance();
+
             foreach (var type in configtypes)
             {
                 var attrs = type.GetCustomAttributes(typeof(ServerSettingRegisterAttribute), false);
@@ -80,10 +85,6 @@ namespace PirateX.Core.Actor
                         .Register(builder, serverSetting);
             }
 
-            //在线管理  TODO ,,,,,
-            builder.Register(c =>  new RedisOnlineManager(c.Resolve<ConnectionMultiplexer>()))
-                .As<ISessionManager>()
-                .SingleInstance();
 
             ////默认的包解析器
             builder.Register(c => new ProtocolPackage())

@@ -1,4 +1,6 @@
 ﻿using System;
+using Autofac;
+using StackExchange.Redis;
 
 namespace PirateX.Core.Actor
 {
@@ -11,9 +13,6 @@ namespace PirateX.Core.Actor
     {
         public override void Execute()
         {
-
-            var response = Play();
-
             var cachekey = GetResponseUrn();
 
             if (Context.Request.R)
@@ -26,6 +25,7 @@ namespace PirateX.Core.Actor
             }
             else
             {
+                var response = Play();
                 if (!Equals(response, default(TResponse)))
                 {
                     //有值，返回
@@ -46,15 +46,21 @@ namespace PirateX.Core.Actor
             }
         }
 
-
+        //TODO 抽象到  IReqCache 中
         protected virtual TResponse GetFromCache(string key)
         {
+            if (!base.ServerReslover.IsRegistered<IDatabase>())
+                return default(TResponse) ;
+
             var data = Redis.StringGet(key);
             return RedisSerializer.Deserialize<TResponse>(data);
         }
 
         protected virtual void SetToCache(string key, TResponse response)
         {
+            if (!base.ServerReslover.IsRegistered<IDatabase>())
+                return ;
+
             var listurn = GetResponseListUrn();
             if (string.IsNullOrEmpty(listurn))
                 return;
@@ -70,7 +76,6 @@ namespace PirateX.Core.Actor
                 Redis.KeyDelete(removekey.ToString());
             }
         }
-
 
         private string GetResponseUrn()
         {

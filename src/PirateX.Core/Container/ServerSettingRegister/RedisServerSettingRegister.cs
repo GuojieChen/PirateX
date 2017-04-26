@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using PirateX.Core.Session;
 using StackExchange.Redis;
 
 namespace PirateX.Core.Container.ServerSettingRegister
@@ -28,6 +29,12 @@ namespace PirateX.Core.Container.ServerSettingRegister
             //Redis连接池  管理全局信息
             builder.Register(c => ConnectionMultiplexer.Connect(redisconfig.RedisHost))
                 .As<ConnectionMultiplexer>()
+                .SingleInstance();
+
+
+            //在线管理  TODO ,,,,,
+            builder.Register(c => new RedisOnlineManager(c.Resolve<ConnectionMultiplexer>()))
+                .As<ISessionManager>()
                 .SingleInstance();
         }
     }

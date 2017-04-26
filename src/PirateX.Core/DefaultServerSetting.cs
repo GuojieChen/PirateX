@@ -8,11 +8,9 @@ using PirateX.Core.Container.ServerSettingRegister;
 
 namespace PirateX.Core
 {
-    public class DefaultServerSetting : IServerSetting,IRedisServerSetting
+    public class DefaultServerSetting : IServerSetting
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public string RedisHost { get; set; }
-        public int RedisDb { get; set; }
     }
 }

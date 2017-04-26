@@ -40,13 +40,13 @@ namespace GameServer.Console
         public string SecretKey { get; set; }
     }
 
-    public class ServerSetting : IServerSetting, IRedisServerSetting
+    public class ServerSetting : IServerSetting
     {
         public string Id { get; set; }
         public string Name { get; set; }
 
-        public string RedisHost { get; set; }
-        public int RedisDb { get; set; }
+        //public string RedisHost { get; set; }
+        //public int RedisDb { get; set; }
 
     }
 
