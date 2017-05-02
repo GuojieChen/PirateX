@@ -77,8 +77,8 @@ c : 方法名
 i : 消息类型 (1:返回  2广播)   
 o : 请求序号，自增    
 t  : 时间戳  
-format:消息格式    
-code:状态码    
+format:消息格式，默认protobuf, 其他可选json       
+code:状态码 200以外都是错误异常        
 errorCode:（ * ） 错误消息码    
 errorMsg : （ * ） 错误消息   
 
