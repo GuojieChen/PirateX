@@ -148,16 +148,7 @@ namespace PirateX.Core.Container
             return c;
         }
 
-        public IEnumerable<IDistrictConfig> GetDistrictConfigs()
-        {
-            var list = LoadDistrictConfigs();
-            //if (Settings.Districts == null)
-            //    return list;
-
-            //return list.Where(item => Settings.Districts.Select(d => d.ServerId).Contains(item.Id));
-
-            return list;
-        }
+        public abstract IEnumerable<IDistrictConfig> GetDistrictConfigs();
 
         private IContainer LoadDistrictContainer(IDistrictConfig districtConfig)
         {
@@ -182,14 +173,19 @@ namespace PirateX.Core.Container
                         .Register(builder,districtConfig);
             }
 
+
+            builder.Register(c => this.ServerIoc.Resolve<IRedisSerializer>())
+                .As<IRedisSerializer>()
+                .SingleInstance();
+
             builder.Register((c, p) => new SqlConnection(p.Named<string>("ConnectionString")))
                 .As<IDbConnection>()
                 .InstancePerDependency();
 
-            builder.Register(c => districtConfig).As<IDistrictConfig>()
-                .SingleInstance();
+            SetUpConnectionStrings(builder);
 
-            builder.Register(c => districtConfig).As<IDistrictConfig>()
+            builder.Register(c => districtConfig)
+                .As<IDistrictConfig>()
                 .SingleInstance();
 
             builder.Register(c => GetConfigAssemblyList())
@@ -266,10 +262,6 @@ namespace PirateX.Core.Container
         }
 
         #region abstract methods
-        /// <summary> 加载配置列表
-        /// </summary>
-        /// <returns></returns>
-        public abstract IEnumerable<IDistrictConfig> LoadDistrictConfigs();
 
         /// <summary> 获取单个 配置信息 
         /// </summary>
@@ -284,7 +276,10 @@ namespace PirateX.Core.Container
 
         protected abstract void BuildServerContainer(ContainerBuilder builder);
 
-
+        /// <summary>
+        /// 公共数据库连接
+        /// </summary>
+        /// <returns></returns>
         public virtual IDictionary<string, string> GetNamedConnectionStrings()
         {
             return new Dictionary<string, string>();

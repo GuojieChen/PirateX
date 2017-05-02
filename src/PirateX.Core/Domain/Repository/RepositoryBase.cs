@@ -20,22 +20,5 @@ namespace PirateX.Core.Domain.Repository
         public IDbConnection DbConnection { get; set; }
         public IDatabase Redis { get; set; }
 
-        protected StackExchange.Redis.IDatabase RedisDatabase { get; set; }
-
-        public T GetById(object id)
-        {
-            //return DbConnection.Get<T>(id,DbTransaction);
-            return default(T);
-        }
-
-        public void Insert(T t)
-        {
-            //DbConnection.Insert(t,DbTransaction);
-        }
-
-        public void Insert(IEnumerable<T> ts)
-        {
-            //DbConnection.Insert(ts, DbTransaction);
-        }
     }
 }

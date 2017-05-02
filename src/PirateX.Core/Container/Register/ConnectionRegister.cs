@@ -22,7 +22,10 @@ namespace PirateX.Core.Container.Register
 
         public void SetUp(IContainer container,IDistrictConfig config)
         {
-            var connectionString = (config as IConnectionDistrictConfig).ConnectionString;
+            var connectionString = ((IConnectionDistrictConfig)config).ConnectionString;
+
+            if (string.IsNullOrEmpty(connectionString))
+                return ;
 
             if (container.IsRegistered<IDatabaseInitializer>())
             {
@@ -33,7 +36,7 @@ namespace PirateX.Core.Container.Register
         }
     }
 
-
+    [DistrictConfigRegister(typeof(ConnectionRegister))]
     public interface IConnectionDistrictConfig
     {
         string ConnectionString { get; set; }

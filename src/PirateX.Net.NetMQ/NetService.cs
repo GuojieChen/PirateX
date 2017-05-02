@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using NetMQ;
 using NetMQ.Sockets;
 using PirateX.Core.Net;
@@ -76,36 +77,49 @@ namespace PirateX.Net.NetMQ
         protected virtual void ProcessResponse(object o, NetMQSocketEventArgs e)
         {
             //TODO https://netmq.readthedocs.io/en/latest/poller/   #Performance
-            var msg = responseSocket.ReceiveMultipartMessage();//TryReceiveMultipartMessage();
-            //msg[0].Buffer //版本号
-            var action = msg[1].ConvertToString();
-            var sessionid = msg[2].ConvertToString();
 
-            var clientkey = msg[3].Buffer;
-            var serverkey = msg[4].Buffer;
-
-            var header = msg[5].Buffer;
-            var content = msg[6].Buffer;
-
-            var response = new PirateXResponsePackage()
+            var msg1 = responseSocket.ReceiveMultipartMessage();//TryReceiveMultipartMessage();
+            ThreadPool.QueueUserWorkItem(state =>
             {
-                HeaderBytes = header,
-                ContentBytes = content
-            };
+                try
+                {
+                    var msg = (NetMQMessage)state;
 
-            var protocolPackage = NetSend.GetProtocolPackage(sessionid);
+                    //msg[0].Buffer //版本号
+                    var action = msg[1].ConvertToString();
+                    var sessionid = msg[2].ConvertToString();
 
-            //将消息下发到客户端
-            if (protocolPackage == null)
-                return;
-            if (protocolPackage.PackKeys == null)
-                protocolPackage.PackKeys = serverkey;
-            if (protocolPackage.UnPackKeys == null)
-                protocolPackage.UnPackKeys = clientkey;
+                    var clientkey = msg[3].Buffer;
+                    var serverkey = msg[4].Buffer;
 
-            var bytes = protocolPackage.PackPacketToBytes(response);
+                    var header = msg[5].Buffer;
+                    var content = msg[6].Buffer;
 
-            NetSend.Send(sessionid, bytes);
+                    var response = new PirateXResponsePackage()
+                    {
+                        HeaderBytes = header,
+                        ContentBytes = content
+                    };
+
+                    var protocolPackage = NetSend.GetProtocolPackage(sessionid);
+
+                    //将消息下发到客户端
+                    if (protocolPackage == null)
+                        return;
+                    if (protocolPackage.PackKeys == null)
+                        protocolPackage.PackKeys = serverkey;
+                    if (protocolPackage.UnPackKeys == null)
+                        protocolPackage.UnPackKeys = clientkey;
+
+                    var bytes = protocolPackage.PackPacketToBytes(response);
+
+                    NetSend.Send(sessionid, bytes);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                }
+            },msg1);
         }
 
         /// <summary>

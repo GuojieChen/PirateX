@@ -25,11 +25,7 @@ namespace PirateX.Core.Container
         /// 初始化容器信息
         /// </summary>
         void InitContainers(ContainerBuilder builder);
-
-        /// <summary> 加载配置列表
-        /// </summary>
-        /// <returns></returns>
-        IEnumerable<IDistrictConfig> LoadDistrictConfigs();
+        
         /// <summary> 获取单个 配置信息 
         /// </summary>
         /// <param name="id"></param>

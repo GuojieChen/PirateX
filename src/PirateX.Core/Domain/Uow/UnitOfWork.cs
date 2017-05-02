@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Autofac;
+using PirateX.Core.Container.Register;
 using PirateX.Core.Domain.Repository;
 using StackExchange.Redis;
 
 namespace PirateX.Core.Domain.Uow
 {
-    public class UnitOfWork :IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
 
-        private IDictionary<string,IRepository> _repoDic = new Dictionary<string, IRepository>();
+        private IDictionary<string, IRepository> _repoDic = new Dictionary<string, IRepository>();
 
         private readonly ILifetimeScope _resolver;
 
@@ -21,30 +22,34 @@ namespace PirateX.Core.Domain.Uow
 
         private bool _disposed;
         private bool _commited;
-        private bool _isTrassactionOpend; 
+        private bool _isTrassactionOpend;
 
-        public UnitOfWork(ILifetimeScope resolver,string name = null)
+        public UnitOfWork(ILifetimeScope resolver, string name = null)
         {
             this._resolver = resolver;
             if (string.IsNullOrEmpty(name))
-                this._dbConnection = _resolver.Resolve<IDbConnection>();
+            {
+                if(_resolver.IsRegistered<IConnectionDistrictConfig>())
+                    this._dbConnection = _resolver.Resolve<IDbConnection>();
+            }
             else
                 this._dbConnection = _resolver.ResolveNamed<IDbConnection>(name);
 
-            this._redisDatabase = _resolver.Resolve<IDatabase>();
+            if(_resolver.IsRegistered<IDatabase>())
+                this._redisDatabase = _resolver.Resolve<IDatabase>();
 
-            _dbConnection.Open();
+            _dbConnection?.Open();
         }
 
         public void BeginTrasaction()
         {
-            _transaction = _dbConnection.BeginTransaction();
+            _transaction = _dbConnection?.BeginTransaction();
             _isTrassactionOpend = true;
         }
 
         public void BeginTrasaction(IsolationLevel il)
         {
-            _transaction = _dbConnection.BeginTransaction(il);
+            _transaction = _dbConnection?.BeginTransaction(il);
             _isTrassactionOpend = true;
         }
 
@@ -62,29 +67,30 @@ namespace PirateX.Core.Domain.Uow
 
             try
             {
-                
-                _transaction.Commit();
+
+                _transaction?.Commit();
                 _commited = true;
             }
             catch
             {
-                _transaction.Rollback();
+                _transaction?.Rollback();
                 throw;
             }
         }
 
         public T Repository<T>() where T : IRepository
         {
-            var name = typeof (T).Name;
+            var name = typeof(T).Name;
             if (_repoDic.ContainsKey(name))
-                return (T) _repoDic[name];
+                return (T)_repoDic[name];
             else
             {
                 var instance = Activator.CreateInstance<T>();
+                instance.Resolver = this._resolver;
                 instance.DbConnection = _dbConnection;
                 instance.DbTransaction = _transaction;
                 instance.Redis = _redisDatabase;
-                _repoDic.Add(name,instance);
+                _repoDic.Add(name, instance);
 
                 return instance;
             }
@@ -104,10 +110,10 @@ namespace PirateX.Core.Domain.Uow
             {
                 if (_transaction != null)
                 {
-                    if(!_commited)
+                    if (!_commited)
                         icommit();
 
-                    _transaction.Dispose();
+                    _transaction?.Dispose();
                     _transaction = null;
                 }
 

@@ -6,10 +6,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac;
 using Dapper;
 using NLog;
 using PirateX.Core.Cache;
 using PirateX.Core.Container;
+using PirateX.Core.Container.Register;
 using PirateX.Core.Utils;
 
 namespace PirateX.Core.Config
@@ -18,7 +20,7 @@ namespace PirateX.Core.Config
     {
         private readonly MemoryCacheClient _cacheClient = new MemoryCacheClient();
 
-        private readonly IDictionary<string,MemoryCacheClient> Cache = new Dictionary<string, MemoryCacheClient>();
+        private readonly IDictionary<string, MemoryCacheClient> Cache = new Dictionary<string, MemoryCacheClient>();
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -28,16 +30,17 @@ namespace PirateX.Core.Config
 
         private object _lockHelper = new object();
 
-        private Func<IDbConnection> getconnection { get; set; }
+        private IDbConnection _dbConnection;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="configAssembly">配置模型所在的程序集</param>
-        public MemoryConfigReader(List<Assembly> configAssembly, Func<IDbConnection> getconnection)
+        /// <param name="assemblies"></param>
+        /// <param name="dbConnection"></param>
+        public MemoryConfigReader(List<Assembly> assemblies, IDbConnection dbConnection)
         {
-            _configAssembly = configAssembly;
-            this.getconnection = getconnection;
+            _dbConnection = dbConnection;
+            _configAssembly = assemblies;
         }
 
         public void Load()
@@ -51,7 +54,7 @@ namespace PirateX.Core.Config
                     return;
                 var types = new List<Type>();
                 _configAssembly.ForEach(a => types.AddRange(a.GetTypes()
-                    .Where(item => typeof(IConfigEntity).IsAssignableFrom(item)))) ;
+                    .Where(item => typeof(IConfigEntity).IsAssignableFrom(item))));
 
 
                 var queue = new Queue<Type>(types);
@@ -70,13 +73,13 @@ namespace PirateX.Core.Config
                             {
                                 this.GetType().GetMethod("LoadKeyValueConfigData", BindingFlags.Instance | BindingFlags.NonPublic)
                                                         .MakeGenericMethod(type)
-                                                        .Invoke(this, new object[] { getconnection(), });
+                                                        .Invoke(this, null);
                             }
                             else if (typeof(IConfigIdEntity).IsAssignableFrom(type))
                             {
                                 this.GetType().GetMethod("LoadConfigData", BindingFlags.Instance | BindingFlags.NonPublic)
                                                         .MakeGenericMethod(type)
-                                                        .Invoke(this, new object[] { getconnection() });
+                                                        .Invoke(this, null);
                             }
                         }));
                     }
@@ -96,63 +99,96 @@ namespace PirateX.Core.Config
             }
         }
         #region Load Methods
-        private void LoadConfigData<T>(IDbConnection connection) where T : IConfigIdEntity
+        private void LoadConfigData<T>() where T : IConfigIdEntity
         {
-            var list = connection.Query<T>($"select * from {typeof(T).Name}");
+            var connection = (IDbConnection)Activator.CreateInstance(_dbConnection.GetType());
+            connection.ConnectionString = _dbConnection.ConnectionString;
 
-            var type = typeof(T);
-
-            var listkeys = new List<string>();
-
-            foreach (var item in list)
+            try
             {
-                if (item == null)
-                    continue;
-                var key = GetCacheKeyId<T>(item.Id);
-                _cacheClient.Set(key, item);
-                listkeys.Add(key);
+                connection.Open();
 
-                foreach (var attr in type.GetCustomAttributes().Where(x => x is ConfigIndex))
+                var list = connection.Query<T>($"select * from {typeof(T).Name}");
+
+                var type = typeof(T);
+
+                var listkeys = new List<string>();
+
+                foreach (var item in list)
                 {
-                    var configindex = (ConfigIndex)attr;
-                    //获取 对应的字段列表
-                    var ps = type.GetProperties().Where(p => configindex.Names.Contains(p.Name));
-                    var dic = ps.ToDictionary(info => info.Name, info => info.GetValue(item));
+                    if (item == null)
+                        continue;
+                    var key = GetCacheKeyId<T>(item.Id);
+                    _cacheClient.Set(key, item);
+                    listkeys.Add(key);
 
-
-                    if (configindex.IsUnique)
+                    foreach (var attr in type.GetCustomAttributes().Where(x => x is ConfigIndex))
                     {
-                        var urn = GetCacheIndexKey<T>(dic);
-                        //这里只存根据ID生成的KEY
-                        _cacheClient.Set(urn, key);
-                    }
-                    else
-                    {
-                        var urn = GetCacheIndexKey2<T>(dic);
-                        var urnlist = _cacheClient.Get<IList<string>>(urn) ?? new List<string>();
+                        var configindex = (ConfigIndex)attr;
+                        //获取 对应的字段列表
+                        var ps = type.GetProperties().Where(p => configindex.Names.Contains(p.Name));
+                        var dic = ps.ToDictionary(info => info.Name, info => info.GetValue(item));
 
-                        urnlist.Add(key);
 
-                        _cacheClient.Set(urn, urnlist);
+                        if (configindex.IsUnique)
+                        {
+                            var urn = GetCacheIndexKey<T>(dic);
+                            //这里只存根据ID生成的KEY
+                            _cacheClient.Set(urn, key);
+                        }
+                        else
+                        {
+                            var urn = GetCacheIndexKey2<T>(dic);
+                            var urnlist = _cacheClient.Get<IList<string>>(urn) ?? new List<string>();
+
+                            urnlist.Add(key);
+
+                            _cacheClient.Set(urn, urnlist);
+                        }
                     }
                 }
+
+                if (listkeys.Any())
+                    _cacheClient.Add(GetCacheKeyListKey<T>(), listkeys);
+            }
+            catch (Exception e)
+            {
+
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                    connection.Close();
             }
 
-            if (listkeys.Any())
-                _cacheClient.Add(GetCacheKeyListKey<T>(), listkeys);
+
         }
 
-        private void LoadKeyValueConfigData<T>(IDbConnection connection) where T : IConfigKeyValueEntity
+        private void LoadKeyValueConfigData<T>() where T : IConfigKeyValueEntity
         {
-            var list = connection.Query<T>($"select * from {typeof(T).Name}", typeof(T));
-
-            foreach (var item in list)
+            var connection = (IDbConnection)Activator.CreateInstance(_dbConnection.GetType());
+            connection.ConnectionString = _dbConnection.ConnectionString;
+            try
             {
-                if (item == null)
-                    continue;
+                var list = connection.Query<T>($"select * from {typeof(T).Name}", typeof(T));
 
-                var key = GetCacheKey<T>(item.Id);
-                _cacheClient.Set(key, item.V);
+                foreach (var item in list)
+                {
+                    if (item == null)
+                        continue;
+
+                    var key = GetCacheKey<T>(item.Id);
+                    _cacheClient.Set(key, item.V);
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                    connection.Close();
             }
         }
         #endregion

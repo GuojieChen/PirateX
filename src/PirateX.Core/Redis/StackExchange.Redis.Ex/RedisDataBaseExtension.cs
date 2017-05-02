@@ -8,7 +8,6 @@ namespace PirateX.Core.Redis.StackExchange.Redis.Ex
     {
         private static IRedisSerializer _redisSerilazer;
 
-
         public static IRedisSerializer RedisSerilazer
         {
             get

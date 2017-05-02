@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using Autofac.Core;
 using PirateX.Core.Config;
 using PirateX.Core.Utils;
 
@@ -14,7 +15,7 @@ namespace PirateX.Core.Container.Register
 {
     public class ConfigConnectionRegister:IDistrictConfigRegister
     {
-        private readonly IDictionary<string, IConfigReader> _configReaderDic = new Dictionary<string, IConfigReader>();
+        private static readonly IDictionary<string, IConfigReader> _configReaderDic = new Dictionary<string, IConfigReader>();
 
         public void Register(ContainerBuilder builder, IDistrictConfig config)
         {
@@ -27,7 +28,10 @@ namespace PirateX.Core.Container.Register
                     if (_configReaderDic.ContainsKey(configDbKey))
                         return _configReaderDic[configDbKey];
 
-                    var newReader = new MemoryConfigReader(c.Resolve<List<Assembly>>(), () => c.Resolve<IDbConnection>(new NamedParameter("ConnectionString", configConnectionString)));
+                    var newReader = new MemoryConfigReader(
+                        c.ResolveKeyed<List<Assembly>>("ConfigAssemblyList")
+                        ,c.Resolve<IDbConnection>(new NamedParameter("ConnectionString", configConnectionString)));
+
                     _configReaderDic.Add(configDbKey, newReader);
                     return newReader;
                 })

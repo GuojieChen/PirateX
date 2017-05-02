@@ -60,6 +60,7 @@ namespace PirateX.WinClient
                 _client.DefaultFormat = comboBox1.Text;
             _client.OnOpen += OnOpen;
             _client.OnError += OnError;
+            _client.OnClosed += OnClosed;
             _client.OnReceiveMessage += (o, args) =>
             {
                 this.Invoke((EventHandler)delegate
@@ -85,6 +86,20 @@ namespace PirateX.WinClient
                 btnConn.Enabled = false;
                 txtToken.Enabled = false;
             });
+        }
+
+        private void OnClosed(object sender, EventArgs e)
+        {
+            this.Invoke((EventHandler)delegate
+            {
+                txtHost.Enabled = true;
+                txtPort.Enabled = true;
+                btnConn.Enabled = true;
+                txtToken.Enabled = true;
+                btnSend.Enabled = false;
+            });
+
+            _client = null; 
         }
 
         private void OnError(object sender, ErrorEventArgs e)

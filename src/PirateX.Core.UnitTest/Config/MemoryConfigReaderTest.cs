@@ -29,10 +29,7 @@ namespace PirateX.Core.UnitTest.Config
 
             Console.WriteLine("init datas....");
             dbConnectionFactory = new OrmLiteConnectionFactory(":memory:", SqliteDialect.Provider);
-            MemoryConfigReader = new MemoryConfigReader(new List<Assembly>(){ typeof(TestConfig).Assembly }, () =>
-            {
-                return dbConnectionFactory.OpenDbConnection();
-            });
+            MemoryConfigReader = new MemoryConfigReader(new List<Assembly>(){ typeof(TestConfig).Assembly }, dbConnectionFactory.OpenDbConnection());
             var catalog = new Catalog();
 
             using (var db = dbConnectionFactory.OpenDbConnection())

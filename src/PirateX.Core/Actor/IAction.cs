@@ -16,7 +16,7 @@ namespace PirateX.Core.Actor
         /// </summary>
         string Name { get; set; }
 
-        PirateSession OnlieRole { get; set; }
+        PirateSession Session { get; set; }
         ActorContext Context { get; set; }
 
         void Execute();

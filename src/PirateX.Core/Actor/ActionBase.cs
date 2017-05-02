@@ -18,7 +18,7 @@ namespace PirateX.Core.Actor
         public ILifetimeScope ServerReslover { get; set; }
         public ILifetimeScope Reslover { get; set; }
         public virtual string Name { get; set; }
-        public PirateSession OnlieRole { get; set; }
+        public PirateSession Session { get; set; }
         public ActorContext Context { get; set; }
         public abstract void Execute();
 

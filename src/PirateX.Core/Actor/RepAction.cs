@@ -1,5 +1,6 @@
 ﻿using System;
 using Autofac;
+using PirateX.Core.Domain.Uow;
 using StackExchange.Redis;
 
 namespace PirateX.Core.Actor
@@ -44,6 +45,13 @@ namespace PirateX.Core.Actor
                 if (!string.IsNullOrEmpty(cachekey))
                     SetToCache(cachekey,response);
             }
+
+            AfterPlay();
+        }
+
+        protected UnitOfWork NewUnitOfWork()
+        {
+            return new UnitOfWork(this.Reslover);
         }
 
         //TODO 抽象到  IReqCache 中
@@ -79,20 +87,26 @@ namespace PirateX.Core.Actor
 
         private string GetResponseUrn()
         {
-            if (base.OnlieRole == null)
+            if (base.Session == null)
                 return string.Empty;
 
-            return $"rep:{base.OnlieRole.Id}:{base.Context.Request.C}_{base.Context.Request.O}";
+            return $"rep:{base.Session.Id}:{base.Context.Request.C}_{base.Context.Request.O}";
         }
 
         private string GetResponseListUrn()
         {
-            if (base.OnlieRole == null)
+            if (base.Session == null)
                 return string.Empty;
 
-            return $"replist:{base.OnlieRole.Id}";
+            return $"replist:{base.Session.Id}";
         }
 
         public abstract TResponse Play();
+
+        protected virtual void AfterPlay()
+        {
+            
+        }
+
     }
 }

@@ -213,38 +213,40 @@ namespace PirateX.Core.Actor
                         //context.Request.Token
                         //获取session信息  从缓存中去获取session信息  session没有的时候需要提示客户端重新连接
 
+                        PirateSession session;
+
                         if (Equals(actionname, "NewSeed"))
                         {
-                            var onlinerole2 = CreateOnlineRole(context, token);
-                            onlinerole2.ClientKeys = context.ClientKeys;
-                            onlinerole2.ServerKeys = context.ServerKeys;
-
-                            ServerContainer.ServerIoc.Resolve<ISessionManager>().Login(onlinerole2);
+                            session = CreateOnlineRole(context, token);
+                            session.ClientKeys = context.ClientKeys;
+                            session.ServerKeys = context.ServerKeys;
                         }
                         else
                         {
-                            var onlinerole = OnlineManager.GetOnlineRole(token.Rid);
+                            session = OnlineManager.GetOnlineRole(token.Rid);
                             var container = ServerContainer.GetDistrictContainer(token.Did);
                             if (container == null)
                                 throw new PirateXException("ContainerNull", "容器未定义") { Code = StatusCode.ContainerNull };
                             action.Reslover = container.BeginLifetimeScope();
 
-                            if (onlinerole == null)
+                            if (session == null)
                             {
-                                var onlinerole2 = CreateOnlineRole(context, token);
-                                onlinerole2.ClientKeys = context.ClientKeys;
-                                onlinerole2.ServerKeys = context.ServerKeys;
+                                session = CreateOnlineRole(context, token);
+                                session.ClientKeys = context.ClientKeys;
+                                session.ServerKeys = context.ServerKeys;
 
-                                ServerContainer.ServerIoc.Resolve<ISessionManager>().Login(onlinerole2);
                             }
-                            else if (!Equals(onlinerole.SessionId, context.SessionId))
+                            else if (!Equals(session.SessionId, context.SessionId))
                             {
                                 //单设备登陆控制
                                 throw new PirateXException("ReLogin", "ReLogin") { Code = StatusCode.ReLogin };
                             }
                             
-                            action.OnlieRole = onlinerole;
+                            action.Session = session;
                         }
+
+                        session.LastUtcAt = DateTime.UtcNow;
+                        ServerContainer.ServerIoc.Resolve<ISessionManager>().Login(session);
 
                         action.ServerReslover = ServerContainer.ServerIoc;
                         action.Context = context;
