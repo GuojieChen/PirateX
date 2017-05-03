@@ -58,6 +58,7 @@ format :期望消息返回格式
 username=xxx&password=xxx   
 
 >Token格式
+
 ```chsarp
 message Token {
    optional int32 Did = 1 [default = 0];  //服ID
