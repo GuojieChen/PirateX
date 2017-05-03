@@ -1,18 +1,23 @@
-﻿using PirateX.Protocol;
+﻿using System.Collections;
+using PirateX.Protocol;
 using ProtoBuf;
 
 namespace PirateX.Client.Command
 {
     public class NewSeed : ExecutorBase<NewSeedResponse>
     {
-        private static readonly byte[] CryptoByte = new byte[8]{1,0,0,0,0,0,0,0};
+        private static readonly bool[] CryptoByte = new bool[8]
+        {
+            false, false, false, false,
+            false, false, false, true
+        };
 
         public override void Excute(PirateXClient pSocket, NewSeedResponse data)
         {
-            var serverKey = new KeyGenerator(data.Seed); 
+            var serverKey = new KeyGenerator(data.Seed);
 
             pSocket.PackageProcessor.UnPackKeys = serverKey.MakeKey();
-            pSocket.PackageProcessor.CryptoByte = CryptoByte;
+            pSocket.PackageProcessor.CryptoByte = new BitArray(CryptoByte).ConvertToByte();
         }
     }
 

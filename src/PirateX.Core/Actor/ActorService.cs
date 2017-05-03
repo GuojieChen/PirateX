@@ -292,6 +292,7 @@ namespace PirateX.Core.Actor
                 Uid = token.Uid,
                 ClientKeys = context.ClientKeys,
                 ServerKeys = context.ServerKeys,
+                CryptoByte = context.CryptoByte,
                 SessionId = context.SessionId,
                 StartUtcAt = DateTime.UtcNow,
                 ResponseConvert = context.ResponseCovnert

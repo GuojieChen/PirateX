@@ -66,7 +66,8 @@ namespace PirateX.Net.NetMQ
                     msg[6].Buffer)//信息体
                 ,
                 ResponseCovnert = "protobuf",
-                RemoteIp = msg[7].ConvertToString()
+                RemoteIp = msg[7].ConvertToString(),
+                CryptoByte = msg[8].Buffer[0]
             };
 
             Task.Factory.StartNew(() => _actorService.OnReceive(context)).ContinueWith(t =>
@@ -107,6 +108,7 @@ namespace PirateX.Net.NetMQ
             repMsg.Append(role.SessionId);//sessionid
             repMsg.Append(role.ClientKeys);//客户端密钥
             repMsg.Append(role.ServerKeys);//服务端密钥
+            repMsg.Append(new byte[] { role.CryptoByte });//加密项
             repMsg.Append(GetHeaderBytes(headers));//信息头
             if (body != null)
                 repMsg.Append(body);//信息体
@@ -130,6 +132,7 @@ namespace PirateX.Net.NetMQ
             repMsg.Append(context.SessionId);//sessionid
             repMsg.Append(context.ClientKeys);//客户端密钥
             repMsg.Append(context.ServerKeys);//服务端密钥
+            repMsg.Append(new byte[] { context.CryptoByte });//加密项
             repMsg.Append(GetHeaderBytes(header));//信息头
             if (body != null)
                 repMsg.Append(body);//信息体

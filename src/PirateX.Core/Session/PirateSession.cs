@@ -25,12 +25,15 @@ namespace PirateX.Core.Session
         [ProtoMember(8)]
         public byte[] ServerKeys { get; set; }
         [ProtoMember(9)]
-        public string ResponseConvert { get; set; }
+        public byte CryptoByte { get; set; }
 
         [ProtoMember(10)]
-        public DateTime LastUtcAt { get; set; }
+        public string ResponseConvert { get; set; }
 
         [ProtoMember(11)]
+        public DateTime LastUtcAt { get; set; }
+
+        [ProtoMember(12)]
         public IDictionary<string, string> Items { get; set; }
     }
 }

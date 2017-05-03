@@ -426,5 +426,27 @@ namespace PirateX.Protocol
 
             return queryDict;
         }
+
+        #region bit
+        public static bool GetBit(this byte b, int bitNumber)
+        {
+            return (b & (1 << bitNumber)) != 0;
+        }
+
+        public static byte ConvertToByte(this BitArray bits)
+        {
+            if (bits.Count != 8)
+            {
+                throw new ArgumentException("bits");
+            }
+            byte[] bytes = new byte[1];
+            bits.CopyTo(bytes, 0);
+            return bytes[0];
+        }
+
+        #endregion
+
+
+
     }
 }

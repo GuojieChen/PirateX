@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using NetMQ;
 using NetMQ.Sockets;
 using PirateX.Core.Net;
+using PirateX.Protocol;
 using PirateX.Protocol.Package;
 
 namespace PirateX.Net.NetMQ
@@ -92,9 +95,11 @@ namespace PirateX.Net.NetMQ
 
                     var clientkey = msg[3].Buffer;
                     var serverkey = msg[4].Buffer;
+                    var crypto = msg[5].Buffer[0];
 
-                    var header = msg[5].Buffer;
-                    var content = msg[6].Buffer;
+                    var header = msg[6].Buffer;
+                    var content = msg[7].Buffer;
+
 
                     var response = new PirateXResponsePackage()
                     {
@@ -108,13 +113,18 @@ namespace PirateX.Net.NetMQ
                     if (protocolPackage == null)
                         return;
                     if (protocolPackage.PackKeys == null)
+                    {
                         protocolPackage.PackKeys = serverkey;
+                        
+                    }
+
                     if (protocolPackage.UnPackKeys == null)
                         protocolPackage.UnPackKeys = clientkey;
 
                     var bytes = protocolPackage.PackPacketToBytes(response);
-
                     NetSend.Send(sessionid, bytes);
+                    
+                    protocolPackage.CryptoByte = crypto;
                 }
                 catch (Exception exception)
                 {
@@ -144,6 +154,7 @@ namespace PirateX.Net.NetMQ
             msg.Append(request.HeaderBytes);//信息头
             msg.Append(request.ContentBytes);//信息体
             msg.Append((protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString());
+            msg.Append(new byte[]{ protocolPackage.CryptoByte });
             //加入队列
             PushQueue.Enqueue(msg);
         }

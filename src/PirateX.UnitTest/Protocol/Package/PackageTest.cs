@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -106,12 +107,20 @@ namespace PirateX.UnitTest.Protocol.Package
         {
             var clientPackage = new ProtocolPackage()
             {
-                CryptoByte = new byte[8]{1,0,0,0,0,0,0,0},
+                CryptoByte = new BitArray(new bool[8]
+                {
+                    false, false, false, false,
+                    false, false, false, true
+                }).ConvertToByte(),
             };
 
             var serverPackage = new ProtocolPackage()
             {
-                CryptoByte = new byte[8] { 1, 0, 0, 0, 0, 0, 0, 0 },
+                CryptoByte = new BitArray(new bool[8]
+                {
+                    false, false, false, false,
+                    false, false, false, true
+                }).ConvertToByte(),
             };
 
             var clientKeys = new KeyGenerator(100).MakeKey();
@@ -140,6 +149,8 @@ namespace PirateX.UnitTest.Protocol.Package
             };
 
             var unpackrequestpack = clientPackage.PackPacketToBytes(requestPackage);
+
+            Console.WriteLine($"[{string.Join(",", unpackrequestpack)}]");
 
             var requestInfo2 = new PirateXRequestInfo(serverPackage.UnPackToPacket(unpackrequestpack));
 

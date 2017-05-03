@@ -113,5 +113,12 @@ namespace PirateX.Core.Utils
 
             return t;
         }
+
+        public static bool GetBit(this byte b, int bitNumber)
+        {
+            return (b & (1 << bitNumber)) != 0; 
+        }
+
+
     }
 }

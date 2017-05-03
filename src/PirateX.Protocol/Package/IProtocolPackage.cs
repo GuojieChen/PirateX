@@ -18,7 +18,7 @@ namespace PirateX.Protocol.Package
         /// <summary> 服务端秘钥列表
         /// </summary>
         byte[] UnPackKeys { get; set; }
-        byte[] CryptoByte { get; set; }
+        byte CryptoByte { get; set; }
 
         //IResponseConvert ResponseConvert { get; set; }
 

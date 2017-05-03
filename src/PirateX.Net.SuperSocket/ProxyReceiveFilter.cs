@@ -36,6 +36,8 @@ namespace PirateX.Net.SuperSocket
             var datas = bodyBuffer.CloneRange(offset, length);
             //return new BinaryRequestInfo("PushCmd", datas);
 
+            Console.WriteLine($"[{string.Join(",", datas)}]");
+
 
             _session.ProtocolPackage.SessionID = _session.SessionID;
             _session.ProtocolPackage.RemoteEndPoint = _session.RemoteEndPoint;
