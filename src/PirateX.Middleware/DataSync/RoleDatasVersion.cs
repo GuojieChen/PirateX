@@ -9,9 +9,9 @@ namespace PirateX.Middleware.DataSync
 {
     public class RoleDatasVersion :IRoleDatasVersion,IEntityTimestamp<byte[]>
     {
-        public virtual DateTime CreateAt { get; set; }
         public long Id { get; set; }
         public virtual long Rid { get; set; }
         public virtual byte[] Timestamp { get; set; }
+        public DateTime CreateUtcAt { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using NetMQ;
 using NetMQ.Sockets;
@@ -142,6 +143,7 @@ namespace PirateX.Net.NetMQ
             msg.Append(protocolPackage.UnPackKeys);//服务端密钥
             msg.Append(request.HeaderBytes);//信息头
             msg.Append(request.ContentBytes);//信息体
+            msg.Append((protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString());
             //加入队列
             PushQueue.Enqueue(msg);
         }

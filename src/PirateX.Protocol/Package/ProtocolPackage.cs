@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using PirateX.Protocol.Crypto;
 using PirateX.Protocol.Zip;
 
@@ -10,6 +11,7 @@ namespace PirateX.Protocol.Package
     {
         public string SessionID { get; set; } = Guid.NewGuid().ToString("N");
         
+        public EndPoint RemoteEndPoint { get; set; }
 
         public ProtocolPackage(IZip zip)
         {

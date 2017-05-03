@@ -20,11 +20,11 @@ namespace GameServer.Console.SampleDomain
         public string Name { get; set; }
 
         [ProtoMember(2)]
-        public DateTime CreateAt { get; set; }
+        public DateTime CreateUtcAt { get; set; }
 
         public Role()
         {
-            CreateAt = DateTime.UtcNow;
+            CreateUtcAt = DateTime.UtcNow;
         }
         
         public byte[] Timestamp { get; set; }

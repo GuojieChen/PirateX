@@ -65,7 +65,8 @@ namespace PirateX.Net.NetMQ
                     msg[5].Buffer, //信息头
                     msg[6].Buffer)//信息体
                 ,
-                ResponseCovnert = "protobuf"
+                ResponseCovnert = "protobuf",
+                RemoteIp = msg[7].ConvertToString()
             };
 
             Task.Factory.StartNew(() => _actorService.OnReceive(context)).ContinueWith(t =>

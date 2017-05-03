@@ -40,7 +40,7 @@ namespace PirateX.UnitTest
                 ConnectionString = "Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;"},
         };
 
-        public override IEnumerable<IDistrictConfig> LoadDistrictConfigs()
+        public override IEnumerable<IDistrictConfig> GetDistrictConfigs()
         {
             return ServerConfigs;
         }

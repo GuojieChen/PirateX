@@ -24,18 +24,13 @@ namespace PirateX.Core.Domain.Uow
         private bool _commited;
         private bool _isTrassactionOpend;
 
-        public UnitOfWork(ILifetimeScope resolver, string name = null)
+        public UnitOfWork(ILifetimeScope resolver, string name = "")
         {
             this._resolver = resolver;
-            if (string.IsNullOrEmpty(name))
-            {
-                if(_resolver.IsRegistered<IConnectionDistrictConfig>())
-                    this._dbConnection = _resolver.Resolve<IDbConnection>();
-            }
-            else
-                this._dbConnection = _resolver.ResolveNamed<IDbConnection>(name);
+            if (_resolver.IsRegistered<IDbConnection>())
+                this._dbConnection = _resolver.ResolveKeyed<IDbConnection>(name);
 
-            if(_resolver.IsRegistered<IDatabase>())
+            if (_resolver.IsRegistered<IDatabase>())
                 this._redisDatabase = _resolver.Resolve<IDatabase>();
 
             _dbConnection?.Open();

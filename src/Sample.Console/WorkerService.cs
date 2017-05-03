@@ -31,12 +31,10 @@ namespace GameServer.Console
         }
     }
 
-    public class DistrictConfig : IDistrictConfig,IRedisDistrictConfig
+    public class DistrictConfig : IDistrictConfig
     {
         public string Name { get; set; }
         public int Id { get; set; }
-        public string Redis { get; set; }
-        public int RedisDb { get; set; }
         public string SecretKey { get; set; }
     }
 
@@ -57,18 +55,15 @@ namespace GameServer.Console
             new DistrictConfig {
                 Id = 1,
                 Name = "test 01",
-                Redis = "192.168.1.34:6379,password=glee1234",
-                RedisDb = 11 ,
                 },
             new DistrictConfig {
                 Id = 2,
                 Name = "test 02",
-                Redis = "192.168.1.34:6379,password=glee1234",
-                RedisDb = 12 ,
                 }
         };
 
-        public override IEnumerable<IDistrictConfig> LoadDistrictConfigs()
+
+        public override IEnumerable<IDistrictConfig> GetDistrictConfigs()
         {
             return ServerConfigs;
         }
@@ -91,8 +86,6 @@ namespace GameServer.Console
         {
             return new Dictionary<string, string>()
             {
-                {"role","Server=192.168.1.213;Database=pirate.core;User ID=pokemonx;Password=123456;Pooling=true;MAX Pool Size=20;Connection Lifetime=10;" },
-
             };
         }
     }

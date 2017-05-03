@@ -11,15 +11,17 @@ namespace PirateX.Net.SuperSocket
     {
         public IReceiveFilter<BinaryRequestInfo> CreateFilter(IAppServer appServer, IAppSession appSession, IPEndPoint remoteEndPoint)
         {
-            return new ProxyReceiveFilter();
+            return new ProxyReceiveFilter((ProxySession)appSession);
         }
     }
 
     public class ProxyReceiveFilter : FixedHeaderReceiveFilter<BinaryRequestInfo>
     {
 
-        public ProxyReceiveFilter() : base(0)
+        private ProxySession _session;
+        public ProxyReceiveFilter(ProxySession session) : base(0)
         {
+            _session = session;
         }
 
         protected override int GetBodyLengthFromHeader(byte[] header, int offset, int length)
@@ -32,7 +34,14 @@ namespace PirateX.Net.SuperSocket
         {
             //原始数据
             var datas = bodyBuffer.CloneRange(offset, length);
-            return new BinaryRequestInfo("PushCmd", datas);
+            //return new BinaryRequestInfo("PushCmd", datas);
+
+
+            _session.ProtocolPackage.SessionID = _session.SessionID;
+            _session.ProtocolPackage.RemoteEndPoint = _session.RemoteEndPoint;
+            _session.AppServer.NetService.ProcessRequest(_session.ProtocolPackage, datas);
+
+            return null;
         }
     }
 }

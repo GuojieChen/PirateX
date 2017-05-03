@@ -37,7 +37,7 @@ namespace PirateX.Core.Actor
         void OnReceive(ActorContext context);
     }
 
-    public class ActorService<TActorService> :IMessageSender, IActorService
+    public class ActorService<TActorService> : IMessageSender, IActorService
     {
         public static Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -106,13 +106,13 @@ namespace PirateX.Core.Actor
                 if (attrs.Any())
                 {
                     var convertName = ((DisplayColumnAttribute)attrs[0]).DisplayColumn;
-                    if(!string.IsNullOrEmpty(convertName))
+                    if (!string.IsNullOrEmpty(convertName))
                         builder.Register(c => Activator.CreateInstance(responseConvert))
                             .Keyed<IResponseConvert>(convertName.ToLower())
                             .SingleInstance();
                 }
             }
-            
+
             ServerContainer.InitContainers(builder);
 
             ServerContainer.ServerIoc.Resolve<IProtoService>().Init(ServerContainer.GetEntityAssemblyList());
@@ -184,8 +184,11 @@ namespace PirateX.Core.Actor
 
         public void OnReceive(ActorContext context)
         {
-            if(Logger.IsDebugEnabled)
-                Logger.Debug($"OnReceive,TrheadID:{Thread.CurrentThread.ManagedThreadId}");
+            if (Logger.IsDebugEnabled)
+            {
+                Logger.Debug($"C2S Headers #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers}");
+                Logger.Debug($"C2S Query #{context.SessionId}# #{context.RemoteIp}# {context.Request.QueryString}");
+            }
 
             var format = context.Request.Headers["format"];
             if (!string.IsNullOrEmpty(format))
@@ -193,7 +196,7 @@ namespace PirateX.Core.Actor
 
             var lang = context.Request.Headers["lang"];
             if (!string.IsNullOrEmpty(lang))
-                Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
+                Thread.CurrentThread.CurrentUICulture = Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
 
             //执行动作
             var actionname = context.Request.C;
@@ -241,7 +244,7 @@ namespace PirateX.Core.Actor
                                 //单设备登陆控制
                                 throw new PirateXException("ReLogin", "ReLogin") { Code = StatusCode.ReLogin };
                             }
-                            
+
                             action.Session = session;
                         }
 
@@ -390,12 +393,12 @@ namespace PirateX.Core.Actor
             }
             return null;
         }
-        
+
         public virtual void Stop()
         {
 
         }
-        
+
 
         #region send message
         public void SendMessage<T>(ActorContext context, T t)
@@ -442,7 +445,15 @@ namespace PirateX.Core.Actor
         {
             header["format"] = context.ResponseCovnert;
 
-            NetService.SendMessage(context, header, ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(context.ResponseCovnert).SerializeObject(rep));
+            var body = ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(context.ResponseCovnert)
+                .SerializeObject(rep);
+
+            if (Logger.IsDebugEnabled && body != null)
+            {
+                Logger.Debug($"S2C #{context.SessionId}# #{context.RemoteIp}#{Encoding.UTF8.GetString(body)}");
+            }
+
+            NetService.SendMessage(context, header, body);
         }
 
         private byte[] GetHeaderBytes(NameValueCollection headers)

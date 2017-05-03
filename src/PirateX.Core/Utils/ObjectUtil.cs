@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using ProtoBuf;
+using StackExchange.Redis;
 
 namespace PirateX.Core.Utils
 {
@@ -55,6 +56,14 @@ namespace PirateX.Core.Utils
             }
         }
 
+        public static T FromProtobuf<T>(this byte[] bytes)
+        {
+            using (var ms = new MemoryStream(bytes))
+            {
+                return Serializer.Deserialize<T>(ms);
+            }
+        }
+
         /// <summary>
         /// 获取配置连接的信息摘要
         /// 这个后期是否需要非内置？
@@ -78,6 +87,31 @@ namespace PirateX.Core.Utils
             }
 
             return builder.ToString();
+        }
+
+
+        public static HashEntry[] ToHashEntries<T>(this T t)
+        {
+            return t.GetType()
+                .GetProperties()
+                .Select(property => new HashEntry(property.Name, property.GetValue(t).ToString()))
+                .ToArray();
+        }
+
+        public static T FromHashEntries<T>(this HashEntry[] entries)
+        {
+            var t = Activator.CreateInstance<T>();
+            var type = typeof(T);
+            foreach (var entry in entries)
+            {
+                var p = type.GetProperty(entry.Name);
+                if(p == null)
+                    continue;
+
+                p.SetValue(t,Convert.ChangeType(entry.Value,p.PropertyType));
+            }
+
+            return t;
         }
     }
 }

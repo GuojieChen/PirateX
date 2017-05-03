@@ -17,5 +17,7 @@ namespace PirateX.Core.Actor
         public IToken Token { get; set; }
 
         public IPirateXRequestInfoBase Request { get; set; }
+
+        public string RemoteIp { get; set; }
     }
 }

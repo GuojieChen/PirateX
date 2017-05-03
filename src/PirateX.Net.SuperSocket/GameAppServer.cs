@@ -59,6 +59,9 @@ namespace PirateX.Net.SuperSocket
 
         public void Send(string sessionid, byte[] datas)
         {
+
+            Console.WriteLine($"[{string.Join(",", datas)}]");
+
             var session = GetSessionByID(sessionid);
             session?.Send(datas,0,datas.Length);
         }

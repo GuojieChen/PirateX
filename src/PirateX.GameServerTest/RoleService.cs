@@ -49,9 +49,9 @@ namespace PirateX.GameServerTest
             {
                 //uow.Repository<>()
 
-                uow.Repository<RoleRepository>().Insert(new Role() {Id = 1,Name = "Test", });
+                //uow.Repository<RoleRepository>().Insert(new Role() {Id = 1,Name = "Test", });
 
-                uow.Repository<RoleRepository>().GetById(1);
+                //uow.Repository<RoleRepository>().GetById(1);
 
 
                 using (var now2 = CreateUnitOfWork("role"))

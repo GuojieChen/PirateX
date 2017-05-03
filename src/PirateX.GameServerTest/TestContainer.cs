@@ -72,7 +72,8 @@ namespace PirateX.GameServerTest
             },
         };
 
-        public override IEnumerable<IDistrictConfig> LoadDistrictConfigs()
+     
+        public override IEnumerable<IDistrictConfig> GetDistrictConfigs()
         {
             return ServerConfigs;
         }

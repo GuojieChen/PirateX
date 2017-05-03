@@ -48,7 +48,7 @@ r  : 是否为重试
 o : 请求序号，自增    
 t  : 时间戳    
 token:授权信息    
-language:客户端请求语言    
+lang:客户端请求语言 参考[区域设置](https://zh.wikipedia.org/wiki/%E5%8C%BA%E5%9F%9F%E8%AE%BE%E7%BD%AE)    
 format :期望消息返回格式     
 
 
@@ -56,6 +56,17 @@ format :期望消息返回格式
 类似httpGET方式,做好encode编码    
 
 username=xxx&password=xxx   
+
+>Token格式
+```chsarp
+message Token {
+   optional int32 Did = 1 [default = 0];  //服ID
+   optional int64 Rid = 2 [default = 0];  //角色ID
+   optional int64 Ts = 3 [default = 0];   //时间戳
+   optional string Sign = 4;              //签名
+   optional string Uid = 6;               //UID
+}
+```
 
 ### 返回
 |-------------------------------------------------    

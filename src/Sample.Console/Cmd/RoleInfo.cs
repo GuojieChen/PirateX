@@ -16,7 +16,7 @@ namespace GameServer.Console.Cmd
     {
         public override RoleInfoResponse Play()
         {
-            MessageSender.PushMessage(this.OnlieRole,new{A="111",B="222"});
+            MessageSender.PushMessage(this.Session,new{A="111",B="222"});
 
             Thread.Sleep(2000);
 

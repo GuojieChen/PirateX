@@ -16,7 +16,7 @@ namespace PirateX.Core.Container.Register
             var connectionString = (config as IConnectionDistrictConfig).ConnectionString;
 
             builder.Register(c => c.Resolve<IDbConnection>(new NamedParameter("ConnectionString", connectionString)))
-                .As<IDbConnection>()
+                .Keyed<IDbConnection>("")
                 .InstancePerDependency();
         }
 
