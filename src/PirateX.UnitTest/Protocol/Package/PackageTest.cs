@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using NUnit.Framework;
+using PirateX.Client.Crypto;
 using PirateX.Protocol;
 using PirateX.Protocol.Package;
 using ServiceStack;
@@ -166,6 +167,64 @@ namespace PirateX.UnitTest.Protocol.Package
             Assert.AreEqual($"{String.Join("&", requestInfo.QueryString.AllKeys.Select(a => a + "=" + requestInfo.QueryString[a]))}"
                 , $"{String.Join("&", requestInfo2.QueryString.AllKeys.Select(a => a + "=" + requestInfo2.QueryString[a]))}");
 
+        }
+
+        [Test]
+        public void client_test()
+        {
+            var clientPackage = new ProtocolPackage()
+            {
+                CryptoByte = new BitArray(new bool[8]
+                {
+                    false, false, false, false,
+                    false, false, false, true
+                }).ConvertToByte(),
+                ZipEnable = false,
+            };
+
+            var serverPackage = new ProtocolPackage()
+            {
+                CryptoByte = new BitArray(new bool[8]
+                {
+                    false, false, false, false,
+                    false, false, false, true
+                }).ConvertToByte(),
+            };
+
+            var clientKeys = new KeyGenerator(1).MakeKey();
+            clientPackage.PackKeys = clientKeys;
+
+            var requestPackage = new PirateXRequestPackage()
+            {
+                HeaderBytes = Encoding.UTF8.GetBytes($"hello"),
+                ContentBytes = Encoding.UTF8.GetBytes("hello")
+            };
+
+            var unpackrequestpack = clientPackage.PackPacketToBytes(requestPackage);
+
+            Console.WriteLine(string.Join(",", unpackrequestpack));
+        }
+
+        [Test]
+        public void key()
+        {
+            var keys = new KeyGenerator(1).MakeKey();
+
+            Console.WriteLine(string.Join(",",keys));
+
+
+            Console.WriteLine(string.Join(",",Encoding.UTF8.GetBytes("")));
+        }
+
+        [Test]
+        public void crypto()
+        {
+
+            var keys = new KeyGenerator(1).MakeKey();
+            var xxtea = new XXTea();
+
+            var packet = xxtea.Encode(Encoding.UTF8.GetBytes("hello"), keys);
+            Console.WriteLine(string.Join(",", packet));
         }
     }
 }

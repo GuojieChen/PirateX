@@ -52,7 +52,7 @@ namespace PirateX.Net.NetMQ
 
                 var SubscriberSocket = new XSubscriberSocket(XSubSocketString);
 
-                GlobalServerProxy = new Proxy(SubscriberSocket,PublisherSocket);
+                GlobalServerProxy = new Proxy(SubscriberSocket, PublisherSocket);
             }
 
             sender = new PushSocket(PushsocketString);
@@ -90,15 +90,17 @@ namespace PirateX.Net.NetMQ
                     var msg = (NetMQMessage)state;
 
                     //msg[0].Buffer //版本号
-                    var action = msg[1].ConvertToString();
+                    var action = msg[1].Buffer[0];
                     var sessionid = msg[2].ConvertToString();
 
                     var clientkey = msg[3].Buffer;
                     var serverkey = msg[4].Buffer;
                     var crypto = msg[5].Buffer[0];
 
-                    var header = msg[6].Buffer;
-                    var content = msg[7].Buffer;
+                    var lastNo = msg[6].ConvertToInt32();
+
+                    var header = msg[7].Buffer;
+                    var content = msg[8].Buffer;
 
 
                     var response = new PirateXResponsePackage()
@@ -113,24 +115,24 @@ namespace PirateX.Net.NetMQ
                     if (protocolPackage == null)
                         return;
                     if (protocolPackage.PackKeys == null)
-                    {
                         protocolPackage.PackKeys = serverkey;
-                        
-                    }
 
                     if (protocolPackage.UnPackKeys == null)
                         protocolPackage.UnPackKeys = clientkey;
 
+                    if (lastNo >= 0)
+                        protocolPackage.LastNo = lastNo;
+
                     var bytes = protocolPackage.PackPacketToBytes(response);
                     NetSend.Send(sessionid, bytes);
-                    
+
                     protocolPackage.CryptoByte = crypto;
                 }
                 catch (Exception exception)
                 {
                     Console.WriteLine(exception);
                 }
-            },msg1);
+            }, msg1);
         }
 
         /// <summary>
@@ -147,15 +149,36 @@ namespace PirateX.Net.NetMQ
 
             var msg = new NetMQMessage();
             msg.Append(new byte[] { 1 });//版本号
-            msg.Append("req");//动作
+            msg.Append(new byte[] { 1 });//动作
             msg.Append(protocolPackage.SessionID);//sessionid
             msg.Append(protocolPackage.PackKeys);//客户端密钥
             msg.Append(protocolPackage.UnPackKeys);//服务端密钥
             msg.Append(request.HeaderBytes);//信息头
             msg.Append(request.ContentBytes);//信息体
             msg.Append((protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString());
-            msg.Append(new byte[]{ protocolPackage.CryptoByte });
+            msg.Append(new byte[] { protocolPackage.CryptoByte });
+            msg.Append(protocolPackage.LastNo);
             //加入队列
+            PushQueue.Enqueue(msg);
+        }
+
+
+        public virtual void OnSessionClosed(ProtocolPackage protocolPackage)
+        {
+            if (protocolPackage == null)
+                return;
+
+            var msg = new NetMQMessage();
+            msg.Append(new byte[] { 1 });//版本号
+            msg.Append(new byte[] { 2 });//动作
+            msg.Append(protocolPackage.SessionID);//sessionid
+            msg.Append(protocolPackage.PackKeys);//客户端密钥
+            msg.Append(protocolPackage.UnPackKeys);//服务端密钥
+            msg.Append(new byte[] { });//信息头
+            msg.Append(new byte[] { });//信息体
+            msg.Append((protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString());
+            msg.Append(new byte[] { protocolPackage.CryptoByte });
+            msg.Append(protocolPackage.LastNo);
             PushQueue.Enqueue(msg);
         }
 

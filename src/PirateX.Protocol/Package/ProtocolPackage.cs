@@ -16,7 +16,7 @@ namespace PirateX.Protocol.Package
 
         public ProtocolPackage(IZip zip)
         {
-            ZipEnable = true;
+            ZipEnable = false;
             Zip = zip;
         }
 
@@ -31,6 +31,8 @@ namespace PirateX.Protocol.Package
         public byte[] PackKeys { get; set; }
         public byte[] UnPackKeys { get; set; }
 
+        public int LastNo { get; set; } = -1;
+
         public byte[] PackPacketToBytes(IPirateXPackage requestPackage)
         {
             if (requestPackage == null)
@@ -38,7 +40,6 @@ namespace PirateX.Protocol.Package
 
             var headerbytes = requestPackage.HeaderBytes;
             var contentbytes = requestPackage.ContentBytes;
-
             //信息头压缩
             headerbytes = ZipEnable ? Zip.Compress(headerbytes) : headerbytes;
             //数据体压缩
@@ -60,8 +61,6 @@ namespace PirateX.Protocol.Package
                     }
                 }
             }
-
-
 
             var zipByte = new byte[1];
             zipByte[0] = ZipEnable ? (byte)Math.Pow(2, 7) : (byte)0;
@@ -108,6 +107,7 @@ namespace PirateX.Protocol.Package
                 stream.Read(headerBytes, 0, headerLen);
                 stream.Read(contentBytes, 0, len - 4 - 1 - 1 - 4 - headerLen);
             }
+
             //8位,  每一位是一个加密标记位，1表示启用
             for (byte i = 0; i < 8; i++)
             {

@@ -1,4 +1,5 @@
-﻿using PirateX.Core.Utils;
+﻿using System;
+using PirateX.Core.Utils;
 
 namespace PirateX.Core.Actor
 {
@@ -6,7 +7,7 @@ namespace PirateX.Core.Actor
     {
         public override NewSeedResponse Play()
         {
-            return new NewSeedResponse() { Seed = TimeUtil.GetTimestampAsSecond() };
+            return new NewSeedResponse() { Seed = DateTime.UtcNow.GetTimestampAsSecond() };
         }
     }
 }

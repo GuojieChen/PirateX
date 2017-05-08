@@ -237,7 +237,7 @@ namespace PirateX.GameServerTest
         {
             var sessionid = Guid.NewGuid().ToString();
             var version = (byte)1;
-            var o = Utils.GetTimestampAsSecond();
+            var o = DateTime.UtcNow.GetTimestamp()/10000;
 
             var msg = new NetMQMessage();
             msg.Append(new byte[] { version });//版本号

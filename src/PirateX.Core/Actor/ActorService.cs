@@ -18,6 +18,7 @@ using PirateX.Core.Container;
 using PirateX.Core.Net;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Core.Session;
+using PirateX.Core.Utils;
 using PirateX.Protocol.Package;
 using PirateX.Protocol.Package.ResponseConvert;
 using ProtoBuf;
@@ -113,6 +114,15 @@ namespace PirateX.Core.Actor
                 }
             }
 
+            //注册内置命令
+            RegisterActions(typeof(ActorService<TActorService>).Assembly.GetTypes());
+            //注册外置命令
+            RegisterActions(GetActions());
+
+            builder.Register(c => Actions)
+                .AsSelf()
+                .SingleInstance();
+
             ServerContainer.InitContainers(builder);
 
             ServerContainer.ServerIoc.Resolve<IProtoService>().Init(ServerContainer.GetEntityAssemblyList());
@@ -122,10 +132,9 @@ namespace PirateX.Core.Actor
             ProtocolPackage = ServerContainer.ServerIoc.Resolve<IProtocolPackage>();
             OnlineManager = ServerContainer.ServerIoc.Resolve<ISessionManager>();
 
-            //注册内置命令
-            RegisterActions(typeof(ActorService<TActorService>).Assembly.GetTypes());
-            //注册外置命令
-            RegisterActions(GetActions());
+
+
+            
         }
 
         public virtual void Start()
@@ -190,13 +199,34 @@ namespace PirateX.Core.Actor
                 Logger.Debug($"C2S Query #{context.SessionId}# #{context.RemoteIp}# {context.Request.QueryString}");
             }
 
+            if (context.Action == 2)//断线
+            {
+                var session = OnlineManager.GetOnlineRole(context.SessionId);
+                OnlineManager.Logout(session.Id,context.SessionId);
+                return;
+            }
+
+
             var format = context.Request.Headers["format"];
             if (!string.IsNullOrEmpty(format))
                 context.ResponseCovnert = format;
 
-            var lang = context.Request.Headers["lang"];
+            var lang = context.Request .Headers["lang"];
             if (!string.IsNullOrEmpty(lang))
                 Thread.CurrentThread.CurrentUICulture = Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
+
+            ////request timeout
+            //if ((DateTime.UtcNow.GetTimestamp() - context.Request.Timestamp) > 1000 * 30)//30秒
+            //{
+            //    Logger.Warn($"C2S Timeout t #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
+            //    return;
+            //}
+
+            //if (context.Request.O <= context.LastNo)
+            //{
+            //    Logger.Warn($"C2S Timeout o #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
+            //    return;
+            //}
 
             //执行动作
             var actionname = context.Request.C;
@@ -249,6 +279,9 @@ namespace PirateX.Core.Actor
                         }
 
                         session.LastUtcAt = DateTime.UtcNow;
+
+                        //TODO 对 r o t 进行验证
+
                         ServerContainer.ServerIoc.Resolve<ISessionManager>().Login(session);
 
                         action.ServerReslover = ServerContainer.ServerIoc;
@@ -326,7 +359,15 @@ namespace PirateX.Core.Actor
         /// <returns></returns>
         protected virtual bool VerifyToken(IDistrictConfig config, IToken token)
         {
-            return true;
+            var isign = $"{token.Did}{token.Rid}{token.Ts}{config.SecretKey}".GetMD5();
+
+            if (Equals(isign, token.Sign))
+                return true;
+
+            if (DateTime.Now.GetTimestamp() - token.Ts < 1000 * 60 * 60)
+                return true;
+
+            return false; 
         }
 
         protected virtual void HandleException(ActorContext context, Exception e)

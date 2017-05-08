@@ -175,7 +175,7 @@ namespace PirateX.Client
             PackageProcessor = new ProtocolPackage();  //new DefaultPackageProcessor() { ZipEnable = true };
             m_StateCode = PSocketStateConst.None;
 
-            client.ReceiveBufferSize = 2048;
+            client.ReceiveBufferSize = 40960;
             client.Connected += new EventHandler(client_Connected);
             client.Closed += new EventHandler(client_Closed);
             client.Error += (sender, args) => { };

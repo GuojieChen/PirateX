@@ -8,8 +8,11 @@ namespace PirateX.Client.Command
     {
         private static readonly bool[] CryptoByte = new bool[8]
         {
-            false, false, false, false,
-            false, false, false, true
+            false, false,
+            false, false,
+            false, false,
+            false,
+            true//xxtea
         };
 
         public override void Excute(PirateXClient pSocket, NewSeedResponse data)

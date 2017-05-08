@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
-using PirateX.Core.Utils;
 using PirateX.Protocol;
 using ProtoBuf;
+using RandomUtil = PirateX.Core.Utils.RandomUtil;
 
 namespace PirateX.Core.Actor
 {

@@ -27,7 +27,7 @@ namespace PirateX.Core.Domain.Uow
         public UnitOfWork(ILifetimeScope resolver, string name = "")
         {
             this._resolver = resolver;
-            if (_resolver.IsRegistered<IDbConnection>())
+            if (_resolver.IsRegistered<IDbConnection>() && _resolver.IsRegisteredWithKey<IDbConnection>(name))
                 this._dbConnection = _resolver.ResolveKeyed<IDbConnection>(name);
 
             if (_resolver.IsRegistered<IDatabase>())

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 using PirateX.Client;
+using PirateX.Protocol;
 using PirateX.Protocol.Package;
 using PirateX.Protocol.Package.ResponseConvert;
 
@@ -120,7 +121,6 @@ namespace PirateX.WinClient
 
             var exHeaders = HttpUtility.ParseQueryString(txtHeader.Text.Trim());
             exHeaders.Add("format", comboBox1.Text.Trim());
-
             _client.Send("RoleInfo",txtQuery.Text.Trim(), exHeaders);
         }
     }

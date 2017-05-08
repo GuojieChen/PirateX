@@ -54,10 +54,16 @@ namespace PirateX.Core.Actor
             return new UnitOfWork(this.Reslover);
         }
 
+
+        protected UnitOfWork NewServerUnitOfWork(string key = "")
+        {
+            return new UnitOfWork(this.ServerReslover,key);
+        }
+
         //TODO 抽象到  IReqCache 中
         protected virtual TResponse GetFromCache(string key)
         {
-            if (!base.ServerReslover.IsRegistered<IDatabase>())
+            if (!base.Reslover.IsRegistered<IDatabase>())
                 return default(TResponse) ;
 
             var data = Redis.StringGet(key);
@@ -66,7 +72,7 @@ namespace PirateX.Core.Actor
 
         protected virtual void SetToCache(string key, TResponse response)
         {
-            if (!base.ServerReslover.IsRegistered<IDatabase>())
+            if (!base.Reslover.IsRegistered<IDatabase>())
                 return ;
 
             var listurn = GetResponseListUrn();

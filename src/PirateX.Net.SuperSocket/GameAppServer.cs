@@ -48,6 +48,8 @@ namespace PirateX.Net.SuperSocket
         protected override void OnSessionClosed(ProxySession session, CloseReason reason)
         {
             Console.WriteLine($"New Session Closed!{session.SessionID}");
+
+            NetService.OnSessionClosed(GetProtocolPackage(session.SessionID));
             base.OnSessionClosed(session, reason);
         }
 
@@ -59,9 +61,6 @@ namespace PirateX.Net.SuperSocket
 
         public void Send(string sessionid, byte[] datas)
         {
-
-            Console.WriteLine($"[{string.Join(",", datas)}]");
-
             var session = GetSessionByID(sessionid);
             session?.Send(datas,0,datas.Length);
         }

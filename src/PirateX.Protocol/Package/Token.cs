@@ -12,11 +12,11 @@ namespace PirateX.Protocol.Package
         /// <summary>
         /// 角色ID
         /// </summary>
-        long Rid { get; set; }
+        int Rid { get; set; }
         /// <summary>
         /// 时间戳
         /// </summary>
-        long Ts { get; set; }
+        int Ts { get; set; }
         /// <summary>
         /// 密钥 需要验证
         /// </summary>
@@ -40,12 +40,12 @@ namespace PirateX.Protocol.Package
         /// 角色ID
         /// </summary>
         [ProtoMember(2)]
-        public long Rid { get; set; }
+        public int Rid { get; set; }
         /// <summary>
         /// 时间戳
         /// </summary>
         [ProtoMember(3)]
-        public long Ts { get; set; }
+        public int Ts { get; set; }
         /// <summary>
         /// 密钥 需要验证
         /// </summary>

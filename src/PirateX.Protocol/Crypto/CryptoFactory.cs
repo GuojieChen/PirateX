@@ -10,11 +10,11 @@
         {
             switch (index)
             {
-                case 0:
+                case 7:
                     return XXTEA;
 
                 default:
-                    return Default;
+                    return null;
             }
         }
     }

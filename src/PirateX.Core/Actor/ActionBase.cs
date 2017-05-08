@@ -13,7 +13,7 @@ namespace PirateX.Core.Actor
         public Logger Logger { get; set; }
 
         public IRedisSerializer RedisSerializer => ServerReslover.Resolve<IRedisSerializer>();
-        public IDatabase Redis => Reslover.Resolve<IDatabase>();
+        public virtual IDatabase Redis => Reslover.Resolve<IDatabase>();
         public IDbConnection DbConnection => Reslover.Resolve<IDbConnection>();
         public ILifetimeScope ServerReslover { get; set; }
         public ILifetimeScope Reslover { get; set; }

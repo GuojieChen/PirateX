@@ -37,21 +37,22 @@ namespace PirateX.Core.Container
         public ILifetimeScope ServerIoc { get; set; }
 
         private IServerSetting _defaultSetting;
-        private IServerSetting GetDefaultSeting()
+        protected IServerSetting GetDefaultSeting<T>() where T: IServerSetting
         {
             if (_defaultSetting != null)
                 return _defaultSetting;
 
-            var ps = typeof(DefaultServerSetting).GetProperties();
-            var defaultServerSetting = Activator.CreateInstance(typeof(DefaultServerSetting), null);
+            var ps = typeof(T).GetProperties();
+            var defaultServerSetting = Activator.CreateInstance(typeof(T), null);
 
             foreach (var propertyInfo in ps)
             {
                 var value = System.Configuration.ConfigurationManager.AppSettings.Get(propertyInfo.Name);
-                propertyInfo.SetValue(defaultServerSetting, Convert.ChangeType(value,propertyInfo.PropertyType));
+                if (value != null)
+                    propertyInfo.SetValue(defaultServerSetting, Convert.ChangeType(value, propertyInfo.PropertyType));
             }
 
-            _defaultSetting = (DefaultServerSetting)defaultServerSetting;
+            _defaultSetting = (T)defaultServerSetting;
 
             return _defaultSetting;
         }
@@ -59,6 +60,19 @@ namespace PirateX.Core.Container
         public void InitContainers(ContainerBuilder builder)
         {
             var districtConfigs = GetDistrictConfigs();
+
+            var serverSetting = GetServerSetting();
+
+            foreach (var type in serverSetting.GetType().GetInterfaces())
+            {
+                var attrs = type.GetCustomAttributes(typeof(ServerSettingRegisterAttribute), false);
+                if (!attrs.Any())
+                    continue;
+                var attr = attrs[0] as ServerSettingRegisterAttribute;
+                if (attr != null)
+                    ((IServerSettingRegister)Activator.CreateInstance(attr.RegisterType))
+                        .Register(builder, serverSetting);
+            }
 
             ServerConfig(builder, districtConfigs);
 
@@ -108,7 +122,11 @@ namespace PirateX.Core.Container
         {
             foreach (var kp in GetNamedConnectionStrings())
             {
-                builder.Register(c => c.Resolve<IDbConnection>(new NamedParameter("ConnectionString",kp.Value)))
+                builder.Register(c => kp.Value)
+                    .Keyed<string>(kp.Key)
+                    .SingleInstance();
+
+                builder.Register(c => c.Resolve<IDbConnection>(new NamedParameter("ConnectionString", kp.Value)))
                     .Keyed<IDbConnection>(kp.Key)
                     .InstancePerDependency();
             }
@@ -169,8 +187,8 @@ namespace PirateX.Core.Container
                     continue;
                 var attr = attrs[0] as DistrictConfigRegisterAttribute;
                 if (attr != null)
-                    ((IDistrictConfigRegister) Activator.CreateInstance(attr.RegisterType))
-                        .Register(builder,districtConfig);
+                    ((IDistrictConfigRegister)Activator.CreateInstance(attr.RegisterType))
+                        .Register(builder, districtConfig);
             }
 
 
@@ -234,7 +252,7 @@ namespace PirateX.Core.Container
                 var attr = attrs[0] as DistrictConfigRegisterAttribute;
                 if (attr != null)
                     ((IDistrictConfigRegister)Activator.CreateInstance(attr.RegisterType))
-                        .SetUp(container,districtConfig);
+                        .SetUp(container, districtConfig);
             }
 
 
@@ -258,7 +276,7 @@ namespace PirateX.Core.Container
 
         public virtual IServerSetting GetServerSetting()
         {
-            return GetDefaultSeting();
+            return GetDefaultSeting<DefaultServerSetting>();
         }
 
         #region abstract methods

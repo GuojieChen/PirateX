@@ -26,7 +26,7 @@ namespace PirateX.Net.NetMQ
 
 
         private IActorService _actorService;
-        public ActorNetService(IActorService actorService , ActorConfig config)
+        public ActorNetService(IActorService actorService, ActorConfig config)
         {
             this._actorService = actorService;
             _actorService.NetService = this;
@@ -57,7 +57,7 @@ namespace PirateX.Net.NetMQ
             var context = new ActorContext()
             {
                 Version = msg[0].Buffer[0],//版本号
-                //ActionName = msg[1].ConvertToString(),//动作
+                Action = msg[1].Buffer[0],
                 SessionId = msg[2].ConvertToString(),//sessionid
                 ClientKeys = msg[3].Buffer,//客户端密钥
                 ServerKeys = msg[4].Buffer,//服务端密钥
@@ -67,7 +67,8 @@ namespace PirateX.Net.NetMQ
                 ,
                 ResponseCovnert = "protobuf",
                 RemoteIp = msg[7].ConvertToString(),
-                CryptoByte = msg[8].Buffer[0]
+                CryptoByte = msg[8].Buffer[0],
+                LastNo = msg[9].ConvertToInt32(),
             };
 
             Task.Factory.StartNew(() => _actorService.OnReceive(context)).ContinueWith(t =>
@@ -104,11 +105,12 @@ namespace PirateX.Net.NetMQ
         {
             var repMsg = new NetMQMessage();
             repMsg.Append(new byte[] { 1 });//版本号
-            repMsg.Append("action");//动作
+            repMsg.Append(new byte[] { 1 });//动作
             repMsg.Append(role.SessionId);//sessionid
             repMsg.Append(role.ClientKeys);//客户端密钥
             repMsg.Append(role.ServerKeys);//服务端密钥
             repMsg.Append(new byte[] { role.CryptoByte });//加密项
+            repMsg.Append(-1);
             repMsg.Append(GetHeaderBytes(headers));//信息头
             if (body != null)
                 repMsg.Append(body);//信息体
@@ -128,11 +130,12 @@ namespace PirateX.Net.NetMQ
         {
             var repMsg = new NetMQMessage();
             repMsg.Append(new byte[] { context.Version });//版本号
-            repMsg.Append("action");//动作
+            repMsg.Append(new byte[] { 1 });//动作
             repMsg.Append(context.SessionId);//sessionid
             repMsg.Append(context.ClientKeys);//客户端密钥
             repMsg.Append(context.ServerKeys);//服务端密钥
             repMsg.Append(new byte[] { context.CryptoByte });//加密项
+            repMsg.Append(context.Request.O);
             repMsg.Append(GetHeaderBytes(header));//信息头
             if (body != null)
                 repMsg.Append(body);//信息体

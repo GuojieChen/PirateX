@@ -5,6 +5,12 @@ namespace PirateX.Core.Actor
     public class ActorContext
     {
         public byte Version { get; set; }
+        /// <summary>
+        /// 动作
+        /// 1 请求
+        /// 2 断线
+        /// </summary>
+        public byte Action { get; set; }
 
         public string SessionId { get; set; }
 
@@ -21,5 +27,10 @@ namespace PirateX.Core.Actor
         public IPirateXRequestInfoBase Request { get; set; }
 
         public string RemoteIp { get; set; }
+
+        /// <summary>
+        /// 客户端请求自增序列号
+        /// </summary>
+        public int LastNo { get; set; }
     }
 }

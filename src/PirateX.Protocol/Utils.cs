@@ -107,24 +107,15 @@ namespace PirateX.Protocol
         /// 获取时间戳
         /// </summary>
         /// <returns></returns>
-        public static long GetTimestamp()
-        {
-            return GetTimestamp(DateTime.UtcNow);
-        }
-
-        public static int GetTimestampAsSecond()
-        {
-            return (int)(GetTimestamp(DateTime.UtcNow) / 1000);
-        }
 
         /// <summary>
-        /// 
+        /// 时间戳，毫秒数
         /// </summary>
         /// <param name="dateTimeUtc"></param>
         /// <returns></returns>
-        public static long GetTimestamp(DateTime dateTimeUtc)
+        public static long GetTimestamp(this DateTime dateTimeUtc)
         {
-            return (dateTimeUtc.Ticks - DateTime.Parse("1970-01-01 00:00:00").Ticks) / 10000;
+            return (dateTimeUtc.ToUniversalTime().Ticks - DateTime.Parse("1970-01-01 00:00:00").Ticks) / 10000;
         }
 
         /// <summary>
@@ -257,15 +248,8 @@ namespace PirateX.Protocol
         /// 2  竞技场
         /// </param>
         /// <returns></returns>
-        public static string PvpToken(long roomId, long rid, int sourceId)
-        {
-            var timestamp = Utils.GetTimestamp();
-            var str = string.Format("{0}-{1}-{2}-{3}-{4}", rid, roomId, "1.0.0", sourceId, timestamp);
-            var md5 = Utils.GetMd5(string.Format("{0}{1}{2}{3}", rid, roomId, timestamp, "pokemonx.glee"));
+       
 
-            return string.Format("{0}-{1}", str, md5);
-            //return SerializeObject.ToBase64String(Encoding.UTF8.GetBytes(string.Format("{0}-{1}", str, md5))); 
-        }
         /// <summary>
         /// 获取本机绑定的IPv4地址，对于阿里云服务器 过滤了 10.  和 169. 开头的地址，因为需要的仅仅是外网地址。
         /// 对于开发的内网来说保留了 168. 的地址

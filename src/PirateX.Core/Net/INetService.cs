@@ -17,6 +17,8 @@ namespace PirateX.Core.Net
         /// <param name="body"></param>
         void ProcessRequest(ProtocolPackage protocolPackage, byte[] body);
 
+        void OnSessionClosed(ProtocolPackage protocolPackage);
+
         void Start();
 
         void Stop();

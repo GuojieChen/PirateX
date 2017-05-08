@@ -11,6 +11,7 @@ namespace PirateX.Net.SuperSocket
 
         public new GameAppServer AppServer => (GameAppServer) base.AppServer;
 
+
         public ProxySession()
         {
             this.ProtocolPackage = new ProtocolPackage()

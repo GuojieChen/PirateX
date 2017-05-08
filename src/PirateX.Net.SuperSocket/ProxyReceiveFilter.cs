@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using SuperSocket.Common;
 using SuperSocket.Facility.Protocol;
@@ -33,16 +34,15 @@ namespace PirateX.Net.SuperSocket
         protected override BinaryRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
         {
             //原始数据
+
+            var start = DateTime.UtcNow;
             var datas = bodyBuffer.CloneRange(offset, length);
             //return new BinaryRequestInfo("PushCmd", datas);
-
-            Console.WriteLine($"[{string.Join(",", datas)}]");
-
-
             _session.ProtocolPackage.SessionID = _session.SessionID;
             _session.ProtocolPackage.RemoteEndPoint = _session.RemoteEndPoint;
             _session.AppServer.NetService.ProcessRequest(_session.ProtocolPackage, datas);
 
+            Console.WriteLine(DateTime.UtcNow.Subtract(start).TotalMilliseconds);
             return null;
         }
     }
