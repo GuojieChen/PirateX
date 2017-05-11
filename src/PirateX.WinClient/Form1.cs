@@ -41,6 +41,8 @@ namespace PirateX.WinClient
                     }
                 }
             }
+
+            comboBox1.SelectedIndex = 0;
         }
 
         private void btnConn_Click(object sender, EventArgs e)
@@ -68,13 +70,15 @@ namespace PirateX.WinClient
                 {
 
                     this.jsonViewer1.ResponseInfo = new PirateXResponseInfo(args.Package);
+                    btnSend.Enabled = true;
                 });
+
             };
             _client.OnSend += (o, args) =>
             {
                 this.Invoke((EventHandler)delegate
                 {
-
+                    btnSend.Enabled = false; 
                     this.jsonViewer1.NewOut(args.Package);
                 });
             };
@@ -86,6 +90,8 @@ namespace PirateX.WinClient
                 txtPort.Enabled = false;
                 btnConn.Enabled = false;
                 txtToken.Enabled = false;
+
+                btnConn.Text = "断开";
             });
         }
 
