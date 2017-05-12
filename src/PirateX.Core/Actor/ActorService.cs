@@ -207,9 +207,11 @@ namespace PirateX.Core.Actor
             if (context.Action == 2)//断线
             {
                 var session = OnlineManager.GetOnlineRole(context.SessionId);
-                OnlineManager.Logout(session.Id,context.SessionId);
-
-                OnSessionClosed(session);
+                if (session != null)
+                {
+                    OnlineManager.Logout(session.Id, context.SessionId);
+                    OnSessionClosed(session);
+                }
                 return;
             }
 
@@ -350,7 +352,7 @@ namespace PirateX.Core.Actor
         {
             if (string.IsNullOrEmpty(token))
                 throw new PirateXException($"{StatusCode.BadRequest}", "invalidToken");
-
+            Console.WriteLine(token);
             var odatas = Convert.FromBase64String(token);
 
             using (var ms = new MemoryStream(odatas))
