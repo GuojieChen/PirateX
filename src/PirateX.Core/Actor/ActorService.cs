@@ -74,7 +74,7 @@ namespace PirateX.Core.Actor
             builder.Register(c => new MemorySessionManager())
                 .As<ISessionManager>()
                 .SingleInstance();
-
+            builder.Register(c => this).As<IMessageSender>().SingleInstance();
             foreach (var type in configtypes)
             {
                 var attrs = type.GetCustomAttributes(typeof(ServerSettingRegisterAttribute), false);
