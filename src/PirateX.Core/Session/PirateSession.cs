@@ -9,7 +9,7 @@ namespace PirateX.Core.Session
     public class PirateSession 
     {
         [ProtoMember(1)] //role id
-        public long Id { get; set; }
+        public int Id { get; set; }
         [ProtoMember(2)]
         public int Did { get; set; }
         [ProtoMember(3)]
@@ -34,6 +34,6 @@ namespace PirateX.Core.Session
         public DateTime LastUtcAt { get; set; }
 
         [ProtoMember(12)]
-        public IDictionary<string, string> Items { get; set; }
+        public IDictionary<string, string> Items { get; set; } = new Dictionary<string, string>();
     }
 }

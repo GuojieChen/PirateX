@@ -18,7 +18,7 @@ namespace PirateX.Core.Session
             _connectionMultiplexer = connectionMultiplexer ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
             Serializer = new ProtobufRedisSerializer();
 
-            Expiry = new TimeSpan(0,0,1,0);// 默认一分钟
+            Expiry = new TimeSpan(0,0,30,0);// 默认一分钟
         }
 
         public void Login(PirateSession pirateSession)

@@ -15,11 +15,11 @@ namespace PirateX.Core.Utils
     {
         public static IDictionary<string, object> ToDictionary<T>(this T obj)
         {
-            var dic = new Dictionary<string,object>();
+            var dic = new Dictionary<string, object>();
 
             foreach (var propertyInfo in obj.GetType().GetProperties())
             {
-                dic.Add(propertyInfo.Name,propertyInfo.GetValue(obj));
+                dic.Add(propertyInfo.Name, propertyInfo.GetValue(obj));
             }
 
             return dic;
@@ -47,7 +47,7 @@ namespace PirateX.Core.Utils
             return sessionkeyBuilder.ToString();
         }
 
-        public static byte[] ToProtobuf<T>(this T t) 
+        public static byte[] ToProtobuf<T>(this T t)
         {
             using (var ms = new MemoryStream())
             {
@@ -94,7 +94,11 @@ namespace PirateX.Core.Utils
         {
             return t.GetType()
                 .GetProperties()
-                .Select(property => new HashEntry(property.Name, property.GetValue(t).ToString()))
+                .Select(property =>
+                    {
+                        var value = property.GetValue(t);
+                        return new HashEntry(property.Name, value?.ToString() ?? "");
+                    })
                 .ToArray();
         }
 
@@ -105,10 +109,10 @@ namespace PirateX.Core.Utils
             foreach (var entry in entries)
             {
                 var p = type.GetProperty(entry.Name);
-                if(p == null)
+                if (p == null)
                     continue;
 
-                p.SetValue(t,Convert.ChangeType(entry.Value,p.PropertyType));
+                p.SetValue(t, Convert.ChangeType(entry.Value, p.PropertyType));
             }
 
             return t;
@@ -116,7 +120,7 @@ namespace PirateX.Core.Utils
 
         public static bool GetBit(this byte b, int bitNumber)
         {
-            return (b & (1 << bitNumber)) != 0; 
+            return (b & (1 << bitNumber)) != 0;
         }
 
 

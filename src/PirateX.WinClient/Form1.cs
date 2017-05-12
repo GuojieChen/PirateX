@@ -61,6 +61,12 @@ namespace PirateX.WinClient
             _client = new PirateXClient($"ps://{txtHost.Text.Trim()}:{txtPort.Text.Trim()}", Convert.ToBase64String(pbCovnert.SerializeObject(token)));
             if (!string.IsNullOrEmpty(comboBox1.Text))
                 _client.DefaultFormat = comboBox1.Text;
+            //_client.ExHeaders
+
+            //_client.ExHeaders.Add("deviceid",HttpUtility.UrlEncode(Guid.NewGuid().ToString()));
+            //_client.ExHeaders.Add("phone","windows");
+            //_client.ExHeaders.Add("os","1.0");
+            //_client.ExHeaders.Add("net","wlan");
             _client.OnOpen += OnOpen;
             _client.OnError += OnError;
             _client.OnClosed += OnClosed;
@@ -78,21 +84,11 @@ namespace PirateX.WinClient
             {
                 this.Invoke((EventHandler)delegate
                 {
-                    btnSend.Enabled = false; 
                     this.jsonViewer1.NewOut(args.Package);
                 });
             };
             _client.Open();
 
-            this.Invoke((EventHandler)delegate
-            {
-                txtHost.Enabled = false;
-                txtPort.Enabled = false;
-                btnConn.Enabled = false;
-                txtToken.Enabled = false;
-
-                btnConn.Text = "断开";
-            });
         }
 
         private void OnClosed(object sender, EventArgs e)
@@ -118,6 +114,12 @@ namespace PirateX.WinClient
         {
             this.Invoke((EventHandler)delegate
             {
+                txtHost.Enabled = false;
+                txtPort.Enabled = false;
+                txtToken.Enabled = false;
+
+                btnConn.Text = "断开";
+                btnConn.Enabled = false; 
                 btnSend.Enabled = true;
             });
         }

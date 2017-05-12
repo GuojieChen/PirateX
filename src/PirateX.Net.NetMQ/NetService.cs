@@ -179,6 +179,7 @@ namespace PirateX.Net.NetMQ
             msg.Append((protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString());
             msg.Append(new byte[] { protocolPackage.CryptoByte });
             msg.Append(protocolPackage.LastNo);
+            
             PushQueue.Enqueue(msg);
         }
 

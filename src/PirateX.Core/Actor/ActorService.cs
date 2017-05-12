@@ -191,6 +191,11 @@ namespace PirateX.Core.Actor
 
         //处理接收
 
+        public virtual void OnSessionClosed(PirateSession session)
+        {
+            
+        }
+
         public void OnReceive(ActorContext context)
         {
             if (Logger.IsDebugEnabled)
@@ -203,6 +208,8 @@ namespace PirateX.Core.Actor
             {
                 var session = OnlineManager.GetOnlineRole(context.SessionId);
                 OnlineManager.Logout(session.Id,context.SessionId);
+
+                OnSessionClosed(session);
                 return;
             }
 
@@ -250,7 +257,7 @@ namespace PirateX.Core.Actor
 
                         if (Equals(actionname, "NewSeed"))
                         {
-                            session = CreateOnlineRole(context, token);
+                            session = ToSession(context, token);
                             session.ClientKeys = context.ClientKeys;
                             session.ServerKeys = context.ServerKeys;
                         }
@@ -264,7 +271,7 @@ namespace PirateX.Core.Actor
 
                             if (session == null)
                             {
-                                session = CreateOnlineRole(context, token);
+                                session = ToSession(context, token);
                                 session.ClientKeys = context.ClientKeys;
                                 session.ServerKeys = context.ServerKeys;
 
@@ -315,9 +322,9 @@ namespace PirateX.Core.Actor
 
         }
 
-        protected virtual PirateSession CreateOnlineRole(ActorContext context, IToken token)
+        public virtual PirateSession ToSession(ActorContext context, IToken token)
         {
-            var onlineRole = new PirateSession
+            var session = new PirateSession
             {
                 Id = token.Rid,
                 Did = token.Did,
@@ -331,7 +338,7 @@ namespace PirateX.Core.Actor
                 ResponseConvert = context.ResponseCovnert
             };
 
-            return onlineRole;
+            return session;
         }
 
         /// <summary>

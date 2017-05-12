@@ -132,6 +132,9 @@ namespace PirateX.Client
 
         private IDictionary<string, IResponseConvert> _responseConverts = new Dictionary<string, IResponseConvert>();
 
+
+        public NameValueCollection ExHeaders = new NameValueCollection();
+
         /// <summary>
         /// 构造一个PSocket 有两种方式
         /// 
@@ -177,6 +180,7 @@ namespace PirateX.Client
 
             client.ReceiveBufferSize = 40960;
             client.Connected += new EventHandler(client_Connected);
+            
             client.Closed += new EventHandler(client_Closed);
             client.Error += (sender, args) => { };
             client.DataReceived += new EventHandler<DataEventArgs>(client_DataReceived);
@@ -495,20 +499,24 @@ namespace PirateX.Client
         {
             var headerNc = new NameValueCollection
             {
-                {"c", name},
-                {"o", $"{O++}"},
-                {"t", $"{Utils.GetTimestamp()}"},
-                {"lang", $"{Lang}"},
-                {"device", $"{HttpUtility.UrlEncode(Device)}"},
-                {"format", "protobuf"},
-                { "token",HttpUtility.UrlEncode(_token)}
             };
+
+            foreach (string key in ExHeaders.Keys)
+                headerNc.Add(key,ExHeaders[key]);
+
+            headerNc.Add("c",name);
+            headerNc.Add("o", $"{O++}");
+            headerNc.Add("t", $"{Utils.GetTimestamp()}");
+            headerNc.Add("lang", $"{Lang}");
+            headerNc.Add("format", "protobuf");
+            headerNc.Add("token", HttpUtility.UrlEncode(_token));
 
             if (exheader != null)
             {
                 foreach (var item in exheader.AllKeys)
                     headerNc[item] = exheader[item];
             }
+            
 
             var reqeustInfo = new PirateXRequestInfo(headerNc, HttpUtility.ParseQueryString(querystring));
 
