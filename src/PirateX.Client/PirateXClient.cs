@@ -36,10 +36,7 @@ namespace PirateX.Client
 
         public DateTime End { get; set; }
 
-        public long Ts
-        {
-            get { return (int)End.Subtract(Start).TotalMilliseconds; }
-        }
+        public long Ts => (int)End.Subtract(Start).TotalMilliseconds;
 
         public DateTime LogTime { get; set; }
 
@@ -217,8 +214,6 @@ namespace PirateX.Client
 
                 log.Resp = header;
 
-                if (OnReceiveMessage != null)
-                    OnReceiveMessage(this, new MsgEventArgs(responseInfo.Headers["c"], responsePackage));
 
                 if (!Equals(header["code"], "200"))
                 {
@@ -254,6 +249,10 @@ namespace PirateX.Client
                             client_Error(this, new ErrorEventArgs(new Exception("Message handling exception", exc)));
                         }
                     }
+
+
+                    if (OnNotified != null)
+                        OnNotified(this, new MsgEventArgs(responseInfo.Headers["c"], responseInfo));
                 }
                 else if (Equals(header["i"], "1"))
                 {
@@ -288,6 +287,9 @@ namespace PirateX.Client
 
                     if (OnResponseProcessed != null)
                         OnResponseProcessed(this, log);
+
+                    if (OnReceiveMessage != null)
+                        OnReceiveMessage(this, new MsgEventArgs(responseInfo.Headers["c"], responseInfo));
                 }
             }
             catch (Exception exc)
@@ -367,6 +369,9 @@ namespace PirateX.Client
 
         #endregion
 
+        public event EventHandler<MsgEventArgs> OnNotified;
+
+
         public event EventHandler<MsgEventArgs> OnReceiveMessage;
 
         public event EventHandler<ErrorEventArgs> OnError;
@@ -377,7 +382,7 @@ namespace PirateX.Client
 
         public event EventHandler<PErrorEventArgs> OnServerError;
 
-        public event EventHandler<MsgEventArgs> OnSend;
+        public event EventHandler<OutMsgEventArgs> OnSend;
 
 
         public delegate void OnResponseProcessedHandler(object sender, ProcessLog log);
@@ -523,9 +528,9 @@ namespace PirateX.Client
             var package = reqeustInfo.ToRequestPackage();
             var senddatas = PackageProcessor.PackPacketToBytes(package);
             Client.Send(senddatas, 0, senddatas.Length);
-
+            SendTime = DateTime.Now;
             if (OnSend != null)
-                OnSend(this, new MsgEventArgs(name, package));
+                OnSend(this, new OutMsgEventArgs(name, reqeustInfo));
         }
 
         public void Send<T>(T data)

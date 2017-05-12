@@ -459,7 +459,15 @@ namespace PirateX.Core.Actor
                 {"o", Convert.ToString(context.Request.O)},
                 {"code", Convert.ToString((int) StatusCode.Ok)}
             };
-            //返回类型 
+
+#if DEBUG
+            foreach (string key in context.Request.Headers.AllKeys)
+            {
+                if (key.StartsWith("_"))
+                    headers.Add(key, context.Request.Headers[key]);
+            }
+#endif
+
 
             SendMessage(context, headers, t);
         }

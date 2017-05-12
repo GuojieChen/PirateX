@@ -74,11 +74,14 @@ namespace EPocalipse.Json.Viewer
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.CopyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPageOut = new System.Windows.Forms.TabPage();
             this.listViewOut = new System.Windows.Forms.ListView();
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.mnuTree.SuspendLayout();
             this.mnuVisualizerPnl.SuspendLayout();
             this.pageTextView.SuspendLayout();
@@ -91,6 +94,7 @@ namespace EPocalipse.Json.Viewer
             this.pnlFind.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPageIn.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.tabPageOut.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -487,6 +491,7 @@ namespace EPocalipse.Json.Viewer
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3});
+            this.listViewIn.ContextMenuStrip = this.contextMenuStrip1;
             this.listViewIn.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listViewIn.FullRowSelect = true;
             this.listViewIn.GridLines = true;
@@ -497,6 +502,7 @@ namespace EPocalipse.Json.Viewer
             this.listViewIn.TabIndex = 0;
             this.listViewIn.UseCompatibleStateImageBehavior = false;
             this.listViewIn.View = System.Windows.Forms.View.Details;
+            this.listViewIn.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listViewIn_MouseDoubleClick);
             // 
             // columnHeader1
             // 
@@ -512,6 +518,20 @@ namespace EPocalipse.Json.Viewer
             // 
             this.columnHeader3.Text = "Body";
             this.columnHeader3.Width = 387;
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CopyToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(101, 26);
+            // 
+            // CopyToolStripMenuItem
+            // 
+            this.CopyToolStripMenuItem.Name = "CopyToolStripMenuItem";
+            this.CopyToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.CopyToolStripMenuItem.Text = "¿½±´";
+            this.CopyToolStripMenuItem.Click += new System.EventHandler(this.CopyToolStripMenuItem_Click);
             // 
             // tabPageOut
             // 
@@ -539,6 +559,7 @@ namespace EPocalipse.Json.Viewer
             this.listViewOut.TabIndex = 0;
             this.listViewOut.UseCompatibleStateImageBehavior = false;
             this.listViewOut.View = System.Windows.Forms.View.Details;
+            this.listViewOut.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listViewIn_MouseDoubleClick);
             // 
             // columnHeader4
             // 
@@ -554,6 +575,12 @@ namespace EPocalipse.Json.Viewer
             // 
             this.columnHeader6.Text = "QueryString";
             this.columnHeader6.Width = 460;
+            // 
+            // notifyIcon1
+            // 
+            this.notifyIcon1.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.notifyIcon1.Text = "notifyIcon1";
+            this.notifyIcon1.Visible = true;
             // 
             // JsonViewer
             // 
@@ -578,6 +605,7 @@ namespace EPocalipse.Json.Viewer
             this.pnlFind.PerformLayout();
             this.tabControl.ResumeLayout(false);
             this.tabPageIn.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.tabPageOut.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -632,5 +660,8 @@ namespace EPocalipse.Json.Viewer
         private ColumnHeader columnHeader6;
         private TabPage tabPageOut;
         public ListView listViewOut;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem CopyToolStripMenuItem;
+        private NotifyIcon notifyIcon1;
     }
 }

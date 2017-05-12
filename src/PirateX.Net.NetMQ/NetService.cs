@@ -109,6 +109,13 @@ namespace PirateX.Net.NetMQ
                         ContentBytes = content
                     };
 
+#if DEBUG
+                    var r = new PirateXResponseInfo(response);
+                    r.Headers.Add("_tout_", $"{DateTime.UtcNow.Ticks}");
+                    response.HeaderBytes = r.GetHeaderBytes();
+
+#endif
+
                     var protocolPackage = NetSend.GetProtocolPackage(sessionid);
 
                     //将消息下发到客户端
@@ -147,9 +154,15 @@ namespace PirateX.Net.NetMQ
 
             var request = protocolPackage.UnPackToPacket(body);
 
+#if DEBUG
+            var r = new PirateXRequestInfo(request);
+            r.Headers.Add("_tin_", $"{DateTime.UtcNow.Ticks}");
+            request = r.ToRequestPackage();
+#endif
+
             var msg = new NetMQMessage();
             msg.Append(new byte[] { 1 });//版本号
-            msg.Append(new byte[] { 1 });//动作
+            msg.Append(new byte[] { (byte)Action.Req });//动作
             msg.Append(protocolPackage.SessionID);//sessionid
             msg.Append(protocolPackage.PackKeys);//客户端密钥
             msg.Append(protocolPackage.UnPackKeys);//服务端密钥
@@ -163,6 +176,15 @@ namespace PirateX.Net.NetMQ
         }
 
 
+        public virtual void Ping()
+        {
+            var msg = new NetMQMessage();
+            msg.Append(new byte[] { 1 });//版本号
+            msg.Append(new byte[] { (byte)Action.Ping });//动作
+            //加入队列
+            PushQueue.Enqueue(msg);
+        }
+
         public virtual void OnSessionClosed(ProtocolPackage protocolPackage)
         {
             if (protocolPackage == null)
@@ -170,7 +192,7 @@ namespace PirateX.Net.NetMQ
 
             var msg = new NetMQMessage();
             msg.Append(new byte[] { 1 });//版本号
-            msg.Append(new byte[] { 2 });//动作
+            msg.Append(new byte[] { (byte)Action.Closed });//动作
             msg.Append(protocolPackage.SessionID);//sessionid
             msg.Append(protocolPackage.PackKeys);//客户端密钥
             msg.Append(protocolPackage.UnPackKeys);//服务端密钥
@@ -200,5 +222,13 @@ namespace PirateX.Net.NetMQ
             Poller?.Dispose();
             Poller = null;
         }
+    }
+
+
+    enum Action:byte
+    {
+        Ping = 0 ,
+        Req  = 1 , 
+        Closed = 2 ,
     }
 }

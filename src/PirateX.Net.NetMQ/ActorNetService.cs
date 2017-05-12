@@ -54,10 +54,17 @@ namespace PirateX.Net.NetMQ
         protected void ProcessTaskPullSocket(object sender, NetMQSocketEventArgs e)
         {
             var msg = e.Socket.ReceiveMultipartMessage();
+            var version = msg[0].Buffer[0];
+            var action = msg[1].Buffer[0];
+
+            if (action == 0)
+                return;
+
+
             var context = new ActorContext()
             {
-                Version = msg[0].Buffer[0],//版本号
-                Action = msg[1].Buffer[0],
+                Version = version,//版本号
+                Action = action,
                 SessionId = msg[2].ConvertToString(),//sessionid
                 ClientKeys = msg[3].Buffer,//客户端密钥
                 ServerKeys = msg[4].Buffer,//服务端密钥

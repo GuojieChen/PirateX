@@ -35,14 +35,12 @@ namespace PirateX.Net.SuperSocket
         {
             //原始数据
 
-            var start = DateTime.UtcNow;
             var datas = bodyBuffer.CloneRange(offset, length);
             //return new BinaryRequestInfo("PushCmd", datas);
             _session.ProtocolPackage.SessionID = _session.SessionID;
             _session.ProtocolPackage.RemoteEndPoint = _session.RemoteEndPoint;
             _session.AppServer.NetService.ProcessRequest(_session.ProtocolPackage, datas);
 
-            Console.WriteLine(DateTime.UtcNow.Subtract(start).TotalMilliseconds);
             return null;
         }
     }

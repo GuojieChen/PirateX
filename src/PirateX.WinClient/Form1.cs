@@ -47,6 +47,13 @@ namespace PirateX.WinClient
 
         private void btnConn_Click(object sender, EventArgs e)
         {
+            if (_client != null)
+            {
+                _client.Close();
+                _client = null;
+            }
+
+
             //var headerQuery = new Name
             var tokenQuery = HttpUtility.ParseQueryString(txtToken.Text.Trim());
             var token = new Token()
@@ -75,16 +82,40 @@ namespace PirateX.WinClient
                 this.Invoke((EventHandler)delegate
                 {
 
-                    this.jsonViewer1.ResponseInfo = new PirateXResponseInfo(args.Package);
+                    var tin = Convert.ToInt64(args.Package.Headers["_tin_"]);
+                    var tout = Convert.ToInt64(args.Package.Headers["_tout_"]);
+
+
+                    this.jsonViewer1.ResponseInfo = args.Package;
                     btnSend.Enabled = true;
                 });
 
             };
+
+            _client.OnNotified += (o, args) =>
+            {
+                this.Invoke((EventHandler)delegate
+                {
+                    this.jsonViewer1.ResponseInfo = args.Package;
+                    btnSend.Enabled = true;
+                });
+
+            };
+
+
+            _client.OnResponseProcessed += (o, log) =>
+            {
+                this.Invoke((EventHandler)delegate
+                {
+                    this.lable_duration.Text = $"{log.Ts} ms"; 
+                });
+            };
+
             _client.OnSend += (o, args) =>
             {
                 this.Invoke((EventHandler)delegate
                 {
-                    this.jsonViewer1.NewOut(args.Package);
+                    this.jsonViewer1.NewOut(args.Package.ToRequestPackage());
                 });
             };
             _client.Open();
@@ -118,18 +149,15 @@ namespace PirateX.WinClient
                 txtPort.Enabled = false;
                 txtToken.Enabled = false;
 
-                btnConn.Text = "断开";
-                btnConn.Enabled = false; 
                 btnSend.Enabled = true;
             });
         }
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-
             var exHeaders = HttpUtility.ParseQueryString(txtHeader.Text.Trim());
             exHeaders.Add("format", comboBox1.Text.Trim());
-            _client.Send("RoleInfo",txtQuery.Text.Trim(), exHeaders);
+            _client.Send("",txtQuery.Text.Trim(), exHeaders);
         }
     }
 }

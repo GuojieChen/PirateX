@@ -673,6 +673,31 @@ namespace EPocalipse.Json.Viewer
 
             
         }
+        private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var v = sender as ListView;
+            
+
+        }
+
+        private void listViewIn_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ListView listview = (ListView)sender;
+            ListViewItem lstrow = listview.GetItemAt(e.X, e.Y);
+            System.Windows.Forms.ListViewItem.ListViewSubItem lstcol = lstrow.GetSubItemAt(e.X, e.Y);
+            string strText = lstcol.Text;
+            try
+            {
+                Clipboard.SetText(strText);
+                notifyIcon1.Visible = true;
+                string info = string.Format("内容【{0}】已经复制到剪贴板", strText);
+                notifyIcon1.ShowBalloonTip(1500, "提示", info, ToolTipIcon.Info);
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(ex.Message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 
     public struct ErrorDetails

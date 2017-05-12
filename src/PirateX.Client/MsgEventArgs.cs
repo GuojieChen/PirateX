@@ -8,11 +8,25 @@ namespace PirateX.Client
         public string Msg { get; private set; }
 
 
-        public IPirateXPackage Package { get; private set; }
+        public IPirateXResponseInfo Package { get; private set; }
 
-        public MsgEventArgs(string c,IPirateXPackage package)
+        public MsgEventArgs(string c,IPirateXResponseInfo package)
         {
            Msg = c;
+            Package = package;
+        }
+    }
+
+    public class OutMsgEventArgs : EventArgs
+    {
+        public string Msg { get; private set; }
+
+
+        public IPirateXRequestInfoBase Package { get; private set; }
+
+        public OutMsgEventArgs(string c, IPirateXRequestInfoBase package)
+        {
+            Msg = c;
             Package = package;
         }
     }
