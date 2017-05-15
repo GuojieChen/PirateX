@@ -11,7 +11,7 @@ namespace PirateX.Core.Session
         void Login(PirateSession pirateSession);
         /// <summary> 角色登出
         /// </summary>
-        void Logout(long rid, string sessionid);
+        void Logout(long rid);
         /// <summary> 是否在线
         /// </summary>
         /// <param name="rid">角色ID</param>

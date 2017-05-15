@@ -200,6 +200,19 @@ namespace PirateX.Core.Actor
 
         public void OnReceive(ActorContext context)
         {
+            
+            if (context.Action == 2)//断线
+            {
+                var session = OnlineManager.GetOnlineRole(context.Token.Rid);
+                if (session != null)
+                {
+                    //TODO logout
+                    OnlineManager.Logout(session.Id);
+                    OnSessionClosed(session);
+                }
+                return;
+            }
+
             var token = GetToken(context.Request.Token);
             context.Token = token;
 
@@ -213,17 +226,6 @@ namespace PirateX.Core.Actor
             if (!VerifyToken(ServerContainer.GetDistrictConfig(token.Did), token))
                 throw new PirateXException("AuthError", "授权失败") { Code = StatusCode.Unauthorized };
 
-            if (context.Action == 2)//断线
-            {
-                var session = OnlineManager.GetOnlineRole(context.Token.Rid);
-                if (session != null)
-                {
-                    //TODO logout
-                    //OnlineManager.Logout(session.Id, context.Token.Rid);
-                    OnSessionClosed(session);
-                }
-                return;
-            }
 
 
             var format = context.Request.Headers["format"];
@@ -236,18 +238,18 @@ namespace PirateX.Core.Actor
             if (!string.IsNullOrEmpty(lang))
                 Thread.CurrentThread.CurrentUICulture = Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
 
-            ////request timeout
-            //if ((DateTime.UtcNow.GetTimestamp() - context.Request.Timestamp) > 1000 * 30)//30秒
-            //{
-            //    Logger.Warn($"C2S Timeout t #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
-            //    return;
-            //}
+            //request timeout
+            if ((DateTime.UtcNow.GetTimestamp() - context.Request.Timestamp) > 1000 * 30)//30秒
+            {
+                Logger.Warn($"C2S Timeout t #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
+                return;
+            }
 
-            //if (context.Request.O <= context.LastNo)
-            //{
-            //    Logger.Warn($"C2S Timeout o #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
-            //    return;
-            //}
+            if (context.Request.O <= context.LastNo)
+            {
+                Logger.Warn($"C2S Timeout o #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
+                return;
+            }
 
             //执行动作
             var actionname = context.Request.C;

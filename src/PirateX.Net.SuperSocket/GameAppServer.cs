@@ -44,15 +44,14 @@ namespace PirateX.Net.SuperSocket
 
         protected override void OnNewSessionConnected(ProxySession session)
         {
-            Console.WriteLine($"New Session Connected!{session.Id}");
             base.OnNewSessionConnected(session);
         }
 
         protected override void OnSessionClosed(ProxySession session, CloseReason reason)
         {
-            Console.WriteLine($"New Session Closed!{session.Id}");
+            if(reason == CloseReason.ClientClosing || reason == CloseReason.ServerShutdown)
+                NetService.OnSessionClosed(GetProtocolPackage(session.Id));
 
-            NetService.OnSessionClosed(GetProtocolPackage(session.Id));
             base.OnSessionClosed(session, reason);
         }
 

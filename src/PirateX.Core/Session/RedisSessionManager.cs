@@ -39,7 +39,7 @@ namespace PirateX.Core.Session
             db.HashSet(GetDidUrn(pirateSession.Did), Convert.ToString(pirateSession.Id), urn);//TODO 需要定时清理
         }
 
-        public async void Logout(long rid, string sessionid)
+        public async void Logout(long rid)
         {
             if (rid <= 0)
                 return;
@@ -52,12 +52,9 @@ namespace PirateX.Core.Session
             if (!onlineRoleStr.HasValue)
                 return;
             var onlineRole = Serializer.Deserialize<PirateSession>(onlineRoleStr);
-            if (Equals(onlineRole.SessionId, sessionid))
-            {
-                //trans.AddCondition(Condition.StringEqual())
-                db.KeyDelete(urn);
-                db.HashDelete(GetDidUrn(onlineRole.Did), Convert.ToString(rid));
-            }
+
+            db.KeyDelete(urn);
+            db.HashDelete(GetDidUrn(onlineRole.Did), Convert.ToString(rid));
         }
 
         public bool IsOnline(long rid)

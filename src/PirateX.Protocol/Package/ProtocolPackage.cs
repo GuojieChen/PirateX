@@ -144,6 +144,11 @@ namespace PirateX.Protocol.Package
             
         }
 
+        public virtual void Close()
+        {
+            
+        }
+
         //private static int GetbitValue(byte input, int index)
         //{
         //    return (input & ((uint)1 << index)) > 0 ? 1 : 0;

@@ -177,6 +177,17 @@ namespace PirateX.Net.NetMQ
             if (protocolPackage == null)
                 return;
 
+            if (protocolPackage.CryptoByte > 0)
+            {
+
+                var last = NetSend.GetProtocolPackage(protocolPackage.Rid);
+                if (!Equals(last.Id, protocolPackage.Id))
+                {
+                    protocolPackage.Close();
+                    return;
+                }
+            }
+
             var request = protocolPackage.UnPackToPacket(body);
 
 #if PERFORM || DEBUG

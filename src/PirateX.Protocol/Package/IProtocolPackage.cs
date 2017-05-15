@@ -40,5 +40,7 @@ namespace PirateX.Protocol.Package
         IPirateXPackage UnPackToPacket(byte[] datas);
 
         void Send(byte[] body);
+
+        void Close();
     }
 }
