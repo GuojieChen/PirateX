@@ -91,18 +91,12 @@ namespace PirateX.Core.Actor
 
         private string GetResponseUrn()
         {
-            if (base.Session == null)
-                return string.Empty;
-
-            return $"rep:{base.Session.Id}:{base.Context.Request.C}_{base.Context.Request.O}";
+            return $"rep:{base.Context.Token.Rid}:{base.Context.Request.C}_{base.Context.Request.O}";
         }
 
         private string GetResponseListUrn()
         {
-            if (base.Session == null)
-                return string.Empty;
-
-            return $"replist:{base.Session.Id}";
+            return $"replist:{base.Context.Token.Rid}";
         }
 
         public abstract TResponse Play();

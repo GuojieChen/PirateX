@@ -12,6 +12,8 @@ namespace PirateX.Protocol.Package
     {
         public string SessionID { get; set; } = Guid.NewGuid().ToString("N");
 
+        public int Rid { get; set; }
+
         public EndPoint RemoteEndPoint { get; set; }
 
         public ProtocolPackage(IZip zip)

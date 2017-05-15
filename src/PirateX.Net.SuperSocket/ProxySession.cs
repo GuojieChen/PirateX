@@ -19,5 +19,6 @@ namespace PirateX.Net.SuperSocket
                 SessionID = this.SessionID
             };
         }
+
     }
 }

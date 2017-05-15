@@ -65,17 +65,14 @@ namespace PirateX.Net.NetMQ
             {
                 Version = version,//版本号
                 Action = action,
-                SessionId = msg[2].ConvertToString(),//sessionid
-                ClientKeys = msg[3].Buffer,//客户端密钥
-                ServerKeys = msg[4].Buffer,//服务端密钥
                 Request = new PirateXRequestInfo(
-                    msg[5].Buffer, //信息头
-                    msg[6].Buffer)//信息体
+                    msg[2].Buffer, //信息头
+                    msg[3].Buffer)//信息体
                 ,
                 ResponseCovnert = "protobuf",
-                RemoteIp = msg[7].ConvertToString(),
-                CryptoByte = msg[8].Buffer[0],
-                LastNo = msg[9].ConvertToInt32(),
+                RemoteIp = msg[4].ConvertToString(),
+                LastNo = msg[5].ConvertToInt32(),
+                SessionId = msg[6].ConvertToString()
             };
 
 #if PERFORM
@@ -113,21 +110,20 @@ namespace PirateX.Net.NetMQ
             _actorService.Stop();
         }
 
-        public void PushMessage(PirateSession role, NameValueCollection headers, byte[] body)
+        public void PushMessage(int rid, NameValueCollection headers, byte[] body)
         {
             var repMsg = new NetMQMessage();
             repMsg.Append(new byte[] { 1 });//版本号
-            repMsg.Append(new byte[] { 1 });//动作
-            repMsg.Append(role.SessionId);//sessionid
-            repMsg.Append(role.ClientKeys);//客户端密钥
-            repMsg.Append(role.ServerKeys);//服务端密钥
-            repMsg.Append(new byte[] { role.CryptoByte });//加密项
+            repMsg.Append(new byte[] { (byte)Action.Req });//动作
+            repMsg.Append("");
             repMsg.Append(-1);
             repMsg.Append(GetHeaderBytes(headers));//信息头
             if (body != null)
                 repMsg.Append(body);//信息体
             else
                 repMsg.AppendEmptyFrame();
+
+            repMsg.Append(rid);
 
             EnqueueMessage(repMsg);
         }
@@ -138,6 +134,26 @@ namespace PirateX.Net.NetMQ
             return Encoding.UTF8.GetBytes(string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a])));
         }
 
+        public void Seed(ActorContext context, NameValueCollection header, byte cryptobyte , byte[] clientkeys,byte[] serverkeys , byte[] body)
+        {
+            var repMsg = new NetMQMessage();
+            repMsg.Append(new byte[] { context.Version });//版本号
+            repMsg.Append(new byte[] { (byte)Action.Seed });//动作
+            repMsg.Append(context.SessionId);//sessionid
+            repMsg.Append(context.Request.O);
+            repMsg.Append(GetHeaderBytes(header));//信息头
+            repMsg.Append(body);
+            repMsg.Append(context.Token.Rid);
+
+            repMsg.Append(clientkeys);//客户端密钥
+            repMsg.Append(serverkeys);//服务端密钥
+            repMsg.Append(new byte[] { cryptobyte });//加密项
+            repMsg.Append(context.Token.Rid);
+
+            EnqueueMessage(repMsg);
+        }
+
+
         public void SendMessage(ActorContext context, NameValueCollection header, byte[] body)
         {
 
@@ -147,17 +163,15 @@ namespace PirateX.Net.NetMQ
 
             var repMsg = new NetMQMessage();
             repMsg.Append(new byte[] { context.Version });//版本号
-            repMsg.Append(new byte[] { 1 });//动作
-            repMsg.Append(context.SessionId);//sessionid
-            repMsg.Append(context.ClientKeys);//客户端密钥
-            repMsg.Append(context.ServerKeys);//服务端密钥
-            repMsg.Append(new byte[] { context.CryptoByte });//加密项
+            repMsg.Append(new byte[] { (byte)Action.Req });//动作
+            repMsg.Append("");//sessionid
             repMsg.Append(context.Request.O);
             repMsg.Append(GetHeaderBytes(header));//信息头
             if (body != null)
                 repMsg.Append(body);//信息体
             else
                 repMsg.AppendEmptyFrame();
+            repMsg.Append(context.Token.Rid);//sessionid
 
             EnqueueMessage(repMsg);
         }

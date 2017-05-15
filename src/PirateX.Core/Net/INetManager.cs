@@ -6,6 +6,11 @@ namespace PirateX.Core.Net
     {
         ProtocolPackage GetProtocolPackage(string sessionid);
 
+        ProtocolPackage GetProtocolPackage(int rid);
+
+
+        void Attach(ProtocolPackage package);
+
         void Send(string sessionid,byte[] datas);
 
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,8 @@ namespace PirateX.Net.SuperSocket
 {
     public sealed class GameAppServer:AppServer<ProxySession,BinaryRequestInfo>,INetManager
     {
+        private ConcurrentDictionary<int,string> _dic = new ConcurrentDictionary<int, string>();
+
         public INetService NetService { get; set; }
 
         public GameAppServer(INetService netService):base(new ProxyReceiveFilterFactory())
@@ -57,6 +60,23 @@ namespace PirateX.Net.SuperSocket
         {
             var session = GetSessionByID(sessionid);
             return session?.ProtocolPackage;
+        }
+
+        public ProtocolPackage GetProtocolPackage(int rid)
+        {
+            string sessionid = string.Empty;
+            _dic.TryGetValue(rid, out sessionid);
+
+            if (string.IsNullOrEmpty(sessionid))
+                return null;
+
+            return GetSessionByID(sessionid).ProtocolPackage;
+        }
+
+
+        public void Attach(ProtocolPackage package)
+        {
+            _dic.AddOrUpdate(package.Rid, package.SessionID, ((i, s) => package.SessionID));
         }
 
         public void Send(string sessionid, byte[] datas)
