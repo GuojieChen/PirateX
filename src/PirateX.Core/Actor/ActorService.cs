@@ -289,7 +289,6 @@ namespace PirateX.Core.Actor
 
                         //TODO 对 r o t 进行验证
 
-                        ServerContainer.ServerIoc.Resolve<ISessionManager>().Login(session);
 
                         action.ServerReslover = ServerContainer.ServerIoc;
                         action.Context = context;
@@ -297,6 +296,8 @@ namespace PirateX.Core.Actor
                         action.MessageSender = this;
 
                         action.Execute();
+
+                        ServerContainer.ServerIoc.Resolve<ISessionManager>().Login(session);
                     }
                     catch (Exception exception)
                     {
@@ -507,7 +508,7 @@ namespace PirateX.Core.Actor
 
             if (Logger.IsDebugEnabled && body != null)
             {
-                Logger.Debug($"S2C #{context.SessionId}# #{context.RemoteIp}#{Encoding.UTF8.GetString(body)}");
+                Logger.Debug($"S2C #{context.SessionId}# #{context.RemoteIp}# {string.Join("&", header.AllKeys.Select(a => a + "=" + header[a]))} {Encoding.UTF8.GetString(body)}");
             }
 
             NetService.SendMessage(context, header, body);

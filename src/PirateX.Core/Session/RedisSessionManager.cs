@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using StackExchange.Redis;
 
@@ -21,7 +22,7 @@ namespace PirateX.Core.Session
             Expiry = new TimeSpan(0,0,30,0);// 默认一分钟
         }
 
-        public void Login(PirateSession pirateSession)
+        public async void Login(PirateSession pirateSession)
         {
             if (pirateSession == null)
                 return;
@@ -29,39 +30,43 @@ namespace PirateX.Core.Session
             if (pirateSession.Id <= 0)
                 return;
 
-            var urn = GetUrnOnlineRole(pirateSession.Id);
+            await Task.Factory.StartNew((idb) =>
+            {
+                var urn = GetUrnOnlineRole(pirateSession.Id);
 
-            var db = _connectionMultiplexer.GetDatabase();
+                var db = (IDatabase) idb;
 
-            var trans = db.CreateTransaction();
+                db.StringSet(urn, Serializer.Serilazer(pirateSession), Expiry);
+                db.StringSet(GetUrnOnlineRole(pirateSession.SessionId), urn, Expiry);
+                db.HashSet(GetDidUrn(pirateSession.Did), Convert.ToString(pirateSession.Id), urn);//TODO 需要定时清理
 
-            trans.StringSetAsync(urn, Serializer.Serilazer(pirateSession), Expiry);
-            trans.StringSetAsync(GetUrnOnlineRole(pirateSession.SessionId), urn, Expiry);
-
-            trans.HashSetAsync(GetDidUrn(pirateSession.Did), Convert.ToString(pirateSession.Id), urn);//TODO 需要定时清理
-            trans.Execute();
+            }, _connectionMultiplexer.GetDatabase());
         }
 
-        public void Logout(long rid, string sessionid)
+        public async void Logout(long rid, string sessionid)
         {
             if (rid <= 0)
                 return;
 
             var urn = $"core:onlinerole:{rid}";
 
-            var db = _connectionMultiplexer.GetDatabase();
-            var onlineRoleStr = db.StringGet(urn);
-            if (!onlineRoleStr.HasValue)
-                return;
-            var onlineRole = Serializer.Deserialize<PirateSession>(onlineRoleStr);
-            if (Equals(onlineRole.SessionId, sessionid))
+            await Task.Factory.StartNew((idb) =>
             {
-                var trans = db.CreateTransaction();
-                //trans.AddCondition(Condition.StringEqual())
-                trans.KeyDeleteAsync(urn);
-                trans.HashDeleteAsync(GetDidUrn(onlineRole.Did), Convert.ToString(rid));
-                trans.Execute();
-            }
+                var db = (IDatabase) idb;
+
+                var onlineRoleStr = db.StringGet(urn);
+                if (!onlineRoleStr.HasValue)
+                    return;
+                var onlineRole = Serializer.Deserialize<PirateSession>(onlineRoleStr);
+                if (Equals(onlineRole.SessionId, sessionid))
+                {
+                    //trans.AddCondition(Condition.StringEqual())
+                    db.KeyDeleteAsync(urn);
+                    db.HashDeleteAsync(GetDidUrn(onlineRole.Did), Convert.ToString(rid));
+                }
+
+            }, _connectionMultiplexer.GetDatabase());
+
         }
 
         public bool IsOnline(long rid)

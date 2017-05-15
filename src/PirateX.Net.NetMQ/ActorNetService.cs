@@ -78,6 +78,11 @@ namespace PirateX.Net.NetMQ
                 LastNo = msg[9].ConvertToInt32(),
             };
 
+#if DEBUG
+            context.Request.Headers.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
+#endif
+
+
             Task.Factory.StartNew(() => _actorService.OnReceive(context)).ContinueWith(t =>
             {
                 //发生内部错误
@@ -135,6 +140,11 @@ namespace PirateX.Net.NetMQ
 
         public void SendMessage(ActorContext context, NameValueCollection header, byte[] body)
         {
+
+#if DEBUG
+            header.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
+#endif
+
             var repMsg = new NetMQMessage();
             repMsg.Append(new byte[] { context.Version });//版本号
             repMsg.Append(new byte[] { 1 });//动作

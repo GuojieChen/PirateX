@@ -114,7 +114,7 @@ namespace PirateX.Client
         /// <summary> 数据包处理器
         /// </summary>
         public IProtocolPackage PackageProcessor { get; private set; }
-        
+
         public string CurrentMethod { get; private set; }
         public DateTime SendTime { get; private set; }
 
@@ -156,7 +156,7 @@ namespace PirateX.Client
 
             m_ExecutorDict.Add("Ping", new Ping());
             m_ExecutorDict.Add("NewSeed", new NewSeed());
-            
+
             foreach (var responseConvert in typeof(IResponseConvert).Assembly.GetTypes().Where(item => typeof(IResponseConvert).IsAssignableFrom(item)))
             {
                 if (responseConvert.IsInterface)
@@ -177,7 +177,7 @@ namespace PirateX.Client
 
             client.ReceiveBufferSize = 40960;
             client.Connected += new EventHandler(client_Connected);
-            
+
             client.Closed += new EventHandler(client_Closed);
             client.Error += (sender, args) => { };
             client.DataReceived += new EventHandler<DataEventArgs>(client_DataReceived);
@@ -215,19 +215,7 @@ namespace PirateX.Client
                 log.Resp = header;
 
 
-                if (!Equals(header["code"], "200"))
-                {
-                    if (OnServerError != null)
-                        OnServerError(this, new PErrorEventArgs(
-                            Convert.ToInt32(header["errorCode"]),
-                            HttpUtility.UrlDecode(Convert.ToString(header["errorMessage"]))));
-
-                    log.Ok = false;
-
-                    if (OnResponseProcessed != null)
-                        OnResponseProcessed(this, log);
-                }
-                else if (Equals(header["i"], "2"))
+                if (Equals(header["i"], "2"))
                 {
                     var method = header["c"];
                     var executor = GetBroadcastExecutor(method);
@@ -239,7 +227,7 @@ namespace PirateX.Client
                         var o = (IPirateXClientExecutor)Activator.CreateInstance(type);
 
                         o.Header = header;
-                        o.ResponseConvert = _responseConverts[responseInfo.Headers["format"]??DefaultFormat];
+                        o.ResponseConvert = _responseConverts[responseInfo.Headers["format"] ?? DefaultFormat];
                         try
                         {
                             o.Excute(this, responsePackage.ContentBytes);
@@ -249,47 +237,61 @@ namespace PirateX.Client
                             client_Error(this, new ErrorEventArgs(new Exception("Message handling exception", exc)));
                         }
                     }
-
 
                     if (OnNotified != null)
                         OnNotified(this, new MsgEventArgs(responseInfo.Headers["c"], responseInfo));
                 }
                 else if (Equals(header["i"], "1"))
                 {
-                    var method = header["c"].ToString();
-
-                    var executor = GetExecutor(method);
-
-                    if (executor != null)
+                    if (!Equals(header["code"], "200"))
                     {
-                        var type = executor.GetType();
-                        var o = (IPirateXClientExecutor)Activator.CreateInstance(type);
+                        if (OnServerError != null)
+                            OnServerError(this, new PErrorEventArgs(
+                                Convert.ToInt32(header["errorCode"]),
+                                HttpUtility.UrlDecode(Convert.ToString(header["errorMessage"]))));
 
-                        o.Header = header;
-                        o.ResponseConvert = _responseConverts[responseInfo.Headers["format"] ?? DefaultFormat];
+                        log.Ok = false;
 
-                        try
+                    }
+                    else
+                    {
+                        var method = header["c"].ToString();
+
+                        var executor = GetExecutor(method);
+
+                        if (executor != null)
                         {
-                            o.Excute(this, responsePackage.ContentBytes);
-                        }
-                        catch (Exception exc)
-                        {
-                            client_Error(this, new ErrorEventArgs(new Exception("Message handling exception", exc)));
+                            var type = executor.GetType();
+                            var o = (IPirateXClientExecutor)Activator.CreateInstance(type);
+
+                            o.Header = header;
+                            o.ResponseConvert = _responseConverts[responseInfo.Headers["format"] ?? DefaultFormat];
+
+                            try
+                            {
+                                o.Excute(this, responsePackage.ContentBytes);
+                            }
+                            catch (Exception exc)
+                            {
+                                client_Error(this, new ErrorEventArgs(new Exception("Message handling exception", exc)));
+                            }
+
+                            if (type == typeof(NewSeed))
+                            {
+                                m_StateCode = PSocketStateConst.Open;
+                                if (OnOpen != null)
+                                    OnOpen(this, new EventArgs());
+                            }
                         }
 
-                        if (type == typeof(NewSeed))
-                        {
-                            m_StateCode = PSocketStateConst.Open;
-                            if (OnOpen != null)
-                                OnOpen(this, new EventArgs());
-                        }
+
+                        if (OnReceiveMessage != null)
+                            OnReceiveMessage(this, new MsgEventArgs(responseInfo.Headers["c"], responseInfo));
                     }
 
                     if (OnResponseProcessed != null)
                         OnResponseProcessed(this, log);
 
-                    if (OnReceiveMessage != null)
-                        OnReceiveMessage(this, new MsgEventArgs(responseInfo.Headers["c"], responseInfo));
                 }
             }
             catch (Exception exc)
@@ -399,7 +401,7 @@ namespace PirateX.Client
             var clientKey = new KeyGenerator(_clientSeed);
             PackageProcessor.PackKeys = clientKey.MakeKey();
 
-            Send("NewSeed", $"seed={_clientSeed}",new NameValueCollection(){{"format",DefaultFormat}});
+            Send("NewSeed", $"seed={_clientSeed}", new NameValueCollection() { { "format", DefaultFormat } });
         }
 
         private void ClearTimer()
@@ -507,9 +509,9 @@ namespace PirateX.Client
             };
 
             foreach (string key in ExHeaders.Keys)
-                headerNc.Add(key,ExHeaders[key]);
+                headerNc.Add(key, ExHeaders[key]);
 
-            headerNc.Add("c",name);
+            headerNc.Add("c", name);
             headerNc.Add("o", $"{O++}");
             headerNc.Add("t", $"{Utils.GetTimestamp()}");
             headerNc.Add("lang", $"{Lang}");
@@ -521,7 +523,7 @@ namespace PirateX.Client
                 foreach (var item in exheader.AllKeys)
                     headerNc[item] = exheader[item];
             }
-            
+
 
             var reqeustInfo = new PirateXRequestInfo(headerNc, HttpUtility.ParseQueryString(querystring));
 

@@ -13,6 +13,8 @@ namespace PirateX.Net.SuperSocket
         public override void ExecuteCommand(ProxySession session, BinaryRequestInfo requestInfo)
         {
             session.ProtocolPackage.SessionID = session.SessionID;
+            session.ProtocolPackage.RemoteEndPoint = session.RemoteEndPoint;
+
             session.AppServer.NetService.ProcessRequest(session.ProtocolPackage, requestInfo.Body);
         }
     }
