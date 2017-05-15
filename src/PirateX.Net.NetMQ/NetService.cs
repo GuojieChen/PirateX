@@ -132,7 +132,6 @@ namespace PirateX.Net.NetMQ
 
                     var bytes = protocolPackage.PackPacketToBytes(response);
                     protocolPackage.Send(bytes);
-                    //TODO 拿到SESSION 需要省去步骤
 
                     if (Equals((Action)action, Action.Seed))
                     {

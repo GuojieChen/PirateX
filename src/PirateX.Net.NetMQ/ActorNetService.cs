@@ -69,7 +69,7 @@ namespace PirateX.Net.NetMQ
                     msg[2].Buffer, //信息头
                     msg[3].Buffer)//信息体
                 ,
-                ResponseCovnert = "protobuf",
+                //ResponseCovnert = "protobuf",
                 RemoteIp = msg[4].ConvertToString(),
                 LastNo = msg[5].ConvertToInt32(),
                 SessionId = msg[6].ConvertToString()

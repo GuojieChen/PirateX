@@ -52,6 +52,8 @@ namespace PirateX.Core.Actor
 
         protected ISessionManager OnlineManager { get; set; }
 
+        protected virtual string DefaultResponseCovnert => "protobuf";
+
 
         public ActorService(IServerContainer serverContainer)
         {
@@ -198,25 +200,24 @@ namespace PirateX.Core.Actor
 
         public void OnReceive(ActorContext context)
         {
-            //if (Logger.IsDebugEnabled)
-            //{
-            //    Logger.Debug($"C2S Headers #{context.Token.Rid}# #{context.RemoteIp}# {context.Request.Headers}");
-            //    Logger.Debug($"C2S Query #{context.Token.Rid}# #{context.RemoteIp}# {context.Request.QueryString}");
-            //}
             var token = GetToken(context.Request.Token);
             context.Token = token;
+
+            if (Logger.IsDebugEnabled)
+            {
+                Logger.Debug($"C2S Headers #{context.Token.Rid}# #{context.RemoteIp}# {context.Request.Headers}");
+                Logger.Debug($"C2S Query #{context.Token.Rid}# #{context.RemoteIp}# {context.Request.QueryString}");
+            }
 
             //授权检查
             if (!VerifyToken(ServerContainer.GetDistrictConfig(token.Did), token))
                 throw new PirateXException("AuthError", "授权失败") { Code = StatusCode.Unauthorized };
-
 
             if (context.Action == 2)//断线
             {
                 var session = OnlineManager.GetOnlineRole(context.Token.Rid);
                 if (session != null)
                 {
-
                     //TODO logout
                     //OnlineManager.Logout(session.Id, context.Token.Rid);
                     OnSessionClosed(session);
@@ -228,6 +229,8 @@ namespace PirateX.Core.Actor
             var format = context.Request.Headers["format"];
             if (!string.IsNullOrEmpty(format))
                 context.ResponseCovnert = format;
+            else
+                context.ResponseCovnert = DefaultResponseCovnert;
 
             var lang = context.Request .Headers["lang"];
             if (!string.IsNullOrEmpty(lang))
