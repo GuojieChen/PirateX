@@ -114,7 +114,7 @@ namespace PirateX.Net.NetMQ
                     response.HeaderBytes = r.GetHeaderBytes();
 #endif
 
-                    ProtocolPackage protocolPackage = null;
+                    IProtocolPackage protocolPackage = null;
 
                     if (Equals((Action) action, Action.Seed))
                     {
@@ -131,7 +131,7 @@ namespace PirateX.Net.NetMQ
                         protocolPackage.LastNo = lastNo;
 
                     var bytes = protocolPackage.PackPacketToBytes(response);
-                    NetSend.Send(protocolPackage.SessionID, bytes);
+                    protocolPackage.Send(bytes);
                     //TODO 拿到SESSION 需要省去步骤
 
                     if (Equals((Action)action, Action.Seed))
@@ -173,7 +173,7 @@ namespace PirateX.Net.NetMQ
         /// </summary>
         /// <param name="protocolPackage"></param>
         /// <param name="body"></param>
-        public virtual void ProcessRequest(ProtocolPackage protocolPackage, byte[] body)
+        public virtual void ProcessRequest(IProtocolPackage protocolPackage, byte[] body)
         {
             if (protocolPackage == null)
                 return;
@@ -193,7 +193,7 @@ namespace PirateX.Net.NetMQ
             msg.Append(request.ContentBytes);//信息体
             msg.Append((protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString());
             msg.Append(protocolPackage.LastNo);
-            msg.Append(protocolPackage.SessionID);
+            msg.Append(protocolPackage.Id);
 
             //加入队列
             PushQueue.Enqueue(msg);
@@ -209,7 +209,7 @@ namespace PirateX.Net.NetMQ
             PushQueue.Enqueue(msg);
         }
 
-        public virtual void OnSessionClosed(ProtocolPackage protocolPackage)
+        public virtual void OnSessionClosed(IProtocolPackage protocolPackage)
         {
             if (protocolPackage == null)
                 return;
@@ -217,7 +217,7 @@ namespace PirateX.Net.NetMQ
             var msg = new NetMQMessage();
             msg.Append(new byte[] { 1 });//版本号
             msg.Append(new byte[] { (byte)Action.Closed });//动作
-            msg.Append(protocolPackage.SessionID);//sessionid
+            msg.Append(protocolPackage.Id);//sessionid
             msg.Append(new byte[] { });//信息头
             msg.Append(new byte[] { });//信息体
             msg.Append((protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString());

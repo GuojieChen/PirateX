@@ -44,25 +44,25 @@ namespace PirateX.Net.SuperSocket
 
         protected override void OnNewSessionConnected(ProxySession session)
         {
-            Console.WriteLine($"New Session Connected!{session.SessionID}");
+            Console.WriteLine($"New Session Connected!{session.Id}");
             base.OnNewSessionConnected(session);
         }
 
         protected override void OnSessionClosed(ProxySession session, CloseReason reason)
         {
-            Console.WriteLine($"New Session Closed!{session.SessionID}");
+            Console.WriteLine($"New Session Closed!{session.Id}");
 
-            NetService.OnSessionClosed(GetProtocolPackage(session.SessionID));
+            NetService.OnSessionClosed(GetProtocolPackage(session.Id));
             base.OnSessionClosed(session, reason);
         }
 
-        public ProtocolPackage GetProtocolPackage(string sessionid)
+        public IProtocolPackage GetProtocolPackage(string sessionid)
         {
             var session = GetSessionByID(sessionid);
-            return session?.ProtocolPackage;
+            return session;
         }
 
-        public ProtocolPackage GetProtocolPackage(int rid)
+        public IProtocolPackage GetProtocolPackage(int rid)
         {
             string sessionid = string.Empty;
             _dic.TryGetValue(rid, out sessionid);
@@ -70,13 +70,13 @@ namespace PirateX.Net.SuperSocket
             if (string.IsNullOrEmpty(sessionid))
                 return null;
 
-            return GetSessionByID(sessionid).ProtocolPackage;
+            return GetSessionByID(sessionid);
         }
 
 
-        public void Attach(ProtocolPackage package)
+        public void Attach(IProtocolPackage package)
         {
-            _dic.AddOrUpdate(package.Rid, package.SessionID, ((i, s) => package.SessionID));
+            _dic.AddOrUpdate(package.Rid, package.Id, ((i, s) => package.Id));
         }
 
         public void Send(string sessionid, byte[] datas)

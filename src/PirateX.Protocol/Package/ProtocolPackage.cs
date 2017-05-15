@@ -10,7 +10,7 @@ namespace PirateX.Protocol.Package
 {
     public class ProtocolPackage : IProtocolPackage
     {
-        public string SessionID { get; set; } = Guid.NewGuid().ToString("N");
+        public string Id { get; set; } = Guid.NewGuid().ToString("N");
 
         public int Rid { get; set; }
 
@@ -137,6 +137,11 @@ namespace PirateX.Protocol.Package
                 HeaderBytes = headerBytes,
                 ContentBytes = contentBytes
             };
+        }
+
+        public virtual void Send(byte[] body)
+        {
+            
         }
 
         //private static int GetbitValue(byte input, int index)
