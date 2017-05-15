@@ -463,7 +463,7 @@ namespace PirateX.Core.Actor
                 {"code", Convert.ToString((int) StatusCode.Ok)}
             };
 
-#if DEBUG
+#if PERFORM
             foreach (string key in context.Request.Headers.AllKeys)
             {
                 if (key.StartsWith("_"))

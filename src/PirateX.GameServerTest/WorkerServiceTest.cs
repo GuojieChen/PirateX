@@ -34,19 +34,6 @@ namespace PirateX.GameServerTest
         public TestActorService(ActorConfig config, IServerContainer serverContainer) : base(serverContainer)
         {
         }
-
-        protected override PirateSession CreateOnlineRole(ActorContext context, IToken token)
-        {
-            return new PirateSession()
-            {
-                Id = token.Rid,
-                Did = token.Did,
-                SessionId = context.SessionId,
-                StartUtcAt = DateTime.UtcNow,
-                Token = context.Request.Token,
-                Uid = token.Uid
-            };
-        }
     }
 
     [TestFixture]

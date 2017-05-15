@@ -109,7 +109,7 @@ namespace PirateX.Net.NetMQ
                         ContentBytes = content
                     };
 
-#if DEBUG
+#if PERFORM
                     var r = new PirateXResponseInfo(response);
                     r.Headers.Add("_tout_", $"{DateTime.UtcNow.Ticks}");
                     response.HeaderBytes = r.GetHeaderBytes();
@@ -154,7 +154,7 @@ namespace PirateX.Net.NetMQ
 
             var request = protocolPackage.UnPackToPacket(body);
 
-#if DEBUG
+#if PERFORM || DEBUG
             var r = new PirateXRequestInfo(request);
             r.Headers.Add("_tin_", $"{DateTime.UtcNow.Ticks}");
             request = r.ToRequestPackage();

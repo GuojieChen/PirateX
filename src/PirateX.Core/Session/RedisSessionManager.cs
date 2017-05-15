@@ -30,17 +30,13 @@ namespace PirateX.Core.Session
             if (pirateSession.Id <= 0)
                 return;
 
-            await Task.Factory.StartNew((idb) =>
-            {
-                var urn = GetUrnOnlineRole(pirateSession.Id);
+            var urn = GetUrnOnlineRole(pirateSession.Id);
 
-                var db = (IDatabase) idb;
+            var db = _connectionMultiplexer.GetDatabase();
 
-                db.StringSet(urn, Serializer.Serilazer(pirateSession), Expiry);
-                db.StringSet(GetUrnOnlineRole(pirateSession.SessionId), urn, Expiry);
-                db.HashSet(GetDidUrn(pirateSession.Did), Convert.ToString(pirateSession.Id), urn);//TODO 需要定时清理
-
-            }, _connectionMultiplexer.GetDatabase());
+            db.StringSet(urn, Serializer.Serilazer(pirateSession), Expiry);
+            db.StringSet(GetUrnOnlineRole(pirateSession.SessionId), urn, Expiry);
+            db.HashSet(GetDidUrn(pirateSession.Did), Convert.ToString(pirateSession.Id), urn);//TODO 需要定时清理
         }
 
         public async void Logout(long rid, string sessionid)
@@ -50,23 +46,18 @@ namespace PirateX.Core.Session
 
             var urn = $"core:onlinerole:{rid}";
 
-            await Task.Factory.StartNew((idb) =>
+            var db = _connectionMultiplexer.GetDatabase();
+
+            var onlineRoleStr = db.StringGet(urn);
+            if (!onlineRoleStr.HasValue)
+                return;
+            var onlineRole = Serializer.Deserialize<PirateSession>(onlineRoleStr);
+            if (Equals(onlineRole.SessionId, sessionid))
             {
-                var db = (IDatabase) idb;
-
-                var onlineRoleStr = db.StringGet(urn);
-                if (!onlineRoleStr.HasValue)
-                    return;
-                var onlineRole = Serializer.Deserialize<PirateSession>(onlineRoleStr);
-                if (Equals(onlineRole.SessionId, sessionid))
-                {
-                    //trans.AddCondition(Condition.StringEqual())
-                    db.KeyDeleteAsync(urn);
-                    db.HashDeleteAsync(GetDidUrn(onlineRole.Did), Convert.ToString(rid));
-                }
-
-            }, _connectionMultiplexer.GetDatabase());
-
+                //trans.AddCondition(Condition.StringEqual())
+                db.KeyDelete(urn);
+                db.HashDelete(GetDidUrn(onlineRole.Did), Convert.ToString(rid));
+            }
         }
 
         public bool IsOnline(long rid)

@@ -43,11 +43,11 @@ namespace GameServer.Console
                     PushsocketString = ">tcp://localhost:5001",
                     PullSocketString = ">tcp://localhost:5002",
                 }),
-                new ActorNetService(new WorkerService(),new ActorConfig()
-                {
-                    PushsocketString = ">tcp://localhost:5001",
-                    PullSocketString = ">tcp://localhost:5002",
-                })
+                //new ActorNetService(new WorkerService(),new ActorConfig()
+                //{
+                //    PushsocketString = ">tcp://localhost:5001",
+                //    PullSocketString = ">tcp://localhost:5002",
+                //})
             };
         }
 

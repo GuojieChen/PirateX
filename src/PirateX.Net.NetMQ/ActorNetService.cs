@@ -78,7 +78,7 @@ namespace PirateX.Net.NetMQ
                 LastNo = msg[9].ConvertToInt32(),
             };
 
-#if DEBUG
+#if PERFORM
             context.Request.Headers.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
 #endif
 
@@ -141,7 +141,7 @@ namespace PirateX.Net.NetMQ
         public void SendMessage(ActorContext context, NameValueCollection header, byte[] body)
         {
 
-#if DEBUG
+#if PERFORM
             header.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
 #endif
 

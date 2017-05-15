@@ -79,10 +79,8 @@ namespace PirateX.Core.Actor
             if (string.IsNullOrEmpty(listurn))
                 return;
 
-            var trans = Redis.CreateTransaction();
-            trans.StringSetAsync(key, RedisSerializer.Serilazer(response),new TimeSpan(0,0,30));
-            trans.ListRightPushAsync(GetResponseListUrn(), key);
-            trans.Execute();
+            Redis.StringSet(key, RedisSerializer.Serilazer(response),new TimeSpan(0,0,30));
+            Redis.ListRightPush(GetResponseListUrn(), key);
 
             if (Redis.ListLength(listurn) >= 4)
             {//保存4条
