@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -353,13 +354,28 @@ namespace PirateX.Core.Actor
         {
             if (string.IsNullOrEmpty(token))
                 throw new PirateXException($"{StatusCode.BadRequest}", "invalidToken");
-            Console.WriteLine(token);
             var odatas = Convert.FromBase64String(token);
-
+            Token t = null;
             using (var ms = new MemoryStream(odatas))
             {
-                return Serializer.Deserialize<Token>(ms);
+                t = Serializer.Deserialize<Token>(ms);
             }
+            return t;
+            /*var sw = new Stopwatch();
+            sw.Start();
+            var odatas = Convert.FromBase64String(token);
+            sw.Stop();
+            Console.WriteLine($"from base64:{sw.ElapsedMilliseconds} ms");
+            sw.Start();
+            Token t = null;
+            using (var ms = new MemoryStream(odatas))
+            {
+                t = Serializer.Deserialize<Token>(ms);
+            }
+            sw.Stop();
+            Console.WriteLine($"deserialize token:{sw.ElapsedMilliseconds} ms");
+            return t;*/
+
         }
         /// <summary>
         /// 验证token 默认是不验证

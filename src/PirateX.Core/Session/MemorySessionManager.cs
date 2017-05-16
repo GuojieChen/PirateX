@@ -11,7 +11,7 @@ namespace PirateX.Core.Session
         private ConcurrentDictionary<string ,long> _sessionidDic = new ConcurrentDictionary<string, long>();
         public void Login(PirateSession pirateSession)
         {
-            _sessionDic.AddOrUpdate(pirateSession.Id, pirateSession, (l, session) => pirateSession);
+            _sessionDic.AddOrUpdate(pirateSession.Id, pirateSession, (l, session) => pirateSession); 
             _sessionidDic.AddOrUpdate(pirateSession.SessionId, pirateSession.Id, (s, l) => pirateSession.Id);
         }
 

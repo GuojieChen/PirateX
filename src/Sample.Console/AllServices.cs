@@ -34,6 +34,7 @@ namespace GameServer.Console
             var b = HostServer.Setup(new ServerConfig()
             {
                 Port = 4012,
+                MaxConnectionNumber = 10000
             });
 
             WorkerServer = new ActorNetService[]

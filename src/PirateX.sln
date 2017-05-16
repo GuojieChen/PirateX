@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{CB3452E6-7B7B-46FC-8F90-D92DB4A29E06}"
 EndProject
@@ -55,6 +55,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schedule", "Schedule", "{9E53C2B2-5541-4DCC-9201-43B6B8EBF14C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.Schedule", "PirateX.Schedule\PirateX.Schedule.csproj", "{B989BABA-4B8C-406F-83FB-16C5412B9250}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.FrameLossTest", "PirateX.FrameLossTest\PirateX.FrameLossTest.csproj", "{C48880E9-3155-4274-9406-85DC6731FD34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -208,6 +210,14 @@ Global
 		{B989BABA-4B8C-406F-83FB-16C5412B9250}.Perform-Release|Any CPU.Build.0 = Perform-Release|Any CPU
 		{B989BABA-4B8C-406F-83FB-16C5412B9250}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B989BABA-4B8C-406F-83FB-16C5412B9250}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C48880E9-3155-4274-9406-85DC6731FD34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C48880E9-3155-4274-9406-85DC6731FD34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C48880E9-3155-4274-9406-85DC6731FD34}.Perform-Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C48880E9-3155-4274-9406-85DC6731FD34}.Perform-Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C48880E9-3155-4274-9406-85DC6731FD34}.Perform-Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C48880E9-3155-4274-9406-85DC6731FD34}.Perform-Release|Any CPU.Build.0 = Release|Any CPU
+		{C48880E9-3155-4274-9406-85DC6731FD34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C48880E9-3155-4274-9406-85DC6731FD34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -233,5 +243,6 @@ Global
 		{CB9D8861-54AB-41FC-A750-114F79263339} = {4C3DAE84-BA97-441C-8800-F53797CA1E45}
 		{9E53C2B2-5541-4DCC-9201-43B6B8EBF14C} = {2827A0D1-32C1-4B18-94BC-91CC1E3A90A6}
 		{B989BABA-4B8C-406F-83FB-16C5412B9250} = {9E53C2B2-5541-4DCC-9201-43B6B8EBF14C}
+		{C48880E9-3155-4274-9406-85DC6731FD34} = {CB3452E6-7B7B-46FC-8F90-D92DB4A29E06}
 	EndGlobalSection
 EndGlobal
