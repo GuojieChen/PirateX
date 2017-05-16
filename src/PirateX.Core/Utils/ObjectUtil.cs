@@ -109,10 +109,14 @@ namespace PirateX.Core.Utils
             foreach (var entry in entries)
             {
                 var p = type.GetProperty(entry.Name);
-                if (p == null)
+                if (p == null || !entry.Value.HasValue)
                     continue;
 
-                p.SetValue(t, Convert.ChangeType(entry.Value, p.PropertyType));
+                var value = entry.Value;
+                if (p.PropertyType == typeof(bool))
+                    value = Equals(value.ToString(), "TRUE"); 
+
+                p.SetValue(t, Convert.ChangeType(value, p.PropertyType));
             }
 
             return t;

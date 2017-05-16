@@ -37,6 +37,9 @@ namespace PirateX.Net.NetMQ
         public NetMQQueue<NetMQMessage> PushQueue = new NetMQQueue<NetMQMessage>();
 
         private NetMQPoller Poller;
+
+        private NetMQPoller ResponsePoller; 
+
         private bool IsSetuped { get; set; }
         public virtual void Setup(INetManager netManager)
         {
@@ -62,8 +65,12 @@ namespace PirateX.Net.NetMQ
             Poller = new NetMQPoller()
             {
                 sender,
-                responseSocket,
                 PushQueue
+            };
+
+            ResponsePoller = new NetMQPoller()
+            {
+                responseSocket,
             };
 
             NetSend = netManager;
@@ -91,6 +98,8 @@ namespace PirateX.Net.NetMQ
             {
                 try
                 {
+                    var t1 = DateTime.Now.Ticks;
+
                     var msg = (NetMQMessage)state;
 
                     //msg[0].Buffer //版本号
@@ -108,9 +117,12 @@ namespace PirateX.Net.NetMQ
                         ContentBytes = content
                     };
 
+                    var t2 = DateTime.Now.Ticks;
+
 #if PERFORM
                     var r = new PirateXResponseInfo(response);
                     r.Headers.Add("_tout_", $"{DateTime.UtcNow.Ticks}");
+                    r.Headers.Add("_tout_t_", $"{t2 - t1}");
                     response.HeaderBytes = r.GetHeaderBytes();
 #endif
 
@@ -242,6 +254,7 @@ namespace PirateX.Net.NetMQ
                 throw new ApplicationException("Please Setup firset!");
 
             Poller.RunAsync();
+            ResponsePoller.RunAsync();
             GlobalServerProxy?.Start();
         }
 
@@ -252,6 +265,11 @@ namespace PirateX.Net.NetMQ
             Poller?.Stop();
             Poller?.Dispose();
             Poller = null;
+
+            ResponsePoller?.Stop();
+            ResponsePoller?.Dispose();
+            ResponsePoller = null;
+
         }
     }
 
