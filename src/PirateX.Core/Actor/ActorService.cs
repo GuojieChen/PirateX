@@ -200,7 +200,11 @@ namespace PirateX.Core.Actor
 
         public void OnReceive(ActorContext context)
         {
-            
+#if PERFORM
+            context.Request.Headers.Add("_t1_",$"{DateTime.UtcNow.GetTimestamp()}");
+#endif
+
+
             if (context.Action == 2)//断线
             {
                 var session = OnlineManager.GetOnlineRole(context.Token.Rid);
@@ -227,6 +231,9 @@ namespace PirateX.Core.Actor
                 throw new PirateXException("AuthError", "授权失败") { Code = StatusCode.Unauthorized };
 
 
+#if PERFORM
+            context.Request.Headers.Add("_t2_",$"{DateTime.UtcNow.GetTimestamp()}");
+#endif
 
             var format = context.Request.Headers["format"];
             if (!string.IsNullOrEmpty(format))
@@ -251,6 +258,10 @@ namespace PirateX.Core.Actor
                 return;
             }
 
+#if PERFORM
+            context.Request.Headers.Add("_t3_",$"{DateTime.UtcNow.GetTimestamp()}");
+#endif
+
             //执行动作
             var actionname = context.Request.C;
             using (var action = GetActionInstanceByName(actionname))
@@ -263,6 +274,10 @@ namespace PirateX.Core.Actor
                         //获取session信息  从缓存中去获取session信息  session没有的时候需要提示客户端重新连接
 
                         PirateSession session;
+
+#if PERFORM
+            context.Request.Headers.Add("_t4_",$"{DateTime.UtcNow.GetTimestamp()}");
+#endif
 
                         if (Equals(actionname, "NewSeed"))
                         {
@@ -301,7 +316,15 @@ namespace PirateX.Core.Actor
                         action.Logger = Logger;
                         action.MessageSender = this;
 
+#if PERFORM
+            context.Request.Headers.Add("_t5_",$"{DateTime.UtcNow.GetTimestamp()}");
+#endif
+
                         action.Execute();
+
+#if PERFORM
+            context.Request.Headers.Add("_t6_",$"{DateTime.UtcNow.GetTimestamp()}");
+#endif
 
                         //session = OnlineManager.GetOnlineRole(token.Rid);
                         //session.LastUtcAt = DateTime.UtcNow;
