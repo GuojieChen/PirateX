@@ -15,11 +15,11 @@ namespace PirateX.Core.Net
         /// </summary>
         /// <param name="protocolPackage"></param>
         /// <param name="body"></param>
-        void ProcessRequest(ProtocolPackage protocolPackage, byte[] body);
+        void ProcessRequest(IProtocolPackage protocolPackage, byte[] body);
 
         void Ping();
 
-        void OnSessionClosed(ProtocolPackage protocolPackage);
+        void OnSessionClosed(IProtocolPackage protocolPackage);
 
         void Start();
 

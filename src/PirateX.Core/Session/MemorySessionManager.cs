@@ -15,7 +15,7 @@ namespace PirateX.Core.Session
             _sessionidDic.AddOrUpdate(pirateSession.SessionId, pirateSession.Id, (s, l) => pirateSession.Id);
         }
 
-        public void Logout(long rid, string sessionid)
+        public void Logout(long rid)
         {
             PirateSession session;
 

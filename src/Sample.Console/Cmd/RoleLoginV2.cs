@@ -38,7 +38,7 @@ namespace GameServer.Console.Cmd
             {
                 //Id = Context.Request.Headers.
                 //Did = request.Did,
-                //SessionId = pirateSession.SessionID
+                //SessionId = pirateSession.Id
             };
         }
     }

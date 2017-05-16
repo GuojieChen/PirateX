@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,8 @@ namespace PirateX.Net.SuperSocket
 {
     public sealed class GameAppServer:AppServer<ProxySession,BinaryRequestInfo>,INetManager
     {
+        private ConcurrentDictionary<int,string> _dic = new ConcurrentDictionary<int, string>();
+
         public INetService NetService { get; set; }
 
         public GameAppServer(INetService netService):base(new ProxyReceiveFilterFactory())
@@ -41,22 +44,38 @@ namespace PirateX.Net.SuperSocket
 
         protected override void OnNewSessionConnected(ProxySession session)
         {
-            Console.WriteLine($"New Session Connected!{session.SessionID}");
             base.OnNewSessionConnected(session);
         }
 
         protected override void OnSessionClosed(ProxySession session, CloseReason reason)
         {
-            Console.WriteLine($"New Session Closed!{session.SessionID}");
+            if(reason == CloseReason.ClientClosing || reason == CloseReason.ServerShutdown)
+                NetService.OnSessionClosed(GetProtocolPackage(session.Id));
 
-            NetService.OnSessionClosed(GetProtocolPackage(session.SessionID));
             base.OnSessionClosed(session, reason);
         }
 
-        public ProtocolPackage GetProtocolPackage(string sessionid)
+        public IProtocolPackage GetProtocolPackage(string sessionid)
         {
             var session = GetSessionByID(sessionid);
-            return session?.ProtocolPackage;
+            return session;
+        }
+
+        public IProtocolPackage GetProtocolPackage(int rid)
+        {
+            string sessionid = string.Empty;
+            _dic.TryGetValue(rid, out sessionid);
+
+            if (string.IsNullOrEmpty(sessionid))
+                return null;
+
+            return GetSessionByID(sessionid);
+        }
+
+
+        public void Attach(IProtocolPackage package)
+        {
+            _dic.AddOrUpdate(package.Rid, package.Id, ((i, s) => package.Id));
         }
 
         public void Send(string sessionid, byte[] datas)

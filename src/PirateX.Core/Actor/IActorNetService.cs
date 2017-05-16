@@ -9,7 +9,10 @@ namespace PirateX.Core.Actor
         void Start();
         void Stop();
 
-        void PushMessage(PirateSession role,NameValueCollection headers,byte[] body);
+        void PushMessage(int rid,NameValueCollection headers,byte[] body);
+
+        void Seed(ActorContext context, NameValueCollection header, byte cryptobyte, byte[] clientkeys,
+            byte[] serverkeys, byte[] body);
 
         void SendMessage(ActorContext context, NameValueCollection headers, byte[] body);
     }

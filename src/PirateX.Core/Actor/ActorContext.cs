@@ -12,15 +12,9 @@ namespace PirateX.Core.Actor
         /// </summary>
         public byte Action { get; set; }
 
-        public string SessionId { get; set; }
-
-        public byte[] ClientKeys { get; set; }
-
-        public byte[] ServerKeys { get; set; }
-
-        public byte CryptoByte { get; set; }
-
         public string ResponseCovnert { get; set; }
+
+        public string SessionId { get; set; }
 
         public IToken Token { get; set; }
 

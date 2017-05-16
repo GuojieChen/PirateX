@@ -4,7 +4,12 @@ namespace PirateX.Core.Net
 {
     public interface INetManager
     {
-        ProtocolPackage GetProtocolPackage(string sessionid);
+        IProtocolPackage GetProtocolPackage(string sessionid);
+
+        IProtocolPackage GetProtocolPackage(int rid);
+
+
+        void Attach(IProtocolPackage package);
 
         void Send(string sessionid,byte[] datas);
 

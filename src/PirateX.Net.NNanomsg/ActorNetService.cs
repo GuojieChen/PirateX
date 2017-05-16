@@ -53,6 +53,22 @@ namespace PirateX.Net.NNanomsg
             _actorService.Stop();
         }
 
+        public void PushMessage(int rid, NameValueCollection headers, byte[] body)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PushMessage(string sessionid, NameValueCollection headers, byte[] body)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Seed(ActorContext context, NameValueCollection header, byte cryptobyte, byte[] clientkeys, byte[] serverkeys,
+            byte[] body)
+        {
+            throw new NotImplementedException();
+        }
+
         public void PushMessage(PirateSession role, NameValueCollection headers, byte[] body)
         {
             PushSocket.SendImmediate(new GmaeMail()
@@ -78,9 +94,6 @@ namespace PirateX.Net.NNanomsg
             {
                 Version = 1,
                 Action = 1,
-                SessionId = context.SessionId,
-                ClientKeys = context.ClientKeys,
-                ServerKeys = context.ServerKeys,
                 Headers = GetHeaderBytes(headers),
                 Body = body
 

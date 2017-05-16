@@ -8,6 +8,8 @@ namespace PirateX.Core.Actor
 
         void SendMessage<T>(ActorContext context, string name, T t);
 
-        void PushMessage<T>(PirateSession session, T t);
+        void SendSeed<T>(ActorContext context, byte cryptobyte, byte[] clientkeys, byte[] serverkeys, T t);
+
+        void PushMessage<T>(int rid, T t);
     }
 }

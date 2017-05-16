@@ -26,6 +26,8 @@ namespace GameServer.Console
 {
     public class WorkerService : ActorService<WorkerService>
     {
+        protected override string DefaultResponseCovnert => "json";
+
         public WorkerService() : base(new DemoServerContainer())
         {
         }
