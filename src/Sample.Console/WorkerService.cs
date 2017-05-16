@@ -39,7 +39,6 @@ namespace GameServer.Console
     }
 
     public class DistrictConfig : IDistrictConfig
-        ,IRedisDistrictConfig
     {
         public string Name { get; set; }
         public int Id { get; set; }
@@ -48,13 +47,13 @@ namespace GameServer.Console
         public int RedisDb { get; set; }
     }
 
-    public class ServerSetting : IServerSetting
+    public class ServerSetting : IServerSetting,IRedisServerSetting
     {
         public string Id { get; set; }
         public string Name { get; set; }
 
-        //public string RedisHost { get; set; }
-        //public int RedisDb { get; set; }
+        public string RedisHosts { get; set; }
+        public int RedisDb { get; set; }
 
     }
 
@@ -86,6 +85,14 @@ namespace GameServer.Console
         {
             return ServerConfigs.FirstOrDefault(item => item.Id == id);
         }
+        
+#if DEBUG
+        public override IServerSetting GetServerSetting()
+        {
+            return base.GetDefaultSeting<ServerSetting>();
+        }
+#endif
+
 
         protected override void BuildDistrictContainer(ContainerBuilder builder)
         {

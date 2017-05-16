@@ -12,7 +12,7 @@ namespace PirateX.Core.Container.ServerSettingRegister
     [ServerSettingRegister(typeof(RedisServerSettingRegister))]
     public interface IRedisServerSetting
     {
-        string RedisHost { get; set; }
+        string RedisHosts { get; set; }
 
         int RedisDb { get; set; }
     }
@@ -26,8 +26,15 @@ namespace PirateX.Core.Container.ServerSettingRegister
             if (redisconfig == null)
                 return;
 
+            //ConfigurationOptions options = new ConfigurationOptions();
+            //foreach (var host in redisconfig.RedisHosts)
+            //{
+            //    options.EndPoints.Add(host);
+            //    options.DefaultDatabase = redisconfig.RedisDb;
+            //}
+
             //Redis连接池  管理全局信息
-            builder.Register(c => ConnectionMultiplexer.Connect(redisconfig.RedisHost))
+            builder.Register(c => ConnectionMultiplexer.Connect(redisconfig.RedisHosts))
                 .As<ConnectionMultiplexer>()
                 .SingleInstance();
 
