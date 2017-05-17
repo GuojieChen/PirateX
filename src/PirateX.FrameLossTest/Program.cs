@@ -25,6 +25,7 @@ namespace PirateX.FrameLossTest
         private static double spanT1Sum = 0.0;
         private static double spanT2Sum = 0.0;
         private static double spanT3Sum = 0.0;
+        private static double spanT4Sum = 0.0;
 
         private static int spanCount = 0;
         private static int newSeedCount = 0;
@@ -84,6 +85,7 @@ namespace PirateX.FrameLossTest
             var averageT1 = spanT1Sum / spanCount;
             var averageT2 = spanT2Sum / spanCount;
             var averageT3 = spanT3Sum / spanCount;
+            var averageT4 = spanT4Sum / spanCount;
 
             Console.WriteLine("average tin->tout time loss:{0} ms", average1);
             Console.WriteLine("average tin->itin time loss:{0} ms", average2);
@@ -93,6 +95,8 @@ namespace PirateX.FrameLossTest
             Console.WriteLine("average itin1->itin thread start time loss:{0} ms", averageT1);
             Console.WriteLine("average itin5->itin1 OnReceive method process time loss:{0} ms", averageT2);
             Console.WriteLine("average itin6->itin5 send message time loss:{0} ms", averageT3);
+
+            Console.WriteLine("average itin1->itin time loss:{0} ms", averageT4);
             Console.Read();
         }
 
@@ -126,6 +130,9 @@ namespace PirateX.FrameLossTest
                     if (args.Msg == TestCommand)
                     {
                         var tin = Convert.ToInt64(args.Package.Headers["_tin_"]);
+
+                        var tin1 = Convert.ToInt64(args.Package.Headers["_itin_1_"]);
+
                         var itin = Convert.ToInt64(args.Package.Headers["_itin_"]);
 
                         var itin1 = Convert.ToInt64(args.Package.Headers["_t1_"]);
@@ -147,8 +154,8 @@ namespace PirateX.FrameLossTest
                         var span_OnReceive_process = ((double)(itin5 - itin1)) / TimeSpan.TicksPerMillisecond;
                         var span_send_message = ((double)(itin6 - itin5)) / TimeSpan.TicksPerMillisecond;
                         
-
-//                        Console.WriteLine($"{index} span:{span_tin_tout} ms");
+                        var span_tin1 = ((double)(itin - tin1)) / TimeSpan.TicksPerMillisecond;
+                        //                        Console.WriteLine($"{index} span:{span_tin_tout} ms");
 
                         spanCount++;
 
@@ -160,6 +167,8 @@ namespace PirateX.FrameLossTest
                         spanT1Sum += span_task_start;
                         spanT2Sum += span_OnReceive_process;
                         spanT3Sum += span_send_message;
+
+                        spanT4Sum += span_tin1;
                     }
                     else
                     {
