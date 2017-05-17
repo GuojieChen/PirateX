@@ -18,8 +18,6 @@ namespace PirateX.Net.NetMQ
 {
     public class ActorNetService : IActorNetService
     {
-
-
         private ActorConfig config;
 
         private PullSocket PullSocket { get; set; }
@@ -37,7 +35,6 @@ namespace PirateX.Net.NetMQ
             this._actorService = actorService;
             _actorService.NetService = this;
             this.config = config;
-
         }
 
         private void SetUp()

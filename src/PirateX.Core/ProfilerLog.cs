@@ -30,6 +30,9 @@ namespace PirateX.Core
         /// </summary>
         public Ticks Tout { get; set; }
 
+
+        public Ticks TExcute { get; set; }
+
         private JsonSerializerSettings _settings = new JsonSerializerSettings()
         {
             NullValueHandling = NullValueHandling.Ignore

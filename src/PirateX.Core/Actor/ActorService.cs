@@ -237,11 +237,11 @@ namespace PirateX.Core.Actor
                 Thread.CurrentThread.CurrentUICulture = Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
 
             //request timeout
-            //if ((DateTime.UtcNow.GetTimestamp() - context.Request.Timestamp) > 1000 * 30)//30秒
-            //{
-            //    Logger.Warn($"C2S Timeout t #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
-            //    return;
-            //}
+            if ((DateTime.UtcNow.GetTimestamp() - context.Request.Timestamp) > 1000 * 60 * 2)
+            {
+                Logger.Warn($"C2S Timeout t #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
+                return;
+            }
 
             if (context.Request.O <= context.LastNo)
             {
@@ -276,12 +276,29 @@ namespace PirateX.Core.Actor
                         action.Context = context;
                         action.Logger = Logger;
                         action.MessageSender = this;
+#if PERFORM
+                        var texcute1 = DateTime.UtcNow.Ticks;
+#endif
                         action.Execute();
+
+#if PERFORM
+                        var texcute2 = DateTime.UtcNow.Ticks;
+
+                        new ProfilerLog()
+                        {
+                            Token = context.Request.Token,
+                            Ip = context.RemoteIp,
+                            Tin = new Ticks()
+                            {
+                                Start = texcute1,
+                                End = texcute2
+                            }
+                        }.Log();
+#endif
                     }
                     catch (Exception exception)
                     {
                         HandleException(context, exception);
-                        Console.WriteLine(exception.Message);
                     }
                 }
                 else
