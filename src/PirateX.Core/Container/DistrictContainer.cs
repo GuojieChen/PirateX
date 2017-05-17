@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using Autofac;
 using Autofac.Builder;
+using Newtonsoft.Json;
 using NLog;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Config;
@@ -39,22 +41,13 @@ namespace PirateX.Core.Container
         private IServerSetting _defaultSetting;
         protected IServerSetting GetDefaultSeting<T>() where T: IServerSetting
         {
-            if (_defaultSetting != null)
-                return _defaultSetting;
+            var file = $"{AppDomain.CurrentDomain.BaseDirectory}Config\\ServerConfigs.json";
 
-            var ps = typeof(T).GetProperties();
-            var defaultServerSetting = Activator.CreateInstance(typeof(T), null);
+            if (!File.Exists(file))
+                return default(T);
 
-            foreach (var propertyInfo in ps)
-            {
-                var value = System.Configuration.ConfigurationManager.AppSettings.Get(propertyInfo.Name);
-                if (value != null)
-                    propertyInfo.SetValue(defaultServerSetting, Convert.ChangeType(value, propertyInfo.PropertyType));
-            }
-
-            _defaultSetting = (T)defaultServerSetting;
-
-            return _defaultSetting;
+            var json = File.ReadAllText(file);
+            return JsonConvert.DeserializeObject<T>(json);
         }
 
         public void InitContainers(ContainerBuilder builder)

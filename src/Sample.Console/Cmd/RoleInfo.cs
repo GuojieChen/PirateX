@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using PirateX;
 using PirateX.Core.Actor;
 using PirateX.Protocol;
 using ProtoBuf;
+using StackExchange.Redis;
 using SuperSocket.SocketBase.Protocol;
 
 namespace GameServer.Console.Cmd
@@ -16,15 +18,17 @@ namespace GameServer.Console.Cmd
     {
         public override RoleInfoResponse Play()
         {
-            MessageSender.PushMessage(Context.Token.Rid,new{A="111",B="222"});
+            //MessageSender.PushMessage(Context.Token.Rid,new{A="111",B="222"});
 
-            Thread.Sleep(2000);
+            base.ServerReslover.Resolve<IDatabase>().StringSet("a", DateTime.Now.Ticks);
+
 
             return new RoleInfoResponse()
             {
                 Name = "mrglee",
                 Lv = 2,
-                CreateAt = DateTime.UtcNow
+                CreateAt = DateTime.UtcNow,
+                A = new DateTime(Convert.ToInt64(ServerReslover.Resolve<IDatabase>().StringGet("a")))
             };
         }
     }
@@ -51,6 +55,8 @@ namespace GameServer.Console.Cmd
 
         [ProtoMember(6)]
         public List<TestData> Datas { get; set; } 
+
+        public DateTime A { get; set; }
     }
 
     [Serializable]
