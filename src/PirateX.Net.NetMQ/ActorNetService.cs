@@ -23,8 +23,11 @@ namespace PirateX.Net.NetMQ
         private PushSocket PushSocket { get; set; }
 
         private NetMQPoller Poller { get; set; }
-        private readonly NetMQQueue<NetMQMessage> MessageQueue = new NetMQQueue<NetMQMessage>();
 
+        private NetMQPoller PullPoller { get; set; }
+
+        private readonly NetMQQueue<NetMQMessage> MessageQueue = new NetMQQueue<NetMQMessage>();
+        private readonly NetMQQueue<NetMQMessage> PullQueue = new NetMQQueue<NetMQMessage>();
 
         private IActorService _actorService;
         public ActorNetService(IActorService actorService, ActorConfig config)
@@ -43,26 +46,25 @@ namespace PirateX.Net.NetMQ
             PullSocket.ReceiveReady += ProcessTaskPullSocket;
 
             PushSocket = new PushSocket(config.PushsocketString);
-            Poller = new NetMQPoller() { PullSocket, PushSocket, MessageQueue };
+            Poller = new NetMQPoller() { PushSocket, MessageQueue };
+            PullPoller = new NetMQPoller(){ PullSocket, PullQueue };
 
             MessageQueue.ReceiveReady += (sender, args) =>
             {
                 PushSocket.SendMultipartMessage(args.Queue.Dequeue());
             };
+
+            PullQueue.ReceiveReady += ProcessTaskPullSocket2;
         }
 
-        /// <summary>
-        /// 多线程处理请求
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        protected void ProcessTaskPullSocket(object sender, NetMQSocketEventArgs e)
+        private void ProcessTaskPullSocket2(object sender, NetMQQueueEventArgs<NetMQMessage> e)
         {
+            var msg = e.Queue.Dequeue();
+
 #if PERFORM
             var t1 = DateTime.UtcNow.Ticks;
 #endif
 
-            var msg = e.Socket.ReceiveMultipartMessage();
             var version = msg[0].Buffer[0];
             var action = msg[1].Buffer[0];
 
@@ -97,7 +99,17 @@ namespace PirateX.Net.NetMQ
                 //发生异常需要处理
                 //t.Exception
             }, TaskContinuationOptions.OnlyOnFaulted);*/
+        }
 
+        /// <summary>
+        /// 多线程处理请求
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void ProcessTaskPullSocket(object sender, NetMQSocketEventArgs e)
+        {
+            var msg = e.Socket.ReceiveMultipartMessage();
+            PullQueue.Enqueue(msg);
         }
 
         private void CallActor(object obj)
@@ -124,13 +136,15 @@ namespace PirateX.Net.NetMQ
 
             _actorService.Start();
             Poller.RunAsync();
+            PullPoller.RunAsync();
         }
 
         public virtual void Stop()
         {
             Poller?.Stop();
-            PullSocket?.Close();
+            PullPoller?.Stop();
 
+            PullSocket?.Close();
             _actorService.Stop();
         }
 
