@@ -27,7 +27,6 @@ namespace PirateX.Net.NetMQ
         private NetMQPoller PullPoller { get; set; }
 
         private readonly NetMQQueue<NetMQMessage> MessageQueue = new NetMQQueue<NetMQMessage>();
-        private readonly NetMQQueue<NetMQMessage> PullQueue = new NetMQQueue<NetMQMessage>();
 
         private IActorService _actorService;
         public ActorNetService(IActorService actorService, ActorConfig config)
@@ -47,58 +46,13 @@ namespace PirateX.Net.NetMQ
 
             PushSocket = new PushSocket(config.PushsocketString);
             Poller = new NetMQPoller() { PushSocket, MessageQueue };
-            PullPoller = new NetMQPoller(){ PullSocket, PullQueue };
+            PullPoller = new NetMQPoller(){ PullSocket };
 
             MessageQueue.ReceiveReady += (sender, args) =>
             {
                 PushSocket.SendMultipartMessage(args.Queue.Dequeue());
             };
 
-            PullQueue.ReceiveReady += ProcessTaskPullSocket2;
-        }
-
-        private void ProcessTaskPullSocket2(object sender, NetMQQueueEventArgs<NetMQMessage> e)
-        {
-            var msg = e.Queue.Dequeue();
-
-#if PERFORM
-            var t1 = DateTime.UtcNow.Ticks;
-#endif
-
-            var version = msg[0].Buffer[0];
-            var action = msg[1].Buffer[0];
-
-            if (action == 0)
-                return;
-
-
-            var context = new ActorContext()
-            {
-                Version = version,//版本号
-                Action = action,
-                Request = new PirateXRequestInfo(
-                    msg[2].Buffer, //信息头
-                    msg[3].Buffer)//信息体
-                ,
-                //ResponseCovnert = "protobuf",
-                RemoteIp = msg[4].ConvertToString(),
-                LastNo = msg[5].ConvertToInt32(),
-                SessionId = msg[6].ConvertToString()
-            };
-
-#if PERFORM
-            context.Request.Headers.Add("_itin_1_", $"{t1}");
-            context.Request.Headers.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
-#endif
-            _actorService.OnReceive(context);
-            //            ThreadPool.QueueUserWorkItem(new WaitCallback(CallActor), context);
-            /*Task.Factory.StartNew(() => _actorService.OnReceive(context)).ContinueWith(t =>
-            {
-                //发生内部错误
-
-                //发生异常需要处理
-                //t.Exception
-            }, TaskContinuationOptions.OnlyOnFaulted);*/
         }
 
         /// <summary>
@@ -108,8 +62,46 @@ namespace PirateX.Net.NetMQ
         /// <param name="e"></param>
         protected void ProcessTaskPullSocket(object sender, NetMQSocketEventArgs e)
         {
-            var msg = e.Socket.ReceiveMultipartMessage();
-            PullQueue.Enqueue(msg);
+            var msg1 = e.Socket.ReceiveMultipartMessage();
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                try
+                {
+                    var msg = (NetMQMessage)state;
+
+                    var version = msg[0].Buffer[0];
+                    var action = msg[1].Buffer[0];
+
+                    if (action == 0)
+                        return;
+
+
+                    var context = new ActorContext()
+                    {
+                        Version = version,//版本号
+                        Action = action,
+                        Request = new PirateXRequestInfo(
+                            msg[2].Buffer, //信息头
+                            msg[3].Buffer)//信息体
+                        ,
+                        //ResponseCovnert = "protobuf",
+                        RemoteIp = msg[4].ConvertToString(),
+                        LastNo = msg[5].ConvertToInt32(),
+                        SessionId = msg[6].ConvertToString()
+                    };
+
+#if PERFORM
+                    context.Request.Headers.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
+#endif
+                    _actorService.OnReceive(context);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                }
+
+            },msg1);
         }
 
         private void CallActor(object obj)

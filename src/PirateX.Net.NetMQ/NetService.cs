@@ -77,8 +77,7 @@ namespace PirateX.Net.NetMQ
 
             PushQueue.ReceiveReady += (o, args) =>
             {
-                var msg = PushQueue.Dequeue();
-                sender.SendMultipartMessage(msg);
+                sender.SendMultipartMessage(args.Queue.Dequeue());
             };
 
             responseSocket.ReceiveReady += ProcessResponse;
@@ -217,11 +216,8 @@ namespace PirateX.Net.NetMQ
             msg.Append(protocolPackage.LastNo);
             msg.Append(protocolPackage.Id);
 
-
-            sender.SendMultipartMessage(msg);
-
             //加入队列
-            //PushQueue.Enqueue(msg);
+            PushQueue.Enqueue(msg);
         }
 
 
