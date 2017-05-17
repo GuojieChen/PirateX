@@ -52,7 +52,7 @@ namespace PirateX.Protocol.Package
         [ProtoMember(4)]
         public string Sign { get; set; }
 
-        [ProtoMember(6)]
+        [ProtoMember(5)]
         public string Uid { get; set; }
     }
 }
