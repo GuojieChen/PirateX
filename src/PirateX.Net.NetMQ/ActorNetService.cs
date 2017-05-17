@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -31,6 +32,7 @@ namespace PirateX.Net.NetMQ
             this._actorService = actorService;
             _actorService.NetService = this;
             this.config = config;
+
         }
 
         private void SetUp()
@@ -81,15 +83,29 @@ namespace PirateX.Net.NetMQ
 #if PERFORM
             context.Request.Headers.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
 #endif
-
-
-            Task.Factory.StartNew(() => _actorService.OnReceive(context)).ContinueWith(t =>
+            _actorService.OnReceive(context);
+            //            ThreadPool.QueueUserWorkItem(new WaitCallback(CallActor), context);
+            /*Task.Factory.StartNew(() => _actorService.OnReceive(context)).ContinueWith(t =>
             {
                 //发生内部错误
 
                 //发生异常需要处理
                 //t.Exception
-            }, TaskContinuationOptions.OnlyOnFaulted);
+            }, TaskContinuationOptions.OnlyOnFaulted);*/
+
+        }
+
+        private void CallActor(object obj)
+        {
+            var context = obj as ActorContext;
+            if (context != null)
+            {
+                _actorService.OnReceive(context);
+            }
+            else
+            {
+                throw new Exception("call actor param type error");
+            }
         }
 
         protected void EnqueueMessage(NetMQMessage message)

@@ -136,8 +136,8 @@ namespace PirateX.Core.Actor
             OnlineManager = ServerContainer.ServerIoc.Resolve<ISessionManager>();
 
 
-
             
+
         }
 
         public virtual void Start()
@@ -196,13 +196,13 @@ namespace PirateX.Core.Actor
 
         public virtual void OnSessionClosed(PirateSession session)
         {
-            
+
         }
 
         public void OnReceive(ActorContext context)
         {
 #if PERFORM
-            context.Request.Headers.Add("_t1_",$"{DateTime.UtcNow.GetTimestamp()}");
+            context.Request.Headers.Add("_t1_", $"{DateTime.UtcNow.Ticks}");
 #endif
 
 
@@ -233,7 +233,7 @@ namespace PirateX.Core.Actor
 
 
 #if PERFORM
-            context.Request.Headers.Add("_t2_",$"{DateTime.UtcNow.GetTimestamp()}");
+            context.Request.Headers.Add("_t2_", $"{DateTime.UtcNow.Ticks}");
 #endif
 
             var format = context.Request.Headers["format"];
@@ -242,7 +242,7 @@ namespace PirateX.Core.Actor
             else
                 context.ResponseCovnert = DefaultResponseCovnert;
 
-            var lang = context.Request .Headers["lang"];
+            var lang = context.Request.Headers["lang"];
             if (!string.IsNullOrEmpty(lang))
                 Thread.CurrentThread.CurrentUICulture = Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
 
@@ -260,7 +260,7 @@ namespace PirateX.Core.Actor
             }
 
 #if PERFORM
-            context.Request.Headers.Add("_t3_",$"{DateTime.UtcNow.GetTimestamp()}");
+            context.Request.Headers.Add("_t3_", $"{DateTime.UtcNow.Ticks}");
 #endif
 
             //执行动作
@@ -277,7 +277,7 @@ namespace PirateX.Core.Actor
                         PirateSession session;
 
 #if PERFORM
-            context.Request.Headers.Add("_t4_",$"{DateTime.UtcNow.GetTimestamp()}");
+                        context.Request.Headers.Add("_t4_", $"{DateTime.UtcNow.Ticks}");
 #endif
 
                         if (Equals(actionname, "NewSeed"))
@@ -318,13 +318,13 @@ namespace PirateX.Core.Actor
                         action.MessageSender = this;
 
 #if PERFORM
-            context.Request.Headers.Add("_t5_",$"{DateTime.UtcNow.GetTimestamp()}");
+                        context.Request.Headers.Add("_t5_", $"{DateTime.UtcNow.Ticks}");
 #endif
 
                         action.Execute();
 
 #if PERFORM
-            context.Request.Headers.Add("_t6_",$"{DateTime.UtcNow.GetTimestamp()}");
+                        context.Request.Headers.Add("_t6_", $"{DateTime.UtcNow.Ticks}");
 #endif
 
                         //session = OnlineManager.GetOnlineRole(token.Rid);
@@ -335,6 +335,7 @@ namespace PirateX.Core.Actor
                     catch (Exception exception)
                     {
                         HandleException(context, exception);
+                        Console.WriteLine(exception.Message);
                     }
                 }
                 else
@@ -380,7 +381,6 @@ namespace PirateX.Core.Actor
         {
             if (string.IsNullOrEmpty(token))
                 throw new PirateXException($"{StatusCode.BadRequest}", "invalidToken");
-            Console.WriteLine(token);
             var odatas = Convert.FromBase64String(token);
 
             return odatas.FromProtobuf<Token>();
@@ -401,7 +401,7 @@ namespace PirateX.Core.Actor
             if (DateTime.Now.GetTimestamp() - token.Ts < 1000 * 60 * 60)
                 return true;
 
-            return false; 
+            return false;
         }
 
         protected virtual void HandleException(ActorContext context, Exception e)
@@ -505,7 +505,7 @@ namespace PirateX.Core.Actor
         /// <typeparam name="T"></typeparam>
         /// <param name="context"></param>
         /// <param name="t"></param>
-        public void SendSeed<T>(ActorContext context,byte cryptobyte,byte[] clientkeys,byte[] serverkeys,  T t)
+        public void SendSeed<T>(ActorContext context, byte cryptobyte, byte[] clientkeys, byte[] serverkeys, T t)
         {
             var headers = new NameValueCollection
             {
@@ -527,7 +527,7 @@ namespace PirateX.Core.Actor
                 Logger.Debug($"S2C #{context.Token.Rid}# #{context.RemoteIp}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {Encoding.UTF8.GetString(body)}");
             }
 
-            NetService.Seed(context, headers, cryptobyte,clientkeys,serverkeys, body);
+            NetService.Seed(context, headers, cryptobyte, clientkeys, serverkeys, body);
         }
 
         //public void PushMessage<T>(string sessionid, T t)

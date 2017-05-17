@@ -21,23 +21,46 @@ namespace PirateX.FrameLossTest
         private static double span2Sum = 0.0;
         private static double span3Sum = 0.0;
         private static double span4Sum = 0.0;
+
+        private static double spanT1Sum = 0.0;
+        private static double spanT2Sum = 0.0;
+        private static double spanT3Sum = 0.0;
+
         private static int spanCount = 0;
         private static int newSeedCount = 0;
-
+        private static string host = "192.168.1.119";
         private const string TestCommand = "Test";
         static void Main(string[] args)
         {
-            string c = args[0];
-            if (!string.IsNullOrEmpty(c))
+            if (args != null && args.Length!=0)
             {
-                bool result = int.TryParse(c, out Count);
-                if(result)
-                    Console.WriteLine($"设置{Count}个客户端成功");
-                else
+                if (args.Length >= 2)
                 {
-                    Console.WriteLine($"本次测试默认{Count}个客户端");
+                    string c = args[1];
+                    if (!string.IsNullOrEmpty(c))
+                    {
+                        bool result = int.TryParse(c, out Count);
+                        if (result)
+                            Console.WriteLine($"设置{Count}个客户端成功");
+                        else
+                        {
+                            throw new Exception("客户端数量设置错误，应该为一个Int范围内的值");
+                        }
+                        Thread.Sleep(500);
+                    }
                 }
-                Thread.Sleep(500);
+                if (args.Length >= 1)
+                {
+                    string host_str = args[0];
+                    if (!string.IsNullOrEmpty(host_str))
+                    {
+                        host = host_str;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine($"本次测试默认{Count}个客户端");
             }
             mre = new ManualResetEvent(false);
             for (int i = 0; i < Count; i++)
@@ -57,10 +80,19 @@ namespace PirateX.FrameLossTest
             var average2 = span2Sum / spanCount;
             var average3 = span3Sum / spanCount;
             var average4 = span4Sum / spanCount;
+
+            var averageT1 = spanT1Sum / spanCount;
+            var averageT2 = spanT2Sum / spanCount;
+            var averageT3 = spanT3Sum / spanCount;
+
             Console.WriteLine("average tin->tout time loss:{0} ms", average1);
             Console.WriteLine("average tin->itin time loss:{0} ms", average2);
             Console.WriteLine("average itin->itout time loss:{0} ms", average3);
             Console.WriteLine("average itout->tout time loss:{0} ms", average4);
+
+            Console.WriteLine("average itin1->itin thread start time loss:{0} ms", averageT1);
+            Console.WriteLine("average itin5->itin1 OnReceive method process time loss:{0} ms", averageT2);
+            Console.WriteLine("average itin6->itin5 send message time loss:{0} ms", averageT3);
             Console.Read();
         }
 
@@ -68,7 +100,7 @@ namespace PirateX.FrameLossTest
         {
             int index = (int)i;
             Console.WriteLine("loss test thread started " + index);
-            string host = "192.168.1.119";
+//            string host = "192.168.1.232";
             int port = 4012;
             int userId = 30110 + index;
             int serverId = 2;
@@ -95,13 +127,28 @@ namespace PirateX.FrameLossTest
                     {
                         var tin = Convert.ToInt64(args.Package.Headers["_tin_"]);
                         var itin = Convert.ToInt64(args.Package.Headers["_itin_"]);
+
+                        var itin1 = Convert.ToInt64(args.Package.Headers["_t1_"]);
+                        var itin2 = Convert.ToInt64(args.Package.Headers["_t2_"]);
+                        var itin3 = Convert.ToInt64(args.Package.Headers["_t3_"]);
+                        var itin4 = Convert.ToInt64(args.Package.Headers["_t4_"]);
+                        var itin5 = Convert.ToInt64(args.Package.Headers["_t5_"]);
+                        var itin6 = Convert.ToInt64(args.Package.Headers["_t6_"]);
+                        Console.WriteLine(itin6 + "   " + index);
+
                         var itout = Convert.ToInt64(args.Package.Headers["_itout_"]);
                         var tout = Convert.ToInt64(args.Package.Headers["_tout_"]);
                         var span_tin_tout = ((double)(tout - tin)) / TimeSpan.TicksPerMillisecond;
                         var span_tin_itin = ((double)(itin - tin)) / TimeSpan.TicksPerMillisecond;
                         var span_itin_itout = ((double)(itout - itin)) / TimeSpan.TicksPerMillisecond;
                         var span_itout_tout = ((double)(tout - itout)) / TimeSpan.TicksPerMillisecond;
-                        Console.WriteLine($"{index} span:{span_tin_tout} ms");
+
+                        var span_task_start = ((double)(itin1 - itin)) / TimeSpan.TicksPerMillisecond;
+                        var span_OnReceive_process = ((double)(itin5 - itin1)) / TimeSpan.TicksPerMillisecond;
+                        var span_send_message = ((double)(itin6 - itin5)) / TimeSpan.TicksPerMillisecond;
+                        
+
+//                        Console.WriteLine($"{index} span:{span_tin_tout} ms");
 
                         spanCount++;
 
@@ -110,6 +157,9 @@ namespace PirateX.FrameLossTest
                         span3Sum += span_itin_itout;
                         span4Sum += span_itout_tout;
 
+                        spanT1Sum += span_task_start;
+                        spanT2Sum += span_OnReceive_process;
+                        spanT3Sum += span_send_message;
                     }
                     else
                     {
