@@ -58,6 +58,10 @@ namespace PirateX.Net.NetMQ
         /// <param name="e"></param>
         protected void ProcessTaskPullSocket(object sender, NetMQSocketEventArgs e)
         {
+#if PERFORM
+            var t1 = DateTime.UtcNow.Ticks;
+#endif
+
             var msg = e.Socket.ReceiveMultipartMessage();
             var version = msg[0].Buffer[0];
             var action = msg[1].Buffer[0];
@@ -81,6 +85,7 @@ namespace PirateX.Net.NetMQ
             };
 
 #if PERFORM
+            context.Request.Headers.Add("_itin_1_", $"{t1}");
             context.Request.Headers.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
 #endif
             _actorService.OnReceive(context);
