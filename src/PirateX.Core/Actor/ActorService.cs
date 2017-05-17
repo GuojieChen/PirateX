@@ -341,7 +341,7 @@ namespace PirateX.Core.Actor
                     var headers = new NameValueCollection()
                     {
                         {"c", context.Request.C},
-                        {"i", MessageType.Rep},
+                        {"i", MessageType.Boradcast},
                         {"o", Convert.ToString(context.Request.O)},
                         {"code", Convert.ToString((int) StatusCode.NotFound)},
                         {"errorCode", "NotFound"},
@@ -444,7 +444,7 @@ namespace PirateX.Core.Actor
             var headers = new NameValueCollection
             {
                 {"c", context.Request.C},
-                {"i", MessageType.Rep},
+                {"i", MessageType.Boradcast},
                 {"o", Convert.ToString(context.Request.O)},
                 {"code", Convert.ToString(code)},
                 {"errorCode", errorCode},
@@ -548,10 +548,10 @@ namespace PirateX.Core.Actor
             {
                 {"c", typeof(T).Name},
                 { "i", MessageType.Boradcast},
-                {"format","json"} // TODO 默认解析器
+                {"format",DefaultResponseCovnert} // TODO 默认解析器
             };
 
-            NetService.PushMessage(rid, headers, ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>("json").SerializeObject(t));
+            NetService.PushMessage(rid, headers, ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
         }
 
         public void SendMessage<T>(ActorContext context, string name, T t)

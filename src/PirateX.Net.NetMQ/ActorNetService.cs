@@ -43,7 +43,10 @@ namespace PirateX.Net.NetMQ
             PushSocket = new PushSocket(config.PushsocketString);
             Poller = new NetMQPoller() { PullSocket, PushSocket, MessageQueue };
 
-            MessageQueue.ReceiveReady += (sender, args) => { PushSocket.SendMultipartMessage(args.Queue.Dequeue()); };
+            MessageQueue.ReceiveReady += (sender, args) =>
+            {
+                PushSocket.SendMultipartMessage(args.Queue.Dequeue());
+            };
         }
 
         /// <summary>
