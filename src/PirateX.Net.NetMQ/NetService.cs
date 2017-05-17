@@ -217,8 +217,11 @@ namespace PirateX.Net.NetMQ
             msg.Append(protocolPackage.LastNo);
             msg.Append(protocolPackage.Id);
 
+
+            sender.SendMultipartMessage(msg);
+
             //加入队列
-            PushQueue.Enqueue(msg);
+            //PushQueue.Enqueue(msg);
         }
 
 
