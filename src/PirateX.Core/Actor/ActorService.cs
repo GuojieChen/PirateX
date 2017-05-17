@@ -201,11 +201,6 @@ namespace PirateX.Core.Actor
 
         public void OnReceive(ActorContext context)
         {
-#if PERFORM
-            context.Request.Headers.Add("_t1_", $"{DateTime.UtcNow.Ticks}");
-#endif
-
-
             if (context.Action == 2)//断线
             {
                 var session = OnlineManager.GetOnlineRole(context.Token.Rid);
@@ -231,11 +226,6 @@ namespace PirateX.Core.Actor
             if (!VerifyToken(ServerContainer.GetDistrictConfig(token.Did), token))
                 throw new PirateXException("AuthError", "授权失败") { Code = StatusCode.Unauthorized };
 
-
-#if PERFORM
-            context.Request.Headers.Add("_t2_", $"{DateTime.UtcNow.Ticks}");
-#endif
-
             var format = context.Request.Headers["format"];
             if (!string.IsNullOrEmpty(format))
                 context.ResponseCovnert = format;
@@ -259,10 +249,6 @@ namespace PirateX.Core.Actor
                 return;
             }
 
-#if PERFORM
-            context.Request.Headers.Add("_t3_", $"{DateTime.UtcNow.Ticks}");
-#endif
-
             //执行动作
             var actionname = context.Request.C;
             using (var action = GetActionInstanceByName(actionname))
@@ -274,12 +260,6 @@ namespace PirateX.Core.Actor
                         //context.Request.Token
                         //获取session信息  从缓存中去获取session信息  session没有的时候需要提示客户端重新连接
 
-                        PirateSession session;
-
-#if PERFORM
-                        context.Request.Headers.Add("_t4_", $"{DateTime.UtcNow.Ticks}");
-#endif
-
                         if (Equals(actionname, "NewSeed"))
                         {
                         }
@@ -290,47 +270,13 @@ namespace PirateX.Core.Actor
                             if (container == null)
                                 throw new PirateXException("ContainerNull", "容器未定义") { Code = StatusCode.ContainerNull };
                             action.Reslover = container.BeginLifetimeScope();
-
-                            //if (session == null)
-                            //{
-                            //    session = ToSession(context, token);
-                            //    session.ClientKeys = context.ClientKeys;
-                            //    session.ServerKeys = context.ServerKeys;
-
-                            //}
-                            //else if (!Equals(session.SessionId, context.SessionId))
-                            //{
-                            //    //单设备登陆控制
-                            //    throw new PirateXException("ReLogin", "ReLogin") { Code = StatusCode.ReLogin };
-                            //}
-
-                            //action.Session = session;
                         }
-
-                        //session.LastUtcAt = DateTime.UtcNow;
-
-                        //TODO 对 r o t 进行验证
-
 
                         action.ServerReslover = ServerContainer.ServerIoc;
                         action.Context = context;
                         action.Logger = Logger;
                         action.MessageSender = this;
-
-#if PERFORM
-                        context.Request.Headers.Add("_t5_", $"{DateTime.UtcNow.Ticks}");
-#endif
-
                         action.Execute();
-
-#if PERFORM
-                        context.Request.Headers.Add("_t6_", $"{DateTime.UtcNow.Ticks}");
-#endif
-
-                        //session = OnlineManager.GetOnlineRole(token.Rid);
-                        //session.LastUtcAt = DateTime.UtcNow;
-
-                        //ServerContainer.ServerIoc.Resolve<ISessionManager>().Login(session);
                     }
                     catch (Exception exception)
                     {

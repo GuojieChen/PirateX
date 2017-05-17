@@ -136,6 +136,7 @@
     <Compile Include="Actor\IActorNetService.cs" />
     <Compile Include="Net\INetManager.cs" />
     <Compile Include="Net\INetService.cs" />
+    <Compile Include="ProfilerLog.cs" />
     <Compile Include="Profiler\PirateXProfiler.cs" />
     <Compile Include="Session\MemorySessionManager.cs" />
     <Compile Include="Push\IPushService.cs" />

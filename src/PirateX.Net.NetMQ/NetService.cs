@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading;
 using NetMQ;
 using NetMQ.Sockets;
+using PirateX.Core;
 using PirateX.Core.Net;
 using PirateX.Core.Utils;
 using PirateX.Protocol;
@@ -97,8 +98,6 @@ namespace PirateX.Net.NetMQ
             {
                 try
                 {
-                    var t1 = DateTime.Now.Ticks;
-
                     var msg = (NetMQMessage)state;
 
                     //msg[0].Buffer //版本号
@@ -116,14 +115,6 @@ namespace PirateX.Net.NetMQ
                         ContentBytes = content
                     };
 
-                    var t2 = DateTime.Now.Ticks;
-
-#if PERFORM
-                    var r = new PirateXResponseInfo(response);
-                    r.Headers.Add("_tout_", $"{DateTime.UtcNow.Ticks}");
-                    r.Headers.Add("_tout_t_", $"{t2 - t1}");
-                    response.HeaderBytes = r.GetHeaderBytes();
-#endif
 
                     IProtocolPackage protocolPackage = null;
 
@@ -136,6 +127,26 @@ namespace PirateX.Net.NetMQ
                     }
                     else
                         protocolPackage = NetSend.GetProtocolPackage(rid);
+
+
+#if PERFORM
+                    var r = new PirateXResponseInfo(response);
+                    r.Headers.Add("_tout_", $"{DateTime.UtcNow.Ticks}");
+                    response.HeaderBytes = r.GetHeaderBytes();
+
+
+                    new ProfilerLog()
+                    {
+                        Token = r.Headers["token"],
+                        Ip = protocolPackage.RemoteEndPoint.ToString(),
+                        Tout = new Ticks()
+                        {
+                            Start = Convert.ToInt64(r.Headers["_itout_"]),
+                            End = Convert.ToInt64(r.Headers["_tout_"])
+                        }
+                    }.Log();
+
+#endif
 
 
                     if (lastNo >= 0)

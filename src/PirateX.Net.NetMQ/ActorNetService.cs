@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
+using PirateX.Core;
 using PirateX.Core.Actor;
 using PirateX.Core.Net;
 using PirateX.Core.Session;
@@ -17,6 +18,8 @@ namespace PirateX.Net.NetMQ
 {
     public class ActorNetService : IActorNetService
     {
+
+
         private ActorConfig config;
 
         private PullSocket PullSocket { get; set; }
@@ -93,6 +96,18 @@ namespace PirateX.Net.NetMQ
 
 #if PERFORM
                     context.Request.Headers.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
+
+                    new ProfilerLog()
+                    {
+                        Token = context.Request.Token,
+                        Ip = context.RemoteIp,
+                        Tin = new Ticks()
+                        {
+                            Start = Convert.ToInt64(context.Request.Headers["_tin_"]),
+                            End = Convert.ToInt64(context.Request.Headers["_tin_"])
+                        }
+                    }.Log();
+
 #endif
                     _actorService.OnReceive(context);
                 }
@@ -189,6 +204,19 @@ namespace PirateX.Net.NetMQ
 
 #if PERFORM
             header.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
+
+
+            new ProfilerLog()
+            {
+                Token = context.Request.Token,
+                Ip = context.RemoteIp,
+                iTin = new Ticks()
+                {
+                    Start = Convert.ToInt64(context.Request.Headers["_itin_"]),
+                    End = Convert.ToInt64(context.Request.Headers["_itout_"])
+                }
+            }.Log();
+
 #endif
 
             var repMsg = new NetMQMessage();
