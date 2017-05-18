@@ -53,19 +53,31 @@ namespace PirateX.WinClient
                 _client = null;
             }
 
-
             //var headerQuery = new Name
-            var tokenQuery = HttpUtility.ParseQueryString(txtToken.Text.Trim());
-            var token = new Token()
+
+            var tokenbase64 = string.Empty;
+            try
             {
-                Did = Convert.ToInt32(tokenQuery["did"]),
-                Rid = Convert.ToInt32(tokenQuery["rid"]),
-                Uid = tokenQuery["uid"]
-            };
+                Convert.FromBase64String(txtToken.Text.Trim());
+                tokenbase64 = txtToken.Text.Trim();
+            }
+            catch (Exception exception)
+            {
+                var tokenQuery = HttpUtility.ParseQueryString(txtToken.Text.Trim());
+                var token = new Token()
+                {
+                    Did = Convert.ToInt32(tokenQuery["did"]),
+                    Rid = Convert.ToInt32(tokenQuery["rid"]),
+                    Uid = tokenQuery["uid"]
+                };
 
-            var pbCovnert = new PirateX.Protocol.Package.ResponseConvert.ProtoResponseConvert();
+                var pbCovnert = new PirateX.Protocol.Package.ResponseConvert.ProtoResponseConvert();
+                tokenbase64 = Convert.ToBase64String(pbCovnert.SerializeObject(token));
+            }
 
-            _client = new PirateXClient($"ps://{txtHost.Text.Trim()}:{txtPort.Text.Trim()}", Convert.ToBase64String(pbCovnert.SerializeObject(token)));
+            
+
+            _client = new PirateXClient($"ps://{txtHost.Text.Trim()}:{txtPort.Text.Trim()}", HttpUtility.UrlEncode(tokenbase64) );
             if (!string.IsNullOrEmpty(comboBox1.Text))
                 _client.DefaultFormat = comboBox1.Text;
             //_client.ExHeaders
