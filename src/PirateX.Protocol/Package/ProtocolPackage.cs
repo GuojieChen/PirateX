@@ -59,7 +59,10 @@ namespace PirateX.Protocol.Package
                         //信息头加密
                         headerbytes = crypto.Encode(headerbytes, PackKeys);
                         //数据体加密
-                        contentbytes = crypto.Encode(contentbytes, PackKeys);
+                        if(contentbytes == null)
+                            contentbytes = new byte[0];
+                        else 
+                            contentbytes = crypto.Encode(contentbytes, PackKeys);
                     }
                 }
             }
