@@ -237,11 +237,11 @@ namespace PirateX.Core.Actor
                 Thread.CurrentThread.CurrentUICulture = Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
 
             //request timeout
-            if ((DateTime.UtcNow.GetTimestamp() - context.Request.Timestamp) > 1000 * 60 * 2)
-            {
-                Logger.Warn($"C2S Timeout t #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
-                return;
-            }
+            //if ((DateTime.UtcNow.GetTimestamp() - context.Request.Timestamp) > 1000 * 60 * 2)
+            //{
+            //    Logger.Warn($"C2S Timeout t #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
+            //    return;
+            //}
 
             if (context.Request.O <= context.LastNo)
             {

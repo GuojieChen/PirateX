@@ -35,7 +35,7 @@ namespace PirateX.Net.NetMQ
         //接收全局信息，可能是tool 、gm等后台，广播给worker
         private Proxy GlobalServerProxy { get; set; }
 
-        public NetMQQueue<NetMQMessage> PushQueue = new NetMQQueue<NetMQMessage>();
+        public NetMQQueue<byte[]> PushQueue = new NetMQQueue<byte[]>();
 
         private NetMQPoller Poller;
 
@@ -78,7 +78,7 @@ namespace PirateX.Net.NetMQ
 
             PushQueue.ReceiveReady += (o, args) =>
             {
-                sender.SendMultipartMessage(args.Queue.Dequeue());
+                sender.SendFrame(args.Queue.Dequeue());
             };
 
             responseSocket.ReceiveReady += ProcessResponse;
@@ -93,40 +93,42 @@ namespace PirateX.Net.NetMQ
         {
             //TODO https://netmq.readthedocs.io/en/latest/poller/   #Performance
 
-            var msg1 = responseSocket.ReceiveMultipartMessage();//TryReceiveMultipartMessage();
+            var msg1 = responseSocket.ReceiveFrameBytes();//TryReceiveMultipartMessage();
             ThreadPool.QueueUserWorkItem(state =>
             {
                 try
                 {
-                    var msg = (NetMQMessage)state;
+                    var msg = (byte[])state;
+
+                    var dout = msg.FromProtobuf<Out>();
 
                     //msg[0].Buffer //版本号
-                    var action = msg[1].Buffer[0];
-                    var sessionid = msg[2].ConvertToString();
-                    var lastNo = msg[3].ConvertToInt32();
-                    var header = msg[4].Buffer;
-                    var content = msg[5].Buffer;
-                    var rid = msg[6].ConvertToInt32();
+                    //var action = msg[1].Buffer[0];
+                    //var sessionid = msg[2].ConvertToString();
+                    //var lastNo = msg[3].ConvertToInt32();
+                    //var header = msg[4].Buffer;
+                    //var content = msg[5].Buffer;
+                    //var rid = msg[6].ConvertToInt32();
 
 
                     var response = new PirateXResponsePackage()
                     {
-                        HeaderBytes = header,
-                        ContentBytes = content
+                        HeaderBytes = dout.HeaderBytes,
+                        ContentBytes = dout.BodyBytes
                     };
 
 
                     IProtocolPackage protocolPackage = null;
 
-                    if (Equals((Action) action, Action.Seed))
+                    if (Equals(dout.Action, Action.Seed))
                     {
-                        protocolPackage = NetSend.GetProtocolPackage(sessionid);
-                        protocolPackage.Rid = rid;
+                        protocolPackage = NetSend.GetProtocolPackage(dout.SessionId);
+                        protocolPackage.Rid = dout.Id;
 
                         NetSend.Attach(protocolPackage);
                     }
                     else
-                        protocolPackage = NetSend.GetProtocolPackage(rid);
+                        protocolPackage = NetSend.GetProtocolPackage(dout.Id);
 
 
 #if PERFORM
@@ -149,17 +151,17 @@ namespace PirateX.Net.NetMQ
 #endif
 
 
-                    if (lastNo >= 0)
-                        protocolPackage.LastNo = lastNo;
+                    if (dout.LastNo >= 0)
+                        protocolPackage.LastNo = dout.LastNo;
 
                     var bytes = protocolPackage.PackPacketToBytes(response);
                     protocolPackage.Send(bytes);
 
-                    if (Equals((Action)action, Action.Seed))
+                    if (Equals(dout.Action, Action.Seed))
                     {
-                        var clientkey = msg[7].Buffer;
-                        var serverkey = msg[8].Buffer;
-                        var crypto = msg[9].Buffer[0];
+                        var clientkey = dout.ClientKeys;
+                        var serverkey = dout.ServerKeys;
+                        var crypto = dout.Crypto;
 
                         //种子交换  记录种子信息，后续收发数据用得到
                         protocolPackage.PackKeys = serverkey;
@@ -201,7 +203,6 @@ namespace PirateX.Net.NetMQ
 
             if (protocolPackage.CryptoByte > 0)
             {
-
                 var last = NetSend.GetProtocolPackage(protocolPackage.Rid);
                 if (!Equals(last.Id, protocolPackage.Id))
                 {
@@ -218,27 +219,27 @@ namespace PirateX.Net.NetMQ
             request = r.ToRequestPackage();
 #endif
 
-            var msg = new NetMQMessage();
-            msg.Append(new byte[] { 1 });//版本号
-            msg.Append(new byte[] { (byte)Action.Req });//动作
-            msg.Append(request.HeaderBytes);//信息头
-            msg.Append(request.ContentBytes);//信息体
-            msg.Append((protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString());
-            msg.Append(protocolPackage.LastNo);
-            msg.Append(protocolPackage.Id);
-
             //加入队列
-            PushQueue.Enqueue(msg);
+            PushQueue.Enqueue(new In()
+            {
+                Version = 1,
+                Action = Action.Req,
+                HeaderBytes = request.HeaderBytes,
+                QueryBytes = request.ContentBytes,
+                Ip = (protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString(),
+                LastNo = protocolPackage.LastNo,
+                SessionId = protocolPackage.Id,
+            }.ToProtobuf());
         }
 
 
         public virtual void Ping()
         {
-            var msg = new NetMQMessage();
-            msg.Append(new byte[] { 1 });//版本号
-            msg.Append(new byte[] { (byte)Action.Ping });//动作
-            //加入队列
-            PushQueue.Enqueue(msg);
+            PushQueue.Enqueue(new In()
+            {
+                Version = 1,
+                Action = Action.Ping,
+            }.ToProtobuf());
         }
 
         public virtual void OnSessionClosed(IProtocolPackage protocolPackage)
@@ -246,16 +247,15 @@ namespace PirateX.Net.NetMQ
             if (protocolPackage == null)
                 return;
 
-            var msg = new NetMQMessage();
-            msg.Append(new byte[] { 1 });//版本号
-            msg.Append(new byte[] { (byte)Action.Closed });//动作
-            msg.Append(protocolPackage.Id);//sessionid
-            msg.Append(new byte[] { });//信息头
-            msg.Append(new byte[] { });//信息体
-            msg.Append((protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString());
-            msg.Append(protocolPackage.LastNo);
-
-            PushQueue.Enqueue(msg);
+            //加入队列
+            PushQueue.Enqueue(new In()
+            {
+                Version = 1,
+                Action = Action.Closed,
+                Ip = (protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString(),
+                LastNo = protocolPackage.LastNo,
+                SessionId = protocolPackage.Id,
+            }.ToProtobuf());
         }
 
         public virtual void Start()
