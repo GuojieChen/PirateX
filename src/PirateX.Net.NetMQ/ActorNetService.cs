@@ -97,7 +97,7 @@ namespace PirateX.Net.NetMQ
                         Tin = new Ticks()
                         {
                             Start = Convert.ToInt64(context.Request.Headers["_tin_"]),
-                            End = Convert.ToInt64(context.Request.Headers["_tin_"])
+                            End = Convert.ToInt64(context.Request.Headers["_itin_"])
                         }
                     }.Log();
 

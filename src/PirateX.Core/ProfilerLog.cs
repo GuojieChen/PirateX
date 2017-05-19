@@ -57,6 +57,6 @@ namespace PirateX.Core
 
         public long End { get; set; }
 
-        public long Duration { get; set; }
+        public long Duration => End - Start;
     }
 }
