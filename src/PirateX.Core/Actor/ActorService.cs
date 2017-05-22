@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Autofac;
+using Newtonsoft.Json;
 using NLog;
 using PirateX.Core.Actor.ProtoSync;
 using PirateX.Core.Broadcas;
@@ -136,7 +137,7 @@ namespace PirateX.Core.Actor
             OnlineManager = ServerContainer.ServerIoc.Resolve<ISessionManager>();
 
 
-            
+
 
         }
 
@@ -201,15 +202,21 @@ namespace PirateX.Core.Actor
 
         public void OnReceive(ActorContext context)
         {
-            if (context.Action == 2)//断线
+            if (context.Action == 0)
             {
-                var session = OnlineManager.GetOnlineRole(context.Token.Rid);
-                if (session != null)
-                {
-                    //TODO logout
-                    OnlineManager.Logout(session.Id);
-                    OnSessionClosed(session);
-                }
+                return;
+            }
+            else if (context.Action == 2)//断线
+            {
+
+                //TODO  
+                //var session = OnlineManager.GetOnlineRole(context.Token.Rid);
+                //if (session != null)
+                //{
+                //    //TODO logout
+                //    OnlineManager.Logout(session.Id);
+                //    OnSessionClosed(session);
+                //}
                 return;
             }
 
@@ -276,25 +283,9 @@ namespace PirateX.Core.Actor
                         action.Context = context;
                         action.Logger = Logger;
                         action.MessageSender = this;
-#if PERFORM
-                        var texcute1 = DateTime.UtcNow.Ticks;
-#endif
+
+
                         action.Execute();
-
-#if PERFORM
-                        var texcute2 = DateTime.UtcNow.Ticks;
-
-                        new ProfilerLog()
-                        {
-                            Token = context.Request.Token,
-                            Ip = context.RemoteIp,
-                            Tin = new Ticks()
-                            {
-                                Start = texcute1,
-                                End = texcute2
-                            }
-                        }.Log();
-#endif
                     }
                     catch (Exception exception)
                     {
@@ -356,12 +347,12 @@ namespace PirateX.Core.Actor
         /// <returns></returns>
         protected virtual bool VerifyToken(IDistrictConfig config, IToken token)
         {
-            var isign = $"{token.Did}{token.Rid}{token.Ts}{config.SecretKey}".GetMD5();
+            var isign = $"{token.Did}{token.Rid}{token.Ts}{token.Uid}{config.SecretKey}".GetMD5();
+
+            if (DateTime.UtcNow.GetTimestamp()/1000 - token.Ts >= 1000 * 60 * 60 *5)//5h
+                return false;
 
             if (Equals(isign, token.Sign))
-                return true;
-
-            if (DateTime.Now.GetTimestamp() - token.Ts < 1000 * 60 * 60)
                 return true;
 
             return false;
@@ -514,6 +505,11 @@ namespace PirateX.Core.Actor
                 { "i", MessageType.Boradcast},
                 {"format",DefaultResponseCovnert} // TODO 默认解析器
             };
+
+            if (Logger.IsDebugEnabled && t != null)
+            {
+                Logger.Debug($"S2C #{rid}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {JsonConvert.SerializeObject(t)}");
+            }
 
             NetService.PushMessage(rid, headers, ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
         }

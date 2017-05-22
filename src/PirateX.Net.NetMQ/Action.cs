@@ -12,5 +12,6 @@ namespace PirateX.Net.NetMQ
         Req = 1,
         Closed = 2,
         Seed = 3,    //种子交换
+        Push = 4,
     }
 }

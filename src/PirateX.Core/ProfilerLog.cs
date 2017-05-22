@@ -6,32 +6,27 @@ namespace PirateX.Core
 {
     public class ProfilerLog
     {
-        private static readonly Logger ProfilerLogger = LogManager.GetLogger("_Profiler_");
+        public static readonly Logger ProfilerLogger = LogManager.GetLogger("_PirateX_");
 
         public string Token { get; set; }
 
         public string Ip { get; set; }
 
         [JsonProperty("@timestamp")]
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public DateTime Timestamp => StartAt; 
 
-        /// <summary>
-        /// tin --> itin
-        /// </summary>
-        public Ticks Tin { get; set; }
+        public DateTime StartAt { get; set; }
 
-        /// <summary>
-        /// itin --> itout
-        /// </summary>
-        public Ticks iTin { get; set; }
+        public DateTime EndAt { get; set; }
 
-        /// <summary>
-        /// itout-->tout
-        /// </summary>
-        public Ticks Tout { get; set; }
+        public double Milliseconds => EndAt.Subtract(StartAt).TotalMilliseconds;
 
+        public string C { get; set; }
 
-        public Ticks TExcute { get; set; }
+        public long Tin { get; set; }
+        public long iTin { get; set; }
+        public long Tout { get; set; }
+
 
         private JsonSerializerSettings _settings = new JsonSerializerSettings()
         {
@@ -45,18 +40,8 @@ namespace PirateX.Core
 
         public void Log()
         {
-            if(ProfilerLogger.IsInfoEnabled)
+            if (ProfilerLogger.IsInfoEnabled)
                 ProfilerLogger.Info(this.ToString);
         }
-    }
-
-
-    public class Ticks
-    {
-        public long Start { get; set; }
-
-        public long End { get; set; }
-
-        public long Duration { get; set; }
     }
 }

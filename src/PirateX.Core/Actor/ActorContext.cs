@@ -1,4 +1,5 @@
-﻿using PirateX.Protocol.Package;
+﻿using System.Collections.Generic;
+using PirateX.Protocol.Package;
 
 namespace PirateX.Core.Actor
 {
@@ -26,5 +27,7 @@ namespace PirateX.Core.Actor
         /// 客户端请求自增序列号
         /// </summary>
         public int LastNo { get; set; }
+
+        public Dictionary<string ,string> Profile { get; set; }
     }
 }

@@ -18,10 +18,10 @@ namespace PirateX.Net.NetMQ
         public Action Action { get; set; }
 
         [ProtoMember(3)]
-        public byte[] HeaderBytes { get; set; }
+        public byte[] HeaderBytes { get; set; } = new byte[0];
 
         [ProtoMember(4)]
-        public byte[] QueryBytes { get; set; }
+        public byte[] QueryBytes { get; set; } = new byte[0];
 
         [ProtoMember(5)]
         public string Ip { get; set; }
@@ -31,5 +31,10 @@ namespace PirateX.Net.NetMQ
 
         [ProtoMember(7)]
         public string SessionId { get; set; }
+        /// <summary>
+        /// 打点
+        /// </summary>
+        [ProtoMember(8)]
+        public Dictionary<string,string> Profile  = new Dictionary<string, string>();
     }
 }

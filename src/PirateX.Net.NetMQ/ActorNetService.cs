@@ -13,7 +13,6 @@ using PirateX.Core.Net;
 using PirateX.Core.Session;
 using PirateX.Core.Utils;
 using PirateX.Protocol.Package;
-using PirateX.Protocol.Package.ResponseConvert;
 
 namespace PirateX.Net.NetMQ
 {
@@ -73,6 +72,8 @@ namespace PirateX.Net.NetMQ
 
                     var din = msg.FromProtobuf<In>();
                     
+                    if(ProfilerLog.ProfilerLogger.IsInfoEnabled)
+                        din.Profile.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
 
                     var context = new ActorContext()
                     {
@@ -84,24 +85,10 @@ namespace PirateX.Net.NetMQ
                         ,
                         RemoteIp = din.Ip,
                         LastNo = din.LastNo,
-                        SessionId = din.SessionId
+                        SessionId = din.SessionId,
+                        Profile = din.Profile
                     };
 
-#if PERFORM
-                    context.Request.Headers.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
-
-                    new ProfilerLog()
-                    {
-                        Token = context.Request.Token,
-                        Ip = context.RemoteIp,
-                        Tin = new Ticks()
-                        {
-                            Start = Convert.ToInt64(context.Request.Headers["_tin_"]),
-                            End = Convert.ToInt64(context.Request.Headers["_tin_"])
-                        }
-                    }.Log();
-
-#endif
                     _actorService.OnReceive(context);
                 }
                 catch (Exception exception)
@@ -110,19 +97,6 @@ namespace PirateX.Net.NetMQ
                 }
 
             },bytes);
-        }
-
-        private void CallActor(object obj)
-        {
-            var context = obj as ActorContext;
-            if (context != null)
-            {
-                _actorService.OnReceive(context);
-            }
-            else
-            {
-                throw new Exception("call actor param type error");
-            }
         }
 
         protected void EnqueueMessage(byte[] message)
@@ -150,30 +124,14 @@ namespace PirateX.Net.NetMQ
 
         public void PushMessage(int rid, NameValueCollection headers, byte[] body)
         {
-            //var repMsg = new NetMQMessage();
-            //repMsg.Append(new byte[] { 1 });//版本号
-            //repMsg.Append(new byte[] { (byte)Action.Req });//动作
-            //repMsg.Append("");
-            //repMsg.Append(-1);
-            //repMsg.Append(GetHeaderBytes(headers));//信息头
-            //if (body != null)
-            //    repMsg.Append(body);//信息体
-            //else
-            //    repMsg.AppendEmptyFrame();
-
-            //repMsg.Append(rid);
-
-
-
             EnqueueMessage(new Out()
             {
                 Version = 1,
-                Action = Action.Req,
+                Action = Action.Push,
                 LastNo = -1,
                 HeaderBytes = GetHeaderBytes(headers),
                 BodyBytes = body,
                 Id = rid,
-
             }.ToProtobuf());
         }
 
@@ -185,23 +143,8 @@ namespace PirateX.Net.NetMQ
 
         public void Seed(ActorContext context, NameValueCollection header, byte cryptobyte , byte[] clientkeys,byte[] serverkeys , byte[] body)
         {
-            //var repMsg = new NetMQMessage();
-            //repMsg.Append(new byte[] { context.Version });//版本号
-            //repMsg.Append(new byte[] { (byte)Action.Seed });//动作
-            //repMsg.Append(context.SessionId);//sessionid
-            //repMsg.Append(context.Request.O);
-            //repMsg.Append(GetHeaderBytes(header));//信息头
-            //repMsg.Append(body);
-            //repMsg.Append(context.Token.Rid);
-
-            //repMsg.Append(clientkeys);//客户端密钥
-            //repMsg.Append(serverkeys);//服务端密钥
-            //repMsg.Append(new byte[] { cryptobyte });//加密项
-            //repMsg.Append(context.Token.Rid);
-
-            //EnqueueMessage(repMsg);
-
-
+            if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
+                context.Profile.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
 
             EnqueueMessage(new Out()
             {
@@ -216,29 +159,16 @@ namespace PirateX.Net.NetMQ
                 ClientKeys = clientkeys,
                 ServerKeys = serverkeys,
                 Crypto = cryptobyte,
+
+                Profile = context.Profile
             }.ToProtobuf());
         }
 
 
         public void SendMessage(ActorContext context, NameValueCollection header, byte[] body)
         {
-
-#if PERFORM
-            header.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
-
-
-            new ProfilerLog()
-            {
-                Token = context.Request.Token,
-                Ip = context.RemoteIp,
-                iTin = new Ticks()
-                {
-                    Start = Convert.ToInt64(context.Request.Headers["_itin_"]),
-                    End = Convert.ToInt64(context.Request.Headers["_itout_"])
-                }
-            }.Log();
-
-#endif
+            if(ProfilerLog.ProfilerLogger.IsInfoEnabled)
+                context.Profile.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
 
             EnqueueMessage(new Out()
             {
@@ -248,6 +178,7 @@ namespace PirateX.Net.NetMQ
                 HeaderBytes = GetHeaderBytes(header),
                 BodyBytes = body,
                 Id = context.Token.Rid,
+                Profile = context.Profile
 
             }.ToProtobuf());
         }

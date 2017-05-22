@@ -39,5 +39,11 @@ namespace PirateX.Net.NetMQ
 
         [ProtoMember(10)]
         public byte Crypto { get; set; }
+
+        /// <summary>
+        /// 耗时信息
+        /// </summary>
+        [ProtoMember(11)]
+        public Dictionary<string, string> Profile { get; set; }
     }
 }

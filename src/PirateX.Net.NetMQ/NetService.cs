@@ -102,21 +102,11 @@ namespace PirateX.Net.NetMQ
 
                     var dout = msg.FromProtobuf<Out>();
 
-                    //msg[0].Buffer //版本号
-                    //var action = msg[1].Buffer[0];
-                    //var sessionid = msg[2].ConvertToString();
-                    //var lastNo = msg[3].ConvertToInt32();
-                    //var header = msg[4].Buffer;
-                    //var content = msg[5].Buffer;
-                    //var rid = msg[6].ConvertToInt32();
-
-
                     var response = new PirateXResponsePackage()
                     {
                         HeaderBytes = dout.HeaderBytes,
                         ContentBytes = dout.BodyBytes
                     };
-
 
                     IProtocolPackage protocolPackage = null;
 
@@ -131,25 +121,35 @@ namespace PirateX.Net.NetMQ
                         protocolPackage = NetSend.GetProtocolPackage(dout.Id);
 
 
-#if PERFORM
-                    var r = new PirateXResponseInfo(response);
-                    r.Headers.Add("_tout_", $"{DateTime.UtcNow.Ticks}");
-                    response.HeaderBytes = r.GetHeaderBytes();
-
-
-                    new ProfilerLog()
+                    if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
                     {
-                        Token = r.Headers["token"],
-                        Ip = protocolPackage.RemoteEndPoint.ToString(),
-                        Tout = new Ticks()
+                        if (dout.Action == Action.Req)
                         {
-                            Start = Convert.ToInt64(r.Headers["_itout_"]),
-                            End = Convert.ToInt64(r.Headers["_tout_"])
+                            dout.Profile.Add("_tout_", $"{DateTime.UtcNow.Ticks}");
+
+                            var r = new PirateXResponseInfo(response);
+
+                            foreach (var kp in dout.Profile)
+                            {
+                                if (kp.Key.StartsWith("_"))
+                                    r.Headers.Add(kp.Key, $"{kp.Value}");
+                            }
+                            response.HeaderBytes = r.GetHeaderBytes();
+
+                            new ProfilerLog()
+                            {
+                                Token = r.Headers["token"],
+                                Ip = protocolPackage.RemoteEndPoint.ToString(),
+                                C = r.Headers["c"],
+                                Tin = Convert.ToInt64(dout.Profile["_itin_"]) - Convert.ToInt64(dout.Profile["_tin_"]),
+                                iTin = Convert.ToInt64(dout.Profile["_itout_"]) - Convert.ToInt64(dout.Profile["_itin_"]),
+                                Tout = Convert.ToInt64(dout.Profile["_tout_"]) - Convert.ToInt64(dout.Profile["_itout_"]),
+
+                                StartAt = new DateTime(Convert.ToInt64(dout.Profile["_tin_"]),DateTimeKind.Utc),
+                                EndAt = new DateTime(Convert.ToInt64(dout.Profile["_tout_"]),DateTimeKind.Utc)
+                            }.Log();
                         }
-                    }.Log();
-
-#endif
-
+                    }
 
                     if (dout.LastNo >= 0)
                         protocolPackage.LastNo = dout.LastNo;
@@ -213,14 +213,7 @@ namespace PirateX.Net.NetMQ
 
             var request = protocolPackage.UnPackToPacket(body);
 
-#if PERFORM || DEBUG
-            var r = new PirateXRequestInfo(request);
-            r.Headers.Add("_tin_", $"{DateTime.UtcNow.Ticks}");
-            request = r.ToRequestPackage();
-#endif
-
-            //加入队列
-            PushQueue.Enqueue(new In()
+            var din = new In()
             {
                 Version = 1,
                 Action = Action.Req,
@@ -229,7 +222,12 @@ namespace PirateX.Net.NetMQ
                 Ip = (protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString(),
                 LastNo = protocolPackage.LastNo,
                 SessionId = protocolPackage.Id,
-            }.ToProtobuf());
+            };
+            if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
+                din.Profile.Add("_tin_", $"{DateTime.UtcNow.Ticks}");
+
+            //加入队列
+            PushQueue.Enqueue(din.ToProtobuf());
         }
 
 

@@ -29,8 +29,8 @@ namespace GameServer.Console
             ThreadPool.SetMinThreads(4, 4);
             HostServer = new GameAppServer(new NetService()
             {
-                PullSocketString = "@tcp://localhost:5001",
-                PushsocketString = "@tcp://localhost:5002",
+                PullSocketString = "@tcp://*:5001",
+                PushsocketString = "@tcp://*:5002",
                 XPubSocketString = "",
                 XSubSocketString = ""
             });

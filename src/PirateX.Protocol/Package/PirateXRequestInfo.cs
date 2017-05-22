@@ -47,7 +47,7 @@ namespace PirateX.Protocol.Package
         }
 
         public PirateXRequestInfo(byte[] headerBytes, byte[] contentBytes)
-            : this(HttpUtility.ParseQueryString((Encoding.UTF8.GetString(headerBytes))), HttpUtility.ParseQueryString(Encoding.UTF8.GetString(contentBytes)))
+            : this(HttpUtility.ParseQueryString(Encoding.UTF8.GetString(headerBytes)), HttpUtility.ParseQueryString(Encoding.UTF8.GetString(contentBytes)))
         {
 
         }

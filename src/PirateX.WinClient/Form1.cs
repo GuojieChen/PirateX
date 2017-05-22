@@ -77,7 +77,7 @@ namespace PirateX.WinClient
 
             
 
-            _client = new PirateXClient($"ps://{txtHost.Text.Trim()}:{txtPort.Text.Trim()}", HttpUtility.UrlEncode(tokenbase64) );
+            _client = new PirateXClient($"ps://{txtHost.Text.Trim()}:{txtPort.Text.Trim()}", tokenbase64 );
             if (!string.IsNullOrEmpty(comboBox1.Text))
                 _client.DefaultFormat = comboBox1.Text;
             //_client.ExHeaders

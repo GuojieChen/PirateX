@@ -56,6 +56,10 @@ namespace PirateX.Core.Container
 
             var serverSetting = GetServerSetting();
 
+            builder.Register(c => serverSetting)
+                .As<IServerSetting>()
+                .SingleInstance();
+
             foreach (var type in serverSetting.GetType().GetInterfaces())
             {
                 var attrs = type.GetCustomAttributes(typeof(ServerSettingRegisterAttribute), false);
