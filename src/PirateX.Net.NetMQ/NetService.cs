@@ -93,12 +93,12 @@ namespace PirateX.Net.NetMQ
         {
             //TODO https://netmq.readthedocs.io/en/latest/poller/   #Performance
 
-            var msg1 = responseSocket.ReceiveFrameBytes();//TryReceiveMultipartMessage();
-            ThreadPool.QueueUserWorkItem(state =>
-            {
+            var msg = responseSocket.ReceiveFrameBytes();//TryReceiveMultipartMessage();
+           /* ThreadPool.QueueUserWorkItem(state =>
+            {*/
                 try
                 {
-                    var msg = (byte[])state;
+                    //var msg = msg1;//(byte[])state;
 
                     var dout = msg.FromProtobuf<Out>();
 
@@ -173,7 +173,7 @@ namespace PirateX.Net.NetMQ
                 {
                     Console.WriteLine(exception);
                 }
-            }, msg1);
+//            }, msg1);
         }
 
 

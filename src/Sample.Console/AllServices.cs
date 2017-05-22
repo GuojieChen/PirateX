@@ -25,8 +25,8 @@ namespace GameServer.Console
 
         public AllServices()
         {
-            ThreadPool.SetMaxThreads(8, 8);
-            ThreadPool.SetMinThreads(4, 4);
+            /*ThreadPool.SetMaxThreads(8, 8);
+            ThreadPool.SetMinThreads(4, 4);*/
             HostServer = new GameAppServer(new NetService()
             {
                 PullSocketString = "@tcp://*:5001",
