@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading;
 using NetMQ;
 using NetMQ.Sockets;
+using NLog;
 using PirateX.Core;
 using PirateX.Core.Net;
 using PirateX.Core.Utils;
@@ -15,6 +16,7 @@ namespace PirateX.Net.NetMQ
 {
     public class NetService : INetService
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private INetManager NetSend { get; set; }
 
         public string PushsocketString { get; set; }
@@ -268,15 +270,23 @@ namespace PirateX.Net.NetMQ
 
         public virtual void Stop()
         {
+            if(Logger.IsDebugEnabled)
+                Logger.Debug("Stopping...");
+
             GlobalServerProxy?.Stop();
 
-            Poller?.Stop();
-            Poller?.Dispose();
+            if (Logger.IsDebugEnabled)
+                Logger.Debug("Stopping ResponsePoller...");
+
+            ResponsePoller?.StopAsync();
+            ResponsePoller = null;
+
+            if (Logger.IsDebugEnabled)
+                Logger.Debug("Stopping Poller...");
+
+            Poller?.StopAsync();
             Poller = null;
 
-            ResponsePoller?.Stop();
-            ResponsePoller?.Dispose();
-            ResponsePoller = null;
 
         }
     }

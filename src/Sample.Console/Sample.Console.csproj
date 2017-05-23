@@ -109,7 +109,6 @@
     <Compile Include="Cmd\Broadcast.cs" />
     <Compile Include="Cmd\Exception.cs" />
     <Compile Include="Cmd\RoleInfo.cs" />
-    <Compile Include="Cmd\RoleLoginV2.cs" />
     <Compile Include="Cmd\Test.cs" />
     <Compile Include="WorkerService.cs" />
     <Compile Include="Program.cs" />

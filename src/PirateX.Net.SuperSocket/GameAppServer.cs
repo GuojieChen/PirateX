@@ -38,8 +38,8 @@ namespace PirateX.Net.SuperSocket
 
         public override void Stop()
         {
-            base.Stop();
             NetService.Stop();
+            base.Stop();
         }
 
         protected override void OnNewSessionConnected(ProxySession session)

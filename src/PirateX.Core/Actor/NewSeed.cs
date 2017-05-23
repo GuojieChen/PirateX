@@ -28,7 +28,9 @@ namespace PirateX.Core.Actor
                 Seed = serverSeed
             });
 
+
         }
+
     }
 
 

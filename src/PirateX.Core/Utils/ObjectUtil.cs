@@ -127,6 +127,12 @@ namespace PirateX.Core.Utils
             return (b & (1 << bitNumber)) != 0;
         }
 
+        public static IEnumerable<int> ToIntArray(this string str)
+        {
+            if(string.IsNullOrEmpty(str))
+                return new int[0];
 
+            return str.Split(new char[] {','}).Select(int.Parse);
+        }
     }
 }

@@ -7,11 +7,11 @@ namespace PirateX.Core.Session
     public class MemorySessionManager : ISessionManager
     {
 
-        private ConcurrentDictionary<long,PirateSession> _sessionDic = new ConcurrentDictionary<long, PirateSession>();
-        private ConcurrentDictionary<string ,long> _sessionidDic = new ConcurrentDictionary<string, long>();
+        private ConcurrentDictionary<long, PirateSession> _sessionDic = new ConcurrentDictionary<long, PirateSession>();
+        private ConcurrentDictionary<string, long> _sessionidDic = new ConcurrentDictionary<string, long>();
         public void Login(PirateSession pirateSession)
         {
-            _sessionDic.AddOrUpdate(pirateSession.Id, pirateSession, (l, session) => pirateSession); 
+            _sessionDic.AddOrUpdate(pirateSession.Id, pirateSession, (l, session) => pirateSession);
             _sessionidDic.AddOrUpdate(pirateSession.SessionId, pirateSession.Id, (s, l) => pirateSession.Id);
         }
 
@@ -37,7 +37,7 @@ namespace PirateX.Core.Session
 
         public PirateSession GetOnlineRole(string sessionid)
         {
-            long rid = 0 ;
+            long rid = 0;
             _sessionidDic.TryGetValue(sessionid, out rid);
             if (rid > 0)
             {
@@ -45,7 +45,8 @@ namespace PirateX.Core.Session
                 _sessionDic.TryGetValue(rid, out session);
 
                 return session;
-;            }
+                ;
+            }
 
             return null;
         }

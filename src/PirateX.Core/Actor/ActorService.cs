@@ -135,10 +135,6 @@ namespace PirateX.Core.Actor
 
             ProtocolPackage = ServerContainer.ServerIoc.Resolve<IProtocolPackage>();
             OnlineManager = ServerContainer.ServerIoc.Resolve<ISessionManager>();
-
-
-
-
         }
 
         public virtual void Start()
@@ -208,15 +204,16 @@ namespace PirateX.Core.Actor
             }
             else if (context.Action == 2)//断线
             {
+                if(Logger.IsDebugEnabled)
+                    Logger.Debug("Session Logout ~");
 
-                //TODO  
-                //var session = OnlineManager.GetOnlineRole(context.Token.Rid);
-                //if (session != null)
-                //{
-                //    //TODO logout
-                //    OnlineManager.Logout(session.Id);
-                //    OnSessionClosed(session);
-                //}
+                var session = OnlineManager.GetOnlineRole(context.SessionId);
+                if (session != null)
+                {
+                    OnlineManager.Logout(session.Id);
+                    OnSessionClosed(session);
+                }
+
                 return;
             }
 
@@ -264,11 +261,9 @@ namespace PirateX.Core.Actor
                 {
                     try
                     {
-                        //context.Request.Token
-                        //获取session信息  从缓存中去获取session信息  session没有的时候需要提示客户端重新连接
-
                         if (Equals(actionname, "NewSeed"))
                         {
+
                         }
                         else
                         {
@@ -286,6 +281,12 @@ namespace PirateX.Core.Actor
 
 
                         action.Execute();
+
+                        if (Equals(actionname, "NewSeed"))
+                        {
+                            //session 保存
+                            OnlineManager.Login(ToSession(context,context.Token));
+                        }
                     }
                     catch (Exception exception)
                     {
@@ -315,6 +316,7 @@ namespace PirateX.Core.Actor
         {
             var session = new PirateSession
             {
+                SessionId = context.SessionId,
                 Id = token.Rid,
                 Did = token.Did,
                 Token = context.Request.Token,

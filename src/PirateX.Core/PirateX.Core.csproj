@@ -66,7 +66,6 @@
     <Compile Include="Actor\IAction.cs" />
     <Compile Include="Actor\IMessageSender.cs" />
     <Compile Include="Actor\IReqCache.cs" />
-    <Compile Include="Actor\Login.cs" />
     <Compile Include="Actor\NewSeed.cs" />
     <Compile Include="Actor\EmptyBodyResponse.cs" />
     <Compile Include="Actor\Ping.cs" />
