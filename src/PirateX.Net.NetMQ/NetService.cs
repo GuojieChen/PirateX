@@ -286,11 +286,6 @@ namespace PirateX.Net.NetMQ
 
             Poller?.StopAsync();
             Poller = null;
-
-
         }
     }
-
-
-    
 }

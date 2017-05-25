@@ -263,7 +263,7 @@ namespace PirateX.Core.Actor
                     {
                         if (Equals(actionname, "NewSeed"))
                         {
-
+                            OnSessionConnected(ToSession(context, context.Token));
                         }
                         else
                         {
@@ -278,7 +278,6 @@ namespace PirateX.Core.Actor
                         action.Context = context;
                         action.Logger = Logger;
                         action.MessageSender = this;
-
 
                         action.Execute();
 
@@ -310,6 +309,10 @@ namespace PirateX.Core.Actor
                 }
             }
 
+        }
+
+        public virtual void OnSessionConnected(PirateSession session)
+        {
         }
 
         public virtual PirateSession ToSession(ActorContext context, IToken token)

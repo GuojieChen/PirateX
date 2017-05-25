@@ -83,6 +83,9 @@ namespace PirateX.Core.Session
                 return default(PirateSession);
             var data = db.StringGet(urn.ToString());
 
+            if(data == RedisValue.Null)
+                return default(PirateSession);
+
 
             return Serializer.Deserialize<PirateSession>(data);
         }
