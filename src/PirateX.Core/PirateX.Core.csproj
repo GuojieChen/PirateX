@@ -29,33 +29,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Perform|AnyCPU'">
-    <OutputPath>bin\Perform\</OutputPath>
-    <DefineConstants>TRACE;PERFORM</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Perform-Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Perform-Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;PERFORM</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Perform-Release|AnyCPU'">
-    <OutputPath>bin\Perform-Release\</OutputPath>
-    <DefineConstants>TRACE;PERFORM</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
@@ -73,7 +46,7 @@
       <HintPath>..\packages\protobuf-net.2.1.0\lib\net451\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="StackExchange.Redis, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\BomberX\Server\packages\StackExchange.Redis.1.2.3\lib\net45\StackExchange.Redis.dll</HintPath>
+      <HintPath>..\packages\StackExchange.Redis.1.2.3\lib\net45\StackExchange.Redis.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -93,7 +66,6 @@
     <Compile Include="Actor\IAction.cs" />
     <Compile Include="Actor\IMessageSender.cs" />
     <Compile Include="Actor\IReqCache.cs" />
-    <Compile Include="Actor\Login.cs" />
     <Compile Include="Actor\NewSeed.cs" />
     <Compile Include="Actor\EmptyBodyResponse.cs" />
     <Compile Include="Actor\Ping.cs" />
@@ -136,6 +108,7 @@
     <Compile Include="Actor\IActorNetService.cs" />
     <Compile Include="Net\INetManager.cs" />
     <Compile Include="Net\INetService.cs" />
+    <Compile Include="ProfilerLog.cs" />
     <Compile Include="Profiler\PirateXProfiler.cs" />
     <Compile Include="Session\MemorySessionManager.cs" />
     <Compile Include="Push\IPushService.cs" />

@@ -100,7 +100,10 @@ namespace GameServer.Console
 
         protected override void BuildServerContainer(ContainerBuilder builder)
         {
-            
+            builder.Register(c => new MemorySessionManager())
+                .As<ISessionManager>()
+                .SingleInstance();
+
         }
 
         public override IDictionary<string, string> GetNamedConnectionStrings()

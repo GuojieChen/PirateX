@@ -19,7 +19,7 @@ namespace PirateX.Core.Session
             _connectionMultiplexer = connectionMultiplexer ?? throw new ArgumentNullException(nameof(connectionMultiplexer));
             Serializer = new ProtobufRedisSerializer();
 
-            Expiry = new TimeSpan(0,0,30,0);// 默认一分钟
+            Expiry = new TimeSpan(0, 0, 30, 0);// 默认一分钟
         }
 
         public async void Login(PirateSession pirateSession)
@@ -71,7 +71,7 @@ namespace PirateX.Core.Session
             var db = _connectionMultiplexer.GetDatabase();
             var onlineRoleStr = db.StringGet(urn);
             if (!onlineRoleStr.HasValue)
-                return default (PirateSession);
+                return default(PirateSession);
             return Serializer.Deserialize<PirateSession>(onlineRoleStr);
         }
 
@@ -79,9 +79,12 @@ namespace PirateX.Core.Session
         {
             var db = _connectionMultiplexer.GetDatabase();
             var urn = db.StringGet(GetUrnOnlineRole(sessionid));
-            if(!urn.HasValue)
+            if (!urn.HasValue)
                 return default(PirateSession);
             var data = db.StringGet(urn.ToString());
+
+            if(data == RedisValue.Null)
+                return default(PirateSession);
 
 
             return Serializer.Deserialize<PirateSession>(data);

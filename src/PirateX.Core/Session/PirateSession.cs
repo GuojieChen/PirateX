@@ -6,7 +6,7 @@ namespace PirateX.Core.Session
 {
     [Serializable]
     [ProtoContract]
-    public class PirateSession 
+    public class PirateSession
     {
         [ProtoMember(1)] //role id
         public int Id { get; set; }

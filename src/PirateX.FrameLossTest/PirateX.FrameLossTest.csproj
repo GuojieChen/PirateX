@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CB9D8861-54AB-41FC-A750-114F79263339}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PirateX.Net.NNanomsg</RootNamespace>
-    <AssemblyName>PirateX.Net.NNanomsg</AssemblyName>
+    <ProjectGuid>{C48880E9-3155-4274-9406-85DC6731FD34}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>PirateX.FrameLossTest</RootNamespace>
+    <AssemblyName>PirateX.FrameLossTest</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -30,14 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NNanomsg, Version=0.5.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NNanomsg.0.5.2\lib\net40\NNanomsg.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net, Version=2.1.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>..\packages\protobuf-net.2.1.0\lib\net451\protobuf-net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,37 +43,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActorNetService.cs" />
-    <Compile Include="Mail.cs" />
-    <Compile Include="NetService.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PirateX.Core\PirateX.Core.csproj">
-      <Project>{af6f5077-f2f6-4293-afd2-21c9e1ebc296}</Project>
-      <Name>PirateX.Core</Name>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PirateX.Client\PirateX.Client.csproj">
+      <Project>{608d6062-379a-4999-aa20-592a48216e71}</Project>
+      <Name>PirateX.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\PirateX.Protocol\PirateX.Protocol.csproj">
       <Project>{ebde20ee-7293-4b51-99f4-6688ebdd3d2b}</Project>
       <Name>PirateX.Protocol</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="x64\nanomsg.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="x86\nanomsg.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="x64\libnanomsg.so">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="x86\libnanomsg.so">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

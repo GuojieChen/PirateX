@@ -9,7 +9,9 @@ using GameServer.Console.Cmd;
 using PirateX.Core.i18n;
 using PirateX.Core.Utils;
 using PirateX.Net;
+using PirateX.Net.NetMQ;
 using PirateX.Protocol;
+using PirateX.Protocol.Package;
 using ProtoBuf;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketEngine;
@@ -21,6 +23,9 @@ namespace GameServer.Console
     {
         private static void Main(string[] args)
         {
+            ProtoBuf.Serializer.PrepareSerializer<Token>();
+            ProtoBuf.Serializer.PrepareSerializer<In>();
+            ProtoBuf.Serializer.PrepareSerializer<Out>();
             var host = HostFactory.New(c =>
             {
                 c.UseNLog() ;

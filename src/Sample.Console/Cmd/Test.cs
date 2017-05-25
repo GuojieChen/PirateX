@@ -7,10 +7,11 @@ using PirateX.Core.Actor;
 
 namespace GameServer.Console.Cmd
 {
-    public class Test:RepAction
+    public class Test:RepAction<EmptyBodyResponse>
     {
-        public override void Execute()
+        public override EmptyBodyResponse Play()
         {
+            return null;
         }
     }
 }

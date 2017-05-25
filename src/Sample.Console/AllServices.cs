@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using PirateX.Core.Actor;
 using PirateX.Net;
@@ -24,16 +25,19 @@ namespace GameServer.Console
 
         public AllServices()
         {
+            /*ThreadPool.SetMaxThreads(8, 8);
+            ThreadPool.SetMinThreads(4, 4);*/
             HostServer = new GameAppServer(new NetService()
             {
-                PullSocketString = "@tcp://localhost:5001",
-                PushsocketString = "@tcp://localhost:5002",
+                PullSocketString = "@tcp://*:5001",
+                PushsocketString = "@tcp://*:5002",
                 XPubSocketString = "",
                 XSubSocketString = ""
             });
             var b = HostServer.Setup(new ServerConfig()
             {
                 Port = 4012,
+                MaxConnectionNumber = 10000
             });
 
             WorkerServer = new ActorNetService[]
@@ -43,11 +47,22 @@ namespace GameServer.Console
                     PushsocketString = ">tcp://localhost:5001",
                     PullSocketString = ">tcp://localhost:5002",
                 }),
-                //new ActorNetService(new WorkerService(),new ActorConfig()
-                //{
-                //    PushsocketString = ">tcp://localhost:5001",
-                //    PullSocketString = ">tcp://localhost:5002",
-                //})
+                /*new ActorNetService(new WorkerService(),new ActorConfig()
+                {
+                    PushsocketString = ">tcp://localhost:5001",
+                    PullSocketString = ">tcp://localhost:5002",
+                }),
+                new ActorNetService(new WorkerService(),new ActorConfig()
+                {
+                    PushsocketString = ">tcp://localhost:5001",
+                    PullSocketString = ">tcp://localhost:5002",
+                }),
+                new ActorNetService(new WorkerService(),new ActorConfig()
+                {
+                    PushsocketString = ">tcp://localhost:5001",
+                    PullSocketString = ">tcp://localhost:5002",
+                }),*/
+
             };
         }
 

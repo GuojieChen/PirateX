@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
+using PirateX.Core;
 using PirateX.Core.Actor;
 using PirateX.Core.Net;
 using PirateX.Core.Session;
+using PirateX.Core.Utils;
 using PirateX.Protocol.Package;
-using PirateX.Protocol.Package.ResponseConvert;
 
 namespace PirateX.Net.NetMQ
 {
@@ -22,8 +24,10 @@ namespace PirateX.Net.NetMQ
         private PushSocket PushSocket { get; set; }
 
         private NetMQPoller Poller { get; set; }
-        private readonly NetMQQueue<NetMQMessage> MessageQueue = new NetMQQueue<NetMQMessage>();
 
+        private NetMQPoller PullPoller { get; set; }
+
+        private readonly NetMQQueue<byte[]> MessageQueue = new NetMQQueue<byte[]>();
 
         private IActorService _actorService;
         public ActorNetService(IActorService actorService, ActorConfig config)
@@ -41,12 +45,14 @@ namespace PirateX.Net.NetMQ
             PullSocket.ReceiveReady += ProcessTaskPullSocket;
 
             PushSocket = new PushSocket(config.PushsocketString);
-            Poller = new NetMQPoller() { PullSocket, PushSocket, MessageQueue };
+            Poller = new NetMQPoller() { PushSocket, MessageQueue };
+            PullPoller = new NetMQPoller(){ PullSocket };
 
             MessageQueue.ReceiveReady += (sender, args) =>
             {
-                PushSocket.SendMultipartMessage(args.Queue.Dequeue());
+                PushSocket.SendFrame(args.Queue.Dequeue());
             };
+
         }
 
         /// <summary>
@@ -56,43 +62,44 @@ namespace PirateX.Net.NetMQ
         /// <param name="e"></param>
         protected void ProcessTaskPullSocket(object sender, NetMQSocketEventArgs e)
         {
-            var msg = e.Socket.ReceiveMultipartMessage();
-            var version = msg[0].Buffer[0];
-            var action = msg[1].Buffer[0];
+            var bytes = e.Socket.ReceiveFrameBytes();
 
-            if (action == 0)
-                return;
-
-
-            var context = new ActorContext()
+            ThreadPool.QueueUserWorkItem(state =>
             {
-                Version = version,//版本号
-                Action = action,
-                Request = new PirateXRequestInfo(
-                    msg[2].Buffer, //信息头
-                    msg[3].Buffer)//信息体
-                ,
-                //ResponseCovnert = "protobuf",
-                RemoteIp = msg[4].ConvertToString(),
-                LastNo = msg[5].ConvertToInt32(),
-                SessionId = msg[6].ConvertToString()
-            };
+                try
+                {
+                    var msg = (byte[])state;
 
-#if PERFORM
-            context.Request.Headers.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
-#endif
+                    var din = msg.FromProtobuf<In>();
+                    
+                    if(ProfilerLog.ProfilerLogger.IsInfoEnabled)
+                        din.Profile.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
 
+                    var context = new ActorContext()
+                    {
+                        Version = din.Version,//版本号
+                        Action = (byte)din.Action,
+                        Request = new PirateXRequestInfo(
+                            din.HeaderBytes, //信息头
+                            din.QueryBytes)//信息体
+                        ,
+                        RemoteIp = din.Ip,
+                        LastNo = din.LastNo,
+                        SessionId = din.SessionId,
+                        Profile = din.Profile
+                    };
 
-            Task.Factory.StartNew(() => _actorService.OnReceive(context)).ContinueWith(t =>
-            {
-                //发生内部错误
+                    _actorService.OnReceive(context);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                }
 
-                //发生异常需要处理
-                //t.Exception
-            }, TaskContinuationOptions.OnlyOnFaulted);
+            },bytes);
         }
 
-        protected void EnqueueMessage(NetMQMessage message)
+        protected void EnqueueMessage(byte[] message)
         {
             MessageQueue.Enqueue(message);
         }
@@ -103,32 +110,29 @@ namespace PirateX.Net.NetMQ
 
             _actorService.Start();
             Poller.RunAsync();
+            PullPoller.RunAsync();
         }
 
         public virtual void Stop()
         {
             Poller?.Stop();
-            PullSocket?.Close();
+            PullPoller?.Stop();
 
+            PullSocket?.Close();
             _actorService.Stop();
         }
 
         public void PushMessage(int rid, NameValueCollection headers, byte[] body)
         {
-            var repMsg = new NetMQMessage();
-            repMsg.Append(new byte[] { 1 });//版本号
-            repMsg.Append(new byte[] { (byte)Action.Req });//动作
-            repMsg.Append("");
-            repMsg.Append(-1);
-            repMsg.Append(GetHeaderBytes(headers));//信息头
-            if (body != null)
-                repMsg.Append(body);//信息体
-            else
-                repMsg.AppendEmptyFrame();
-
-            repMsg.Append(rid);
-
-            EnqueueMessage(repMsg);
+            EnqueueMessage(new Out()
+            {
+                Version = 1,
+                Action = Action.Push,
+                LastNo = -1,
+                HeaderBytes = GetHeaderBytes(headers),
+                BodyBytes = body,
+                Id = rid,
+            }.ToProtobuf());
         }
 
 
@@ -139,44 +143,44 @@ namespace PirateX.Net.NetMQ
 
         public void Seed(ActorContext context, NameValueCollection header, byte cryptobyte , byte[] clientkeys,byte[] serverkeys , byte[] body)
         {
-            var repMsg = new NetMQMessage();
-            repMsg.Append(new byte[] { context.Version });//版本号
-            repMsg.Append(new byte[] { (byte)Action.Seed });//动作
-            repMsg.Append(context.SessionId);//sessionid
-            repMsg.Append(context.Request.O);
-            repMsg.Append(GetHeaderBytes(header));//信息头
-            repMsg.Append(body);
-            repMsg.Append(context.Token.Rid);
+            if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
+                context.Profile.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
 
-            repMsg.Append(clientkeys);//客户端密钥
-            repMsg.Append(serverkeys);//服务端密钥
-            repMsg.Append(new byte[] { cryptobyte });//加密项
-            repMsg.Append(context.Token.Rid);
+            EnqueueMessage(new Out()
+            {
+                Version = 1,
+                Action = Action.Seed,
+                SessionId = context.SessionId,
+                LastNo = context.Request.O,
+                HeaderBytes = GetHeaderBytes(header),
+                BodyBytes = body,
+                Id = context.Token.Rid,
 
-            EnqueueMessage(repMsg);
+                ClientKeys = clientkeys,
+                ServerKeys = serverkeys,
+                Crypto = cryptobyte,
+
+                Profile = context.Profile
+            }.ToProtobuf());
         }
 
 
         public void SendMessage(ActorContext context, NameValueCollection header, byte[] body)
         {
+            if(ProfilerLog.ProfilerLogger.IsInfoEnabled)
+                context.Profile.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
 
-#if PERFORM
-            header.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
-#endif
+            EnqueueMessage(new Out()
+            {
+                Version = 1,
+                Action = Action.Req,
+                LastNo = context.Request.O,
+                HeaderBytes = GetHeaderBytes(header),
+                BodyBytes = body,
+                Id = context.Token.Rid,
+                Profile = context.Profile
 
-            var repMsg = new NetMQMessage();
-            repMsg.Append(new byte[] { context.Version });//版本号
-            repMsg.Append(new byte[] { (byte)Action.Req });//动作
-            repMsg.Append("");//sessionid
-            repMsg.Append(context.Request.O);
-            repMsg.Append(GetHeaderBytes(header));//信息头
-            if (body != null)
-                repMsg.Append(body);//信息体
-            else
-                repMsg.AppendEmptyFrame();
-            repMsg.Append(context.Token.Rid);//sessionid
-
-            EnqueueMessage(repMsg);
+            }.ToProtobuf());
         }
     }
 }

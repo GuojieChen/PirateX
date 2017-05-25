@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Autofac;
+using Newtonsoft.Json;
 using NLog;
 using PirateX.Core.Actor.ProtoSync;
 using PirateX.Core.Broadcas;
@@ -133,10 +135,6 @@ namespace PirateX.Core.Actor
 
             ProtocolPackage = ServerContainer.ServerIoc.Resolve<IProtocolPackage>();
             OnlineManager = ServerContainer.ServerIoc.Resolve<ISessionManager>();
-
-
-
-            
         }
 
         public virtual void Start()
@@ -195,25 +193,27 @@ namespace PirateX.Core.Actor
 
         public virtual void OnSessionClosed(PirateSession session)
         {
-            
+
         }
 
         public void OnReceive(ActorContext context)
         {
-#if PERFORM
-            context.Request.Headers.Add("_t1_",$"{DateTime.UtcNow.GetTimestamp()}");
-#endif
-
-
-            if (context.Action == 2)//断线
+            if (context.Action == 0)
             {
-                var session = OnlineManager.GetOnlineRole(context.Token.Rid);
+                return;
+            }
+            else if (context.Action == 2)//断线
+            {
+                if(Logger.IsDebugEnabled)
+                    Logger.Debug("Session Logout ~");
+
+                var session = OnlineManager.GetOnlineRole(context.SessionId);
                 if (session != null)
                 {
-                    //TODO logout
                     OnlineManager.Logout(session.Id);
                     OnSessionClosed(session);
                 }
+
                 return;
             }
 
@@ -230,37 +230,28 @@ namespace PirateX.Core.Actor
             if (!VerifyToken(ServerContainer.GetDistrictConfig(token.Did), token))
                 throw new PirateXException("AuthError", "授权失败") { Code = StatusCode.Unauthorized };
 
-
-#if PERFORM
-            context.Request.Headers.Add("_t2_",$"{DateTime.UtcNow.GetTimestamp()}");
-#endif
-
             var format = context.Request.Headers["format"];
             if (!string.IsNullOrEmpty(format))
                 context.ResponseCovnert = format;
             else
                 context.ResponseCovnert = DefaultResponseCovnert;
 
-            var lang = context.Request .Headers["lang"];
+            var lang = context.Request.Headers["lang"];
             if (!string.IsNullOrEmpty(lang))
                 Thread.CurrentThread.CurrentUICulture = Thread.CurrentThread.CurrentCulture = new CultureInfo(lang);
 
             //request timeout
-            if ((DateTime.UtcNow.GetTimestamp() - context.Request.Timestamp) > 1000 * 30)//30秒
-            {
-                Logger.Warn($"C2S Timeout t #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
-                return;
-            }
+            //if ((DateTime.UtcNow.GetTimestamp() - context.Request.Timestamp) > 1000 * 60 * 2)
+            //{
+            //    Logger.Warn($"C2S Timeout t #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
+            //    return;
+            //}
 
             if (context.Request.O <= context.LastNo)
             {
                 Logger.Warn($"C2S Timeout o #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
                 return;
             }
-
-#if PERFORM
-            context.Request.Headers.Add("_t3_",$"{DateTime.UtcNow.GetTimestamp()}");
-#endif
 
             //执行动作
             var actionname = context.Request.C;
@@ -270,17 +261,9 @@ namespace PirateX.Core.Actor
                 {
                     try
                     {
-                        //context.Request.Token
-                        //获取session信息  从缓存中去获取session信息  session没有的时候需要提示客户端重新连接
-
-                        PirateSession session;
-
-#if PERFORM
-            context.Request.Headers.Add("_t4_",$"{DateTime.UtcNow.GetTimestamp()}");
-#endif
-
                         if (Equals(actionname, "NewSeed"))
                         {
+                            OnSessionConnected(ToSession(context, context.Token));
                         }
                         else
                         {
@@ -289,47 +272,20 @@ namespace PirateX.Core.Actor
                             if (container == null)
                                 throw new PirateXException("ContainerNull", "容器未定义") { Code = StatusCode.ContainerNull };
                             action.Reslover = container.BeginLifetimeScope();
-
-                            //if (session == null)
-                            //{
-                            //    session = ToSession(context, token);
-                            //    session.ClientKeys = context.ClientKeys;
-                            //    session.ServerKeys = context.ServerKeys;
-
-                            //}
-                            //else if (!Equals(session.SessionId, context.SessionId))
-                            //{
-                            //    //单设备登陆控制
-                            //    throw new PirateXException("ReLogin", "ReLogin") { Code = StatusCode.ReLogin };
-                            //}
-
-                            //action.Session = session;
                         }
-
-                        //session.LastUtcAt = DateTime.UtcNow;
-
-                        //TODO 对 r o t 进行验证
-
 
                         action.ServerReslover = ServerContainer.ServerIoc;
                         action.Context = context;
                         action.Logger = Logger;
                         action.MessageSender = this;
 
-#if PERFORM
-            context.Request.Headers.Add("_t5_",$"{DateTime.UtcNow.GetTimestamp()}");
-#endif
-
                         action.Execute();
 
-#if PERFORM
-            context.Request.Headers.Add("_t6_",$"{DateTime.UtcNow.GetTimestamp()}");
-#endif
-
-                        //session = OnlineManager.GetOnlineRole(token.Rid);
-                        //session.LastUtcAt = DateTime.UtcNow;
-
-                        //ServerContainer.ServerIoc.Resolve<ISessionManager>().Login(session);
+                        if (Equals(actionname, "NewSeed"))
+                        {
+                            //session 保存
+                            OnlineManager.Login(ToSession(context,context.Token));
+                        }
                     }
                     catch (Exception exception)
                     {
@@ -355,10 +311,15 @@ namespace PirateX.Core.Actor
 
         }
 
+        public virtual void OnSessionConnected(PirateSession session)
+        {
+        }
+
         public virtual PirateSession ToSession(ActorContext context, IToken token)
         {
             var session = new PirateSession
             {
+                SessionId = context.SessionId,
                 Id = token.Rid,
                 Did = token.Did,
                 Token = context.Request.Token,
@@ -379,7 +340,6 @@ namespace PirateX.Core.Actor
         {
             if (string.IsNullOrEmpty(token))
                 throw new PirateXException($"{StatusCode.BadRequest}", "invalidToken");
-            Console.WriteLine(token);
             var odatas = Convert.FromBase64String(token);
 
             return odatas.FromProtobuf<Token>();
@@ -392,15 +352,15 @@ namespace PirateX.Core.Actor
         /// <returns></returns>
         protected virtual bool VerifyToken(IDistrictConfig config, IToken token)
         {
-            var isign = $"{token.Did}{token.Rid}{token.Ts}{config.SecretKey}".GetMD5();
+            var isign = $"{token.Did}{token.Rid}{token.Ts}{token.Uid}{config.SecretKey}".GetMD5();
+
+            if (DateTime.UtcNow.GetTimestamp()/1000 - token.Ts >= 1000 * 60 * 60 *5)//5h
+                return false;
 
             if (Equals(isign, token.Sign))
                 return true;
 
-            if (DateTime.Now.GetTimestamp() - token.Ts < 1000 * 60 * 60)
-                return true;
-
-            return false; 
+            return false;
         }
 
         protected virtual void HandleException(ActorContext context, Exception e)
@@ -504,7 +464,7 @@ namespace PirateX.Core.Actor
         /// <typeparam name="T"></typeparam>
         /// <param name="context"></param>
         /// <param name="t"></param>
-        public void SendSeed<T>(ActorContext context,byte cryptobyte,byte[] clientkeys,byte[] serverkeys,  T t)
+        public void SendSeed<T>(ActorContext context, byte cryptobyte, byte[] clientkeys, byte[] serverkeys, T t)
         {
             var headers = new NameValueCollection
             {
@@ -526,7 +486,7 @@ namespace PirateX.Core.Actor
                 Logger.Debug($"S2C #{context.Token.Rid}# #{context.RemoteIp}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {Encoding.UTF8.GetString(body)}");
             }
 
-            NetService.Seed(context, headers, cryptobyte,clientkeys,serverkeys, body);
+            NetService.Seed(context, headers, cryptobyte, clientkeys, serverkeys, body);
         }
 
         //public void PushMessage<T>(string sessionid, T t)
@@ -550,6 +510,11 @@ namespace PirateX.Core.Actor
                 { "i", MessageType.Boradcast},
                 {"format",DefaultResponseCovnert} // TODO 默认解析器
             };
+
+            if (Logger.IsDebugEnabled && t != null)
+            {
+                Logger.Debug($"S2C #{rid}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {JsonConvert.SerializeObject(t)}");
+            }
 
             NetService.PushMessage(rid, headers, ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
         }

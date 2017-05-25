@@ -5,6 +5,8 @@ using System.Net;
 using System.Threading;
 using NetMQ;
 using NetMQ.Sockets;
+using NLog;
+using PirateX.Core;
 using PirateX.Core.Net;
 using PirateX.Core.Utils;
 using PirateX.Protocol;
@@ -14,6 +16,7 @@ namespace PirateX.Net.NetMQ
 {
     public class NetService : INetService
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private INetManager NetSend { get; set; }
 
         public string PushsocketString { get; set; }
@@ -34,7 +37,7 @@ namespace PirateX.Net.NetMQ
         //接收全局信息，可能是tool 、gm等后台，广播给worker
         private Proxy GlobalServerProxy { get; set; }
 
-        public NetMQQueue<NetMQMessage> PushQueue = new NetMQQueue<NetMQMessage>();
+        public NetMQQueue<byte[]> PushQueue = new NetMQQueue<byte[]>();
 
         private NetMQPoller Poller;
 
@@ -77,8 +80,7 @@ namespace PirateX.Net.NetMQ
 
             PushQueue.ReceiveReady += (o, args) =>
             {
-                var msg = PushQueue.Dequeue();
-                sender.SendMultipartMessage(msg);
+                sender.SendFrame(args.Queue.Dequeue());
             };
 
             responseSocket.ReceiveReady += ProcessResponse;
@@ -93,63 +95,75 @@ namespace PirateX.Net.NetMQ
         {
             //TODO https://netmq.readthedocs.io/en/latest/poller/   #Performance
 
-            var msg1 = responseSocket.ReceiveMultipartMessage();//TryReceiveMultipartMessage();
-            ThreadPool.QueueUserWorkItem(state =>
-            {
+            var msg = responseSocket.ReceiveFrameBytes();//TryReceiveMultipartMessage();
+           /* ThreadPool.QueueUserWorkItem(state =>
+            {*/
                 try
                 {
-                    var t1 = DateTime.Now.Ticks;
+                    //var msg = msg1;//(byte[])state;
 
-                    var msg = (NetMQMessage)state;
-
-                    //msg[0].Buffer //版本号
-                    var action = msg[1].Buffer[0];
-                    var sessionid = msg[2].ConvertToString();
-                    var lastNo = msg[3].ConvertToInt32();
-                    var header = msg[4].Buffer;
-                    var content = msg[5].Buffer;
-                    var rid = msg[6].ConvertToInt32();
-
+                    var dout = msg.FromProtobuf<Out>();
 
                     var response = new PirateXResponsePackage()
                     {
-                        HeaderBytes = header,
-                        ContentBytes = content
+                        HeaderBytes = dout.HeaderBytes,
+                        ContentBytes = dout.BodyBytes
                     };
-
-                    var t2 = DateTime.Now.Ticks;
-
-#if PERFORM
-                    var r = new PirateXResponseInfo(response);
-                    r.Headers.Add("_tout_", $"{DateTime.UtcNow.Ticks}");
-                    r.Headers.Add("_tout_t_", $"{t2 - t1}");
-                    response.HeaderBytes = r.GetHeaderBytes();
-#endif
 
                     IProtocolPackage protocolPackage = null;
 
-                    if (Equals((Action) action, Action.Seed))
+                    if (Equals(dout.Action, Action.Seed))
                     {
-                        protocolPackage = NetSend.GetProtocolPackage(sessionid);
-                        protocolPackage.Rid = rid;
+                        protocolPackage = NetSend.GetProtocolPackage(dout.SessionId);
+                        protocolPackage.Rid = dout.Id;
 
                         NetSend.Attach(protocolPackage);
                     }
                     else
-                        protocolPackage = NetSend.GetProtocolPackage(rid);
+                        protocolPackage = NetSend.GetProtocolPackage(dout.Id);
 
 
-                    if (lastNo >= 0)
-                        protocolPackage.LastNo = lastNo;
+                    if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
+                    {
+                        if (dout.Action == Action.Req)
+                        {
+                            dout.Profile.Add("_tout_", $"{DateTime.UtcNow.Ticks}");
+
+                            var r = new PirateXResponseInfo(response);
+
+                            foreach (var kp in dout.Profile)
+                            {
+                                if (kp.Key.StartsWith("_"))
+                                    r.Headers.Add(kp.Key, $"{kp.Value}");
+                            }
+                            response.HeaderBytes = r.GetHeaderBytes();
+
+                            new ProfilerLog()
+                            {
+                                Token = r.Headers["token"],
+                                Ip = protocolPackage.RemoteEndPoint.ToString(),
+                                C = r.Headers["c"],
+                                Tin = Convert.ToInt64(dout.Profile["_itin_"]) - Convert.ToInt64(dout.Profile["_tin_"]),
+                                iTin = Convert.ToInt64(dout.Profile["_itout_"]) - Convert.ToInt64(dout.Profile["_itin_"]),
+                                Tout = Convert.ToInt64(dout.Profile["_tout_"]) - Convert.ToInt64(dout.Profile["_itout_"]),
+
+                                StartAt = new DateTime(Convert.ToInt64(dout.Profile["_tin_"]),DateTimeKind.Utc),
+                                EndAt = new DateTime(Convert.ToInt64(dout.Profile["_tout_"]),DateTimeKind.Utc)
+                            }.Log();
+                        }
+                    }
+
+                    if (dout.LastNo >= 0)
+                        protocolPackage.LastNo = dout.LastNo;
 
                     var bytes = protocolPackage.PackPacketToBytes(response);
                     protocolPackage.Send(bytes);
 
-                    if (Equals((Action)action, Action.Seed))
+                    if (Equals(dout.Action, Action.Seed))
                     {
-                        var clientkey = msg[7].Buffer;
-                        var serverkey = msg[8].Buffer;
-                        var crypto = msg[9].Buffer[0];
+                        var clientkey = dout.ClientKeys;
+                        var serverkey = dout.ServerKeys;
+                        var crypto = dout.Crypto;
 
                         //种子交换  记录种子信息，后续收发数据用得到
                         protocolPackage.PackKeys = serverkey;
@@ -161,7 +175,7 @@ namespace PirateX.Net.NetMQ
                 {
                     Console.WriteLine(exception);
                 }
-            }, msg1);
+//            }, msg1);
         }
 
 
@@ -191,7 +205,6 @@ namespace PirateX.Net.NetMQ
 
             if (protocolPackage.CryptoByte > 0)
             {
-
                 var last = NetSend.GetProtocolPackage(protocolPackage.Rid);
                 if (!Equals(last.Id, protocolPackage.Id))
                 {
@@ -202,33 +215,31 @@ namespace PirateX.Net.NetMQ
 
             var request = protocolPackage.UnPackToPacket(body);
 
-#if PERFORM || DEBUG
-            var r = new PirateXRequestInfo(request);
-            r.Headers.Add("_tin_", $"{DateTime.UtcNow.Ticks}");
-            request = r.ToRequestPackage();
-#endif
-
-            var msg = new NetMQMessage();
-            msg.Append(new byte[] { 1 });//版本号
-            msg.Append(new byte[] { (byte)Action.Req });//动作
-            msg.Append(request.HeaderBytes);//信息头
-            msg.Append(request.ContentBytes);//信息体
-            msg.Append((protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString());
-            msg.Append(protocolPackage.LastNo);
-            msg.Append(protocolPackage.Id);
+            var din = new In()
+            {
+                Version = 1,
+                Action = Action.Req,
+                HeaderBytes = request.HeaderBytes,
+                QueryBytes = request.ContentBytes,
+                Ip = (protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString(),
+                LastNo = protocolPackage.LastNo,
+                SessionId = protocolPackage.Id,
+            };
+            if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
+                din.Profile.Add("_tin_", $"{DateTime.UtcNow.Ticks}");
 
             //加入队列
-            PushQueue.Enqueue(msg);
+            PushQueue.Enqueue(din.ToProtobuf());
         }
 
 
         public virtual void Ping()
         {
-            var msg = new NetMQMessage();
-            msg.Append(new byte[] { 1 });//版本号
-            msg.Append(new byte[] { (byte)Action.Ping });//动作
-            //加入队列
-            PushQueue.Enqueue(msg);
+            PushQueue.Enqueue(new In()
+            {
+                Version = 1,
+                Action = Action.Ping,
+            }.ToProtobuf());
         }
 
         public virtual void OnSessionClosed(IProtocolPackage protocolPackage)
@@ -236,16 +247,15 @@ namespace PirateX.Net.NetMQ
             if (protocolPackage == null)
                 return;
 
-            var msg = new NetMQMessage();
-            msg.Append(new byte[] { 1 });//版本号
-            msg.Append(new byte[] { (byte)Action.Closed });//动作
-            msg.Append(protocolPackage.Id);//sessionid
-            msg.Append(new byte[] { });//信息头
-            msg.Append(new byte[] { });//信息体
-            msg.Append((protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString());
-            msg.Append(protocolPackage.LastNo);
-
-            PushQueue.Enqueue(msg);
+            //加入队列
+            PushQueue.Enqueue(new In()
+            {
+                Version = 1,
+                Action = Action.Closed,
+                Ip = (protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString(),
+                LastNo = protocolPackage.LastNo,
+                SessionId = protocolPackage.Id,
+            }.ToProtobuf());
         }
 
         public virtual void Start()
@@ -260,19 +270,22 @@ namespace PirateX.Net.NetMQ
 
         public virtual void Stop()
         {
+            if(Logger.IsDebugEnabled)
+                Logger.Debug("Stopping...");
+
             GlobalServerProxy?.Stop();
 
-            Poller?.Stop();
-            Poller?.Dispose();
-            Poller = null;
+            if (Logger.IsDebugEnabled)
+                Logger.Debug("Stopping ResponsePoller...");
 
-            ResponsePoller?.Stop();
-            ResponsePoller?.Dispose();
+            ResponsePoller?.StopAsync();
             ResponsePoller = null;
 
+            if (Logger.IsDebugEnabled)
+                Logger.Debug("Stopping Poller...");
+
+            Poller?.StopAsync();
+            Poller = null;
         }
     }
-
-
-    
 }

@@ -39,7 +39,7 @@ namespace PirateX.Core.Container
         public ILifetimeScope ServerIoc { get; set; }
 
         private IServerSetting _defaultSetting;
-        protected IServerSetting GetDefaultSeting<T>() where T: IServerSetting
+        protected T GetDefaultSeting<T>() where T: IServerSetting
         {
             var file = $"{AppDomain.CurrentDomain.BaseDirectory}Config\\ServerConfigs.json";
 
@@ -55,6 +55,10 @@ namespace PirateX.Core.Container
             var districtConfigs = GetDistrictConfigs();
 
             var serverSetting = GetServerSetting();
+
+            builder.Register(c => serverSetting)
+                .As<IServerSetting>()
+                .SingleInstance();
 
             foreach (var type in serverSetting.GetType().GetInterfaces())
             {
