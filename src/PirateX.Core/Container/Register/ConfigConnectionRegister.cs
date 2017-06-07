@@ -30,7 +30,7 @@ namespace PirateX.Core.Container.Register
 
                     var newReader = new MemoryConfigReader(
                         c.ResolveKeyed<List<Assembly>>("ConfigAssemblyList")
-                        ,c.Resolve<IDbConnection>(new NamedParameter("ConnectionString", configConnectionString)));
+                        ,c.Resolve<IConfigProvider>());
 
                     _configReaderDic.Add(configDbKey, newReader);
                     return newReader;

@@ -17,6 +17,11 @@ namespace PirateX.Core.Session
         /// <param name="rid">角色ID</param>
         /// <returns></returns>
         bool IsOnline(long rid);
+        /// <summary>
+        /// 保存Session
+        /// </summary>
+        /// <param name="session"></param>
+        void Save(PirateSession session);
 
         /// <summary> 获取在线角色信息
         /// </summary>

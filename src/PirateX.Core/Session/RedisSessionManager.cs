@@ -65,6 +65,14 @@ namespace PirateX.Core.Session
             return db.KeyExists(urn);
         }
 
+        public void Save(PirateSession session)
+        {
+            var urn = GetUrnOnlineRole(session.Id);
+            var db = _connectionMultiplexer.GetDatabase();
+
+            db.StringSet(urn, Serializer.Serilazer(session), Expiry);
+        }
+
         public PirateSession GetOnlineRole(long rid)
         {
             var urn = GetUrnOnlineRole(rid);

@@ -50,6 +50,8 @@ namespace PirateX.Core.Container
             return JsonConvert.DeserializeObject<T>(json);
         }
 
+
+
         public void InitContainers(ContainerBuilder builder)
         {
             var districtConfigs = GetDistrictConfigs();

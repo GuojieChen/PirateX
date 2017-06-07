@@ -31,10 +31,14 @@ namespace PirateX.Net.NetMQ
 
         [ProtoMember(7)]
         public string SessionId { get; set; }
+
+        [ProtoMember(8)]
+        public Dictionary<string,string> Items { get; set; }
+
         /// <summary>
         /// 打点
         /// </summary>
-        [ProtoMember(8)]
+        [ProtoMember(9)]
         public Dictionary<string,string> Profile  = new Dictionary<string, string>();
     }
 }

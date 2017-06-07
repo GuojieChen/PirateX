@@ -26,6 +26,9 @@ namespace PirateX.Core.Redis.StackExchange.Redis.Ex
 
         public T Deserialize<T>(byte[] value)
         {
+            if (value == null)
+                return default(T);
+
             using (var ms = new MemoryStream(value))
             {
                 return Serializer.Deserialize<T>(ms);

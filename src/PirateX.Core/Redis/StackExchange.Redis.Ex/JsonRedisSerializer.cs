@@ -13,7 +13,9 @@ namespace PirateX.Core.Redis.StackExchange.Redis.Ex
 
         public T Deserialize<T>(byte[] value)
         {
-            
+
+            if (value == null)
+                return default(T);
 
             return JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(value));
         }

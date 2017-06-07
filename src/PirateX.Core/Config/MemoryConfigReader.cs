@@ -30,16 +30,16 @@ namespace PirateX.Core.Config
 
         private object _lockHelper = new object();
 
-        private IDbConnection _dbConnection;
+        private IConfigProvider _configProvider;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="assemblies"></param>
         /// <param name="dbConnection"></param>
-        public MemoryConfigReader(List<Assembly> assemblies, IDbConnection dbConnection)
+        public MemoryConfigReader(List<Assembly> assemblies, IConfigProvider provider)
         {
-            _dbConnection = dbConnection;
+            _configProvider = provider;
             _configAssembly = assemblies;
         }
 
@@ -99,16 +99,14 @@ namespace PirateX.Core.Config
             }
         }
         #region Load Methods
+
+
         private void LoadConfigData<T>() where T : IConfigIdEntity
         {
-            var connection = (IDbConnection)Activator.CreateInstance(_dbConnection.GetType());
-            connection.ConnectionString = _dbConnection.ConnectionString;
-
             try
             {
-                connection.Open();
 
-                var list = connection.Query<T>($"select * from {typeof(T).Name}");
+                var list = _configProvider.LoadConfigData<T>();
 
                 var type = typeof(T);
 
@@ -157,8 +155,6 @@ namespace PirateX.Core.Config
             }
             finally
             {
-                if (connection.State == ConnectionState.Open)
-                    connection.Close();
             }
 
 
@@ -166,11 +162,9 @@ namespace PirateX.Core.Config
 
         private void LoadKeyValueConfigData<T>() where T : IConfigKeyValueEntity
         {
-            var connection = (IDbConnection)Activator.CreateInstance(_dbConnection.GetType());
-            connection.ConnectionString = _dbConnection.ConnectionString;
             try
             {
-                var list = connection.Query<T>($"select * from {typeof(T).Name}", typeof(T));
+                var list = _configProvider.LoadKeyValueConfigData<T>();
 
                 foreach (var item in list)
                 {
@@ -187,8 +181,6 @@ namespace PirateX.Core.Config
             }
             finally
             {
-                if (connection.State == ConnectionState.Open)
-                    connection.Close();
             }
         }
         #endregion

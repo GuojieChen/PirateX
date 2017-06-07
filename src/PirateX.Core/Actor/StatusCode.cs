@@ -69,6 +69,9 @@
         /// <summary> 游戏服初始化失败，没有正确进行配置
         /// </summary>
         public const short InitFail = 510;
+
+        public const short ServerError = 503;
+
         /// <summary>
         /// 发生多个异常
         /// </summary>
@@ -89,6 +92,11 @@
         /// 配置数据缺少
         /// </summary>
         public const short ConfigDataNull = 599;
+
+        /// <summary>
+        /// 逻辑处理的时候出现异常
+        /// </summary>
+        public const short Exception = 1000;
 
     }
 }

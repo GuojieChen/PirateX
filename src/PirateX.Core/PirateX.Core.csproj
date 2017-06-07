@@ -82,7 +82,10 @@
     <Compile Include="Broadcas\RedisMqMessageBroadcast.cs" />
     <Compile Include="Cache\MemoryCacheClient.cs" />
     <Compile Include="Config\ConfigIndex.cs" />
+    <Compile Include="Config\DbConfigProvider.cs" />
+    <Compile Include="Config\ExcelNameAttribute.cs" />
     <Compile Include="Config\IConfigEntity.cs" />
+    <Compile Include="Config\IConfigProvider.cs" />
     <Compile Include="Config\IConfigReader.cs" />
     <Compile Include="Config\MemoryConfigReader.cs" />
     <Compile Include="Container\IDistrictConfigRegister.cs" />

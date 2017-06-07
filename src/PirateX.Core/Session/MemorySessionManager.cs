@@ -27,6 +27,12 @@ namespace PirateX.Core.Session
             return _sessionDic.ContainsKey(rid);
         }
 
+        public void Save(PirateSession session)
+        {
+            if (_sessionDic.ContainsKey(session.Id))
+                _sessionDic[session.Id] = session;
+        }
+
         public PirateSession GetOnlineRole(long rid)
         {
             PirateSession session;
@@ -45,7 +51,6 @@ namespace PirateX.Core.Session
                 _sessionDic.TryGetValue(rid, out session);
 
                 return session;
-                ;
             }
 
             return null;

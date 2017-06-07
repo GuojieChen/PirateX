@@ -366,7 +366,7 @@ namespace PirateX.Core.Actor
         protected virtual void HandleException(ActorContext context, Exception e)
         {
             //#ERROR#
-            var code = 400;
+            short code = StatusCode.Exception;
 
             string errorCode = string.Empty;
             string errorMsg;
@@ -387,6 +387,7 @@ namespace PirateX.Core.Actor
             }
             else
             {
+                code = StatusCode.ServerError;
                 errorCode = "ServerError";
                 errorMsg = e.Message; //e.Message;
 
@@ -540,9 +541,9 @@ namespace PirateX.Core.Actor
             var body = ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(context.ResponseCovnert)
                 .SerializeObject(rep);
 
-            if (Logger.IsDebugEnabled && body != null)
+            if (Logger.IsDebugEnabled)
             {
-                Logger.Debug($"S2C #{context.Token.Rid}# #{context.RemoteIp}# {string.Join("&", header.AllKeys.Select(a => a + "=" + header[a]))} {Encoding.UTF8.GetString(body)}");
+                Logger.Debug($"S2C #{context.Token.Rid}# #{context.RemoteIp}# {string.Join("&", header.AllKeys.Select(a => a + "=" + header[a]))} {(body==null?"":Encoding.UTF8.GetString(body))}");
             }
 
             NetService.SendMessage(context, header, body);

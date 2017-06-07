@@ -21,8 +21,8 @@ namespace PirateX.Core.Actor
                 //r == trye //拿之前的数据
                 //获取和保存需要保持一致
 
-                if(!string.IsNullOrEmpty(cachekey))
-                    MessageSender.SendMessage(base.Context, GetFromCache(cachekey) );
+                if (!string.IsNullOrEmpty(cachekey))
+                    MessageSender.SendMessage(base.Context, GetFromCache(cachekey));
             }
             else
             {
@@ -91,7 +91,7 @@ namespace PirateX.Core.Actor
 
         private string GetResponseUrn()
         {
-            return $"rep:{base.Context.Token.Rid}:{base.Context.Request.C}_{base.Context.Request.O}";
+            return $"rep:{base.Context.Token.Rid}:{base.Context.Request.C}";
         }
 
         private string GetResponseListUrn()

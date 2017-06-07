@@ -8,10 +8,11 @@ namespace PirateX.Core.Actor
 
         public string ErrorMsg { get; set; }
 
-        public int Code { get; set; }
+        public short Code { get; set; }
 
         public PirateXException(string errorCode, string errorMsg)
         {
+            Code = StatusCode.Exception;
             this.ErrorCode = errorCode;
             this.ErrorMsg = errorMsg;
         }
