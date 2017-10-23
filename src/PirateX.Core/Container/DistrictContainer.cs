@@ -59,6 +59,7 @@ namespace PirateX.Core.Container
             var serverSetting = GetServerSetting();
 
             builder.Register(c => serverSetting)
+                .AsSelf()
                 .As<IServerSetting>()
                 .SingleInstance();
 
@@ -73,11 +74,31 @@ namespace PirateX.Core.Container
                         .Register(builder, serverSetting);
             }
 
+            builder.Register(c => GetConfigAssemblyList())
+                .Keyed<List<Assembly>>("ConfigAssemblyList")
+                .SingleInstance();
+
+            builder.Register(c => GetServiceAssemblyList())
+                .Keyed<List<Assembly>>("ServiceAssemblyList")
+                .SingleInstance();
+
             ServerConfig(builder, districtConfigs);
 
             BuildServerContainer(builder);
             _serverContainer = builder.Build();
             ServerIoc = _serverContainer.BeginLifetimeScope();
+
+
+            foreach (var type in serverSetting.GetType().GetInterfaces())
+            {
+                var attrs = type.GetCustomAttributes(typeof(ServerSettingRegisterAttribute), false);
+                if (!attrs.Any())
+                    continue;
+                var attr = attrs[0] as ServerSettingRegisterAttribute;
+                if (attr != null)
+                    ((IServerSettingRegister)Activator.CreateInstance(attr.RegisterType))
+                        .SetUp(_serverContainer, serverSetting);
+            }
 
             foreach (var config in districtConfigs)
             {

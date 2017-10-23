@@ -75,6 +75,7 @@ namespace EPocalipse.Json.Viewer
             var text = _pirateXPackage.ContentBytes== null?string.Empty: Encoding.UTF8.GetString(_pirateXPackage.ContentBytes);
 
             _json = text;
+            txtJson.Text = text;
             var viewitem = listViewIn.Items.Add(DateTime.Now.ToString());
             viewitem.SubItems.Add($"{string.Join("&", response.Headers.AllKeys.Select(a=>a+"="+ response.Headers[a]))}");
             viewitem.SubItems.Add(text);

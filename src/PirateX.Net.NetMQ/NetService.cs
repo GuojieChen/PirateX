@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -41,7 +43,7 @@ namespace PirateX.Net.NetMQ
 
         private NetMQPoller Poller;
 
-        private NetMQPoller ResponsePoller; 
+        private NetMQPoller ResponsePoller;
 
         private bool IsSetuped { get; set; }
         public virtual void Setup(INetManager netManager)
@@ -68,7 +70,8 @@ namespace PirateX.Net.NetMQ
             Poller = new NetMQPoller()
             {
                 sender,
-                PushQueue
+                PushQueue,
+                
             };
 
             ResponsePoller = new NetMQPoller()
@@ -95,87 +98,104 @@ namespace PirateX.Net.NetMQ
         {
             //TODO https://netmq.readthedocs.io/en/latest/poller/   #Performance
 
-            var msg = responseSocket.ReceiveFrameBytes();//TryReceiveMultipartMessage();
-           /* ThreadPool.QueueUserWorkItem(state =>
-            {*/
-                try
+            var msg = e.Socket.ReceiveFrameBytes();//TryReceiveMultipartMessage();
+
+            var sw = new Stopwatch();
+            sw.Start();
+            /* ThreadPool.QueueUserWorkItem(state =>
+                                                          {*/
+
+            try
+            {
+                //var msg = msg1;//(byte[])state;
+
+                var dout = msg.FromProtobuf<Out>();
+
+                var response = new PirateXResponsePackage()
                 {
-                    //var msg = msg1;//(byte[])state;
+                    HeaderBytes = dout.HeaderBytes,
+                    ContentBytes = dout.BodyBytes
+                };
 
-                    var dout = msg.FromProtobuf<Out>();
+                IProtocolPackage protocolPackage = null;
 
-                    var response = new PirateXResponsePackage()
+                if (Equals(dout.Action, Action.Seed))
+                {
+                    protocolPackage = NetSend.GetProtocolPackage(dout.SessionId);
+
+                    if (protocolPackage == null)
                     {
-                        HeaderBytes = dout.HeaderBytes,
-                        ContentBytes = dout.BodyBytes
-                    };
-
-                    IProtocolPackage protocolPackage = null;
-
-                    if (Equals(dout.Action, Action.Seed))
-                    {
-                        protocolPackage = NetSend.GetProtocolPackage(dout.SessionId);
-                        protocolPackage.Rid = dout.Id;
-
-                        NetSend.Attach(protocolPackage);
+                        return;
                     }
-                    else
-                        protocolPackage = NetSend.GetProtocolPackage(dout.Id);
 
 
-                    if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
+                    protocolPackage.Rid = dout.Id;
+
+                    NetSend.Attach(protocolPackage);
+                }
+                else
+                    protocolPackage = NetSend.GetProtocolPackage(dout.Id);
+
+                if (protocolPackage == null)
+                {
+                    return;
+                }
+
+                if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
+                {
+                    if (dout.Action == Action.Req)
                     {
-                        if (dout.Action == Action.Req)
+                        dout.Profile.Add("_tout_", $"{DateTime.UtcNow.Ticks}");
+
+                        var r = new PirateXResponseInfo(response);
+
+                        foreach (var kp in dout.Profile)
                         {
-                            dout.Profile.Add("_tout_", $"{DateTime.UtcNow.Ticks}");
-
-                            var r = new PirateXResponseInfo(response);
-
-                            foreach (var kp in dout.Profile)
-                            {
-                                if (kp.Key.StartsWith("_"))
-                                    r.Headers.Add(kp.Key, $"{kp.Value}");
-                            }
-                            response.HeaderBytes = r.GetHeaderBytes();
-
-                            new ProfilerLog()
-                            {
-                                Token = r.Headers["token"],
-                                Ip = protocolPackage.RemoteEndPoint.ToString(),
-                                C = r.Headers["c"],
-                                Tin = Convert.ToInt64(dout.Profile["_itin_"]) - Convert.ToInt64(dout.Profile["_tin_"]),
-                                iTin = Convert.ToInt64(dout.Profile["_itout_"]) - Convert.ToInt64(dout.Profile["_itin_"]),
-                                Tout = Convert.ToInt64(dout.Profile["_tout_"]) - Convert.ToInt64(dout.Profile["_itout_"]),
-
-                                StartAt = new DateTime(Convert.ToInt64(dout.Profile["_tin_"]),DateTimeKind.Utc),
-                                EndAt = new DateTime(Convert.ToInt64(dout.Profile["_tout_"]),DateTimeKind.Utc)
-                            }.Log();
+                            if (kp.Key.StartsWith("_"))
+                                r.Headers.Add(kp.Key, $"{kp.Value}");
                         }
-                    }
+                        response.HeaderBytes = r.GetHeaderBytes();
 
-                    if (dout.LastNo >= 0)
-                        protocolPackage.LastNo = dout.LastNo;
+                        new ProfilerLog()
+                        {
+                            Token = r.Headers["token"],
+                            Ip = protocolPackage.RemoteEndPoint.ToString(),
+                            C = r.Headers["c"],
+                            Tin = Convert.ToInt64(dout.Profile["_itin_"]) - Convert.ToInt64(dout.Profile["_tin_"]),
+                            iTin = Convert.ToInt64(dout.Profile["_itout_"]) - Convert.ToInt64(dout.Profile["_itin_"]),
+                            Tout = Convert.ToInt64(dout.Profile["_tout_"]) - Convert.ToInt64(dout.Profile["_itout_"]),
 
-                    var bytes = protocolPackage.PackPacketToBytes(response);
-                    protocolPackage.Send(bytes);
-
-                    if (Equals(dout.Action, Action.Seed))
-                    {
-                        var clientkey = dout.ClientKeys;
-                        var serverkey = dout.ServerKeys;
-                        var crypto = dout.Crypto;
-
-                        //种子交换  记录种子信息，后续收发数据用得到
-                        protocolPackage.PackKeys = serverkey;
-                        protocolPackage.UnPackKeys = clientkey;
-                        protocolPackage.CryptoByte = crypto;
+                            StartAt = new DateTime(Convert.ToInt64(dout.Profile["_tin_"]), DateTimeKind.Utc),
+                            EndAt = new DateTime(Convert.ToInt64(dout.Profile["_tout_"]), DateTimeKind.Utc)
+                        }.Log();
                     }
                 }
-                catch (Exception exception)
+
+                if (dout.LastNo >= 0)
+                    protocolPackage.LastNo = dout.LastNo;
+
+                var bytes = protocolPackage.PackPacketToBytes(response);
+                protocolPackage.Send(bytes);
+
+                if (Equals(dout.Action, Action.Seed))
                 {
-                    Console.WriteLine(exception);
+                    var clientkey = dout.ClientKeys;
+                    var serverkey = dout.ServerKeys;
+                    var crypto = dout.Crypto;
+
+                    //种子交换  记录种子信息，后续收发数据用得到
+                    protocolPackage.PackKeys = serverkey;
+                    protocolPackage.UnPackKeys = clientkey;
+                    protocolPackage.CryptoByte = crypto;
                 }
-//            }, msg1);
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(exception);
+            }
+            //            }, msg1);
+
+            Logger.Debug(sw.ElapsedMilliseconds);
         }
 
 
@@ -202,6 +222,8 @@ namespace PirateX.Net.NetMQ
         {
             if (protocolPackage == null)
                 return;
+            if(Logger.IsDebugEnabled)
+                Logger.Debug($"request from {protocolPackage.RemoteEndPoint}");
 
             if (protocolPackage.CryptoByte > 0)
             {
@@ -209,6 +231,9 @@ namespace PirateX.Net.NetMQ
                 if (!Equals(last.Id, protocolPackage.Id))
                 {
                     protocolPackage.Close();
+
+                    if (Logger.IsDebugEnabled)
+                        Logger.Debug($"!Equals(last.Id, protocolPackage.Id)");
                     return;
                 }
             }
@@ -233,12 +258,13 @@ namespace PirateX.Net.NetMQ
         }
 
 
-        public virtual void Ping()
+        public virtual void Ping(int onlinecount)
         {
             PushQueue.Enqueue(new In()
             {
                 Version = 1,
                 Action = Action.Ping,
+                Items = new Dictionary<string, string>() { { "OnlineCount", $"{onlinecount}" } }
             }.ToProtobuf());
         }
 
@@ -265,15 +291,15 @@ namespace PirateX.Net.NetMQ
 
             Poller.RunAsync();
             ResponsePoller.RunAsync();
-            GlobalServerProxy?.Start();
+            //GlobalServerProxy?.Start();
         }
 
         public virtual void Stop()
         {
-            if(Logger.IsDebugEnabled)
+            if (Logger.IsDebugEnabled)
                 Logger.Debug("Stopping...");
 
-            GlobalServerProxy?.Stop();
+            //GlobalServerProxy?.Stop();
 
             if (Logger.IsDebugEnabled)
                 Logger.Debug("Stopping ResponsePoller...");

@@ -79,7 +79,7 @@ namespace PirateX.Core.Config
                             {
                                 this.GetType().GetMethod("LoadConfigData", BindingFlags.Instance | BindingFlags.NonPublic)
                                                         .MakeGenericMethod(type)
-                                                        .Invoke(this, null);
+                                                        .Invoke(this,null);
                             }
                         }));
                     }
@@ -103,68 +103,53 @@ namespace PirateX.Core.Config
 
         private void LoadConfigData<T>() where T : IConfigIdEntity
         {
-            try
+            var list = _configProvider.LoadConfigData<T>();
+
+            var type = typeof(T);
+
+            var listkeys = new List<string>();
+
+            foreach (var item in list)
             {
+                if (item == null)
+                    continue;
+                var key = GetCacheKeyId<T>(item.Id);
+                _cacheClient.Set(key, item);
+                listkeys.Add(key);
 
-                var list = _configProvider.LoadConfigData<T>();
-
-                var type = typeof(T);
-
-                var listkeys = new List<string>();
-
-                foreach (var item in list)
+                foreach (var attr in type.GetCustomAttributes().Where(x => x is ConfigIndex))
                 {
-                    if (item == null)
-                        continue;
-                    var key = GetCacheKeyId<T>(item.Id);
-                    _cacheClient.Set(key, item);
-                    listkeys.Add(key);
+                    var configindex = (ConfigIndex)attr;
+                    //获取 对应的字段列表
+                    var ps = type.GetProperties().Where(p => configindex.Names.Contains(p.Name));
+                    var dic = ps.ToDictionary(info => info.Name, info => info.GetValue(item));
 
-                    foreach (var attr in type.GetCustomAttributes().Where(x => x is ConfigIndex))
+
+                    if (configindex.IsUnique)
                     {
-                        var configindex = (ConfigIndex)attr;
-                        //获取 对应的字段列表
-                        var ps = type.GetProperties().Where(p => configindex.Names.Contains(p.Name));
-                        var dic = ps.ToDictionary(info => info.Name, info => info.GetValue(item));
+                        var urn = GetCacheIndexKey<T>(dic);
+                        //这里只存根据ID生成的KEY
+                        _cacheClient.Set(urn, key);
+                    }
+                    else
+                    {
+                        var urn = GetCacheIndexKey2<T>(dic);
+                        var urnlist = _cacheClient.Get<IList<string>>(urn) ?? new List<string>();
 
+                        urnlist.Add(key);
 
-                        if (configindex.IsUnique)
-                        {
-                            var urn = GetCacheIndexKey<T>(dic);
-                            //这里只存根据ID生成的KEY
-                            _cacheClient.Set(urn, key);
-                        }
-                        else
-                        {
-                            var urn = GetCacheIndexKey2<T>(dic);
-                            var urnlist = _cacheClient.Get<IList<string>>(urn) ?? new List<string>();
-
-                            urnlist.Add(key);
-
-                            _cacheClient.Set(urn, urnlist);
-                        }
+                        _cacheClient.Set(urn, urnlist);
                     }
                 }
-
-                if (listkeys.Any())
-                    _cacheClient.Add(GetCacheKeyListKey<T>(), listkeys);
-            }
-            catch (Exception e)
-            {
-
-            }
-            finally
-            {
             }
 
-
+            if (listkeys.Any())
+                _cacheClient.Add(GetCacheKeyListKey<T>(), listkeys);
         }
 
         private void LoadKeyValueConfigData<T>() where T : IConfigKeyValueEntity
         {
-            try
-            {
-                var list = _configProvider.LoadKeyValueConfigData<T>();
+           var list = _configProvider.LoadKeyValueConfigData<T>();
 
                 foreach (var item in list)
                 {
@@ -174,14 +159,6 @@ namespace PirateX.Core.Config
                     var key = GetCacheKey<T>(item.Id);
                     _cacheClient.Set(key, item.V);
                 }
-            }
-            catch (Exception e)
-            {
-
-            }
-            finally
-            {
-            }
         }
         #endregion
 

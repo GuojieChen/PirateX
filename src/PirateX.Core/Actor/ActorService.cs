@@ -56,6 +56,7 @@ namespace PirateX.Core.Actor
 
         protected virtual string DefaultResponseCovnert => "protobuf";
 
+        protected int OnlineCount { get; set; }
 
         public ActorService(IServerContainer serverContainer)
         {
@@ -139,6 +140,7 @@ namespace PirateX.Core.Actor
 
         public virtual void Start()
         {
+
         }
 
         private void RegisterActions(IEnumerable<Type> actions)
@@ -193,13 +195,25 @@ namespace PirateX.Core.Actor
 
         public virtual void OnSessionClosed(PirateSession session)
         {
+            OnlineCount--;
+        }
 
+        public virtual void Ping(string servername,int onlinecount)
+        {
+            
         }
 
         public void OnReceive(ActorContext context)
         {
             if (context.Action == 0)
             {
+                Logger.Debug("ping");
+
+                var onlinecount = 0;
+                if (context.ServerItmes.ContainsKey("OnlineCount"))
+                    onlinecount = Convert.ToInt32(context.ServerItmes["OnlineCount"]);
+
+                Ping(context.ServerName, onlinecount);
                 return;
             }
             else if (context.Action == 2)//断线
@@ -313,6 +327,7 @@ namespace PirateX.Core.Actor
 
         public virtual void OnSessionConnected(PirateSession session)
         {
+            OnlineCount++;
         }
 
         public virtual PirateSession ToSession(ActorContext context, IToken token)
@@ -325,7 +340,8 @@ namespace PirateX.Core.Actor
                 Token = context.Request.Token,
                 Uid = token.Uid,
                 StartUtcAt = DateTime.UtcNow,
-                ResponseConvert = context.ResponseCovnert
+                ResponseConvert = context.ResponseCovnert,
+                ServerName = context.ServerName
             };
 
             return session;
@@ -459,6 +475,7 @@ namespace PirateX.Core.Actor
             SendMessage(context, headers, t);
         }
 
+
         /// <summary>
         /// 种子交换
         /// </summary>
@@ -520,6 +537,24 @@ namespace PirateX.Core.Actor
             NetService.PushMessage(rid, headers, ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
         }
 
+        public void PushMessage<T>(int rid, string name, T t)
+        {
+            var headers = new NameValueCollection
+            {
+                {"c",name},
+                { "i", MessageType.Boradcast},
+                {"format",DefaultResponseCovnert} // TODO 默认解析器
+            };
+            
+
+            if (Logger.IsDebugEnabled && t != null)
+            {
+                Logger.Debug($"S2C #{rid}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {JsonConvert.SerializeObject(t)}");
+            }
+
+            NetService.PushMessage(rid, headers, ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
+        }
+
         public void SendMessage<T>(ActorContext context, string name, T t)
         {
             var headers = new NameValueCollection
@@ -532,6 +567,20 @@ namespace PirateX.Core.Actor
             //通知类型 
 
             SendMessage(context, headers, t);
+        }
+        public void SendMessage(ActorContext context, string name, string msg)
+        {
+            var headers = new NameValueCollection
+            {
+                {"c", context.Request.C},
+                {"i", MessageType.Boradcast},
+                {"o", Convert.ToString(context.Request.O)},
+                {"code", Convert.ToString((int) StatusCode.Ok)},
+                { "format" , "json"}
+            };
+            //通知类型 
+
+            NetService.SendMessage(context, headers, Encoding.UTF8.GetBytes(msg));
         }
 
         private void SendMessage<T>(ActorContext context, NameValueCollection header, T rep)

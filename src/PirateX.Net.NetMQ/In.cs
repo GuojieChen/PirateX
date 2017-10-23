@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using ProtoBuf;
@@ -40,5 +41,13 @@ namespace PirateX.Net.NetMQ
         /// </summary>
         [ProtoMember(9)]
         public Dictionary<string,string> Profile  = new Dictionary<string, string>();
+
+        [ProtoMember(10)]
+        public string ServerName { get; set; }
+
+        public In()
+        {
+            ServerName = Dns.GetHostName();
+        }
     }
 }

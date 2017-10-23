@@ -48,5 +48,10 @@ namespace PirateX.Core.Container.ServerSettingRegister
                 .As<ISessionManager>()
                 .SingleInstance();
         }
+
+        public void SetUp(IContainer container, IServerSetting setting)
+        {
+            
+        }
     }
 }

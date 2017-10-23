@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using PirateX.Core.Net;
 using PirateX.Protocol.Package;
@@ -12,13 +13,13 @@ using SuperSocket.SocketBase.Protocol;
 
 namespace PirateX.Net.SuperSocket
 {
-    public sealed class GameAppServer:AppServer<ProxySession,BinaryRequestInfo>,INetManager
+    public sealed class GameAppServer : AppServer<ProxySession, BinaryRequestInfo>, INetManager
     {
-        private ConcurrentDictionary<int,string> _dic = new ConcurrentDictionary<int, string>();
+        private ConcurrentDictionary<int, string> _dic = new ConcurrentDictionary<int, string>();
 
         public INetService NetService { get; set; }
 
-        public GameAppServer(INetService netService):base(new ProxyReceiveFilterFactory())
+        public GameAppServer(INetService netService) : base(new ProxyReceiveFilterFactory())
         {
             NetService = netService;
 
@@ -30,10 +31,17 @@ namespace PirateX.Net.SuperSocket
             return base.Setup(rootConfig, config);
         }
 
+        private Timer _pingtimer;
         public override bool Start()
         {
             NetService.Start();
+            _pingtimer = new Timer(PingTick, null, 1000 * 60, 1000 * 60);
             return base.Start();
+        }
+
+        private void PingTick(object state)
+        {
+            //NetService.Ping(base.GetAllSessions().GroupBy(l=>l.Rid).Count());
         }
 
         public override void Stop()
@@ -47,10 +55,22 @@ namespace PirateX.Net.SuperSocket
             base.OnNewSessionConnected(session);
         }
 
+        protected override void UpdateServerStatus(StatusInfoCollection serverStatus)
+        {
+            base.UpdateServerStatus(serverStatus);
+        }
+
+        protected override void OnServerStatusCollected(StatusInfoCollection bootstrapStatus, StatusInfoCollection serverStatus)
+        {
+            base.OnServerStatusCollected(bootstrapStatus, serverStatus);
+
+            NetService.Ping(base.GetAllSessions().GroupBy(l => l.Rid).Count());
+        }
+
+
         protected override void OnSessionClosed(ProxySession session, CloseReason reason)
         {
-            if(reason == CloseReason.ClientClosing || reason == CloseReason.ServerShutdown)
-                NetService.OnSessionClosed(GetProtocolPackage(session.Id));
+            NetService.OnSessionClosed(GetProtocolPackage(session.Id));
 
             base.OnSessionClosed(session, reason);
         }
@@ -81,7 +101,7 @@ namespace PirateX.Net.SuperSocket
         public void Send(string sessionid, byte[] datas)
         {
             var session = GetSessionByID(sessionid);
-            session?.Send(datas,0,datas.Length);
+            session?.Send(datas, 0, datas.Length);
         }
     }
 }

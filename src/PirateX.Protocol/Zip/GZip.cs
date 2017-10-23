@@ -7,6 +7,9 @@ namespace PirateX.Protocol.Zip
     {
         public byte[] Compress(byte[] datas)
         {
+            if (datas == null)
+                return null;
+
             byte[] bytes = null;
 
             var outMemoryStream = new MemoryStream();
@@ -25,6 +28,9 @@ namespace PirateX.Protocol.Zip
 
         public byte[] Decompress(byte[] datas)
         {
+            if (datas == null)
+                return null;
+
             byte[] bytes = null; 
             var outMemoryStream = new MemoryStream();
             var inMemoryStream = new MemoryStream(datas);

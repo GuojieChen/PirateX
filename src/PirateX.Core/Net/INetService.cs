@@ -17,7 +17,7 @@ namespace PirateX.Core.Net
         /// <param name="body"></param>
         void ProcessRequest(IProtocolPackage protocolPackage, byte[] body);
 
-        void Ping();
+        void Ping(int onlinecount);
 
         void OnSessionClosed(IProtocolPackage protocolPackage);
 

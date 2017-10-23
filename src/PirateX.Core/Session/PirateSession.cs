@@ -31,9 +31,28 @@ namespace PirateX.Core.Session
         public string ResponseConvert { get; set; }
 
         [ProtoMember(11)]
-        public DateTime LastUtcAt { get; set; }
+        public long LastUtcAt { get; set; }
+
+        public DateTime GetLastAtUtc()
+        {
+            return new DateTime(LastUtcAt,DateTimeKind.Utc);
+        }
 
         [ProtoMember(12)]
         public IDictionary<string, string> Items { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// 角色创建时间
+        /// </summary>
+        [ProtoMember(13)]
+        public long CreateAtUtc { get; set; }
+
+        public DateTime GetCreateAtUtc()
+        {
+            return new DateTime(CreateAtUtc,DateTimeKind.Utc);
+        }
+
+        [ProtoMember(14)]
+        public string ServerName { get; set; }
     }
 }

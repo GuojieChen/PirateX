@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
+using NLog;
 using PirateX.Core;
 using PirateX.Core.Actor;
 using PirateX.Core.Net;
@@ -18,14 +19,13 @@ namespace PirateX.Net.NetMQ
 {
     public class ActorNetService : IActorNetService
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private ActorConfig config;
 
         private PullSocket PullSocket { get; set; }
         private PushSocket PushSocket { get; set; }
 
         private NetMQPoller Poller { get; set; }
-
-        private NetMQPoller PullPoller { get; set; }
 
         private readonly NetMQQueue<byte[]> MessageQueue = new NetMQQueue<byte[]>();
 
@@ -45,14 +45,12 @@ namespace PirateX.Net.NetMQ
             PullSocket.ReceiveReady += ProcessTaskPullSocket;
 
             PushSocket = new PushSocket(config.PushsocketString);
-            Poller = new NetMQPoller() { PushSocket, MessageQueue };
-            PullPoller = new NetMQPoller(){ PullSocket };
+            Poller = new NetMQPoller() { MessageQueue, PullSocket };
 
             MessageQueue.ReceiveReady += (sender, args) =>
             {
                 PushSocket.SendFrame(args.Queue.Dequeue());
             };
-
         }
 
         /// <summary>
@@ -64,15 +62,17 @@ namespace PirateX.Net.NetMQ
         {
             var bytes = e.Socket.ReceiveFrameBytes();
 
-            ThreadPool.QueueUserWorkItem(state =>
+            ThreadPool.QueueUserWorkItem((obj) =>
             {
+                Logger.Debug($"ProcessTaskPullSocket {Thread.CurrentThread.ManagedThreadId} - {Thread.CurrentThread.IsThreadPoolThread}");
+
                 try
                 {
-                    var msg = (byte[])state;
+                    var msg = (byte[])obj;
 
                     var din = msg.FromProtobuf<In>();
-                    
-                    if(ProfilerLog.ProfilerLogger.IsInfoEnabled)
+
+                    if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
                         din.Profile.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
 
                     var context = new ActorContext()
@@ -86,17 +86,21 @@ namespace PirateX.Net.NetMQ
                         RemoteIp = din.Ip,
                         LastNo = din.LastNo,
                         SessionId = din.SessionId,
-                        Profile = din.Profile
+                        Profile = din.Profile,
+                        ServerName = din.ServerName,
+                        ServerItmes = din.Items
                     };
 
                     _actorService.OnReceive(context);
                 }
                 catch (Exception exception)
                 {
-                    Console.WriteLine(exception);
+                    Logger.Error(exception);
                 }
 
-            },bytes);
+            }, bytes);
+
+            
         }
 
         protected void EnqueueMessage(byte[] message)
@@ -110,13 +114,14 @@ namespace PirateX.Net.NetMQ
 
             _actorService.Start();
             Poller.RunAsync();
-            PullPoller.RunAsync();
         }
 
         public virtual void Stop()
         {
+            if (Logger.IsDebugEnabled)
+                Logger.Debug("ActorNetService Stopping...");
+
             Poller?.Stop();
-            PullPoller?.Stop();
 
             PullSocket?.Close();
             _actorService.Stop();
@@ -141,7 +146,7 @@ namespace PirateX.Net.NetMQ
             return Encoding.UTF8.GetBytes(string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a])));
         }
 
-        public void Seed(ActorContext context, NameValueCollection header, byte cryptobyte , byte[] clientkeys,byte[] serverkeys , byte[] body)
+        public void Seed(ActorContext context, NameValueCollection header, byte cryptobyte, byte[] clientkeys, byte[] serverkeys, byte[] body)
         {
             if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
                 context.Profile.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
@@ -167,8 +172,11 @@ namespace PirateX.Net.NetMQ
 
         public void SendMessage(ActorContext context, NameValueCollection header, byte[] body)
         {
-            if(ProfilerLog.ProfilerLogger.IsInfoEnabled)
-                context.Profile.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
+            if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
+            {
+                if(!context.Profile.ContainsKey("_itout_"))
+                    context.Profile.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
+            }
 
             EnqueueMessage(new Out()
             {

@@ -25,6 +25,11 @@ namespace PirateX.Protocol.Package
         /// 第三方UID
         /// </summary>
         string Uid { get; set; }
+
+        /// <summary>
+        /// 角色创建时间的时钟周期表达
+        /// </summary>
+        long CreateAtUtcTicks { get; set; }
     }
     
     [Serializable]
@@ -54,5 +59,11 @@ namespace PirateX.Protocol.Package
 
         [ProtoMember(5)]
         public string Uid { get; set; }
+
+        /// <summary>
+        /// 角色创建时间的时钟周期表达
+        /// </summary>
+        [ProtoMember(6)]
+        public long CreateAtUtcTicks { get; set; }
     }
 }

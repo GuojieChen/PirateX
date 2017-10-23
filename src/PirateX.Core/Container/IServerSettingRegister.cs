@@ -19,11 +19,14 @@ namespace PirateX.Core.Container
 
             RegisterType = type;
         }
+
     }
 
 
     public interface IServerSettingRegister
     {
         void Register(ContainerBuilder builder, IServerSetting setting);
+
+        void SetUp(IContainer container, IServerSetting setting);
     }
 }

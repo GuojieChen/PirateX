@@ -29,5 +29,11 @@ namespace PirateX.Core.Actor
         public int LastNo { get; set; }
 
         public Dictionary<string ,string> Profile { get; set; }
+
+        public string ServerName { get; set; }
+
+        public int OnlineCount { get; set; }
+
+        public Dictionary<string,string> ServerItmes { get; set; }
     }
 }

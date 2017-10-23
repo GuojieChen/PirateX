@@ -7,7 +7,6 @@ namespace PirateX.Core.Actor
 {
     public abstract class RepAction : ActionBase
     {
-        
     }
 
     public abstract class RepAction<TResponse>:ActionBase
