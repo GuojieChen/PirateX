@@ -130,7 +130,7 @@
             this.txtPort.Name = "txtPort";
             this.txtPort.Size = new System.Drawing.Size(139, 21);
             this.txtPort.TabIndex = 3;
-            this.txtPort.Text = "4012";
+            this.txtPort.Text = "4444";
             // 
             // label5
             // 
@@ -147,7 +147,7 @@
             this.txtHost.Name = "txtHost";
             this.txtHost.Size = new System.Drawing.Size(139, 21);
             this.txtHost.TabIndex = 1;
-            this.txtHost.Text = "192.168.1.34";
+            this.txtHost.Text = "127.0.0.1";
             // 
             // lable4
             // 
@@ -195,7 +195,7 @@
             this.txtToken.Name = "txtToken";
             this.txtToken.Size = new System.Drawing.Size(279, 21);
             this.txtToken.TabIndex = 9;
-            this.txtToken.Text = "rid=110&did=2";
+            this.txtToken.Text = "rid=110&did=1";
             // 
             // label3
             // 
