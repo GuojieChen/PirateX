@@ -75,7 +75,7 @@ namespace PirateX.Core.Config
                                                         .MakeGenericMethod(type)
                                                         .Invoke(this, null);
                             }
-                            else if (typeof(IConfigIdEntity).IsAssignableFrom(type))
+                            else //if (typeof(IConfigIdEntity).IsAssignableFrom(type))
                             {
                                 this.GetType().GetMethod("LoadConfigData", BindingFlags.Instance | BindingFlags.NonPublic)
                                                         .MakeGenericMethod(type)
@@ -149,7 +149,7 @@ namespace PirateX.Core.Config
 
         private void LoadKeyValueConfigData<T>() where T : IConfigKeyValueEntity
         {
-           var list = _configProvider.LoadKeyValueConfigData<T>();
+           var list = _configProvider.LoadConfigData<T>();
 
                 foreach (var item in list)
                 {

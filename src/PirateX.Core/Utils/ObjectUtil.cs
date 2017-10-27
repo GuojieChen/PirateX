@@ -73,6 +73,9 @@ namespace PirateX.Core.Utils
         /// <returns></returns>
         public static string GetConfigDbKey(this string connectionString)
         {
+            if (string.IsNullOrEmpty(connectionString))
+                return string.Empty;
+
             var items = connectionString.Split(new char[] { ';' });
             var builder = new StringBuilder();
             foreach (var item in items)

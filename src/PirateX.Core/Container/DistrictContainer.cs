@@ -32,8 +32,6 @@ namespace PirateX.Core.Container
 
         private readonly object _loadContainerLockHelper = new object();
 
-        private readonly IDictionary<string, IConfigReader> _configReaderDic = new Dictionary<string, IConfigReader>();
-
         private IContainer _serverContainer;
 
         public ILifetimeScope ServerIoc { get; set; }
@@ -248,17 +246,22 @@ namespace PirateX.Core.Container
 
             var services = GetServiceAssemblyList();
 
-            if (!services.Any())
+            if (services.Any())
             {
                 services.ForEach(x =>
                 {
-                    builder.RegisterAssemblyTypes(x)
-                        .Where(item => typeof(IService).IsAssignableFrom(item))
+                    foreach (var type in x.GetTypes())
+                    {
+                        if(type.IsInterface || type.IsAbstract || !typeof(IService).IsAssignableFrom(type))
+                            continue;
+                        builder.RegisterType(type)
+                        //.Where(item => typeof(IService).IsAssignableFrom(item))
                         //.WithProperty("Test",123)
                         .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
-                        //.WithProperty(new ResolvedParameter((pi, context) => pi.Name == "Resolver", (pi, ctx) => ctx))
+                            //.WithProperty(new ResolvedParameter((pi, context) => pi.Name == "Resolver", (pi, ctx) => ctx))
                         .AsSelf()
-                        .InstancePerLifetimeScope();
+                        .SingleInstance();
+                    }
                 });
             }
 
@@ -281,17 +284,17 @@ namespace PirateX.Core.Container
 
         protected virtual List<Assembly> GetConfigAssemblyList()
         {
-            return new List<Assembly>() { typeof(TDistrictContainer).Assembly };
+            return new List<Assembly>() { typeof(TDistrictContainer).Assembly, typeof(TDistrictContainer).Assembly };
         }
 
         protected virtual List<Assembly> GetServiceAssemblyList()
         {
-            return new List<Assembly>() { typeof(IService).Assembly };
+            return new List<Assembly>() { typeof(IService).Assembly,typeof(TDistrictContainer).Assembly };
         }
 
         public virtual List<Assembly> GetEntityAssemblyList()
         {
-            return new List<Assembly>() { typeof(IEntity).Assembly };
+            return new List<Assembly>() { typeof(IEntity).Assembly, typeof(TDistrictContainer).Assembly };
         }
 
         public virtual IServerSetting GetServerSetting()

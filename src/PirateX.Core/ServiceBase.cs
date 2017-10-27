@@ -13,7 +13,7 @@ using StackExchange.Redis;
 
 namespace PirateX.Core
 {
-    public class ServiceBase : IService
+    public abstract class ServiceBase : IService
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public ILifetimeScope Resolver { get; set; }

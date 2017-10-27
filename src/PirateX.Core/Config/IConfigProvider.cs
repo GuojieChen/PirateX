@@ -10,8 +10,8 @@ namespace PirateX.Core.Config
     {
         string Key { get;set; }
 
-        IEnumerable<T> LoadConfigData<T>() where T : IConfigIdEntity;
+        IEnumerable<T> LoadConfigData<T>() where T : IConfigEntity;
 
-        IEnumerable<T> LoadKeyValueConfigData<T>() where T : IConfigKeyValueEntity;
+        //IEnumerable<T> LoadKeyValueConfigData<T>() where T : IConfigKeyValueEntity;
     }
 }
