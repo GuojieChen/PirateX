@@ -6,6 +6,8 @@
 *.user
 *.sln.docstates
 /.svn
+.vs
+vs/
 
 # Build results
 
