@@ -187,7 +187,7 @@
             this.txtHeader.Name = "txtHeader";
             this.txtHeader.Size = new System.Drawing.Size(279, 21);
             this.txtHeader.TabIndex = 10;
-            this.txtHeader.Text = "c=_sysinfo";
+            this.txtHeader.Text = "c=_sysinfo&lang=zh-CN";
             // 
             // txtToken
             // 
@@ -195,7 +195,7 @@
             this.txtToken.Name = "txtToken";
             this.txtToken.Size = new System.Drawing.Size(279, 21);
             this.txtToken.TabIndex = 9;
-            this.txtToken.Text = "rid=110&did=1";
+            this.txtToken.Text = "rid=110&did=0";
             // 
             // label3
             // 
