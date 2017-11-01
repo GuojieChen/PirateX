@@ -110,6 +110,8 @@ namespace GameServer.Console
         {
             return new Dictionary<string, string>()
             {
+                {"role","role_123" },
+                {"cps","role_456" },
             };
         }
     }

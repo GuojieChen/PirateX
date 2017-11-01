@@ -34,7 +34,14 @@ namespace PirateX.Core.Actor.ProtoSync
 
         public void Init(List<Assembly> list)
         {
+            if(Logger.IsTraceEnabled)
+                Logger.Trace("---------- ProtobufService.Init ----------");
+
             list.ForEach(Init);
+
+
+            if (Logger.IsTraceEnabled)
+                Logger.Trace("");
         }
 
         public void Init(Assembly assembly)
@@ -53,8 +60,8 @@ namespace PirateX.Core.Actor.ProtoSync
 
                 }
 
-            if (Logger.IsDebugEnabled)
-                Logger.Debug($"previous ModuleVersionId is {_currentModuleVersionId}");
+            if (Logger.IsTraceEnabled)
+                Logger.Trace($"previous ModuleVersionId is {_currentModuleVersionId}");
 
             if (File.Exists(ProtoHashFile))
             {
@@ -71,8 +78,8 @@ namespace PirateX.Core.Actor.ProtoSync
 
             if (!Equals(assembly.ManifestModule.ModuleVersionId.ToString(), _currentModuleVersionId))
             {
-                if (Logger.IsDebugEnabled)
-                    Logger.Debug("genterating proto files...");
+                if (Logger.IsTraceEnabled)
+                    Logger.Trace("genterating proto files...");
 
                 foreach (var type in types)
                 {

@@ -14,22 +14,13 @@ using TestDataGenerator;
 namespace PirateX.Core.UnitTest.Config
 {
 
-    [TestFixture]
-    public class MemoryConfigReaderTest
+    public class DbConfigProvider:IConfigProvider
     {
-        private IDbConnectionFactory dbConnectionFactory;
+        public string Key { get; set; }
+        private OrmLiteConnectionFactory dbConnectionFactory = new OrmLiteConnectionFactory(":memory:", SqliteDialect.Provider);
 
-        private MemoryConfigReader MemoryConfigReader;
-
-
-
-        [SetUp]
-        public void SetUp()
+        public void Init()
         {
-
-            Console.WriteLine("init datas....");
-            dbConnectionFactory = new OrmLiteConnectionFactory(":memory:", SqliteDialect.Provider);
-            MemoryConfigReader = new MemoryConfigReader(new List<Assembly>(){ typeof(TestConfig).Assembly }, dbConnectionFactory.OpenDbConnection());
             var catalog = new Catalog();
 
             using (var db = dbConnectionFactory.OpenDbConnection())
@@ -50,14 +41,40 @@ namespace PirateX.Core.UnitTest.Config
                 {
                     var kvconfig = new KeyValueTestConfig()
                     {
-                        Id = $"ID_{i+1}",
-                        V = $"V_{i+1}"
+                        Id = $"ID_{i + 1}",
+                        V = $"V_{i + 1}"
                     };
 
                     db.Insert(kvconfig);
                 }
             }
+        }
 
+        public IEnumerable<T> LoadConfigData<T>() where T : IConfigEntity
+        {
+            using (var db = dbConnectionFactory.OpenDbConnection())
+            {
+                return db.Select<T>();
+            }
+        }
+    }
+
+    [TestFixture]
+    public class MemoryConfigReaderTest
+    {
+        private IDbConnectionFactory dbConnectionFactory;
+
+        private MemoryConfigReader MemoryConfigReader;
+
+
+
+        [SetUp]
+        public void SetUp()
+        {
+
+            Console.WriteLine("init datas....");
+            MemoryConfigReader = new MemoryConfigReader(new List<Assembly>(){ typeof(TestConfig).Assembly },new DbConfigProvider() );
+            
             MemoryConfigReader.Load();
 
             Console.WriteLine("init datas ok");

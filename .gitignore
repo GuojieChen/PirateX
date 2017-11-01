@@ -157,3 +157,4 @@ $RECYCLE.BIN/
 /TimeTravel.DB
 
 *.nuspec
+/src/.vs

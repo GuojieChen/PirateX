@@ -24,9 +24,6 @@ namespace PirateX.Core.Container.Register
         {
             var connectionString = ((IConnectionDistrictConfig)config).ConnectionString;
 
-            if (string.IsNullOrEmpty(connectionString))
-                return ;
-
             if (container.IsRegistered<IDatabaseInitializer>())
             {
                 //判断是否有更新 ？

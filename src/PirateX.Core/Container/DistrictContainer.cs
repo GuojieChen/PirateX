@@ -37,7 +37,7 @@ namespace PirateX.Core.Container
         public ILifetimeScope ServerIoc { get; set; }
 
         private IServerSetting _defaultSetting;
-        protected T GetDefaultSeting<T>() where T: IServerSetting
+        protected T GetDefaultSeting<T>() where T : IServerSetting
         {
             var file = $"{AppDomain.CurrentDomain.BaseDirectory}Config\\ServerConfigs.json";
 
@@ -48,10 +48,11 @@ namespace PirateX.Core.Container
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-
-
         public void InitContainers(ContainerBuilder builder)
         {
+            if (Log.IsTraceEnabled)
+                Log.Trace($"~~~~~~~~~~ Init server containers ~~~~~~~~~~");
+
             var districtConfigs = GetDistrictConfigs();
 
             var serverSetting = GetServerSetting();
@@ -87,6 +88,8 @@ namespace PirateX.Core.Container
             ServerIoc = _serverContainer.BeginLifetimeScope();
 
 
+            if (Log.IsTraceEnabled)
+                Log.Trace("Setup ServerSetting.");
             foreach (var type in serverSetting.GetType().GetInterfaces())
             {
                 var attrs = type.GetCustomAttributes(typeof(ServerSettingRegisterAttribute), false);
@@ -97,6 +100,17 @@ namespace PirateX.Core.Container
                     ((IServerSettingRegister)Activator.CreateInstance(attr.RegisterType))
                         .SetUp(_serverContainer, serverSetting);
             }
+
+            foreach (var kv in GetNamedConnectionStrings())
+            {
+                if(Log.IsTraceEnabled)
+                    Log.Trace($"Initialize Db[{kv.Key}] = {kv.Value}");
+
+                ServerIoc.ResolveKeyed<IDatabaseInitializer>(kv.Key).Initialize(kv.Value);
+            }
+
+            if (Log.IsTraceEnabled)
+                Log.Trace("Loading distrct containers...");
 
             foreach (var config in districtConfigs)
             {
@@ -110,13 +124,13 @@ namespace PirateX.Core.Container
 
                 _containers.Add(config.Id, c);
             }
-
         }
+
+        private static string ConnectionStringName = "ConnectionString";
 
         private void ServerConfig(ContainerBuilder builder, IEnumerable<IDistrictConfig> configs)
         {
-
-            builder.Register((c, p) => new SqlConnection(p.Named<string>("ConnectionString")))
+            builder.Register((c, p) => new SqlConnection(p.Named<string>(ConnectionStringName)))
                 .As<IDbConnection>()
                 .InstancePerDependency();
 
@@ -124,6 +138,9 @@ namespace PirateX.Core.Container
             builder.Register(c => new ProtobufRedisSerializer())
                 .As<IRedisSerializer>()
                 .SingleInstance();
+
+            if(Log.IsTraceEnabled)
+                Log.Trace("SetUp ConnectionStrings...");
 
             SetUpConnectionStrings(builder);
 
@@ -136,6 +153,10 @@ namespace PirateX.Core.Container
             }
         }
 
+        /// <summary>
+        /// 注册数据库连接
+        /// </summary>
+        /// <param name="builder"></param>
         private void SetUpConnectionStrings(ContainerBuilder builder)
         {
             foreach (var kp in GetNamedConnectionStrings())
@@ -144,9 +165,23 @@ namespace PirateX.Core.Container
                     .Keyed<string>(kp.Key)
                     .SingleInstance();
 
-                builder.Register(c => c.Resolve<IDbConnection>(new NamedParameter("ConnectionString", kp.Value)))
+                builder.Register(c => c.Resolve<IDbConnection>(new NamedParameter(ConnectionStringName, kp.Value)))
                     .Keyed<IDbConnection>(kp.Key)
                     .InstancePerDependency();
+
+            }
+
+            //注册对应的 IDatabaseInitializer
+            foreach (var databaseInitializer in GetNamedDatabaseInitializers())
+            {
+                var attributes = databaseInitializer.GetType().GetCustomAttributes(false);
+                if(!attributes.Any())
+                    continue;
+
+                var name = (attributes[0] as DatabaseInitializerAttribute).Name;
+                builder.Register(c => databaseInitializer)
+                    .Keyed<IDatabaseInitializer>(name)
+                    .SingleInstance();
             }
         }
 
@@ -192,7 +227,7 @@ namespace PirateX.Core.Container
                 return null;
 
             if (Log.IsTraceEnabled)
-                Log.Trace($"Init district container\t{districtConfig.Id}");
+                Log.Trace($"=========== Init district container\t{districtConfig.Id} ===========");
 
             var configtypes = districtConfig.GetType().GetInterfaces();
 
@@ -214,7 +249,7 @@ namespace PirateX.Core.Container
                 .As<IRedisSerializer>()
                 .SingleInstance();
 
-            builder.Register((c, p) => new SqlConnection(p.Named<string>("ConnectionString")))
+            builder.Register((c, p) => new SqlConnection(p.Named<string>(ConnectionStringName)))
                 .As<IDbConnection>()
                 .InstancePerDependency();
 
@@ -222,6 +257,7 @@ namespace PirateX.Core.Container
 
             builder.Register(c => districtConfig)
                 .As<IDistrictConfig>()
+                .AsImplementedInterfaces()
                 .SingleInstance();
 
             builder.Register(c => GetConfigAssemblyList())
@@ -233,9 +269,13 @@ namespace PirateX.Core.Container
                 .SingleInstance();
 
             if (ServerIoc.IsRegistered<IMessageBroadcast>())
-                builder.Register(c => ServerIoc.Resolve<IMessageBroadcast>()).As<IMessageBroadcast>().SingleInstance();
+                builder.Register(c => ServerIoc.Resolve<IMessageBroadcast>())
+                    .As<IMessageBroadcast>()
+                    .SingleInstance();
             else
-                builder.Register(c => new DefaultMessageBroadcast()).As<IMessageBroadcast>().SingleInstance();
+                builder.Register(c => new DefaultMessageBroadcast())
+                    .As<IMessageBroadcast>()
+                    .SingleInstance();
 
             if (ServerIoc.IsRegistered<IPushService>())
                 builder.Register(c => ServerIoc.Resolve<IPushService>())
@@ -252,13 +292,13 @@ namespace PirateX.Core.Container
                 {
                     foreach (var type in x.GetTypes())
                     {
-                        if(type.IsInterface || type.IsAbstract || !typeof(IService).IsAssignableFrom(type))
+                        if (type.IsInterface || type.IsAbstract || !typeof(IService).IsAssignableFrom(type))
                             continue;
                         builder.RegisterType(type)
                         //.Where(item => typeof(IService).IsAssignableFrom(item))
                         //.WithProperty("Test",123)
                         .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
-                            //.WithProperty(new ResolvedParameter((pi, context) => pi.Name == "Resolver", (pi, ctx) => ctx))
+                        //.WithProperty(new ResolvedParameter((pi, context) => pi.Name == "Resolver", (pi, ctx) => ctx))
                         .AsSelf()
                         .SingleInstance();
                     }
@@ -274,11 +314,17 @@ namespace PirateX.Core.Container
                     continue;
                 var attr = attrs[0] as DistrictConfigRegisterAttribute;
                 if (attr != null)
+                {
+                    if (Log.IsTraceEnabled)
+                        Log.Trace($"SetUp DistrictConfig -> {type.Name}");
+
                     ((IDistrictConfigRegister)Activator.CreateInstance(attr.RegisterType))
                         .SetUp(container, districtConfig);
+                }
             }
 
-
+            if (Log.IsTraceEnabled)
+                Log.Trace("");
             return container;
         }
 
@@ -289,7 +335,7 @@ namespace PirateX.Core.Container
 
         protected virtual List<Assembly> GetServiceAssemblyList()
         {
-            return new List<Assembly>() { typeof(IService).Assembly,typeof(TDistrictContainer).Assembly };
+            return new List<Assembly>() { typeof(IService).Assembly, typeof(TDistrictContainer).Assembly };
         }
 
         public virtual List<Assembly> GetEntityAssemblyList()
@@ -326,6 +372,11 @@ namespace PirateX.Core.Container
             return new Dictionary<string, string>();
         }
 
+
+        public virtual List<IDatabaseInitializer> GetNamedDatabaseInitializers()
+        {
+            return new List<IDatabaseInitializer>();
+        }
         #endregion
 
 

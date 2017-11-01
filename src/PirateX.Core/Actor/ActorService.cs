@@ -79,6 +79,7 @@ namespace PirateX.Core.Actor
             builder.Register(c => new MemorySessionManager())
                 .As<ISessionManager>()
                 .SingleInstance();
+
             builder.Register(c => this).As<IMessageSender>().SingleInstance();
             foreach (var type in configtypes)
             {
@@ -130,12 +131,21 @@ namespace PirateX.Core.Actor
 
             ServerContainer.InitContainers(builder);
 
-            ServerContainer.ServerIoc.Resolve<IProtoService>().Init(ServerContainer.GetEntityAssemblyList());
+            ServerContainer.ServerIoc.Resolve<IProtoService>()
+                .Init(ServerContainer.GetEntityAssemblyList());
 
             RedisDataBaseExtension.RedisSerilazer = ServerContainer.ServerIoc.Resolve<IRedisSerializer>();
+            if (Logger.IsTraceEnabled)
+                Logger.Trace($"Set RedisDataBaseExtension.RedisSerilazer = {RedisDataBaseExtension.RedisSerilazer.GetType().FullName}");
 
             ProtocolPackage = ServerContainer.ServerIoc.Resolve<IProtocolPackage>();
+            if (Logger.IsTraceEnabled)
+                Logger.Trace($"Set ProtocolPackage = {ProtocolPackage.GetType().FullName}");
+
             OnlineManager = ServerContainer.ServerIoc.Resolve<ISessionManager>();
+            if (Logger.IsTraceEnabled)
+                Logger.Trace($"Set OnlineManager = {OnlineManager.GetType().FullName}");
+
         }
 
         public virtual void Start()

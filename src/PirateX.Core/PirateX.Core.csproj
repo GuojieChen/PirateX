@@ -97,6 +97,7 @@
     <Compile Include="DefaultServerSetting.cs" />
     <Compile Include="Domain\Entity\IEntityCreateAt.cs" />
     <Compile Include="Domain\Entity\IEntityPrivate.cs" />
+    <Compile Include="Domain\Entity\IEntityPublic.cs" />
     <Compile Include="Domain\Entity\IEntityTimestamp.cs" />
     <Compile Include="Domain\Entity\IRoleDatasVersion.cs" />
     <Compile Include="Domain\Repository\IRepository.cs" />

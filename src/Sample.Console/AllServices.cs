@@ -36,7 +36,7 @@ namespace GameServer.Console
             });
             var b = HostServer.Setup(new ServerConfig()
             {
-                Port = 4012,
+                Port = 4444,
                 MaxConnectionNumber = 10000
             });
 
