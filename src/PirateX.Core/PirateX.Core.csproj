@@ -96,6 +96,7 @@
     <Compile Include="DataSync\IDataSync.cs" />
     <Compile Include="DefaultServerSetting.cs" />
     <Compile Include="Domain\Entity\IEntityCreateAt.cs" />
+    <Compile Include="Domain\Entity\IEntityDistrict.cs" />
     <Compile Include="Domain\Entity\IEntityPrivate.cs" />
     <Compile Include="Domain\Entity\IEntityPublic.cs" />
     <Compile Include="Domain\Entity\IEntityTimestamp.cs" />
