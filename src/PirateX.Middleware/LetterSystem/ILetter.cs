@@ -18,9 +18,11 @@ namespace PirateX.Middleware
         /// </summary>
         int TemplateId { get; set; }
         /// <summary>
-        /// 信件内容，这里是Key—Value存储，用以刷新信件模板（按照信件TemplateId来定位模板）
+        /// 信件内容
+        /// 可以是字典类型，用以刷新信件模板（按照信件TemplateId来定位模板）
+        /// 实现的类中可以自己决定Values的序列化和反序列化规则
         /// </summary>
-        IDictionary<string, string> Values { get; set; }
+        string Values { get; set; }
         /// <summary>
         /// 已读
         /// </summary>

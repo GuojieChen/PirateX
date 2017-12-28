@@ -7,6 +7,9 @@
         int Id { get; set; }
 
         string SecretKey { get; set; }
+        /// <summary>
+        /// 合服后的ID
+        /// </summary>
+        int TargetId { get; set; }
     }
-
 }
