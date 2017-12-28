@@ -135,19 +135,21 @@ errorMsg : （ * ） 错误消息
 批量更新   
 
 
-## 配置数据模型(Config)
->注册配置    
+## 配置数据
+### 注册配置 
 
 ```csharp
-public class DemoServer : GameServer<DemoSession,OnlineRole>
+public class DemoServer : DistrictContainer<DemoServer>
 {
-        public override Assembly ConfigAssembly()
+        protected override List<Assembly> GetConfigAssemblyList()
         {
-            return this.GetType().Assembly;
+            var list = base.GetConfigAssemblyList();
+            list.Add(typeof(TestConfig).Assembly);
+            return list;
         }
 }
 ```  
-
+### 定义配置
 ```csharp
 /// <summary>
 /// 普通模式，以Id为主键
@@ -178,6 +180,10 @@ public class DefaultConfig : IConfigKeyValueEntity
 }
 ```
 
+### 使用配置
+
+
+
 ```csharp
 ///配置模型索引键，后期查询用
 Resolver.Resolve<IConfigReader>().SingleByIndexes<PetConfig>(new
@@ -186,6 +192,26 @@ Resolver.Resolve<IConfigReader>().SingleByIndexes<PetConfig>(new
     Index2 = 2
 }); 
 ```
+
+
+
+### 导入配置
+
+使用PirateX.ConfigImport.exe 将excel文件中的配置数据导入到指定的数据库中   
+
+```csharp
+PirateX.ConfigImport.exe --input "C:\\Users\\Guojie\\Desktop\\1\\config" --maxworkers 5  --connectionstring "server=192.168.1.54;user id=root;password=123456;persist security info=True;database=piratex_config;CharSet='utf8'" --dlldir "C:\\Users\\Guojie\\Desktop\1\\dll"
+```   
+参数说明    
+
+| 参数  | 可选 |        说明           | 示例 |
+| -------- | -------------- | ----------------------- | ---- |
+| input       | N     |  配置文件目录  | |
+| maxworkers       |Y       | 工作队列，默认5   | |
+| ignore       | Y      | 忽略的字段       | --ignore "charactorConfig.xlsx=MegaEvId,EvId,ConsumeIds&material.xlsx=Effects,UpPrice" |
+| connectionstring       | N      | 数据库连接字符串       | |
+| dlldir       |  N     | 模块目录/文件       | |
+
 
 ## 表结构自维护   
 注册需要进行维护的程序集，在此之后，每次重启的时候都会对表结构进行维护    
