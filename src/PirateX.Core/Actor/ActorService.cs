@@ -146,6 +146,17 @@ namespace PirateX.Core.Actor
             if (Logger.IsTraceEnabled)
                 Logger.Trace($"Set OnlineManager = {OnlineManager.GetType().FullName}");
 
+
+
+            if (Logger.IsTraceEnabled)
+                Logger.Trace(@"
+.______    __  .______          ___   .___________. __________   ___ 
+|   _  \  |  | |   _  \        /   \  |           ||   ____\  \ /  / 
+|  |_)  | |  | |  |_)  |      /  ^  \ `---|  |----`|  |__   \  V  /  
+|   ___/  |  | |      /      /  /_\  \    |  |     |   __|   >   <   
+|  |      |  | |  |\  \----./  _____  \   |  |     |  |____ /  .  \  
+| _|      |__| | _| `._____/__/     \__\  |__|     |_______/__/ \__\ 
+");
         }
 
         public virtual void Start()

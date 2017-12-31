@@ -168,19 +168,13 @@ namespace PirateX.Core.Container
                 builder.Register(c => c.Resolve<IDbConnection>(new NamedParameter(ConnectionStringName, kp.Value)))
                     .Keyed<IDbConnection>(kp.Key)
                     .InstancePerDependency();
-
             }
 
             //注册对应的 IDatabaseInitializer
-            foreach (var databaseInitializer in GetNamedDatabaseInitializers())
+            foreach (var kv in GetNamedDatabaseInitializers())
             {
-                var attributes = databaseInitializer.GetType().GetCustomAttributes(false);
-                if(!attributes.Any())
-                    continue;
-
-                var name = (attributes[0] as DatabaseInitializerAttribute).Name;
-                builder.Register(c => databaseInitializer)
-                    .Keyed<IDatabaseInitializer>(name)
+                builder.Register(c => kv.Value)
+                    .Keyed<IDatabaseInitializer>(kv.Key)
                     .SingleInstance();
             }
         }
@@ -373,9 +367,9 @@ namespace PirateX.Core.Container
         }
 
 
-        public virtual List<IDatabaseInitializer> GetNamedDatabaseInitializers()
+        public virtual IDictionary<string, IDatabaseInitializer> GetNamedDatabaseInitializers()
         {
-            return new List<IDatabaseInitializer>();
+            return new Dictionary<string, IDatabaseInitializer>();
         }
         #endregion
 

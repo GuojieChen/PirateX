@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dapper;
-using PirateX.Core;
 using PirateX.Core.DataSync;
 
-namespace PirateX.Middleware.DataSync
+namespace PirateX.Middleware
 {
     public class DataSync:IDataSync<RoleDatasVersion>,IDisposable
     {
