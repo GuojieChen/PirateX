@@ -20,6 +20,7 @@ namespace PirateX.Middleware
 
         public int Delete(long rid,int id)
         {
+            //TODO 这里可以根据情况做下归档
             return base.DbConnection.Execute($"delete from letter where rid = {rid} and Id = {id}");
         }
 

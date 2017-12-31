@@ -20,5 +20,12 @@ namespace PirateX.Core.Domain.Repository
         public IDbConnection DbConnection { get; set; }
         public IDatabase Redis { get; set; }
 
+
+        protected void Exe(Action action)
+        {
+            DbConnection.Open();
+
+            DbConnection.Close();
+        }
     }
 }
