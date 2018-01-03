@@ -19,6 +19,7 @@ namespace PirateX.GameServerTest
         public string Redis { get; set; }
         public int RedisDb { get; set; }
         public string SecretKey { get; set; }
+        public int TargetId { get; set; }
     }
 
     public class ServerSetting : IServerSetting

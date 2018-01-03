@@ -75,7 +75,7 @@ namespace PirateX.UnitTest
         public string Redis { get; set; }
         public int RedisDb { get; set; }
         public string SecretKey { get; set; }
-        public bool AlterTable { get; set; }
+        public int TargetId { get; set; }
     }
 
     public class ServerSetting : IServerSetting
@@ -88,7 +88,6 @@ namespace PirateX.UnitTest
         public int C { get; set; }
         public string RedisHost { get; set; }
         public bool IsSingle { get; set; }
-        public bool AlterTable { get; set; }
         public bool IsMetricOpen { get; set; }
     }
     

@@ -49,9 +49,13 @@
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\..\..\PokemonIII\Server\packages\NLog.4.4.9\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="StackExchange.Redis, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StackExchange.Redis.1.2.3\lib\net45\StackExchange.Redis.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -61,14 +65,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChatSystem\ChatRepository.cs" />
-    <Compile Include="ChatSystem\ChatService.cs" />
+    <Compile Include="ChatSystem\MidChatService.cs" />
     <Compile Include="ChatSystem\IChat.cs" />
     <Compile Include="DataSync\DataSync.cs" />
     <Compile Include="DataSync\RoleDatasVersion.cs" />
     <Compile Include="LetterSystem\ILetter.cs" />
     <Compile Include="LetterSystem\LetterRepository.cs" />
-    <Compile Include="LetterSystem\LetterService.cs" />
+    <Compile Include="LetterSystem\MidLetterService.cs" />
+    <Compile Include="RankingSystem\IRanking.cs" />
+    <Compile Include="RankingSystem\MidRankingRepository.cs" />
+    <Compile Include="TaskSystem\V1\ITaskConditionDetectStrategy.cs" />
+    <Compile Include="TaskSystem\V1\ITaskConfig.cs" />
+    <Compile Include="TaskSystem\V1\LogicalExpression.cs" />
+    <Compile Include="TaskSystem\V1\TaskCondition.cs" />
+    <Compile Include="TaskSystem\V1\TaskConditionDetectContext.cs" />
+    <Compile Include="TaskSystem\V1\TaskLogical.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TaskSystem\V1\IGameTask.cs" />
+    <Compile Include="TaskSystem\V1\_TaskConditionDes.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PirateX.Core\PirateX.Core.csproj">

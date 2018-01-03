@@ -59,6 +59,7 @@ namespace PirateX.Core.UnitTest
     {
         public int Id { get; set; }
         public string SecretKey { get; set; }
+        public int TargetId { get; set; }
         public string ConnectionString { get; set; }
         public string ConfigConnectionString { get; set; }
     }

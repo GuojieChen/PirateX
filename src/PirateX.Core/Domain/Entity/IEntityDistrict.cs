@@ -8,10 +8,10 @@ namespace PirateX.Core.Domain.Entity
 {
     public interface IEntityDistrict
     {
-        /// <summary>
-        /// 初始的服ID
-        /// </summary>
-        int PrimeDid { get; set; }
+        ///// <summary>
+        ///// 初始的服ID
+        ///// </summary>
+        //int PrimeDid { get; set; }
 
         /// <summary>
         /// 当前服ID

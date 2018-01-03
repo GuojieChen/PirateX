@@ -36,6 +36,9 @@ namespace PirateX.Core.UnitTest.Redis.StackExchange.Redis.Ex
         [ProtoMember(7)]
         public IList<int> List2 { get; set; } = new List<int>();
 
+        [ProtoMember(8)]
+        public DateTime CreateAt { get; set; }
+
         //[ProtoBeforeDeserialization]
         public void Init()
         {

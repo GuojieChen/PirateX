@@ -60,6 +60,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.FrameLossTest", "Pi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.ConfigImport", "PirateX.ConfigImport\PirateX.ConfigImport.csproj", "{FD8C86BA-953D-43A9-A77C-427F3FC979E8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{9A6D3F6F-C8C2-4A72-AEF3-504664703557}"
+	ProjectSection(SolutionItems) = preProject
+		..\docs\MiddleWare.md = ..\docs\MiddleWare.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

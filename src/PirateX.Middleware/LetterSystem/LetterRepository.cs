@@ -6,7 +6,7 @@ using PirateX.Core.Domain.Repository;
 
 namespace PirateX.Middleware
 {
-    public class LetterRepository:RepositoryBase<ILetter>
+    public class LetterRepository:RepositoryBase
     {
         public int Insert(ILetter letter)
         {

@@ -3,15 +3,14 @@ using PirateX.Core;
 
 namespace PirateX.Middleware
 {
-    public class MidLetterService<TLetter>:ServiceBase
-        where TLetter: class, ILetter
+    public class MidLetterService:ServiceBase
 
     {
         /// <summary>
         /// 发送信件
         /// </summary>
         /// <param name="letter"></param>
-        public int Send(TLetter letter)
+        public int Send(ILetter letter)
         {
             using (var uow = base.CreateUnitOfWork())
             {
@@ -20,7 +19,7 @@ namespace PirateX.Middleware
             }
         }
 
-        public void Send(IEnumerable<TLetter> letters)
+        public void Send(IEnumerable<ILetter> letters)
         {
             using (var uow = base.CreateUnitOfWork())
             {
@@ -36,7 +35,7 @@ namespace PirateX.Middleware
         /// <param name="page"></param>
         /// <param name="size"></param>
         /// <returns></returns>
-        public List<TLetter> GetLetters(long rid,int page, int size = 50)
+        public List<TLetter> GetLetters<TLetter>(long rid,int page, int size = 50) where TLetter : ILetter
         {
             using (var uow = base.CreateUnitOfWork())
             {

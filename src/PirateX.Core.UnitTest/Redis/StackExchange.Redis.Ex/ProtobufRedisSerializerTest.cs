@@ -124,6 +124,20 @@ namespace PirateX.Core.UnitTest.Redis.StackExchange.Redis.Ex
 
         }
 
+        [Test]
+        public void serializ_datetime()
+        {
+            var obj = new SerializerObject() { CreateAt = DateTime.UtcNow, Id = 2 };
+
+            var bytes = serializer.Serilazer(obj);
+            Console.WriteLine(obj.CreateAt);
+            Console.WriteLine(Encoding.UTF8.GetString(bytes));
+
+            var obj2 = serializer.Deserialize<SerializerObject>(bytes);
+
+            Console.WriteLine(obj2.CreateAt);
+
+        }
 
         [Test]
         public void print_test()

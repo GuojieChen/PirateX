@@ -43,6 +43,7 @@ namespace GameServer.Console
         public string Name { get; set; }
         public int Id { get; set; }
         public string SecretKey { get; set; }
+        public int TargetId { get; set; }
         public string Redis { get; set; }
         public int RedisDb { get; set; }
     }
@@ -110,8 +111,8 @@ namespace GameServer.Console
         {
             return new Dictionary<string, string>()
             {
-                {"role","role_123" },
-                {"cps","role_456" },
+                //{"role","role_123" },
+                //{"cps","role_456" },
             };
         }
     }

@@ -16,6 +16,8 @@ DDD的实践
 多语系统,服务器摆脱语言的束缚，都采用模板的方式，包括信件系统、任务系统等等   
 支持实时对战模式的处理    
 静态数据静默重载     
+需要考虑下红点     
+以前的任务系统是否需要做成中间件    
 
 >TODO SubscribeAsync 需要看看是否用对了   
 
@@ -100,39 +102,23 @@ errorMsg : （ * ） 错误消息
 1. 登陆控制  实行单设备登陆。每次登陆或者重连都将记录当前角色的SessionID ，并在每次请求中检查SessionID，如果发现不一致的，说明角色登陆有变化，需要重新连接
 
 # 数据同步 （初稿）
-1、对玩家的每个数据添加版本号(时间戳)，通过数据库时间戳字段，自动在插入和修改数据时候变更字段值    
+>需要考虑性价比
+1、对玩家的每条数据添加版本号(时间戳)，通过数据库时间戳字段，自动在插入和修改数据时候变更字段值    
 2、每个玩家有一个记录数据变化的版本号(时间戳)，任何一个模型有变动的时候，修改时间戳    
 3、数据同步（重要）   
-同步发生在以下几个地方：   
-3.1、登陆：客户端询问服务器当前玩家数据版本号，处理以下两种情况：   
-3.1.1、一致，不做后续同步   
-3.1.2、不一致，询问玩家模型版本列表，返回的信息是一个字典，KEY：模型Name，VALUE：模型版本号。    
-然后再依次比对模型，依次下载需要的模型数据，根据模型状态维护本地数据
 
-模型数据状态：   
-新增：客户端没有该数据标识，服务器返回的列表中有   
-修改：客户端有该数据标识，服务器返回的列表中也有   
-删除：客户端有该数据标识，服务器返回的列表中没有   
-
-模型状态的处理   
-删除：客户端从本地直接删除   
-新增&修改：客户端通过接口获取变动的数据，保存到本地   
+同步发生在以下几个地方：    
+     
+3.1、登陆请求
+每个系统都会对应一个数据获取接口，客户端请求的时候需要告知服务器本地数据的最新版本号，客户端版本号老的情况下会返回数据列表，客户端刷新到最新的。
 
 3.2、广播通知
-广播通知发生在游戏后台任务引起数据变化后。服务端告知客户端   
+广播的数据是对象模型，并且需要告知客户端该模型系统最新的版本号。 
 
 3.3、接口通知   
-接口通知发生在客户端主动请求接口，服务器执行逻辑处理引起数据变化后。   
-数据随接口一起返回，再由客户端通过相同的方式处理数据   
-删除数据需要另外一种方式   
-
-
-公共数据需要有一个公有值作为钩子，查看玩家数据是否变化的时候需要同时考虑到钩子的情况   
-例如：   
-系统信件   
-只有玩家在查看系统信件的时候才会真正获取系统信件，获取的时候先比较系统信件的版本号(时间戳)   
-
-批量更新   
+接口通知发生在客户端主动请求接口，服务器执行逻辑处理引起数据变化后。
+服务器告知客户端新增或者修改的对象模型数据以及该模型系统的最新版本号。
+删除模型的逻辑需要客户端自身维护好。和以往一样。
 
 
 ## 配置数据
@@ -214,25 +200,35 @@ PirateX.ConfigImport.exe --input "C:\\Users\\Guojie\\Desktop\\1\\config" --maxwo
 
 
 ## 表结构自维护   
-注册需要进行维护的程序集，在此之后，每次重启的时候都会对表结构进行维护    
-这里的 “EntityAssembly”是一个关键字
+本框架表维护引用了EF模块，最终通过模型映射到数据库表，在模型设计的时候准寻EF的标准。   
 
+注册游戏服数据库维护对象
 ```csharp
-public override void IocConfig(ContainerBuilder builder)
+protected override void BuildDistrictContainer(ContainerBuilder builder)
 {
-    builder.Register(c => typeof(Role).Assembly).Named<Assembly>("EntityAssembly").SingleInstance();
+    builder.Register<IDatabaseInitializer>(c => new GameDatabaseInitializer());
 }
 ```
 
-此外还有两个开关来控制每个容器是否启用表结构的维护   
-全局开关，如果为FALSE，则所有的容器无论是否启用表维护都不执行表结构的维护
+注册其他数据库维护对象
 ```csharp
-IServerSetting.AlterTable
+///注册其他库连接
+public override IDictionary<string, string> GetNamedConnectionStrings()
+{
+    var list = base.GetNamedConnectionStrings();
+    list.Add(ConnectionNames.Public, "server=192.168.1.54;user id=root;password=123456;persist security info=True;database=pokemoniii_public;CharSet='utf8'");
+    return list;
+}
+///注册其他库连接对象
+public override IDictionary<string,IDatabaseInitializer> GetNamedDatabaseInitializers()
+{
+    var dic = base.GetNamedDatabaseInitializers();
+    dic.Add(ConnectionNames.Public, new PubclicDatabaseInitializer());
+    return dic;
+}
+
 ```
-私有关只控制自己的容器
-```csharp
-IDistrictConfig.AlterTable
-```
+
 
 >特别提示   
 开发过程中严谨对模型字段进行改名，这会带来不必要的麻烦。通常都是增加冗余字段。    
@@ -247,7 +243,7 @@ IDistrictConfig.AlterTable
 默认采用的是<code>ProtobufRedisSerializer</code>方式来进行序列化和反序列化   
 框架中另外提供了 [protobuf](https://github.com/mgravell/protobuf-net) 的方式来进行序列化和反序列化
 ```csharp
-public override void IocConfig(ContainerBuilder builder)
+protected override void BuildServerContainer(ContainerBuilder builder)
 {
     builder.Register(c => new JsonRedisSerializer()).As<IRedisSerializer>().SingleInstance();
 }
