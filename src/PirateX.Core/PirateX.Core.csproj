@@ -94,6 +94,7 @@
     <Compile Include="Container\Register\ConnectionRegister.cs" />
     <Compile Include="Container\Register\RedisRegister.cs" />
     <Compile Include="Container\ServerSettingRegister\RedisServerSettingRegister.cs" />
+    <Compile Include="DapperMapper\ArrayJsonMapper.cs" />
     <Compile Include="DataSync\IDataSync.cs" />
     <Compile Include="DefaultServerSetting.cs" />
     <Compile Include="Domain\Entity\IEntityCreateAt.cs" />

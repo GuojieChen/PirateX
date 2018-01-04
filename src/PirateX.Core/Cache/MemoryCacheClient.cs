@@ -174,7 +174,7 @@ namespace PirateX.Core.Cache
         public T Get<T>(string key)
         {
             var value = Get(key);
-            if (value != null) return (T)value;
+            if (value != null) return (T)Convert.ChangeType(value,typeof(T));
             return default(T);
         }
 

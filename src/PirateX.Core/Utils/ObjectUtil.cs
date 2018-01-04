@@ -131,12 +131,22 @@ namespace PirateX.Core.Utils
             return (b & (1 << bitNumber)) != 0;
         }
 
-        public static IEnumerable<int> ToIntArray(this string str)
+        public static List<int> ToIntArray(this string str)
         {
-            if(string.IsNullOrEmpty(str))
-                return new int[0];
+            return str.StringToList<int>();
+        }
 
-            return str.Split(new char[] {','}).Select(int.Parse);
+        public static List<T> StringToList<T>(this string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return null; 
+
+            return JsonConvert.DeserializeObject<List<T>>(str);
+        }
+
+        public static string ArrayToString<T>(this IEnumerable<T> array)
+        {
+            return JsonConvert.SerializeObject(array);
         }
     }
 }

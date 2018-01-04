@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System;
+using System.Web;
 using CommandLine;
 using System.IO;
 
@@ -41,6 +42,8 @@ namespace PirateX.ConfigImport
                 service.Start(Directory.GetFiles(applicationArgs.DllDir));
             }
             service.Stop();
+
+            Console.Read();
         }
     }
 }

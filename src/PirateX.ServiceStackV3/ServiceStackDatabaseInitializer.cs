@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX.Core.Container;
+using ServiceStack.Data;
 using ServiceStack.OrmLite;
 
 namespace PirateX.ServiceStackV3
@@ -23,9 +24,9 @@ namespace PirateX.ServiceStackV3
             IsMysql = IsMySql(connectionString);
 
             if (IsMysql)
-                dbConnectionFactory = new OrmLiteConnectionFactory(connectionString, MySqlDialect.Provider);
+                dbConnectionFactory = new OrmLiteConnectionFactory(connectionString, PirateXMySqlDialectProvider.Instance);
             else
-                dbConnectionFactory = new OrmLiteConnectionFactory(connectionString, SqlServerDialect.Provider);
+                dbConnectionFactory = new OrmLiteConnectionFactory(connectionString, PirateXSqlServerDialectProvider.Instance);
 
             CreateAndAlterTable(dbConnectionFactory);
         }
@@ -51,7 +52,7 @@ namespace PirateX.ServiceStackV3
                     if (db.TableExists(type.Name))
                     {
                         if (IsMySql(db.ConnectionString))
-                            db.AlterMySqlTable(type);
+                            db.AlterTableMysql(type);
                         else
                             db.AlterTableSqlServer(type);
                     }

@@ -8,11 +8,13 @@ using System.Reflection;
 using System.Text;
 using Autofac;
 using Autofac.Builder;
+using Dapper;
 using Newtonsoft.Json;
 using NLog;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Cache;
 using PirateX.Core.Config;
+using PirateX.Core.DapperMapper;
 using PirateX.Core.Domain.Entity;
 using PirateX.Core.Push;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
@@ -125,7 +127,7 @@ namespace PirateX.Core.Container
             }
         }
 
-        private static string ConnectionStringName = "ConnectionString";
+        protected static string ConnectionStringName = "ConnectionString";
 
         private void ServerConfig(ContainerBuilder builder, IEnumerable<IDistrictConfig> configs)
         {

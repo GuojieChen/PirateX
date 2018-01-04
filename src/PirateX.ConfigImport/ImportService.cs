@@ -83,6 +83,9 @@ namespace PirateX.ConfigImport
                 types.AddRange(list);
             }
 
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"types.cuont:{types.Count}");
+
             progressBar1.Maximum = types.Count();
 
             if (progressBar1.Maximum <= 0)
@@ -278,8 +281,8 @@ namespace PirateX.ConfigImport
                                 Logger.Error(exception);
                         }
 
-                        IDbConnectionFactory connFactory = new OrmLiteConnectionFactory(_connectionString, SqlServerDialect.Provider);
-                        SqlServerOrmLiteDialectProvider.Instance.UseUnicode = true; 
+                        IDbConnectionFactory connFactory = new OrmLiteConnectionFactory(_connectionString, MySqlDialect.Provider);
+                        //SqlServerOrmLiteDialectProvider.Instance.UseUnicode = true; 
                       
                         using (var db = connFactory.OpenDbConnection())
                         {

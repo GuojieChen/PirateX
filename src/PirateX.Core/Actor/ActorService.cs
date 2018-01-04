@@ -12,11 +12,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Autofac;
+using Dapper;
 using Newtonsoft.Json;
 using NLog;
 using PirateX.Core.Actor.ProtoSync;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Container;
+using PirateX.Core.DapperMapper;
 using PirateX.Core.Net;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Core.Session;
@@ -62,6 +64,20 @@ namespace PirateX.Core.Actor
         {
 
             ServerContainer = serverContainer;
+
+            SqlMapper.AddTypeHandler(typeof(long[]), new ArrayJsonMapper<long>());
+            SqlMapper.AddTypeHandler(typeof(int[]), new ArrayJsonMapper<int>());
+            SqlMapper.AddTypeHandler(typeof(string[]), new ArrayJsonMapper<string>());
+            SqlMapper.AddTypeHandler(typeof(double[]), new ArrayJsonMapper<double>());
+            SqlMapper.AddTypeHandler(typeof(short[]), new ArrayJsonMapper<short>());
+            SqlMapper.AddTypeHandler(typeof(byte[]), new ArrayJsonMapper<byte>());
+
+            SqlMapper.AddTypeHandler(typeof(List<long>), new ListJsonMapper<long>());
+            SqlMapper.AddTypeHandler(typeof(List<int>), new ListJsonMapper<int>());
+            SqlMapper.AddTypeHandler(typeof(List<string>), new ListJsonMapper<string>());
+            SqlMapper.AddTypeHandler(typeof(List<double>), new ListJsonMapper<double>());
+            SqlMapper.AddTypeHandler(typeof(List<short>), new ListJsonMapper<short>());
+            SqlMapper.AddTypeHandler(typeof(List<byte>), new ListJsonMapper<byte>());
         }
 
         /// <summary>

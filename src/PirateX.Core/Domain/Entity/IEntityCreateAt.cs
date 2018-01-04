@@ -8,8 +8,6 @@ namespace PirateX.Core.Domain.Entity
 {
     public interface IEntityCreateAt
     {
-        long CreateAt { get; set; }
-
-        DateTime CreateAtAsDateTime { get; }
+        DateTime CreateAt { get; set; }
     }
 }
