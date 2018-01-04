@@ -11,6 +11,7 @@ using Autofac.Builder;
 using Newtonsoft.Json;
 using NLog;
 using PirateX.Core.Broadcas;
+using PirateX.Core.Cache;
 using PirateX.Core.Config;
 using PirateX.Core.Domain.Entity;
 using PirateX.Core.Push;
@@ -51,7 +52,7 @@ namespace PirateX.Core.Container
         public void InitContainers(ContainerBuilder builder)
         {
             if (Log.IsTraceEnabled)
-                Log.Trace($"~~~~~~~~~~ Init server containers ~~~~~~~~~~");
+                Log.Trace("~~~~~~~~~~ Init server containers ~~~~~~~~~~");
 
             var districtConfigs = GetDistrictConfigs();
 
@@ -67,8 +68,7 @@ namespace PirateX.Core.Container
                 var attrs = type.GetCustomAttributes(typeof(ServerSettingRegisterAttribute), false);
                 if (!attrs.Any())
                     continue;
-                var attr = attrs[0] as ServerSettingRegisterAttribute;
-                if (attr != null)
+                if (attrs[0] is ServerSettingRegisterAttribute attr)
                     ((IServerSettingRegister)Activator.CreateInstance(attr.RegisterType))
                         .Register(builder, serverSetting);
             }
@@ -95,8 +95,7 @@ namespace PirateX.Core.Container
                 var attrs = type.GetCustomAttributes(typeof(ServerSettingRegisterAttribute), false);
                 if (!attrs.Any())
                     continue;
-                var attr = attrs[0] as ServerSettingRegisterAttribute;
-                if (attr != null)
+                if (attrs[0] is ServerSettingRegisterAttribute attr)
                     ((IServerSettingRegister)Activator.CreateInstance(attr.RegisterType))
                         .SetUp(_serverContainer, serverSetting);
             }
@@ -232,19 +231,21 @@ namespace PirateX.Core.Container
                 var attrs = type.GetCustomAttributes(typeof(DistrictConfigRegisterAttribute), false);
                 if (!attrs.Any())
                     continue;
-                var attr = attrs[0] as DistrictConfigRegisterAttribute;
-                if (attr != null)
+                if (attrs[0] is DistrictConfigRegisterAttribute attr)
                     ((IDistrictConfigRegister)Activator.CreateInstance(attr.RegisterType))
                         .Register(builder, districtConfig);
             }
 
-
-            builder.Register(c => this.ServerIoc.Resolve<IRedisSerializer>())
+            builder.Register(c => ServerIoc.Resolve<IRedisSerializer>())
                 .As<IRedisSerializer>()
                 .SingleInstance();
 
             builder.Register((c, p) => new SqlConnection(p.Named<string>(ConnectionStringName)))
                 .As<IDbConnection>()
+                .InstancePerDependency();
+
+            builder.Register(c => new DefaultGameCache(c.Resolve<IRedisSerializer>(), c.Resolve<IDatabase>()))
+                .As<IGameCache>()
                 .InstancePerDependency();
 
             SetUpConnectionStrings(builder);
@@ -253,6 +254,7 @@ namespace PirateX.Core.Container
                 .As<IDistrictConfig>()
                 .AsImplementedInterfaces()
                 .SingleInstance();
+
 
             builder.Register(c => GetConfigAssemblyList())
                 .Keyed<List<Assembly>>("ConfigAssemblyList")
@@ -306,8 +308,7 @@ namespace PirateX.Core.Container
                 var attrs = type.GetCustomAttributes(typeof(DistrictConfigRegisterAttribute), false);
                 if (!attrs.Any())
                     continue;
-                var attr = attrs[0] as DistrictConfigRegisterAttribute;
-                if (attr != null)
+                if (attrs[0] is DistrictConfigRegisterAttribute attr)
                 {
                     if (Log.IsTraceEnabled)
                         Log.Trace($"SetUp DistrictConfig -> {type.Name}");

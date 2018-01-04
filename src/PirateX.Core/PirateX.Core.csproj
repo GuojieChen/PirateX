@@ -80,6 +80,7 @@
     <Compile Include="Broadcas\IMessageBroadcast.cs" />
     <Compile Include="Broadcas\DefaultMessageBroadcast.cs" />
     <Compile Include="Broadcas\RedisMqMessageBroadcast.cs" />
+    <Compile Include="Cache\IGameCache.cs" />
     <Compile Include="Cache\MemoryCacheClient.cs" />
     <Compile Include="Config\ConfigIndex.cs" />
     <Compile Include="Config\ExcelNameAttribute.cs" />

@@ -16,7 +16,7 @@ namespace GameServer.Console.Cmd
 
             var value = base.ServerReslover.ResolveKeyed<IDbConnection>("role");
             
-            System.Console.WriteLine(value);
+            
 
             return null;
         }
