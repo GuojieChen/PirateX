@@ -181,6 +181,9 @@ namespace PirateX.WinClient
             txtToken.Enabled = true;
             btnSend.Enabled = false;
             btnDisconn.Enabled = false;
+
+            txtHost.Enabled = true;
+            txtPort.Enabled = true;
         }
     }
 }
