@@ -8,11 +8,9 @@ using System.Reflection;
 using System.Threading;
 using PirateX.Core;
 using PirateX.Core.Container;
-using ServiceStack.Common;
 using ServiceStack.DataAnnotations;
 using ServiceStack.OrmLite;
 using ServiceStack.OrmLite.SqlServer;
-using ServiceStack.Text;
 using ForeignKeyConstraint = ServiceStack.OrmLite.ForeignKeyConstraint;
 
 namespace PirateX.ServiceStackV3
