@@ -15,16 +15,13 @@ using SuperSocket.SocketBase.Protocol;
 
 namespace GameServer.Console.Cmd
 {
-    [Response(typeof(RoleInfoResponse))]
     public class RoleInfo: RepAction<RoleInfoResponse>
     {
-        [Response(typeof(RoleInfoResponse))]
         public override RoleInfoResponse Play()
         {
             //MessageSender.PushMessage(Context.Token.Rid,new{A="111",B="222"});
 
             base.ServerReslover.Resolve<IDatabase>().StringSet("a", DateTime.Now.Ticks);
-
 
             return new RoleInfoResponse()
             {

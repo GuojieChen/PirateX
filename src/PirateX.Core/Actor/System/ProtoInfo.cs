@@ -18,12 +18,12 @@ namespace PirateX.Core.Actor.System
             var cname = Context.Request.QueryString["cname"];
 
             var action = base.ServerReslover.Resolve<IDictionary<string, IAction>>()[cname];
+            
+            var types = action.GetType().BaseType.GetGenericArguments();
 
-            var attrs = action.GetType().GetCustomAttributes(typeof(ResponseAttribute), false);
-
-            if (attrs.Any())
+            if (types.Any())
             {
-                return GetProto((attrs[0] as ResponseAttribute).Type);
+                return GetProto(types[0]);
             }
 
             return null; 
