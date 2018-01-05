@@ -50,6 +50,7 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.lable_duration = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.btnDisconn = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -71,6 +72,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.btnDisconn);
             this.panel2.Controls.Add(this.label4);
             this.panel2.Controls.Add(this.comboBox1);
             this.panel2.Controls.Add(this.btnSend);
@@ -106,7 +108,7 @@
             // btnSend
             // 
             this.btnSend.Enabled = false;
-            this.btnSend.Location = new System.Drawing.Point(137, 131);
+            this.btnSend.Location = new System.Drawing.Point(149, 116);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(75, 23);
             this.btnSend.TabIndex = 5;
@@ -116,9 +118,9 @@
             // 
             // btnConn
             // 
-            this.btnConn.Location = new System.Drawing.Point(21, 131);
+            this.btnConn.Location = new System.Drawing.Point(30, 116);
             this.btnConn.Name = "btnConn";
-            this.btnConn.Size = new System.Drawing.Size(75, 23);
+            this.btnConn.Size = new System.Drawing.Size(77, 23);
             this.btnConn.TabIndex = 4;
             this.btnConn.Text = "连接";
             this.btnConn.UseVisualStyleBackColor = true;
@@ -187,7 +189,7 @@
             this.txtHeader.Name = "txtHeader";
             this.txtHeader.Size = new System.Drawing.Size(279, 21);
             this.txtHeader.TabIndex = 10;
-            this.txtHeader.Text = "c=_sysinfo&lang=zh-CN";
+            this.txtHeader.Text = "c=RoleInfo&lang=zh-CN";
             // 
             // txtToken
             // 
@@ -195,7 +197,7 @@
             this.txtToken.Name = "txtToken";
             this.txtToken.Size = new System.Drawing.Size(279, 21);
             this.txtToken.TabIndex = 9;
-            this.txtToken.Text = "rid=110&did=0";
+            this.txtToken.Text = "rid=776&did=1";
             // 
             // label3
             // 
@@ -267,6 +269,17 @@
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // btnDisconn
+            // 
+            this.btnDisconn.Enabled = false;
+            this.btnDisconn.Location = new System.Drawing.Point(68, 143);
+            this.btnDisconn.Name = "btnDisconn";
+            this.btnDisconn.Size = new System.Drawing.Size(108, 23);
+            this.btnDisconn.TabIndex = 8;
+            this.btnDisconn.Text = "断开连接";
+            this.btnDisconn.UseVisualStyleBackColor = true;
+            this.btnDisconn.Click += new System.EventHandler(this.btnDisconn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -314,6 +327,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel lable_duration;
         private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.Button btnDisconn;
     }
 }
 

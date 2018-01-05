@@ -32,11 +32,11 @@ namespace PirateX.Core.UnitTest.Config
     public class KeyValueTestConfig :IConfigKeyValueEntity
     {
         public string Id { get; set; }
-        public string V { get; set; }
+        public string Value { get; set; }
 
         public override string ToString()
         {
-            return $"{Id}\t{V}";
+            return $"{Id}\t{Value}";
         }
     }
 }
