@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Autofac;
 using PirateX;
 using PirateX.Core.Actor;
+using PirateX.Core.Actor.System;
 using PirateX.Protocol;
 using ProtoBuf;
 using StackExchange.Redis;
@@ -14,8 +15,10 @@ using SuperSocket.SocketBase.Protocol;
 
 namespace GameServer.Console.Cmd
 {
+    [Response(typeof(RoleInfoResponse))]
     public class RoleInfo: RepAction<RoleInfoResponse>
     {
+        [Response(typeof(RoleInfoResponse))]
         public override RoleInfoResponse Play()
         {
             //MessageSender.PushMessage(Context.Token.Rid,new{A="111",B="222"});
