@@ -520,6 +520,9 @@ namespace PirateX.Core.Actor
 
             headers["format"] = context.ResponseCovnert;
 
+            if (Equals(context.ResponseCovnert, "protobuf"))
+                headers["responsetype"] = typeof(T).Name;
+
             var body = ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(context.ResponseCovnert)
                 .SerializeObject(t);
 
@@ -553,6 +556,10 @@ namespace PirateX.Core.Actor
                 {"format",DefaultResponseCovnert} // TODO 默认解析器
             };
 
+            if(Equals(DefaultResponseCovnert,"protobuf"))
+                headers["responsetype"] = typeof(T).Name;
+
+
             if (Logger.IsDebugEnabled && t != null)
             {
                 Logger.Debug($"S2C #{rid}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {JsonConvert.SerializeObject(t)}");
@@ -569,7 +576,9 @@ namespace PirateX.Core.Actor
                 { "i", MessageType.Boradcast},
                 {"format",DefaultResponseCovnert} // TODO 默认解析器
             };
-            
+
+            if (Equals(DefaultResponseCovnert, "protobuf"))
+                headers["responsetype"] = typeof(T).Name;
 
             if (Logger.IsDebugEnabled && t != null)
             {
@@ -589,6 +598,8 @@ namespace PirateX.Core.Actor
                 {"code", Convert.ToString((int) StatusCode.Ok)}
             };
             //通知类型 
+            if (Equals(DefaultResponseCovnert, "protobuf"))
+                headers["responsetype"] = typeof(T).Name;
 
             SendMessage(context, headers, t);
         }
@@ -613,6 +624,10 @@ namespace PirateX.Core.Actor
 
             var body = ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(context.ResponseCovnert)
                 .SerializeObject(rep);
+
+
+            if (Equals(context.ResponseCovnert, "protobuf"))
+                header["responsetype"] = typeof(T).Name;
 
             if (Logger.IsDebugEnabled)
             {
