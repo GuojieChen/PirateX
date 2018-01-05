@@ -25,5 +25,16 @@ namespace PirateX.Core.Utils
             dtDateTime = dtDateTime.AddMilliseconds(timestamp).ToLocalTime();
             return dtDateTime;
         }
+        /// <summary>
+        /// 时间戳（秒级）转化成UTC时间
+        /// </summary>
+        /// <param name="timestamp"></param>
+        /// <returns></returns>
+        public static DateTime ConvertToDateTime(this int timestamp)
+        {
+            var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            dtDateTime = dtDateTime.AddSeconds(timestamp).ToLocalTime();
+            return dtDateTime;
+        }
     }
 }
