@@ -97,6 +97,20 @@ errorMsg : （ * ） 错误消息
 可以按照需要定义好数据格式   
 例如JSON 或者 protobuf
 
+## 系统接口
+## _ProtoSync_
+同步模型protobuf描述   
+客户端将上次同步的hash值高速服务器，在发现不一致的情况下，服务器返回最新的描述内容和hash值。   
+
+参数 ：  hash  , 客户端上次记录的hash值    
+返回 ：
+```csharp 
+message ProtoSyncResponse {
+    optional string Hash = 1;
+    optional string Proto = 2;
+}
+```
+
 
 ## 功能说明
 1. 登陆控制  实行单设备登陆。每次登陆或者重连都将记录当前角色的SessionID ，并在每次请求中检查SessionID，如果发现不一致的，说明角色登陆有变化，需要重新连接

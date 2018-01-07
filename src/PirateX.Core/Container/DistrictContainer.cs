@@ -339,12 +339,12 @@ namespace PirateX.Core.Container
             return container;
         }
 
-        protected virtual List<Assembly> GetConfigAssemblyList()
+        public virtual List<Assembly> GetConfigAssemblyList()
         {
             return new List<Assembly>() { typeof(TDistrictContainer).Assembly, typeof(TDistrictContainer).Assembly };
         }
 
-        protected virtual List<Assembly> GetServiceAssemblyList()
+        public virtual List<Assembly> GetServiceAssemblyList()
         {
             return new List<Assembly>() { typeof(IService).Assembly, typeof(TDistrictContainer).Assembly };
         }

@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -134,8 +135,11 @@ namespace PirateX.Core.Actor
 
             ServerContainer.InitContainers(builder);
 
+            var list = new List<Assembly>();
+            list.AddRange(ServerContainer.GetServiceAssemblyList());
+            list.AddRange(ServerContainer.GetEntityAssemblyList());
             ServerContainer.ServerIoc.Resolve<IProtoService>()
-                .Init(ServerContainer.GetEntityAssemblyList());
+                .Init(list);
 
             RedisDataBaseExtension.RedisSerilazer = ServerContainer.ServerIoc.Resolve<IRedisSerializer>();
             if (Logger.IsTraceEnabled)
@@ -363,7 +367,7 @@ namespace PirateX.Core.Actor
                 Did = token.Did,
                 Token = context.Request.Token,
                 Uid = token.Uid,
-                StartUtcAt = DateTime.UtcNow,
+                StartTimestamp = DateTime.UtcNow.GetTimestampAsSecond(),
                 ResponseConvert = context.ResponseCovnert,
                 ServerName = context.ServerName
             };

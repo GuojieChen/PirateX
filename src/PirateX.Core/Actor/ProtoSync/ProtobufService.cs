@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using NLog;
 using PirateX.Core.Domain.Entity;
+using PirateX.Core.Utils;
 using ProtoBuf;
 
 namespace PirateX.Core.Actor.ProtoSync
@@ -22,150 +24,111 @@ namespace PirateX.Core.Actor.ProtoSync
         /// </summary>
         private static readonly string ProtoDir = Path.Combine(global::System.AppDomain.CurrentDomain.BaseDirectory, "protos");
 
-        private static readonly string ModuleVersionIdFileName = Path.Combine(ProtoDir, "ModuleVersionId.txt");
+        private static readonly string ProtoHashFile = Path.Combine(ProtoDir, "protoshash.txt");
 
-        private static readonly string ProtoHashFile = Path.Combine(ProtoDir, "protoshash.json");
+        private static readonly string ProtoFile = Path.Combine(ProtoDir, "model.proto");
 
         private static string _currentModuleVersionId = string.Empty;
 
-        private static IDictionary<string, string> _protoshash = new Dictionary<string, string>();
+        private static string _proto = string.Empty;
 
         private bool _isInitOk = false;
 
         public void Init(List<Assembly> list)
         {
             if(Logger.IsTraceEnabled)
-                Logger.Trace("---------- ProtobufService.Init ----------");
+                Logger.Trace("---------- ProtobufService.Init BEGIN----------");
 
-            list.ForEach(Init);
+            //list.ForEach(Init);
+            var builder = new StringBuilder();
+            list.ForEach(item=>builder.Append(GetProtos(item)));
 
+            if (Directory.Exists(ProtoDir))
+                Directory.Delete(ProtoDir,true);
+
+            _proto = CheckRemove(builder.ToString());
+            _currentModuleVersionId = _proto.GetMD5();
+
+            Directory.CreateDirectory(ProtoDir);
+            File.Create (ProtoFile).Close();
+            File.Create(ProtoHashFile).Close();
+
+            File.AppendAllText(ProtoFile, _proto);
+            File.AppendAllText(ProtoHashFile, _currentModuleVersionId);
 
             if (Logger.IsTraceEnabled)
-                Logger.Trace("");
+                Logger.Trace("---------- ProtobufService.Init END----------");
         }
 
-        public void Init(Assembly assembly)
+        private ISet<string> messageHash = new HashSet<string>();
+
+        private string CheckRemove(string pbcontext)
+        {
+            var lines = pbcontext.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+
+            var builder = new StringBuilder();
+
+            StringBuilder tempbuilder = null; 
+            foreach (var line in lines)
+            {
+                if(line.StartsWith("package"))
+                    continue;
+
+                //if(line.Contains("import bc1.proto"))
+
+                if(line.StartsWith("message"))
+                    tempbuilder = new StringBuilder();
+                else if (line.StartsWith("}") && tempbuilder != null)
+                {
+                    tempbuilder.AppendLine(line);
+
+                    var message = tempbuilder.ToString();
+                    var hash = message.GetMD5();
+                    if (!messageHash.Contains(hash))
+                    {
+                        builder.AppendLine(message);
+                        messageHash.Add(hash);
+                    }
+                    tempbuilder = null;
+                    continue;
+                }
+
+                tempbuilder?.AppendLine(line);
+            }
+
+            return builder.ToString();
+        }
+
+        public string GetProtos(Assembly assembly)
         {
             var types = assembly.GetTypes()
-                .Where(item => typeof(IEntity).IsAssignableFrom(item));
-
-            if (!Directory.Exists(ProtoDir))
-                Directory.CreateDirectory(ProtoDir);
-
-            if (File.Exists(ModuleVersionIdFileName))
-                _currentModuleVersionId = File.ReadAllText(ModuleVersionIdFileName);
-            else
-                using (var f = File.Create(ModuleVersionIdFileName))
-                {
-
-                }
-
-            if (Logger.IsTraceEnabled)
-                Logger.Trace($"previous ModuleVersionId is {_currentModuleVersionId}");
-
-            if (File.Exists(ProtoHashFile))
-            {
-                var protoshash = ConvertToDic(File.ReadAllText(ProtoHashFile));
-                if (protoshash != null)
-                    _protoshash = protoshash;
-            }
-            else
-            {
-                using (var f = File.Create(ProtoHashFile))
-                {
-                }
-            }
-
-            if (!Equals(assembly.ManifestModule.ModuleVersionId.ToString(), _currentModuleVersionId))
-            {
-                if (Logger.IsTraceEnabled)
-                    Logger.Trace("genterating proto files...");
-
-                foreach (var type in types)
-                {
-                    if (type.IsInterface || type.IsAbstract)
-                        continue;
-
-                    var guid = type.GUID.ToString();
-
-                    if (_protoshash.ContainsKey(type.Name) && Equals(_protoshash[type.Name], guid))
-                        continue;
-
-                    var proto = typeof(Serializer).GetMethod("GetProto",
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
-                        .MakeGenericMethod(type)
-                        .Invoke(this, null);
-
-                    var protofile = Path.Combine(ProtoDir, $"{type.Name}.proto");
-                    if (!File.Exists(protofile))
-                    {
-                        using (var f = File.Create(protofile))
-                        {
-                        }
-                    }
-
-                    File.WriteAllText(protofile, proto.ToString());
-
-                    if (_protoshash.ContainsKey(type.Name))
-                        _protoshash[type.Name] = guid;
-                    else
-                        _protoshash.Add(type.Name, guid);
-                }
-
-                _currentModuleVersionId = assembly.ManifestModule.ModuleVersionId.ToString();
-                File.WriteAllText(ModuleVersionIdFileName, assembly.ManifestModule.ModuleVersionId.ToString());
-                File.WriteAllText(ProtoHashFile, ConvertToString(_protoshash));
-            }
-
-            _isInitOk = true;
-        }
-
-
-        private static string ConvertToString(IDictionary<string, string> dic)
-        {
+                .Where(item => item.GetCustomAttribute<ProtoContractAttribute>()!=null);
+            
             var stringBuilder = new StringBuilder();
-            foreach (var kv in dic)
+            foreach (var type in types)
             {
-                stringBuilder.Append(kv.Key);
-                stringBuilder.Append("=");
-                stringBuilder.Append(kv.Value);
-                stringBuilder.Append("&");
+                if (type.IsInterface || type.IsAbstract)
+                    continue;
+
+                var proto = typeof(Serializer).GetMethod("GetProto",
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
+                    .MakeGenericMethod(type)
+                    .Invoke(this, null);
+
+                stringBuilder.Append(proto);
             }
 
-            return stringBuilder.ToString().TrimEnd('&');
+            return stringBuilder.ToString();
         }
-
-        private static IDictionary<string, string> ConvertToDic(string str)
-        {
-            if (string.IsNullOrEmpty(str))
-                return null;
-
-            var dic = new Dictionary<string,string>();
-
-            var ss = str.Trim(' ').Split(new char[] {'&'});
-            foreach (var s in ss)
-            {
-                var item = s.Split(new char[] {'='});
-                var key = item[0];
-                var value = item[1];
-
-                if (dic.ContainsKey(key))
-                    dic[key] = value; 
-                else 
-                    dic.Add(key,value);
-            }
-
-            return dic;
-        } 
 
         public string GetProtosHash()
         {
             return _currentModuleVersionId;
         }
 
-        public IDictionary<string, string> GetProtosHashDic(Assembly assembly)
+        public string GetProto()
         {
-            return _protoshash;
+            return _proto;
         }
     }
 }

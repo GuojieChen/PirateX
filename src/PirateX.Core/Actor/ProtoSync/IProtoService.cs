@@ -15,12 +15,9 @@ namespace PirateX.Core.Actor.ProtoSync
         /// <returns></returns>
         string GetProtosHash();
         /// <summary>
-        /// 获取模型的hash值
+        /// 获取protobuf 描述内容
         /// </summary>
-        /// <param name="assembly"></param>
-        /// <returns>
-        /// 字典清单，KEY:模型名称,VALUE 
-        /// </returns>
-        IDictionary<string, string> GetProtosHashDic(Assembly assembly);
+        /// <returns></returns>
+        string GetProto();
     }
 }
