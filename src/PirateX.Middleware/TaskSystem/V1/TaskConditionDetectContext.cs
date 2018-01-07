@@ -66,7 +66,7 @@ namespace PirateX.Middleware.TaskSystem
 
             //int v = strategy.GetDetectData(userID, condition);
 
-            //return Operator(v, condition.V, condition.Operate);
+            //return Operator(v, condition.Value, condition.Operate);
 
             return false; 
         }

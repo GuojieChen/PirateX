@@ -42,7 +42,7 @@ namespace PirateX.Core.UnitTest.Config
                     var kvconfig = new KeyValueTestConfig()
                     {
                         Id = $"ID_{i + 1}",
-                        V = $"V_{i + 1}"
+                        Value = $"V_{i + 1}"
                     };
 
                     db.Insert(kvconfig);

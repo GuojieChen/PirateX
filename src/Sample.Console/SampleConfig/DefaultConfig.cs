@@ -14,6 +14,6 @@ namespace GameServer.Console.SampleConfig
     {
         public string Id { get; set; }
 
-        public string V { get; set; }
+        public string Value { get; set; }
     }
 }

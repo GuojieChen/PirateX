@@ -16,7 +16,7 @@
     /// </summary>
     public interface IConfigKeyValueEntity : IConfigEntity<string>
     {
-        string V { get; set; }
+        string Value { get; set; }
     }
 
     public interface IConfigIdEntity : IConfigEntity<int>

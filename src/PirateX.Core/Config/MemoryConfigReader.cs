@@ -157,7 +157,7 @@ namespace PirateX.Core.Config
                         continue;
 
                     var key = GetCacheKey<T>(item.Id);
-                    _cacheClient.Set(key, item.V);
+                    _cacheClient.Set(key, item.Value);
                 }
         }
         #endregion

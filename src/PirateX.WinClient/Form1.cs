@@ -100,6 +100,7 @@ namespace PirateX.WinClient
 
                     this.jsonViewer1.ResponseInfo = args.Package;
                     btnSend.Enabled = true;
+                    btnDisconn.Enabled = true;
                 });
 
             };
@@ -110,6 +111,7 @@ namespace PirateX.WinClient
                 {
                     this.jsonViewer1.ResponseInfo = args.Package;
                     btnSend.Enabled = true;
+                    btnDisconn.Enabled = true;
                 });
 
             };
@@ -143,6 +145,7 @@ namespace PirateX.WinClient
                 btnConn.Enabled = true;
                 txtToken.Enabled = true;
                 btnSend.Enabled = false;
+                btnDisconn.Enabled = false;
             });
 
             _client = null; 
@@ -162,6 +165,7 @@ namespace PirateX.WinClient
                 txtToken.Enabled = false;
 
                 btnSend.Enabled = true;
+                btnDisconn.Enabled = true;
             });
         }
 
@@ -170,6 +174,16 @@ namespace PirateX.WinClient
             var exHeaders = HttpUtility.ParseQueryString(txtHeader.Text.Trim());
             exHeaders.Add("format", comboBox1.Text.Trim());
             _client.Send("",txtQuery.Text.Trim(), exHeaders);
+        }
+
+        private void btnDisconn_Click(object sender, EventArgs e)
+        {
+            txtToken.Enabled = true;
+            btnSend.Enabled = false;
+            btnDisconn.Enabled = false;
+
+            txtHost.Enabled = true;
+            txtPort.Enabled = true;
         }
     }
 }

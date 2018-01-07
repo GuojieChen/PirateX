@@ -127,7 +127,7 @@ namespace PirateX.Middleware.TaskSystem
             _TaskConditionReward reward = _TaskConditionDao.SelectConditionReward(condition.ID);
             if(reward!=null)
             {
-                this.V = condition.V;
+                this.Value = condition.Value;
                 this.iV = iv;
                 if(inner)
                 {
@@ -136,7 +136,7 @@ namespace PirateX.Middleware.TaskSystem
                 {
                     userCondition._Condition.Des =
                         condition.Des.IndexOf("({X},{Y})", System.StringComparison.Ordinal) < 0 ? condition.Des :
-                        condition.Des.Insert(condition.Des.IndexOf("({X},{Y})", System.StringComparison.Ordinal), String.Format(" {0}/{1}  ", iV, V));
+                        condition.Des.Insert(condition.Des.IndexOf("({X},{Y})", System.StringComparison.Ordinal), String.Format(" {0}/{1}  ", iV, Value));
                     userCondition._Condition.Rate = reward.Rate; 
 
                 }
@@ -189,7 +189,7 @@ namespace PirateX.Middleware.TaskSystem
                             ID = des.Id,
                             Des = 
                             des.Des.IndexOf("({X},{Y})", System.StringComparison.Ordinal)<0?des.Des:
-                            des.Des.Insert(des.Des.IndexOf("({X},{Y})", System.StringComparison.Ordinal), String.Format(" {0}/{1}  ", iV, V)),
+                            des.Des.Insert(des.Des.IndexOf("({X},{Y})", System.StringComparison.Ordinal), String.Format(" {0}/{1}  ", iV, Value)),
                             Rate = rate
                         },
 
