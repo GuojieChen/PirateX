@@ -13,11 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Console", "Sample.Co
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2827A0D1-32C1-4B18-94BC-91CC1E3A90A6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4DB8D514-7ED3-49E8-B973-A576A353840B}"
-	ProjectSection(SolutionItems) = preProject
-		..\readme.md = ..\readme.md
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.Core", "PirateX.Core\PirateX.Core.csproj", "{AF6F5077-F2F6-4293-AFD2-21C9E1EBC296}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.ServiceStackV3", "PirateX.ServiceStackV3\PirateX.ServiceStackV3.csproj", "{DFD44C8C-5914-4470-898D-3B77A901E051}"
@@ -63,6 +58,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{9A6D3F6F-C8C2-4A72-AEF3-504664703557}"
 	ProjectSection(SolutionItems) = preProject
 		..\docs\MiddleWare.md = ..\docs\MiddleWare.md
+		..\readme.md = ..\readme.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.ApiHelper", "PirateX.ApiHelper\PirateX.ApiHelper.csproj", "{04CD4693-4D2E-47ED-A3A8-B1EA866E6AF0}"
