@@ -157,5 +157,15 @@ namespace PirateX.Core.Utils
         {
             return JsonConvert.SerializeObject(array);
         }
+
+        public static string GetProto(this Type type)
+        {
+            var proto = typeof(Serializer).GetMethod("GetProto",
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
+                .MakeGenericMethod(type)
+                .Invoke(null, null);
+
+            return proto.ToString();
+        }
     }
 }

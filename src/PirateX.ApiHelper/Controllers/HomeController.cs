@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
-using PirateX.ApiHelper.Models;
+using PirateX.ApiHelper.App_Start;
 using PirateX.ApiHelper.Test;
 using PirateX.Core.Actor;
 
@@ -13,48 +13,19 @@ namespace PirateX.ApiHelper.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index(string name)
+        public ActionResult Index(string moduleVersionId)
         {
-            ApiGroup group = null;
-            List<string> names = new List<string>();
-            //foreach (var file in Directory.GetFiles(Server.MapPath("~/App_Data/")))
-            {
-                var assembly = typeof(ARequest).Assembly;   //Assembly.ReflectionOnlyLoadFrom(file);
-                names.Add(assembly.FullName);
-
-                if (string.IsNullOrEmpty(name))
-                {
-                    if (group == null)
-                        group = GetApiGroup(assembly);
-                }
-                else if (Equals(assembly.FullName.ToLower(), name.ToLower()))
-                {
-                    if (group == null)
-                        group = GetApiGroup(assembly);
-                }
-                //else
-                //    continue;
-            }
-
-            ViewBag.Names = names;
-            ViewBag.Group = group;
+            ViewBag.ApiGroup = AssemblyContainer.Instance.GetApiGroup(moduleVersionId);
+            ViewBag.Groups = AssemblyContainer.Instance.GetGroups();
             return View();
         }
 
-        private ApiGroup GetApiGroup(Assembly assembly)
+        public ActionResult Details(string modelversionid, string typeguid)
         {
-            var group = new ApiGroup() { Assembly = assembly };
-
-            foreach (var type in assembly.GetTypes())
-            {
-                if (!type.IsClass)
-                    continue;
-
-                if (typeof(IAction).IsAssignableFrom(type))
-                    group.Types.Add(type);
-            }
-
-            return group;
+            ViewBag.ApiGrou = AssemblyContainer.Instance.GetApiGroup(modelversionid);
+            ViewBag.Details = AssemblyContainer.Instance.GetTypeDetails(AssemblyContainer.Instance.GetRequestType(modelversionid, typeguid));
+            ViewBag.Groups = AssemblyContainer.Instance.GetGroups();
+            return View();
         }
 
         public ActionResult About()

@@ -73,9 +73,11 @@
     <Compile Include="Actor\EmptyBodyResponse.cs" />
     <Compile Include="Actor\Ping.cs" />
     <Compile Include="Actor\PirateXException.cs" />
+    <Compile Include="Actor\ApiDocAttribute.cs" />
     <Compile Include="Actor\ProtoSync\IProtoService.cs" />
     <Compile Include="Actor\ProtoSync\ProtobufService.cs" />
     <Compile Include="Actor\RepAction.cs" />
+    <Compile Include="Actor\RequestDocAttribute.cs" />
     <Compile Include="Actor\StatusCode.cs" />
     <Compile Include="Actor\System\ProtoSync.cs" />
     <Compile Include="Actor\System\SysInfo.cs" />

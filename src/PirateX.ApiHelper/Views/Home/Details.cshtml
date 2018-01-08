@@ -1,0 +1,79 @@
+﻿@using PirateX.ApiHelper.App_Start
+@using PirateX.Core.Actor
+@model dynamic
+
+@{
+    ViewBag.Title = "title";
+}
+
+@{
+    var details = (TypeDetails)ViewBag.Details;
+
+}
+<h3>@details.Name</h3>
+<h5>@details.ApiDoc.Des</h5>
+
+<div>
+    <h4>请求参数</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>字段</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (RequestDocAttribute item in details.RequestDocs)
+            {
+            <tr>
+                <td>@Html.Raw(item.Name)</td>
+                <td>@Html.Raw(item.Type)</td>
+                <td>@Html.Raw(item.Des)</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<hr/>
+
+<div>
+    <h4>返回</h4>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>字段</th>
+            <th>类型</th>
+            <th>描述</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        @foreach (ResponseDes item in details.ResponseDeses)
+        {
+            <tr>
+                <td>@Html.Raw(item.Name)</td>
+                <td>@Html.Raw(item.Type)</td>
+                <td>@Html.Raw(item.PpDoc.Des)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<hr />
+<div>
+    <h4>proto描述</h4>
+    <pre>
+    @details.Proto
+    </pre>
+</div>
+
+<div>
+    <h4>Json示例</h4>
+    <code></code>
+    <pre>
+    @details.Json
+    </pre>
+</div>

@@ -1,13 +1,12 @@
-﻿@using PirateX.ApiHelper.Models
-@{
+﻿@{
     ViewBag.Title = "Home Page";
 }
 
 <h3>
-    @((ApiGroup)ViewBag.Group).Assembly
+    @((ApiGroup)ViewBag.ApiGroup).Assembly
 </h3>
 
-<table>
+<table class="table">
     <thead>
         <tr>
             <th>Name</th>
@@ -16,10 +15,10 @@
     </thead>
     
     <tbody>
-        @foreach (Type type in ViewBag.Group.Types)
+        @foreach (Type type in ViewBag.ApiGroup.Types)
         {
             <tr>
-                <td>@type.Name</td>
+                <td>@Html.ActionLink(type.Name, "Details", new{ modelversionid = ViewBag.ApiGroup.ModelId ,typeguid= type.GUID.ToString("N")})</td>
                 <td>@type.BaseType.GetGenericArguments()[0].Name</td>
             </tr>
         }
