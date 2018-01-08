@@ -2,25 +2,43 @@
     ViewBag.Title = "Home Page";
 }
 
-<h3>
-    @((ApiGroup)ViewBag.ApiGroup).Assembly
-</h3>
+<div class="row">
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Response</th>
-        </tr>
-    </thead>
-    
-    <tbody>
-        @foreach (Type type in ViewBag.ApiGroup.Types)
-        {
-            <tr>
-                <td>@Html.ActionLink(type.Name, "Details", new{ modelversionid = ViewBag.ApiGroup.ModelId ,typeguid= type.GUID.ToString("N")})</td>
-                <td>@type.BaseType.GetGenericArguments()[0].Name</td>
-            </tr>
-        }
-    </tbody>
-</table>
+
+    <div class="col-xs-4" id="sidebar">
+
+        <div class="list-group">
+            @foreach (ApiGroup item in ViewBag.Groups)
+            {
+                @Html.ActionLink(item.Name, "Index", new { moduleVersionId = item.ModelId },new{ @class="list-group-item"})
+            }
+        </div>
+    </div>
+
+    <div class="col-xs-8">
+
+        <h3>
+            @((ApiGroup)ViewBag.ApiGroup).Assembly
+        </h3>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Response</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (Type type in ViewBag.ApiGroup.Types)
+                {
+                    <tr>
+                        <td>@Html.ActionLink(type.Name, "Details", new { modelversionid = ViewBag.ApiGroup.ModelId, typeguid = type.GUID.ToString("N") })</td>
+                        <td>@type.BaseType.GetGenericArguments()[0].Name</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>

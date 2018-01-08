@@ -5,8 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Web;
+using Newtonsoft.Json;
 using PirateX.Core.Actor;
 using PirateX.Core.Utils;
+using TestDataGenerator;
 
 namespace PirateX.ApiHelper.App_Start
 {
@@ -27,10 +29,30 @@ namespace PirateX.ApiHelper.App_Start
             foreach (var assembly in list)
             {
                 var api = GetApiGroup(assembly);
-                _dic.Add(api.ModelId,api);
-                _list.Add(api);
+
+                if (NeedLoad(assembly))
+                {
+                    _dic.Add(api.ModelId, api);
+                    _list.Add(api);
+                }
             }
         }
+
+        private bool NeedLoad(Assembly assembly)
+        {
+            foreach (var type in assembly.GetTypes())
+            {
+                if (!type.IsClass)
+                    continue;
+
+                if (typeof(IAction).IsAssignableFrom(type))
+                //if((type as IAction)!=null)
+                    return true;
+            }
+
+            return false; 
+        }
+
         private ApiGroup GetApiGroup(Assembly assembly)
         {
             var group = new ApiGroup() { Assembly = assembly };
@@ -88,13 +110,13 @@ namespace PirateX.ApiHelper.App_Start
                     new ResponseDes()
                     {
                         Name = item.Name,
-                        Type = item.PropertyType.Name.ToString(),
+                        Type = item.PropertyType,
                         PpDoc = item.GetCustomAttribute<ApiDocAttribute>()
                     });
 
                 detail.ResponseDeses = responseDeses;
                 detail.Proto = gtype.GetProto();
-                //detail.Json
+                //detail.Json = JsonConvert.SerializeObject(new Catalog().CreateInstance(gtype));
             }
 
             return detail;

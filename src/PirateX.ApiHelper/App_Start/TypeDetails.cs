@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using PirateX.Core.Actor;
+using PirateX.Core.Domain.Entity;
 
 namespace PirateX.ApiHelper.App_Start
 {
@@ -25,7 +26,11 @@ namespace PirateX.ApiHelper.App_Start
     {
         public string Name { get; set; }
 
-        public string Type { get; set; }
+        public Type Type { get; set; }
+
+        public string TypeName => Type.Name;
+
+        public bool IsPrimitive => Type.IsPrimitive;
 
         public ApiDocAttribute PpDoc { get; set; } 
     }

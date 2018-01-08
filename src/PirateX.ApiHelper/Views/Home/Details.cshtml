@@ -27,35 +27,44 @@
         <tbody>
             @foreach (RequestDocAttribute item in details.RequestDocs)
             {
-            <tr>
-                <td>@Html.Raw(item.Name)</td>
-                <td>@Html.Raw(item.Type)</td>
-                <td>@Html.Raw(item.Des)</td>
-            </tr>
+                <tr>
+                    <td>@Html.Raw(item.Name)</td>
+                    <td>@Html.Raw(item.Type)</td>
+                    <td>@Html.Raw(item.Des)</td>
+                </tr>
             }
         </tbody>
     </table>
 </div>
-<hr/>
+<hr />
 
 <div>
     <h4>返回</h4>
 
     <table class="table">
         <thead>
-        <tr>
-            <th>字段</th>
-            <th>类型</th>
-            <th>描述</th>
-        </tr>
+            <tr>
+                <th>字段</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
         </thead>
 
         <tbody>
-        @foreach (ResponseDes item in details.ResponseDeses)
-        {
-            <tr>
-                <td>@Html.Raw(item.Name)</td>
-                <td>@Html.Raw(item.Type)</td>
+            @foreach (ResponseDes item in details.ResponseDeses)
+            {
+                <tr>
+                    <td>@Html.Raw(item.Name)</td>
+                    <td>
+                        @if (item.IsPrimitive)
+                        {
+                            Html.Raw(item.Name);
+                        }
+                        else
+                        {
+                            Html.ActionLink(item.Name, "TypeInfo", new {id = item.Type.GUID.ToString()});
+                        }
+                </td>
                 <td>@Html.Raw(item.PpDoc.Des)</td>
             </tr>
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Web;
@@ -21,7 +22,13 @@ namespace PirateX.ApiHelper
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             //AssemblyContainer.Instance.Load(typeof(ARequest).Assembly);
 
-            AssemblyContainer.Instance.Load(Assembly.LoadFile(Server.MapPath("~/App_Data/PokemonIII.Server.Game.dll")));
+            var list = new List<Assembly>();
+            foreach (var file in Directory.GetFiles(Server.MapPath("~/App_Data")))
+            {
+                list.Add(Assembly.LoadFrom(file));
+            }
+
+            AssemblyContainer.Instance.Load(list.ToArray());
         }
     }
 }

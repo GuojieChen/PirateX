@@ -28,6 +28,13 @@ namespace PirateX.ApiHelper.Controllers
             return View();
         }
 
+        public ActionResult TypeInfo(string modelid, string id)
+        {
+            AssemblyContainer.Instance.GetApiGroup(modelid);
+
+            return View();
+        }
+
         public ActionResult About()
         {
 
