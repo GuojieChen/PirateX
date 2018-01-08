@@ -47,24 +47,19 @@ namespace PirateX.Core.Actor.ProtoSync
             if (Directory.Exists(ProtoDir))
                 Directory.Delete(ProtoDir,true);
 
-            var proto = CheckRemove(builder.ToString());
+            var exception = false; 
+            var proto = CheckRemove(builder.ToString(),out exception);
 
             Directory.CreateDirectory(ProtoDir);
             File.Create (ProtoFile).Close();
             File.Create(ProtoHashFile).Close();
-
             File.AppendAllText(ProtoFile, proto);
 
+            if(exception)
+                throw new FileLoadException("加载中出现异常，请查看protos\\model.proto中的描述");
+
             #region Generate .bin file
-
-            //var batFile = Path.Combine(ProtoDir, "run.bat");
-            //var fs1 = new FileStream(batFile, FileMode.Create, FileAccess.Write);
-            //var sw = new StreamWriter(fs1);
-            //sw.WriteLine("..\\protoc --descriptor_set_out=model.bin --include_imports model.proto");
-            //sw.Close();
-            //fs1.Close();
-
-            var proc = new Process { StartInfo = { WorkingDirectory = ProtoDir, FileName = "..\\protoc",Arguments = "--descriptor_set_out=model.bin --include_imports model.proto"} };
+            var proc = new Process { StartInfo = { WorkingDirectory = ProtoDir, FileName = "..\\protoc" ,Arguments = "--descriptor_set_out=model.bin --include_imports model.proto" } };
             proc.Start();
             proc.WaitForExit();
 
@@ -80,8 +75,10 @@ namespace PirateX.Core.Actor.ProtoSync
 
         private ISet<string> messageHash = new HashSet<string>();
 
-        private string CheckRemove(string pbcontext)
+        private string CheckRemove(string pbcontext, out bool exception)
         {
+            exception = false;
+
             var lines = pbcontext.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
 
             var builder = new StringBuilder();
@@ -92,9 +89,13 @@ namespace PirateX.Core.Actor.ProtoSync
                 if(line.StartsWith("package"))
                     continue;
 
-                //if(line.Contains("import bc1.proto"))
+                if (line.Contains("import \"bcl.proto\""))
+                {
+                    exception = true;
+                    builder.AppendLine("不支持DateTime字段，请用时间戳（long或者int）来替换");
+                }
 
-                if(line.StartsWith("message"))
+                if (line.StartsWith("message"))
                     tempbuilder = new StringBuilder();
                 else if (line.StartsWith("}") && tempbuilder != null)
                 {

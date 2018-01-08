@@ -107,8 +107,8 @@ responsetype (*) protobuf的情况下告知客户端对应的描述
 返回 ：
 ```csharp 
 message ProtoSyncResponse {
-    optional string Hash = 1;
-    optional string Proto = 2;
+   optional string Hash = 1;
+   optional bytes Proto = 2;
 }
 ```
 

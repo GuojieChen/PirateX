@@ -6,6 +6,7 @@ using System.Resources;
 using System.Threading;
 using System.Threading.Tasks;
 using GameServer.Console.Cmd;
+using PirateX.Core.Actor.System;
 using PirateX.Core.i18n;
 using PirateX.Core.Utils;
 using PirateX.Net;
@@ -26,6 +27,7 @@ namespace GameServer.Console
             ProtoBuf.Serializer.PrepareSerializer<Token>();
             ProtoBuf.Serializer.PrepareSerializer<In>();
             ProtoBuf.Serializer.PrepareSerializer<Out>();
+            System.Console.WriteLine(ProtoBuf.Serializer.GetProto<ProtoSyncResponse>());
             var host = HostFactory.New(c =>
             {
                 c.UseNLog() ;
