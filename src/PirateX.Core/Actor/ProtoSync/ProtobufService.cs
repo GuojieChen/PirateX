@@ -31,7 +31,7 @@ namespace PirateX.Core.Actor.ProtoSync
 
         private static string _currentModuleVersionId = string.Empty;
 
-        private static string _proto = string.Empty;
+        private static byte[] _proto = null; 
 
         private bool _isInitOk = false;
 
@@ -47,32 +47,31 @@ namespace PirateX.Core.Actor.ProtoSync
             if (Directory.Exists(ProtoDir))
                 Directory.Delete(ProtoDir,true);
 
-            _proto = CheckRemove(builder.ToString());
-            _currentModuleVersionId = _proto.GetMD5();
+            var proto = CheckRemove(builder.ToString());
 
             Directory.CreateDirectory(ProtoDir);
             File.Create (ProtoFile).Close();
             File.Create(ProtoHashFile).Close();
 
-            File.AppendAllText(ProtoFile, _proto);
-            File.AppendAllText(ProtoHashFile, _currentModuleVersionId);
+            File.AppendAllText(ProtoFile, proto);
 
             #region Generate .bin file
 
-            var batFile = Path.Combine(ProtoDir, "run.bat");
-            var fs1 = new FileStream(batFile, FileMode.Create, FileAccess.Write);
-            var sw = new StreamWriter(fs1);
-            sw.WriteLine("E:\\Projects\\protoc --descriptor_set_out=descriptor.bin --include_imports model.proto");
-            //sw.WriteLine("pause");
-            sw.Close();
-            fs1.Close();
+            //var batFile = Path.Combine(ProtoDir, "run.bat");
+            //var fs1 = new FileStream(batFile, FileMode.Create, FileAccess.Write);
+            //var sw = new StreamWriter(fs1);
+            //sw.WriteLine("..\\protoc --descriptor_set_out=model.bin --include_imports model.proto");
+            //sw.Close();
+            //fs1.Close();
 
-            var proc = new Process {StartInfo = {WorkingDirectory = ProtoDir, FileName = "run.bat" } };
+            var proc = new Process { StartInfo = { WorkingDirectory = ProtoDir, FileName = "..\\protoc",Arguments = "--descriptor_set_out=model.bin --include_imports model.proto"} };
             proc.Start();
             proc.WaitForExit();
-            
 
+            _proto = File.ReadAllBytes(Path.Combine(ProtoDir, "model.bin"));
 
+            _currentModuleVersionId = _proto.GetMD5();
+            File.AppendAllText(ProtoHashFile, _currentModuleVersionId);
             #endregion
 
             if (Logger.IsTraceEnabled)
@@ -145,7 +144,7 @@ namespace PirateX.Core.Actor.ProtoSync
             return _currentModuleVersionId;
         }
 
-        public string GetProto()
+        public byte[] GetProto()
         {
             return _proto;
         }

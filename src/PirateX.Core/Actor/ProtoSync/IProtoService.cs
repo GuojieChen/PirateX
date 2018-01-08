@@ -18,6 +18,6 @@ namespace PirateX.Core.Actor.ProtoSync
         /// 获取protobuf 描述内容
         /// </summary>
         /// <returns></returns>
-        string GetProto();
+        byte[] GetProto();
     }
 }

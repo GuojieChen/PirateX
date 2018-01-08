@@ -36,6 +36,6 @@ namespace PirateX.Core.Actor.System
         public string Hash { get; set; }
 
         [ProtoMember(2)]
-        public string Proto { get; set; }
+        public byte[] Proto { get; set; }
     }
 }

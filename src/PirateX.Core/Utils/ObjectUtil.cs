@@ -48,6 +48,15 @@ namespace PirateX.Core.Utils
             return sessionkeyBuilder.ToString();
         }
 
+        public static string GetMD5(this byte[] bytes)
+        {
+            var sessionkeyBuilder = new StringBuilder();
+            foreach (byte b in MD5.Create().ComputeHash(bytes))
+                sessionkeyBuilder.Append(b.ToString("x2"));
+
+            return sessionkeyBuilder.ToString();
+        }
+
         public static byte[] ToProtobuf<T>(this T t)
         {
             using (var ms = new MemoryStream())
