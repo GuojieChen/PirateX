@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PirateX.Core.Domain.Entity
 {
-    public interface IRoleDatasVersion:IEntity<long>,IEntityPrivate
+    public interface IRoleDatasVersion:IEntity<int>,IEntityPrivate
     {
 
     }
