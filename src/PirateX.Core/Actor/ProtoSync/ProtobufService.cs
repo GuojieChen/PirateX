@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -55,6 +56,24 @@ namespace PirateX.Core.Actor.ProtoSync
 
             File.AppendAllText(ProtoFile, _proto);
             File.AppendAllText(ProtoHashFile, _currentModuleVersionId);
+
+            #region Generate .bin file
+
+            var batFile = Path.Combine(ProtoDir, "run.bat");
+            var fs1 = new FileStream(batFile, FileMode.Create, FileAccess.Write);
+            var sw = new StreamWriter(fs1);
+            sw.WriteLine("E:\\Projects\\protoc --descriptor_set_out=descriptor.bin --include_imports model.proto");
+            //sw.WriteLine("pause");
+            sw.Close();
+            fs1.Close();
+
+            var proc = new Process {StartInfo = {WorkingDirectory = ProtoDir, FileName = "run.bat" } };
+            proc.Start();
+            proc.WaitForExit();
+            
+
+
+            #endregion
 
             if (Logger.IsTraceEnabled)
                 Logger.Trace("---------- ProtobufService.Init END----------");
