@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace PirateX.Core.Actor
 {
+
+    [AttributeUsage(AttributeTargets.Class,AllowMultiple = true)]
     public class RequestDocAttribute:Attribute
     {
         public string Name { get; set; }
