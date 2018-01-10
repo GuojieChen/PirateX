@@ -121,6 +121,7 @@
     <Compile Include="Redis\StackExchange.Redis.Ex\JsonRedisSerializerTest.cs" />
     <Compile Include="Redis\StackExchange.Redis.Ex\ProtobufRedisSerializerTest.cs" />
     <Compile Include="Redis\StackExchange.Redis.Ex\SerializerObject.cs" />
+    <Compile Include="Utils\DateTimeTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PirateX.Core\PirateX.Core.csproj">

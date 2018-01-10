@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace PirateX.Core.Utils
 {
@@ -35,6 +36,16 @@ namespace PirateX.Core.Utils
             var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddSeconds(timestamp).ToLocalTime();
             return dtDateTime;
+        }
+
+        public static DateTime ToDateTime(this string datetime)
+        {
+            return DateTime.SpecifyKind(DateTime.Parse(datetime,new CultureInfo("zh-CN")),DateTimeKind.Utc);
+        }
+
+        public static string FromDateTime(this DateTime datetime)
+        {
+            return datetime.ToString("yyyy-MM-dd HH:mm:ss");
         }
     }
 }
