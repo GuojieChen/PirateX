@@ -8,7 +8,7 @@ using ProtoBuf;
 namespace PirateX.ApiHelper.Test
 {
     [ApiDoc(Des = "请求")]
-    [RequestDoc(Name = "name",Des = "名字",Type = "string")]
+    [RequestDoc(Name = "name",Des = "名字",Type = typeof(string))]
     public class ARequest:RepAction<ARequestResponse>
     {
         public override ARequestResponse Play()

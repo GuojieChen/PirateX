@@ -12,6 +12,6 @@ namespace PirateX.Core.Actor
 
         public string Des { get; set; }
 
-        public string Type { get; set; }
+        public Type Type { get; set; }
     }
 }

@@ -11,7 +11,7 @@
 
 }
 <h3>@details.Name</h3>
-<h5>@details.ApiDoc.Des</h5>
+<h5>@details.ApiDoc?.Des</h5>
 
 <div>
     <h4>请求参数</h4>
@@ -58,16 +58,16 @@
                     <td>
                         @if (item.IsPrimitive)
                         {
-                            Html.Raw(item.Name);
+                            <span>@Html.Raw(item.TypeName)</span>
                         }
                         else
                         {
-                            Html.ActionLink(item.Name, "TypeInfo", new {id = item.Type.GUID.ToString()});
+                            <span>@Html.ActionLink(item.TypeName, "TypeInfo", new { modelid = item.ModelId, id = item.TypeId })</span>
                         }
-                </td>
-                <td>@Html.Raw(item.PpDoc.Des)</td>
-            </tr>
-        }
+                    </td>
+                    <td>@Html.Raw(item.Commonts?.Summary)</td>
+                </tr>
+            }
         </tbody>
     </table>
 </div>

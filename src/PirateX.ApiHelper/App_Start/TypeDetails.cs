@@ -24,14 +24,17 @@ namespace PirateX.ApiHelper.App_Start
 
     public class ResponseDes
     {
+        public string ModelId { get; set; }
+
         public string Name { get; set; }
 
-        public Type Type { get; set; }
+        public string TypeId { get; set; }
 
-        public string TypeName => Type.Name;
+        public string TypeName { get; set; }
 
-        public bool IsPrimitive => Type.IsPrimitive;
+        //public ApiDocAttribute PpDoc { get; set; } 
+        public CommentsMember Commonts { get; set; }
 
-        public ApiDocAttribute PpDoc { get; set; } 
+        public bool IsPrimitive { get; set; }
     }
 }

@@ -1,0 +1,38 @@
+﻿@using PirateX.ApiHelper.App_Start
+@using PirateX.Core.Actor
+
+@{
+    ViewBag.Title = "TypeInfo";
+}
+
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>字段</th>
+        <th>类型</th>
+        <th>描述</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    @foreach (ResponseDes item in ViewBag.TypeInfo)
+    {
+        <tr>
+            <td>@Html.Raw(item.Name)</td>
+            <td>
+                @if (item.IsPrimitive)
+                {
+                    <span>@Html.Raw(item.TypeName)</span>
+                }
+                else
+                {
+                    <span>@Html.ActionLink(item.TypeName, "TypeInfo", new { modelid = item.ModelId, id = item.TypeId })</span>
+                }
+            </td>
+            <td>@Html.Raw(item.Commonts?.Summary)</td>
+        </tr>
+    }
+    </tbody>
+</table>
+

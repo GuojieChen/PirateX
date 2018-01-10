@@ -6,7 +6,7 @@ namespace PirateX.ApiHelper
 {
     public class ApiGroup
     {
-        public string Name => Assembly.FullName;
+        public string Name => $"{Assembly.GetName().Name}({Assembly.GetName().Version})";
 
         public Assembly Assembly { get; set; }
 

@@ -1,0 +1,251 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PokemonIII.Domain</name>
+    </assembly>
+    <members>
+        <member name="P:PokemonIII.Domain.BattleData.Pets">
+            <summary> 位置:角色 Position:Pet </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.BattleData.CreateAt">
+            <summary> 开始时间戳 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.BattleData.Actions">
+            <summary> 行动列表 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.BattleAction.Actor">
+            <summary> 行为者 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.BattleAction.SkillId">
+            <summary> 释放技能ID </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.BattleAction.Targets">
+            <summary> 目标列表 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.BattleAction.Buffs">
+            <summary> 本轮生效Buff、Debuff </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Buff.Subject">
+            <summary> 主体 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Buff.Object">
+            <summary> 客体 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Buff.Type">
+            <summary> Buff类型 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Buff.Value">
+            <summary> 数值 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Gem.GemId">
+            <summary> 配置ID </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Gem.Amt">
+            <summary> 数量 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Material.Mid">
+            <summary> 配置ID </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Material.Amt">
+            <summary> 数量 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.PetId">
+            <summary> 配置ID </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.Career">
+            <summary> 职业 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.Prop">
+            <summary> 属性 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.Star">
+            <summary> 星级 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.Quality">
+            <summary> 资质 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.Lv">
+            <summary> 等级 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.Exp">
+            <summary> 经验 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.LvUpExp">
+            <summary> 升级所需经验 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.Grade">
+            <summary> 品级 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.AtkGrow">
+            <summary> 攻击成长 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.DefGrow">
+            <summary> 防御成长 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.HpGrow">
+            <summary> 生命成长 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.Speed">
+            <summary> 先手值 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.Skills">
+            <summary> 技能列表 初始有2个技能 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.SkillLvs">
+            <summary> 对应Skills中每个技能的等级 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.SkillAtkRate">
+            <summary> 小技能触发概率 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.Soul">
+            <summary> 战魂 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.CritRate">
+            <summary> 暴击率 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.CritValue">
+            <summary> 暴击强度 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.BlockRate">
+            <summary> 格挡率 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.BlockValue">
+            <summary> 格挡强度 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.DeCritRate">
+            <summary> 抗暴率 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.DeBlockRate">
+            <summary> 破击率 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.HarmRate">
+            <summary> 伤害率 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.DeHarmRate">
+            <summary> 免伤率 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.ReAtkRate">
+            <summary> 反击率 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.HarmAbsorb">
+            <summary> 吸血率：对敌方造成伤害的一定比例恢复自身血量 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Pet.CureRate">
+            <summary> 治疗率：给别人治疗的加成效果 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.PetSimple.Idx">
+            <summary> 序号 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.PetSimple.PetId">
+            <summary> 配置ID </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.PetSimple.Hp">
+            <summary> 生命 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.PetSimple.Speed">
+            <summary> 速度 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.PetSimple.SpeedBar">
+            <summary> 行动条 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.PetSimple.SkillCd">
+            <summary> 技能CD </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.PetProperty.Rid">
+            <summary> 玩家Id </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.PetProperty.PetId">
+            <summary> 精灵ID </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.PetProperty.Type">
+            <summary> 子系统，如：宝石、觉醒、科技、装备、秘宝、羁绊等 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.PetProperty.Values">
+            <summary> 加成项 : 数值 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.PetProperty.Gb">
+            <summary> BUFF效果 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.PetPiece.PetId">
+            <summary> 配置 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.PetPiece.Amt">
+            <summary> 数量 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.Name">
+            <summary> 名字 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.NameLength">
+            <summary> 名字长度（用于查询优化） </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.Gender">
+            <summary> 性别 true-Male, false-Female </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.Lv">
+            <summary> 等级 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.Coin">
+            <summary> 钻石 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.StrGold">
+            <summary> 金币 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.Pwr">
+            <summary> 当前战力 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.HiPwr">
+            <summary> 历史最高战力 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.GuildId">
+            <summary> 公会ID </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.IconId">
+            <summary> 头像ID </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.Ap">
+            <summary> 体力 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.ApLastAt">
+            <summary> 体力同步时间 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.Step">
+            <summary> 新手引导标记 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.Sp">
+            <summary> 技能点 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.SpLastAt">
+            <summary> 技能点同步时间 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.PrimaryIp">
+            <summary> 初始IP </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.LastIp">
+            <summary> 最后IP </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.LoginAt">
+            <summary> 最后登录时间 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.LastOnlineAt">
+            <summary> 最后在线时间 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.TotalLoginDays">
+            <summary> 总计登录天数 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.ContiLoginDays">
+            <summary> 连续登录天数 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.SilentTo">
+            <summary> 禁言至 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.StopTo">
+            <summary> 封停至 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Role.TodayFirstLogin">
+            <summary> 今日首次登陆 </summary>
+        </member>
+        <member name="P:PokemonIII.Domain.Team.PidList">
+            <summary> 上阵英雄Id列表(固定6个， 用 0 补位) </summary>
+        </member>
+    </members>
+</doc>

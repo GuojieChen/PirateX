@@ -30,8 +30,7 @@ namespace PirateX.ApiHelper.Controllers
 
         public ActionResult TypeInfo(string modelid, string id)
         {
-            AssemblyContainer.Instance.GetApiGroup(modelid);
-
+            ViewBag.TypeInfo = AssemblyContainer.Instance.GetResponseDeses(modelid,id);
             return View();
         }
 
