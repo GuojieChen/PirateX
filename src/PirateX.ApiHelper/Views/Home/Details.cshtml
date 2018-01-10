@@ -11,7 +11,7 @@
 
 }
 <h3>@details.Name</h3>
-<h5>@details.ApiDoc?.Des</h5>
+<h5>@details.Comments.Summary</h5>
 
 <div>
     <h4>请求参数</h4>
@@ -29,7 +29,7 @@
             {
                 <tr>
                     <td>@Html.Raw(item.Name)</td>
-                    <td>@Html.Raw(item.Type)</td>
+                    <td>@Html.Raw(item.Type.Name)</td>
                     <td>@Html.Raw(item.Des)</td>
                 </tr>
             }

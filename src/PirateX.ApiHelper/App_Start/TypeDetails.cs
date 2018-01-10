@@ -11,7 +11,7 @@ namespace PirateX.ApiHelper.App_Start
     {
         public string Name { get; set; }
 
-        public ApiDocAttribute ApiDoc { get; set; }
+        public CommentsMember Comments { get; set; }
 
         public IEnumerable<RequestDocAttribute> RequestDocs { get; set; }
 

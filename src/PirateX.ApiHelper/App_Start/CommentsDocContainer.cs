@@ -43,12 +43,19 @@ namespace PirateX.ApiHelper.App_Start
             return _dic[assemblyName];
         }
 
-        public CommentsMember GetCommontsMember(CommentsDoc doc,Type type, PropertyInfo propertyInfo)
+        public CommentsMember GetPropertyCommontsMember(CommentsDoc doc,Type type, PropertyInfo propertyInfo)
         {
             var member = doc.Members.Members.FirstOrDefault(item => Equals(item.Name, $"P:{type.FullName}.{propertyInfo.Name}"));
 
             return member;
         }
 
+        public CommentsMember GetTypeCommontsMember(CommentsDoc doc, Type type)
+        {
+
+            var member = doc.Members.Members.FirstOrDefault(item => Equals(item.Name, $"T:{type.FullName}"));
+
+            return member;
+        }
     }
 }

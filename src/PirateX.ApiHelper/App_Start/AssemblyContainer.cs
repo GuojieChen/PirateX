@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -71,7 +72,7 @@ namespace PirateX.ApiHelper.App_Start
                 if (typeof(IAction).IsAssignableFrom(type))
                     group.Types.Add(type);
             }
-
+            
             return group;
         }
 
@@ -106,7 +107,7 @@ namespace PirateX.ApiHelper.App_Start
 
             var detail = new TypeDetails();
             detail.Name = type.Name;
-            detail.ApiDoc = type.GetCustomAttribute<ApiDocAttribute>();
+            detail.Comments = CommentsDocContainer.Instance.GetTypeCommontsMember(CommentsDocContainer.Instance.GetCommentsDoc(type.Assembly), type);
             detail.RequestDocs = type.GetCustomAttributes<RequestDocAttribute>();
             if (type.BaseType.GenericTypeArguments.Any())
             {
@@ -131,7 +132,7 @@ namespace PirateX.ApiHelper.App_Start
                     {
                         Name = item.Name,
                         //PpDoc = item.GetCustomAttribute<ApiDocAttribute>(),
-                        Commonts = CommentsDocContainer.Instance.GetCommontsMember(CommentsDocContainer.Instance.GetCommentsDoc(assembly),type,item),
+                        Commonts = CommentsDocContainer.Instance.GetPropertyCommontsMember(CommentsDocContainer.Instance.GetCommentsDoc(assembly),type,item),
                         IsPrimitive = item.PropertyType.IsPrimitive,
                     };
 
@@ -146,6 +147,9 @@ namespace PirateX.ApiHelper.App_Start
                         des.ModelId = item.PropertyType.GenericTypeArguments[0].Assembly.ManifestModule.ModuleVersionId.ToString("N");
                         des.TypeName = item.PropertyType.GenericTypeArguments[0].Name;
                         des.TypeId = item.PropertyType.GenericTypeArguments[0].GUID.ToString("N");
+
+                        if (typeof(IEnumerable).IsAssignableFrom(item.PropertyType))
+                            des.TypeName += "[]";
                     }
                     else
                     {

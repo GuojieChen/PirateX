@@ -1,4 +1,5 @@
-﻿@{
+﻿@using PirateX.ApiHelper.App_Start
+@{
     ViewBag.Title = "Home Page";
 }
 
@@ -10,7 +11,7 @@
         <div class="list-group">
             @foreach (ApiGroup item in ViewBag.Groups)
             {
-                @Html.ActionLink(item.Name, "Index", new { moduleVersionId = item.ModelId },new{ @class="list-group-item"})
+                @Html.ActionLink(item.Name, "Index", new { moduleVersionId = item.ModelId }, new { @class = "list-group-item" })
             }
         </div>
     </div>
@@ -24,8 +25,8 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Response</th>
+                    <th>接口</th>
+                    <th>描述</th>
                 </tr>
             </thead>
 
@@ -34,9 +35,18 @@
                 {
                     <tr>
                         <td>@Html.ActionLink(type.Name, "Details", new { modelversionid = ViewBag.ApiGroup.ModelId, typeguid = type.GUID.ToString("N") })</td>
-                        <td>@type.BaseType.GetGenericArguments()[0].Name</td>
-                    </tr>
-                }
+                        <td>
+                            @{
+                                var comments = CommentsDocContainer.Instance.GetTypeCommontsMember(CommentsDocContainer.Instance.GetCommentsDoc(type.Assembly), type);
+                                if (comments != null)
+                                {
+                                    <span>@Html.Raw(comments.Summary)</span>
+                                }
+
+                        }
+                    </td>
+                </tr>
+            }
             </tbody>
         </table>
 
