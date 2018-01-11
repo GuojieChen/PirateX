@@ -6,33 +6,38 @@
 }
 
 
-<table class="table">
+<div class="alert alert-warning" role="alert">
+    以下仅显示proto成员字段
+</div>
+
+<table class="table table-hover">
     <thead>
-    <tr>
-        <th>字段</th>
-        <th>类型</th>
-        <th>描述</th>
-    </tr>
+        <tr>
+            <th>字段</th>
+            <th>类型</th>
+            <th>描述</th>
+            <th>ProtoTag</th>
+        </tr>
     </thead>
 
     <tbody>
-    @foreach (ResponseDes item in ViewBag.TypeInfo)
-    {
-        <tr>
-            <td>@Html.Raw(item.Name)</td>
-            <td>
-                @if (item.IsPrimitive)
-                {
-                    <span>@Html.Raw(item.TypeName)</span>
-                }
-                else
-                {
-                    <span>@Html.ActionLink(item.TypeName, "TypeInfo", new { modelid = item.ModelId, id = item.TypeId })</span>
-                }
-            </td>
-            <td>@Html.Raw(item.Commonts?.Summary)</td>
-        </tr>
-    }
+        @foreach (ResponseDes item in ViewBag.Protomembers)
+        {
+            <tr>
+                <td>@Html.Raw(item.Name)</td>
+                <td>
+                    @if (item.IsPrimitive)
+                    {
+                        <span>@Html.Raw(item.TypeName)</span>
+                    }
+                    else
+                    {
+                        <span>@Html.ActionLink(item.TypeName, "TypeInfo", new { modelid = item.ModelId, id = item.TypeId })</span>
+                    }
+                </td>
+                <td>@Html.Raw(item.Commonts?.Summary)</td>
+                <td>@Html.Raw(item.ProtoMember.Value)</td>
+            </tr>
+        }
     </tbody>
 </table>
-

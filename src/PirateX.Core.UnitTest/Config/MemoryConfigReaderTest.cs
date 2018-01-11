@@ -52,10 +52,42 @@ namespace PirateX.Core.UnitTest.Config
 
         public IEnumerable<T> LoadConfigData<T>() where T : IConfigEntity
         {
-            using (var db = dbConnectionFactory.OpenDbConnection())
+            var catalog = new Catalog();
+
+            List<T> list = new List<T>();
+            if (typeof(T).IsAssignableFrom(typeof(TestConfig)))
             {
-                return db.Select<T>();
+                for (int i = 0; i < 100000; i++)
+                {
+                    var t = catalog.CreateInstance<TestConfig>();
+                    t.Id = i + 1;
+                    t.Lv = i % 5;
+                    
+                    list.Add((T)Convert.ChangeType(t,typeof(T)));
+                }
+
+                for (int i = 0; i < 5; i++)
+                {
+                    var t = new TestConfig() {Lv = 1, Atk = 10};
+                    list.Add((T)Convert.ChangeType(t, typeof(T)));
+                }
+
             }
+            else
+            {
+                for (int i = 0; i < 100000; i++)
+                {
+                    var kvconfig = new KeyValueTestConfig()
+                    {
+                        Id = $"ID_{i + 1}",
+                        Value = $"V_{i + 1}"
+                    };
+                    list.Add((T)Convert.ChangeType(kvconfig, typeof(T)));
+                }
+            }
+
+            return list;
+
         }
     }
 
@@ -71,9 +103,10 @@ namespace PirateX.Core.UnitTest.Config
         [SetUp]
         public void SetUp()
         {
-
+            var dbConfigProvider =  new DbConfigProvider();
+            dbConfigProvider.Init();
             Console.WriteLine("init datas....");
-            MemoryConfigReader = new MemoryConfigReader(new List<Assembly>(){ typeof(TestConfig).Assembly },new DbConfigProvider() );
+            MemoryConfigReader = new MemoryConfigReader(new List<Assembly>(){ typeof(TestConfig).Assembly }, dbConfigProvider);
             
             MemoryConfigReader.Load();
 
@@ -119,6 +152,14 @@ namespace PirateX.Core.UnitTest.Config
         public void unique_index()
         {
             var ts = MemoryConfigReader.SingleByIndexes<TestConfig>(new { Lv = 0,Id = 1 });
+            Console.WriteLine(ts);
+        }
+
+        [Test]
+        public void unique_index_2()
+        {
+            var ts = MemoryConfigReader.SingleByIndexes<TestConfig>(new { Lv = 1, Atk = 1 });
+            Console.WriteLine("-----");
             Console.WriteLine(ts);
         }
 

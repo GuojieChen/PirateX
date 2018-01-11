@@ -138,6 +138,7 @@ namespace PirateX.Core.Actor
             var list = new List<Assembly>();
             list.AddRange(ServerContainer.GetServiceAssemblyList());
             list.AddRange(ServerContainer.GetEntityAssemblyList());
+            list.AddRange(ServerContainer.GetApiAssemblyList());
             ServerContainer.ServerIoc.Resolve<IProtoService>()
                 .Init(list);
 

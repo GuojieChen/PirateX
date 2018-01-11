@@ -36,5 +36,10 @@ namespace PirateX.ApiHelper.App_Start
         public CommentsMember Commonts { get; set; }
 
         public bool IsPrimitive { get; set; }
+
+        /// <summary>
+        /// 如果是有ProtoMember标记，则返回序号
+        /// </summary>
+        public int? ProtoMember { get; set; }
     }
 }

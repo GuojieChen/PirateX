@@ -9,6 +9,7 @@ namespace PirateX.Core.UnitTest.Config
 {
     [ConfigIndex("Lv")]
     [ConfigIndex(true,"Lv","Id")]
+    [ConfigIndex("Lv", "Atk")]
     public class TestConfig:IConfigIdEntity
     {
         public int Id { get; set; }

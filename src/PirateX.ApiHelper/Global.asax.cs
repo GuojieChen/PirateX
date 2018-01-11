@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +16,9 @@ namespace PirateX.ApiHelper
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+
+        private static DateTime? _lastWriteTime; 
+
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
@@ -23,15 +27,24 @@ namespace PirateX.ApiHelper
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             //AssemblyContainer.Instance.Load(typeof(ARequest).Assembly);
+        }
 
-            var list = new List<Assembly>();
-            foreach (var file in Directory.GetFiles(Server.MapPath("~/App_Data")).Where(item=>item.EndsWith(".dll")))
+        protected void Application_BeginRequest(object sender, EventArgs e)
+        {
+            //检查文件是否有变动
+            var dt = Directory.GetLastWriteTime(ConfigurationManager.AppSettings["App_Data_Dir"]);
+            if (!_lastWriteTime.HasValue || dt > _lastWriteTime.Value)
             {
-                list.Add(Assembly.LoadFrom(file));
-            }
+                AssemblyContainer.SetInstanceNull();
+                CommentsDocContainer.SetInstanceNull();
 
-            CommentsDocContainer.Instance.Load(Directory.GetFiles(Server.MapPath("~/App_Data")).Where(item => item.EndsWith(".xml")).ToArray());
-            AssemblyContainer.Instance.Load(list.ToArray());
+                WorkingCopy.CopySourceToTarget();
+
+                AssemblyContainer.SetInstanceNull();
+                CommentsDocContainer.SetInstanceNull();
+
+                _lastWriteTime = dt;
+            }
         }
     }
 }

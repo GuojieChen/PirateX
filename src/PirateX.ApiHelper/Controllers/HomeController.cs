@@ -30,7 +30,10 @@ namespace PirateX.ApiHelper.Controllers
 
         public ActionResult TypeInfo(string modelid, string id)
         {
-            ViewBag.TypeInfo = AssemblyContainer.Instance.GetResponseDeses(modelid,id);
+            var list = AssemblyContainer.Instance.GetResponseDeses(modelid,id);
+            ViewBag.Protomembers = list.Where(item => item.ProtoMember.HasValue).OrderBy(item=>item.ProtoMember.Value);
+            //ViewBag.Normal = list.Where(item => !item.ProtoMember.HasValue);
+
             return View();
         }
 

@@ -17,12 +17,60 @@ namespace PirateX.ApiHelper.App_Start
 {
     public class AssemblyContainer
     {
-        private IDictionary<string,ApiGroup> _dic = new Dictionary<string, ApiGroup>();
-        private List<ApiGroup> _list = new List<ApiGroup>();
-        private IDictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>();
+        private IDictionary<string, ApiGroup> _dic = null;
+        private List<ApiGroup> _list = null;
+        private IDictionary<string, Assembly> _assemblies = null;
+        private List<string> _assemblyXmlList = null;
 
-        public static AssemblyContainer Instance = new AssemblyContainer();
+        private static AssemblyContainer _instance = null;
 
+        private static object _lockHelper = new object();
+
+        public static AssemblyContainer Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_lockHelper)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new AssemblyContainer();
+                            _instance.Load();
+                        }
+                    }
+                }
+
+                return _instance;
+            }
+        }
+
+        public static void SetInstanceNull()
+        {
+            _instance = null;
+        }
+
+        private void Load()
+        {
+            _dic = new Dictionary<string, ApiGroup>();
+            _list = new List<ApiGroup>();
+            _assemblies = new Dictionary<string, Assembly>();
+            _assemblyXmlList = new List<string>();
+
+
+            var list = new List<Assembly>();
+            foreach (var file in Directory.GetFiles(System.Configuration.ConfigurationManager.AppSettings["App_Data_Dir"]).Where(item => item.EndsWith(".dll")))
+            {
+                var systemExists = Directory.GetFiles($"{AppDomain.CurrentDomain.BaseDirectory}bin").Select(Path.GetFileName).ToArray();
+                var filename = Path.GetFileName(file);
+                if (systemExists.Contains(filename))
+                    continue;
+
+                list.Add(Assembly.LoadFrom(file));
+            }
+            _instance.Load(list.ToArray());
+        }
         private AssemblyContainer()
         {
 
@@ -32,10 +80,10 @@ namespace PirateX.ApiHelper.App_Start
         {
             foreach (var assembly in list)
             {
-                if(Equals(assembly.GetName().Name,"PirateX.Core"))
-                    continue;
-
                 var api = GetApiGroup(assembly);
+
+                if (api == null)
+                    continue;
 
                 if (NeedLoad(assembly))
                 {
@@ -48,6 +96,7 @@ namespace PirateX.ApiHelper.App_Start
         private bool NeedLoad(Assembly assembly)
         {
             _assemblies.Add(assembly.ManifestModule.ModuleVersionId.ToString("N"), assembly);
+            _assemblyXmlList.Add(assembly.ManifestModule.Name.Replace(".dll", ".xml"));
             foreach (var type in assembly.GetTypes())
             {
                 if (!type.IsClass)
@@ -57,23 +106,30 @@ namespace PirateX.ApiHelper.App_Start
                     return true;
             }
 
-            return false; 
+            return false;
         }
 
         private ApiGroup GetApiGroup(Assembly assembly)
         {
-            var group = new ApiGroup() { Assembly = assembly };
-
-            foreach (var type in assembly.GetTypes())
+            try
             {
-                if (!type.IsClass)
-                    continue;
-                
-                if (typeof(IAction).IsAssignableFrom(type))
-                    group.Types.Add(type);
+                var group = new ApiGroup() { Assembly = assembly };
+
+                foreach (var type in assembly.GetTypes())
+                {
+                    if (!type.IsClass)
+                        continue;
+
+                    if (typeof(IAction).IsAssignableFrom(type))
+                        group.Types.Add(type);
+                }
+
+                return group;
             }
-            
-            return group;
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
         public ApiGroup GetApiGroup(string modelid)
@@ -126,52 +182,59 @@ namespace PirateX.ApiHelper.App_Start
             {
                 var assembly = type.Assembly;
 
-                return type.GetProperties().Where(item=>item.GetCustomAttribute<ProtoMemberAttribute>()!=null).Select(item =>
-                {
-                    var des = new ResponseDes()
+                return type.GetProperties().Where(item => item.GetCustomAttribute<ProtoMemberAttribute>() != null).Select(item =>
                     {
-                        Name = item.Name,
+                        var des = new ResponseDes()
+                        {
+                            Name = item.Name,
                         //PpDoc = item.GetCustomAttribute<ApiDocAttribute>(),
-                        Commonts = CommentsDocContainer.Instance.GetPropertyCommontsMember(CommentsDocContainer.Instance.GetCommentsDoc(assembly),type,item),
-                        IsPrimitive = item.PropertyType.IsPrimitive,
-                    };
+                        Commonts = CommentsDocContainer.Instance.GetPropertyCommontsMember(CommentsDocContainer.Instance.GetCommentsDoc(assembly), type, item),
+                            IsPrimitive = item.PropertyType.IsPrimitive,
+                        };
 
-                    if (item.PropertyType.IsPrimitive)
-                    {
-                        des.ModelId = item.PropertyType.Assembly.ManifestModule.ModuleVersionId.ToString("N");
-                        des.TypeName = item.PropertyType.Name;
-                        des.TypeId = item.PropertyType.GUID.ToString("N");
-                    }
-                    else if (item.PropertyType.IsGenericType)
-                    {
-                        des.ModelId = item.PropertyType.GenericTypeArguments[0].Assembly.ManifestModule.ModuleVersionId.ToString("N");
-                        des.TypeName = item.PropertyType.GenericTypeArguments[0].Name;
-                        des.TypeId = item.PropertyType.GenericTypeArguments[0].GUID.ToString("N");
+                        des.ProtoMember = item.GetCustomAttribute<ProtoMemberAttribute>()?.Tag;
 
-                        if (typeof(IEnumerable).IsAssignableFrom(item.PropertyType))
-                            des.TypeName += "[]";
-                    }
-                    else
-                    {
-                        des.ModelId = item.PropertyType.Assembly.ManifestModule.ModuleVersionId.ToString("N");
-                        des.TypeName = item.PropertyType.Name;
-                        des.TypeId = item.PropertyType.GUID.ToString("N");
-                    }
+                        if (item.PropertyType.IsPrimitive)
+                        {
+                            des.ModelId = item.PropertyType.Assembly.ManifestModule.ModuleVersionId.ToString("N");
+                            des.TypeName = item.PropertyType.Name;
+                            des.TypeId = item.PropertyType.GUID.ToString("N");
+                        }
+                        else if (item.PropertyType.IsGenericType)
+                        {
+                            des.ModelId = item.PropertyType.GenericTypeArguments[0].Assembly.ManifestModule.ModuleVersionId.ToString("N");
+                            des.TypeName = item.PropertyType.GenericTypeArguments[0].Name;
+                            des.TypeId = item.PropertyType.GenericTypeArguments[0].GUID.ToString("N");
+
+                            if (typeof(IEnumerable).IsAssignableFrom(item.PropertyType))
+                                des.TypeName += "[]";
+                        }
+                        else
+                        {
+                            des.ModelId = item.PropertyType.Assembly.ManifestModule.ModuleVersionId.ToString("N");
+                            des.TypeName = item.PropertyType.Name;
+                            des.TypeId = item.PropertyType.GUID.ToString("N");
+                        }
 
 
-                    return des;
-                });
+                        return des;
+                    });
             }
 
             return null;
         }
 
-        public IEnumerable<ResponseDes> GetResponseDeses(string modelid,string id)
+        public IEnumerable<ResponseDes> GetResponseDeses(string modelid, string id)
         {
             var assembly = _assemblies[modelid];
             var type = assembly.GetTypes().FirstOrDefault(item => Equals(id, item.GUID.ToString("N")));
 
             return GetResponseDeses(type);
+        }
+
+        public List<string> GetAssemblyXmlList()
+        {
+            return _assemblyXmlList;
         }
     }
 }

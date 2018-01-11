@@ -3,11 +3,12 @@
     ViewBag.Title = "Home Page";
 }
 
+
+
+
+
 <div class="row">
-
-
     <div class="col-xs-4" id="sidebar">
-
         <div class="list-group">
             @foreach (ApiGroup item in ViewBag.Groups)
             {
@@ -17,38 +18,49 @@
     </div>
 
     <div class="col-xs-8">
-
         <h3>
             @((ApiGroup)ViewBag.ApiGroup).Assembly
         </h3>
+        
+        @{
+            var groups = ((IEnumerable<Type>) ViewBag.ApiGroup.Types).GroupBy(item => item.FullName.Replace($"{item.Assembly.GetName().Name}.","").Replace($".{item.Name}",""),item=>item);
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>接口</th>
-                    <th>描述</th>
-                </tr>
-            </thead>
+            foreach (var group in groups)
+            {
+                <h3>@group.Key</h3>
 
-            <tbody>
-                @foreach (Type type in ViewBag.ApiGroup.Types)
-                {
+                <table class="table table-hover">
+                    <thead>
                     <tr>
-                        <td>@Html.ActionLink(type.Name, "Details", new { modelversionid = ViewBag.ApiGroup.ModelId, typeguid = type.GUID.ToString("N") })</td>
-                        <td>
-                            @{
-                                var comments = CommentsDocContainer.Instance.GetTypeCommontsMember(CommentsDocContainer.Instance.GetCommentsDoc(type.Assembly), type);
-                                if (comments != null)
-                                {
-                                    <span>@Html.Raw(comments.Summary)</span>
-                                }
+                        <th>接口</th>
+                        <th>描述</th>
+                    </tr>
+                    </thead>
 
-                        }
-                    </td>
-                </tr>
+                    <tbody>
+                    @foreach (Type type in group)
+                    {
+                        <tr>
+                            <td>@Html.ActionLink(type.Name, "Details", new { modelversionid = ViewBag.ApiGroup.ModelId, typeguid = type.GUID.ToString("N") })</td>
+                            <td>
+                                @{
+                                    var comments = CommentsDocContainer.Instance.GetTypeCommontsMember(CommentsDocContainer.Instance.GetCommentsDoc(type.Assembly), type);
+                                    if (comments != null)
+                                    {
+                                        <span>@Html.Raw(comments.Summary)</span>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+
             }
-            </tbody>
-        </table>
+        }
+        
+
+        
 
     </div>
 </div>

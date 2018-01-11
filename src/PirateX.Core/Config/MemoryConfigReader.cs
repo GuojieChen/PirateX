@@ -134,7 +134,7 @@ namespace PirateX.Core.Config
                     else
                     {
                         var urn = GetCacheIndexKey2<T>(dic);
-                        var urnlist = _cacheClient.Get<IList<string>>(urn) ?? new List<string>();
+                        var urnlist = _cacheClient.Get<List<string>>(urn) ?? new List<string>();
 
                         urnlist.Add(key);
 

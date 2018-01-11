@@ -11,6 +11,7 @@ using Autofac.Builder;
 using Dapper;
 using Newtonsoft.Json;
 using NLog;
+using PirateX.Core.Actor.System;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Cache;
 using PirateX.Core.Config;
@@ -347,6 +348,11 @@ namespace PirateX.Core.Container
         public virtual List<Assembly> GetServiceAssemblyList()
         {
             return new List<Assembly>() { typeof(IService).Assembly, typeof(TDistrictContainer).Assembly };
+        }
+
+        public virtual List<Assembly> GetApiAssemblyList()
+        {
+            return new List<Assembly>() { typeof(TDistrictContainer).Assembly };
         }
 
         public virtual List<Assembly> GetEntityAssemblyList()
