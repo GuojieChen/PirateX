@@ -9,6 +9,10 @@ using ProtoBuf;
 
 namespace PirateX.Core.Actor.System
 {
+    /// <summary>
+    /// proto描述同步
+    /// </summary>
+    [RequestDoc(Des = "上次同步后的hash值",Name = "hash",Type = typeof(string))]
     public class ProtoSync:RepAction<ProtoSyncResponse>
     {
         public override string Name => "_ProtoSync_";
@@ -29,7 +33,10 @@ namespace PirateX.Core.Actor.System
         }
     }
 
-    [ProtoContract(Name = "ProtoSyncResponse")]
+    /// <summary>
+    /// 
+    /// </summary>
+    [ProtoContract]
     public class ProtoSyncResponse
     {
         [ProtoMember(1)]

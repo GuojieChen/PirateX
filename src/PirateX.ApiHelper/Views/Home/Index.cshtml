@@ -1,25 +1,22 @@
 ﻿@using PirateX.ApiHelper.App_Start
+@using PirateX.Core.Actor
 @{
     ViewBag.Title = "Home Page";
 }
-
-
-
-
 
 <div class="row">
     <div class="col-xs-4" id="sidebar">
         <div class="list-group">
             @foreach (ApiGroup item in ViewBag.Groups)
             {
-                @Html.ActionLink(item.Name, "Index", new { moduleVersionId = item.ModelId }, new { @class = "list-group-item" })
-            }
+                @Html.ActionLink(item.Name, "Index", new { moduleVersionId = item.ModelId }, new { @class = $"list-group-item {(Equals(ViewBag.ApiGroup.ModelId, item.ModelId) ? "active" : "") }" })
+           }
         </div>
     </div>
 
     <div class="col-xs-8">
         <h3>
-            @((ApiGroup)ViewBag.ApiGroup).Assembly
+            @ViewBag.ApiGroup.Name
         </h3>
         
         @{
@@ -41,13 +38,13 @@
                     @foreach (Type type in group)
                     {
                         <tr>
-                            <td>@Html.ActionLink(type.Name, "Details", new { modelversionid = ViewBag.ApiGroup.ModelId, typeguid = type.GUID.ToString("N") })</td>
+                            <td>@Html.ActionLink( ((IAction)Activator.CreateInstance(type)).Name?? type.Name, "Details", new { modelversionid = ViewBag.ApiGroup.ModelId, typeguid = type.GUID.ToString("N") })</td>
                             <td>
                                 @{
                                     var comments = CommentsDocContainer.Instance.GetTypeCommontsMember(CommentsDocContainer.Instance.GetCommentsDoc(type.Assembly), type);
                                     if (comments != null)
                                     {
-                                        <span>@Html.Raw(comments.Summary)</span>
+                                        <span>@Html.Raw(comments.Summary.InnerText)</span>
                                     }
                                 }
                             </td>

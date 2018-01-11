@@ -3,11 +3,14 @@ using PirateX.Core.Utils;
 
 namespace PirateX.Core.Actor
 {
-    public class Ping : RepAction<NewSeedResponse>
+    /// <summary>
+    /// ping
+    /// </summary>
+    public class Ping : RepAction
     {
-        public override NewSeedResponse Play()
+        public override void Execute()
         {
-            return new NewSeedResponse() { Seed = DateTime.UtcNow.GetTimestampAsSecond() };
+
         }
     }
 }

@@ -26,7 +26,7 @@ namespace PirateX.ApiHelper.App_Start
                         if(_instance==null)
                         {
                             _instance = new CommentsDocContainer();
-                            _instance.Load(Directory.GetFiles(ConfigurationManager.AppSettings["App_Data_Dir"]).Where(item => item.EndsWith(".xml")).ToArray());
+                            _instance.Load(Directory.GetFiles($"{AppDomain.CurrentDomain.BaseDirectory}App_Data").Where(item => item.EndsWith(".xml")).ToArray());
                         }
                     }
                 }

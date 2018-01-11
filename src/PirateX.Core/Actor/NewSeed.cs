@@ -6,6 +6,10 @@ using RandomUtil = PirateX.Core.Utils.RandomUtil;
 
 namespace PirateX.Core.Actor
 {
+    /// <summary>
+    /// 种子交换
+    /// </summary>
+    [RequestDoc(Name = "seed", Des = "客户端种子", Type = typeof(int))]
     public class NewSeed : RepAction
     {
         private static readonly bool[] CryptoByte = new bool[8]
@@ -37,6 +41,9 @@ namespace PirateX.Core.Actor
     [ProtoContract]
     public class NewSeedResponse
     {
+        /// <summary>
+        /// 服务器种子
+        /// </summary>
         [ProtoMember(1)]
         public int Seed { get; set; }
     }

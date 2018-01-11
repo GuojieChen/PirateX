@@ -11,7 +11,7 @@
 
 }
 <h3>@details.Name</h3>
-<h5>@details.Comments.Summary</h5>
+<h5>@details.Comments.Summary.InnerText</h5>
 
 <div>
     <h4>请求参数</h4>
@@ -51,22 +51,25 @@
         </thead>
 
         <tbody>
-            @foreach (ResponseDes item in details.ResponseDeses)
+            @if (details.ResponseDeses!=null)
             {
-                <tr>
-                    <td>@Html.Raw(item.Name)</td>
-                    <td>
-                        @if (item.IsPrimitive)
-                        {
-                            <span>@Html.Raw(item.TypeName)</span>
-                        }
-                        else
-                        {
-                            <span>@Html.ActionLink(item.TypeName, "TypeInfo", new { modelid = item.ModelId, id = item.TypeId })</span>
-                        }
-                    </td>
-                    <td>@Html.Raw(item.Commonts?.Summary)</td>
-                </tr>
+                foreach (ResponseDes item in details.ResponseDeses)
+                 {
+                     <tr>
+                         <td>@Html.Raw(item.Name)</td>
+                         <td>
+                             @if (item.IsPrimitive)
+                             {
+                                 <span>@Html.Raw(item.TypeName)</span>
+                             }
+                             else
+                             {
+                                 <span>@Html.ActionLink(item.TypeName, "TypeInfo", new { modelid = item.ModelId, id = item.TypeId })</span>
+                             }
+                         </td>
+                         <td>@Html.Raw(item.Commonts?.Summary.InnerText)</td>
+                     </tr>
+                 }
             }
         </tbody>
     </table>

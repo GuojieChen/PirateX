@@ -4,9 +4,12 @@ using PirateX.Core.Actor.ProtoSync;
 
 namespace PirateX.Core.Actor.System
 {
+    /// <summary>
+    /// 获取系统信息
+    /// </summary>
     public class SysInfo:RepAction<SystemInfoResponse>
     {
-        public override string Name => "_sysinfo";
+        public override string Name => "_sysinfo_";
 
         public override SystemInfoResponse Play()
         {
@@ -21,6 +24,9 @@ namespace PirateX.Core.Actor.System
     [ProtoContract]
     public class SystemInfoResponse
     {
+        /// <summary>
+        /// proto hash
+        /// </summary>
         [ProtoMember(1)]
         public string ProtoHash { get; set; } 
     }

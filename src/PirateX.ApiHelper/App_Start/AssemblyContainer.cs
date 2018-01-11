@@ -19,9 +19,9 @@ namespace PirateX.ApiHelper.App_Start
     {
         private IDictionary<string, ApiGroup> _dic = null;
         private List<ApiGroup> _list = null;
+        private List<ApiGroup> _apiGroupList = null; 
         private IDictionary<string, Assembly> _assemblies = null;
         private List<string> _assemblyXmlList = null;
-
         private static AssemblyContainer _instance = null;
 
         private static object _lockHelper = new object();
@@ -57,10 +57,11 @@ namespace PirateX.ApiHelper.App_Start
             _list = new List<ApiGroup>();
             _assemblies = new Dictionary<string, Assembly>();
             _assemblyXmlList = new List<string>();
+            _apiGroupList = new List<ApiGroup>();
 
 
             var list = new List<Assembly>();
-            foreach (var file in Directory.GetFiles(System.Configuration.ConfigurationManager.AppSettings["App_Data_Dir"]).Where(item => item.EndsWith(".dll")))
+            foreach (var file in Directory.GetFiles($"{AppDomain.CurrentDomain.BaseDirectory}App_Data").Where(item => item.EndsWith(".dll")))
             {
                 var systemExists = Directory.GetFiles($"{AppDomain.CurrentDomain.BaseDirectory}bin").Select(Path.GetFileName).ToArray();
                 var filename = Path.GetFileName(file);
@@ -69,6 +70,7 @@ namespace PirateX.ApiHelper.App_Start
 
                 list.Add(Assembly.LoadFrom(file));
             }
+            list.Add(typeof(PirateX.Core.Actor.ProtoSync.ProtobufService).Assembly);
             _instance.Load(list.ToArray());
         }
         private AssemblyContainer()
@@ -85,7 +87,7 @@ namespace PirateX.ApiHelper.App_Start
                 if (api == null)
                     continue;
 
-                if (NeedLoad(assembly))
+                if (NeedLoad(api))
                 {
                     _dic.Add(api.ModelId, api);
                     _list.Add(api);
@@ -93,17 +95,26 @@ namespace PirateX.ApiHelper.App_Start
             }
         }
 
-        private bool NeedLoad(Assembly assembly)
+        private bool NeedLoad(ApiGroup api)
         {
-            _assemblies.Add(assembly.ManifestModule.ModuleVersionId.ToString("N"), assembly);
-            _assemblyXmlList.Add(assembly.ManifestModule.Name.Replace(".dll", ".xml"));
-            foreach (var type in assembly.GetTypes())
+            foreach (var type in api.Types)
             {
                 if (!type.IsClass)
                     continue;
 
-                if (typeof(IAction).IsAssignableFrom(type))
-                    return true;
+                if (typeof(IAction).IsAssignableFrom(type) || typeof(IEntity).IsAssignableFrom(type))
+                {
+                    if(!_assemblies.ContainsKey(api.ModelId))
+                        _assemblies.Add(api.ModelId, api.Assembly);
+
+                    _assemblyXmlList.Add(api.Assembly.ManifestModule.Name.Replace(".dll", ".xml"));
+
+                    if (typeof(IAction).IsAssignableFrom(type))
+                    {
+                        _apiGroupList.Add(api);
+                        return true;
+                    }
+                }
             }
 
             return false;
@@ -120,7 +131,7 @@ namespace PirateX.ApiHelper.App_Start
                     if (!type.IsClass)
                         continue;
 
-                    if (typeof(IAction).IsAssignableFrom(type))
+                    if (typeof(IAction).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
                         group.Types.Add(type);
                 }
 
@@ -153,7 +164,7 @@ namespace PirateX.ApiHelper.App_Start
 
         public List<ApiGroup> GetGroups()
         {
-            return _list;
+            return _apiGroupList;
         }
 
         public TypeDetails GetTypeDetails(Type type)
@@ -162,7 +173,7 @@ namespace PirateX.ApiHelper.App_Start
                 return null;
 
             var detail = new TypeDetails();
-            detail.Name = type.Name;
+            detail.Name = ((IAction)Activator.CreateInstance(type)).Name ?? type.Name;
             detail.Comments = CommentsDocContainer.Instance.GetTypeCommontsMember(CommentsDocContainer.Instance.GetCommentsDoc(type.Assembly), type);
             detail.RequestDocs = type.GetCustomAttributes<RequestDocAttribute>();
             if (type.BaseType.GenericTypeArguments.Any())

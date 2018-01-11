@@ -33,17 +33,17 @@ namespace PirateX.ApiHelper
         {
             //检查文件是否有变动
             var dt = Directory.GetLastWriteTime(ConfigurationManager.AppSettings["App_Data_Dir"]);
-            if (!_lastWriteTime.HasValue || dt > _lastWriteTime.Value)
-            {
+
+            if (!_lastWriteTime.HasValue)
+            {//第一次
                 AssemblyContainer.SetInstanceNull();
                 CommentsDocContainer.SetInstanceNull();
-
                 WorkingCopy.CopySourceToTarget();
-
-                AssemblyContainer.SetInstanceNull();
-                CommentsDocContainer.SetInstanceNull();
-
                 _lastWriteTime = dt;
+            }
+            else if (dt > _lastWriteTime.Value)
+            {//后续 需要重启website
+                File.SetLastWriteTimeUtc(Server.MapPath("~/Global.asax"), DateTime.UtcNow);
             }
         }
     }

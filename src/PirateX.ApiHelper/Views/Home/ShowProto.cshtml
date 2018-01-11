@@ -1,0 +1,14 @@
+﻿@using PirateX.ApiHelper.App_Start
+@{
+    ViewBag.Title = "ShowProto";
+}
+
+<h2>ShowProto</h2>
+
+
+<ul>
+    @foreach (string filename in ViewBag.FileNames)
+    {
+        <li>@Html.ActionLink(filename, "ShowFile", new { filename = filename })</li>
+    }
+</ul>

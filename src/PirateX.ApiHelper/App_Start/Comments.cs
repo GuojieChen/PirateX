@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace PirateX.ApiHelper
@@ -26,7 +27,7 @@ namespace PirateX.ApiHelper
         public string Name { get; set; }
 
         [XmlElement("summary")]
-        public string Summary { get; set; }
+        public XmlNode Summary { get; set; }
     }
 
     public class CommentsMembers

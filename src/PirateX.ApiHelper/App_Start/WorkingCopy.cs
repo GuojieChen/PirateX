@@ -24,7 +24,7 @@ namespace PirateX.ApiHelper.App_Start
                     SearchOption.AllDirectories))
                     Directory.CreateDirectory(dirPath.Replace(SourcePath, DestinationPath));
 
-                //Copy all the files & Replaces any files with the same name
+                //Copy all the files & Replaces any files with the same name+--`
                 foreach (string newPath in Directory.GetFiles(SourcePath, "*.*",
                     SearchOption.AllDirectories))
                     File.Copy(newPath, newPath.Replace(SourcePath, DestinationPath), true);

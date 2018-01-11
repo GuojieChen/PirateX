@@ -232,6 +232,8 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Details.cshtml" />
     <Content Include="Views\Home\TypeInfo.cshtml" />
+    <Content Include="Views\Home\ShowProto.cshtml" />
+    <Content Include="Views\Home\ShowFile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

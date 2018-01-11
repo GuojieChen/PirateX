@@ -37,10 +37,24 @@ namespace PirateX.ApiHelper.Controllers
             return View();
         }
 
+        public ActionResult ShowProto()
+        {
+            var files = Directory.GetFiles(Server.MapPath("~/App_Data/protos"));
+
+            ViewBag.FileNames = files.Select(item => Path.GetFileName(item));
+
+            return View();
+        }
+
+        public ActionResult ShowFile(string filename)
+        {
+            var fileContents = System.IO.File.ReadAllText(Server.MapPath($"~/App_Data/protos/{filename}"));
+            ViewBag.FileContents = fileContents;
+            return View();
+        }
+
         public ActionResult About()
         {
-
-
             ViewBag.Message = "Your application description page.";
 
             return View();
