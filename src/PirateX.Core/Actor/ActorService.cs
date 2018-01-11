@@ -42,7 +42,7 @@ namespace PirateX.Core.Actor
         void OnReceive(ActorContext context);
     }
 
-    public class ActorService<TActorService> : ServerService,IActorService
+    public class ActorService<TActorService> : ServerService,IActorService,IMessageSender
     {
         public static Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -69,6 +69,7 @@ namespace PirateX.Core.Actor
         /// <param name="builder"></param>
         protected override void Setup(ContainerBuilder builder)
         {
+            builder.Register(c => this).As<IMessageSender>().SingleInstance();
             //注册内置命令
             RegisterActions(typeof(ActorService<TActorService>).Assembly.GetTypes());
             //注册外置命令
@@ -115,103 +116,6 @@ namespace PirateX.Core.Actor
             ProtocolPackage = DistrictContainer.ServerIoc.Resolve<IProtocolPackage>();
             if (Logger.IsTraceEnabled)
                 Logger.Trace($"Set ProtocolPackage = {ProtocolPackage.GetType().FullName}");
-        }
-
-        /// <summary>
-        /// 加载各种配置
-        /// </summary>
-        private void Setup()
-        {
-            var serverSetting = DistrictContainer.GetServerSetting();
-
-            var configtypes = serverSetting.GetType().GetInterfaces();
-
-            var builder = new ContainerBuilder();
-
-            //默认在线管理  
-            builder.Register(c => new MemorySessionManager())
-                .As<ISessionManager>()
-                .SingleInstance();
-
-            builder.Register(c => this).As<IMessageSender>().SingleInstance();
-            foreach (var type in configtypes)
-            {
-                var attrs = type.GetCustomAttributes(typeof(ServerSettingRegisterAttribute), false);
-                if (!attrs.Any())
-                    continue;
-                if (attrs[0] is ServerSettingRegisterAttribute attr)
-                    ((IServerSettingRegister)Activator.CreateInstance(attr.RegisterType))
-                        .Register(builder, serverSetting);
-            }
-
-            ////默认的包解析器
-            builder.Register(c => new ProtocolPackage())
-                .InstancePerDependency()
-                .As<IProtocolPackage>();
-
-            //默认消息广播
-            builder.Register(c => new DefaultMessageBroadcast()).SingleInstance();
-
-            builder.Register(c => new ProtobufService()).As<IProtoService>().SingleInstance();
-
-            //数据格式
-            foreach (var responseConvert in typeof(IResponseConvert).Assembly.GetTypes().Where(item => typeof(IResponseConvert).IsAssignableFrom(item)))
-            {
-                if (responseConvert.IsInterface)
-                    continue;
-
-                var attrs = responseConvert.GetCustomAttributes(typeof(DisplayColumnAttribute), false);
-                if (attrs.Any())
-                {
-                    var convertName = ((DisplayColumnAttribute)attrs[0]).DisplayColumn;
-                    if (!string.IsNullOrEmpty(convertName))
-                        builder.Register(c => Activator.CreateInstance(responseConvert))
-                            .Keyed<IResponseConvert>(convertName.ToLower())
-                            .SingleInstance();
-                }
-            }
-
-            //注册内置命令
-            RegisterActions(typeof(ActorService<TActorService>).Assembly.GetTypes());
-            //注册外置命令
-            RegisterActions(GetActions());
-
-            builder.Register(c => Actions)
-                .AsSelf()
-                .SingleInstance();
-
-            DistrictContainer.InitContainers(builder);
-
-            var list = new List<Assembly>();
-            list.AddRange(DistrictContainer.GetServiceAssemblyList());
-            list.AddRange(DistrictContainer.GetEntityAssemblyList());
-            list.AddRange(DistrictContainer.GetApiAssemblyList());
-            DistrictContainer.ServerIoc.Resolve<IProtoService>()
-                .Init(list);
-
-            RedisDataBaseExtension.RedisSerilazer = DistrictContainer.ServerIoc.Resolve<IRedisSerializer>();
-            if (Logger.IsTraceEnabled)
-                Logger.Trace($"Set RedisDataBaseExtension.RedisSerilazer = {RedisDataBaseExtension.RedisSerilazer.GetType().FullName}");
-
-            ProtocolPackage = DistrictContainer.ServerIoc.Resolve<IProtocolPackage>();
-            if (Logger.IsTraceEnabled)
-                Logger.Trace($"Set ProtocolPackage = {ProtocolPackage.GetType().FullName}");
-
-            OnlineManager = DistrictContainer.ServerIoc.Resolve<ISessionManager>();
-            if (Logger.IsTraceEnabled)
-                Logger.Trace($"Set OnlineManager = {OnlineManager.GetType().FullName}");
-
-
-
-            if (Logger.IsTraceEnabled)
-                Logger.Trace(@"
-.______    __  .______          ___   .___________. __________   ___ 
-|   _  \  |  | |   _  \        /   \  |           ||   ____\  \ /  / 
-|  |_)  | |  | |  |_)  |      /  ^  \ `---|  |----`|  |__   \     /  
-|   ___/  |  | |      /      /  /_\  \    |  |     |   __|   >   <   
-|  |      |  | |  |\  \----./  _____  \   |  |     |  |____ /  .  \  
-| _|      |__| | _| `._____/__/     \__\  |__|     |_______/__/ \__\ 
-");
         }
 
         public virtual void Start()

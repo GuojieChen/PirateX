@@ -21,19 +21,26 @@ namespace PirateX.Core
     /// <summary>
     /// 
     /// </summary>
-    public class ServerService : IMessageSender
+    public class ServerService //: IMessageSender
     {
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="districtContainer</param>
         public ServerService(IDistrictContainer districtContainer)
         {
             DistrictContainer = districtContainer;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         protected ISessionManager OnlineManager { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public IDistrictContainer DistrictContainer { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public static Logger Logger = LogManager.GetCurrentClassLogger();
         /// <summary>
         /// 加载各种配置
@@ -51,7 +58,6 @@ namespace PirateX.Core
                 .As<ISessionManager>()
                 .SingleInstance();
 
-            builder.Register(c => this).As<IMessageSender>().SingleInstance();
             foreach (var type in configtypes)
             {
                 var attrs = type.GetCustomAttributes(typeof(ServerSettingRegisterAttribute), false);
@@ -87,40 +93,12 @@ namespace PirateX.Core
         {
             
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         protected virtual void Setuped()
         {
             
-        }
-
-        public virtual void SendMessage<T>(ActorContext context, T t)
-        {
-
-        }
-
-        public virtual void SendMessage<T>(ActorContext context, string name, T t)
-        {
-
-        }
-
-        public virtual void SendMessage(ActorContext context, string name, string msg)
-        {
-
-        }
-
-        public virtual void SendSeed<T>(ActorContext context, byte cryptobyte, byte[] clientkeys, byte[] serverkeys, T t)
-        {
-
-        }
-
-        public virtual void PushMessage<T>(int rid, T t)
-        {
-
-        }
-
-        public virtual void PushMessage<T>(int rid, string name, T t)
-        {
-
         }
     }
 }
