@@ -35,15 +35,14 @@ namespace PirateX.Core.Actor
     {
         IActorNetService NetService { get; set; }
 
-        void Setup();
-
         void Start();
+
         void Stop();
 
         void OnReceive(ActorContext context);
     }
 
-    public class ActorService<TActorService> : IMessageSender, IActorService
+    public class ActorService<TActorService> : ServerService,IActorService
     {
         public static Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -51,29 +50,79 @@ namespace PirateX.Core.Actor
 
         private IDictionary<string, IAction> Actions = new Dictionary<string, IAction>(StringComparer.OrdinalIgnoreCase);
 
-        public IServerContainer ServerContainer { get; set; }
+        public IDistrictContainer DistrictContainer { get; set; }
 
         public IProtocolPackage ProtocolPackage { get; set; }
-
-        protected ISessionManager OnlineManager { get; set; }
 
         protected virtual string DefaultResponseCovnert => "protobuf";
 
         protected int OnlineCount { get; set; }
 
-        public ActorService(IServerContainer serverContainer)
+        public ActorService(IDistrictContainer districtContainer):base(districtContainer)
         {
+            DistrictContainer = districtContainer;
 
-            ServerContainer = serverContainer;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="builder"></param>
+        protected override void Setup(ContainerBuilder builder)
+        {
+            //注册内置命令
+            RegisterActions(typeof(ActorService<TActorService>).Assembly.GetTypes());
+            //注册外置命令
+            RegisterActions(GetActions());
 
+            builder.Register(c => Actions)
+                .AsSelf()
+                .SingleInstance();
+
+            //数据格式
+            foreach (var responseConvert in typeof(IResponseConvert).Assembly.GetTypes().Where(item => typeof(IResponseConvert).IsAssignableFrom(item)))
+            {
+                if (responseConvert.IsInterface)
+                    continue;
+
+                var attrs = responseConvert.GetCustomAttributes(typeof(DisplayColumnAttribute), false);
+                if (attrs.Any())
+                {
+                    var convertName = ((DisplayColumnAttribute)attrs[0]).DisplayColumn;
+                    if (!string.IsNullOrEmpty(convertName))
+                        builder.Register(c => Activator.CreateInstance(responseConvert))
+                            .Keyed<IResponseConvert>(convertName.ToLower())
+                            .SingleInstance();
+                }
+            }
+
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        protected override void Setuped()
+        {
+            var list = new List<Assembly>();
+            list.AddRange(DistrictContainer.GetServiceAssemblyList());
+            list.AddRange(DistrictContainer.GetEntityAssemblyList());
+            list.AddRange(DistrictContainer.GetApiAssemblyList());
+            DistrictContainer.ServerIoc.Resolve<IProtoService>()
+                .Init(list);
+
+            RedisDataBaseExtension.RedisSerilazer = DistrictContainer.ServerIoc.Resolve<IRedisSerializer>();
+            if (Logger.IsTraceEnabled)
+                Logger.Trace($"Set RedisDataBaseExtension.RedisSerilazer = {RedisDataBaseExtension.RedisSerilazer.GetType().FullName}");
+
+            ProtocolPackage = DistrictContainer.ServerIoc.Resolve<IProtocolPackage>();
+            if (Logger.IsTraceEnabled)
+                Logger.Trace($"Set ProtocolPackage = {ProtocolPackage.GetType().FullName}");
         }
 
         /// <summary>
         /// 加载各种配置
         /// </summary>
-        public virtual void Setup()
+        private void Setup()
         {
-            var serverSetting = ServerContainer.GetServerSetting();
+            var serverSetting = DistrictContainer.GetServerSetting();
 
             var configtypes = serverSetting.GetType().GetInterfaces();
 
@@ -90,12 +139,10 @@ namespace PirateX.Core.Actor
                 var attrs = type.GetCustomAttributes(typeof(ServerSettingRegisterAttribute), false);
                 if (!attrs.Any())
                     continue;
-                var attr = attrs[0] as ServerSettingRegisterAttribute;
-                if (attr != null)
+                if (attrs[0] is ServerSettingRegisterAttribute attr)
                     ((IServerSettingRegister)Activator.CreateInstance(attr.RegisterType))
                         .Register(builder, serverSetting);
             }
-
 
             ////默认的包解析器
             builder.Register(c => new ProtocolPackage())
@@ -133,24 +180,24 @@ namespace PirateX.Core.Actor
                 .AsSelf()
                 .SingleInstance();
 
-            ServerContainer.InitContainers(builder);
+            DistrictContainer.InitContainers(builder);
 
             var list = new List<Assembly>();
-            list.AddRange(ServerContainer.GetServiceAssemblyList());
-            list.AddRange(ServerContainer.GetEntityAssemblyList());
-            list.AddRange(ServerContainer.GetApiAssemblyList());
-            ServerContainer.ServerIoc.Resolve<IProtoService>()
+            list.AddRange(DistrictContainer.GetServiceAssemblyList());
+            list.AddRange(DistrictContainer.GetEntityAssemblyList());
+            list.AddRange(DistrictContainer.GetApiAssemblyList());
+            DistrictContainer.ServerIoc.Resolve<IProtoService>()
                 .Init(list);
 
-            RedisDataBaseExtension.RedisSerilazer = ServerContainer.ServerIoc.Resolve<IRedisSerializer>();
+            RedisDataBaseExtension.RedisSerilazer = DistrictContainer.ServerIoc.Resolve<IRedisSerializer>();
             if (Logger.IsTraceEnabled)
                 Logger.Trace($"Set RedisDataBaseExtension.RedisSerilazer = {RedisDataBaseExtension.RedisSerilazer.GetType().FullName}");
 
-            ProtocolPackage = ServerContainer.ServerIoc.Resolve<IProtocolPackage>();
+            ProtocolPackage = DistrictContainer.ServerIoc.Resolve<IProtocolPackage>();
             if (Logger.IsTraceEnabled)
                 Logger.Trace($"Set ProtocolPackage = {ProtocolPackage.GetType().FullName}");
 
-            OnlineManager = ServerContainer.ServerIoc.Resolve<ISessionManager>();
+            OnlineManager = DistrictContainer.ServerIoc.Resolve<ISessionManager>();
             if (Logger.IsTraceEnabled)
                 Logger.Trace($"Set OnlineManager = {OnlineManager.GetType().FullName}");
 
@@ -270,7 +317,7 @@ namespace PirateX.Core.Actor
             }
 
             //授权检查
-            if (!VerifyToken(ServerContainer.GetDistrictConfig(token.Did), token))
+            if (!VerifyToken(DistrictContainer.GetDistrictConfig(token.Did), token))
                 throw new PirateXException("AuthError", "授权失败") { Code = StatusCode.Unauthorized };
 
             var format = context.Request.Headers["format"];
@@ -311,13 +358,13 @@ namespace PirateX.Core.Actor
                         else
                         {
                             //session = OnlineManager.GetOnlineRole(token.Rid);
-                            var container = ServerContainer.GetDistrictContainer(token.Did);
+                            var container = DistrictContainer.GetDistrictContainer(token.Did);
                             if (container == null)
                                 throw new PirateXException("ContainerNull", "容器未定义") { Code = StatusCode.ContainerNull };
                             action.Reslover = container.BeginLifetimeScope();
                         }
 
-                        action.ServerReslover = ServerContainer.ServerIoc;
+                        action.ServerReslover = DistrictContainer.ServerIoc;
                         action.Context = context;
                         action.Logger = Logger;
                         action.MessageSender = this;
@@ -528,7 +575,7 @@ namespace PirateX.Core.Actor
             if (Equals(context.ResponseCovnert, "protobuf"))
                 headers["responsetype"] = typeof(T).Name;
 
-            var body = ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(context.ResponseCovnert)
+            var body = DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(context.ResponseCovnert)
                 .SerializeObject(t);
 
             if (Logger.IsDebugEnabled && body != null)
@@ -548,7 +595,7 @@ namespace PirateX.Core.Actor
         //        {"format","json"} // TODO 默认解析器
         //    };
 
-        //    NetService.PushMessage(sessionid, headers, ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>("json").SerializeObject(t));
+        //    NetService.PushMessage(sessionid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>("json").SerializeObject(t));
         //}
 
 
@@ -570,7 +617,7 @@ namespace PirateX.Core.Actor
                 Logger.Debug($"S2C #{rid}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {JsonConvert.SerializeObject(t)}");
             }
 
-            NetService.PushMessage(rid, headers, ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
+            NetService.PushMessage(rid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
         }
 
         public void PushMessage<T>(int rid, string name, T t)
@@ -590,7 +637,7 @@ namespace PirateX.Core.Actor
                 Logger.Debug($"S2C #{rid}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {JsonConvert.SerializeObject(t)}");
             }
 
-            NetService.PushMessage(rid, headers, ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
+            NetService.PushMessage(rid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
         }
 
         public void SendMessage<T>(ActorContext context, string name, T t)
@@ -627,7 +674,7 @@ namespace PirateX.Core.Actor
         {
             header["format"] = context.ResponseCovnert;
 
-            var body = ServerContainer.ServerIoc.ResolveKeyed<IResponseConvert>(context.ResponseCovnert)
+            var body = DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(context.ResponseCovnert)
                 .SerializeObject(rep);
 
 

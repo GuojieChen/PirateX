@@ -123,6 +123,7 @@
     <Compile Include="Net\INetService.cs" />
     <Compile Include="ProfilerLog.cs" />
     <Compile Include="Profiler\PirateXProfiler.cs" />
+    <Compile Include="ServerService.cs" />
     <Compile Include="Session\MemorySessionManager.cs" />
     <Compile Include="Push\IPushService.cs" />
     <Compile Include="Push\LogToFilePushService.cs" />
@@ -131,7 +132,7 @@
     <Compile Include="Domain\Uow\IUnitOfWork.cs" />
     <Compile Include="Domain\Uow\UnitOfWork.cs" />
     <Compile Include="Container\IDistrictConfig.cs" />
-    <Compile Include="Container\IServerContainer.cs" />
+    <Compile Include="Container\IDistrictContainer.cs" />
     <Compile Include="Container\IServerSetting.cs" />
     <Compile Include="Session\ISessionManager.cs" />
     <Compile Include="Session\PirateSession.cs" />

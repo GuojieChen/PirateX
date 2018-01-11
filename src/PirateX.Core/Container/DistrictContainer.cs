@@ -26,7 +26,7 @@ namespace PirateX.Core.Container
 {
     /// <summary> 默认的游戏容器实现
     /// </summary>
-    public abstract class DistrictContainer<TDistrictContainer> : IServerContainer
+    public abstract class DistrictContainer<TDistrictContainer> : IDistrictContainer
     {
         protected static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -67,7 +67,7 @@ namespace PirateX.Core.Container
             SqlMapper.AddTypeHandler(typeof(List<double>), new ListJsonMapper<double>());
             SqlMapper.AddTypeHandler(typeof(List<short>), new ListJsonMapper<short>());
             SqlMapper.AddTypeHandler(typeof(List<byte>), new ListJsonMapper<byte>());
-
+            
             if (Log.IsTraceEnabled)
                 Log.Trace("~~~~~~~~~~ Init server containers ~~~~~~~~~~");
 
@@ -122,7 +122,8 @@ namespace PirateX.Core.Container
                 if(Log.IsTraceEnabled)
                     Log.Trace($"Initialize Db[{kv.Key}] = {kv.Value}");
 
-                ServerIoc.ResolveKeyed<IDatabaseInitializer>(kv.Key).Initialize(kv.Value);
+                if(ServerIoc.IsRegistered<IDatabaseInitializer>())
+                    ServerIoc.ResolveKeyed<IDatabaseInitializer>(kv.Key).Initialize(kv.Value);
             }
 
             if (Log.IsTraceEnabled)

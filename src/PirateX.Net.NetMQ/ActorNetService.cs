@@ -37,22 +37,6 @@ namespace PirateX.Net.NetMQ
             this.config = config;
         }
 
-        private void SetUp()
-        {
-            _actorService.Setup();
-
-            PullSocket = new PullSocket(config.PullSocketString);
-            PullSocket.ReceiveReady += ProcessTaskPullSocket;
-
-            PushSocket = new PushSocket(config.PushsocketString);
-            Poller = new NetMQPoller() { MessageQueue, PullSocket };
-
-            MessageQueue.ReceiveReady += (sender, args) =>
-            {
-                PushSocket.SendFrame(args.Queue.Dequeue());
-            };
-        }
-
         /// <summary>
         /// 多线程处理请求
         /// </summary>
@@ -110,7 +94,16 @@ namespace PirateX.Net.NetMQ
 
         public virtual void Start()
         {
-            SetUp();
+            PullSocket = new PullSocket(config.PullSocketString);
+            PullSocket.ReceiveReady += ProcessTaskPullSocket;
+
+            PushSocket = new PushSocket(config.PushsocketString);
+            Poller = new NetMQPoller() { MessageQueue, PullSocket };
+
+            MessageQueue.ReceiveReady += (sender, args) =>
+            {
+                PushSocket.SendFrame(args.Queue.Dequeue());
+            };
 
             _actorService.Start();
             Poller.RunAsync();

@@ -5,7 +5,7 @@ using Autofac;
 
 namespace PirateX.Core.Container
 {
-    public interface IServerContainer:IDisposable
+    public interface IDistrictContainer:IDisposable
     {
         /// <summary> 服务器容器
         /// </summary>
