@@ -7,7 +7,7 @@ using PirateX.Core.Domain.Entity;
 
 namespace PirateX.Middleware.LetterSystem
 {
-    public interface IArchive:IEntity<long>,IEntityPrivate
+    public interface IArchive:IEntity<long>,IEntityPrivate,IEntityDistrict
     {
         /// <summary>
         /// 是否已经转成信件

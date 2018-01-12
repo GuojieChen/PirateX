@@ -1,9 +1,9 @@
 ﻿using PirateX.Core.Domain.Entity;
 
-namespace PirateX.Middleware
+namespace PirateX.Middleware.ChatSystem
 {
     public interface IChat:
-        IEntityPrivate
+         IEntityPrivate
         , IEntityCreateAt
         , IEntityDistrict
     {

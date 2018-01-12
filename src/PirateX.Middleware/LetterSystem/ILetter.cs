@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using PirateX.Core.Domain.Entity;
+﻿using PirateX.Core.Domain.Entity;
 
-namespace PirateX.Middleware
+namespace PirateX.Middleware.LetterSystem
 {
     public interface ILetter:IEntity<int>,IEntityPrivate,IEntityCreateAt
     {

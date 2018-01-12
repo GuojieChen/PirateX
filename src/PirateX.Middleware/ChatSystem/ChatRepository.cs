@@ -4,9 +4,9 @@ using System.Linq;
 using PirateX.Core.Domain.Repository;
 using PirateX.Core.Utils;
 
-namespace PirateX.Middleware
+namespace PirateX.Middleware.ChatSystem
 {
-    public class ChatRepository:RepositoryBase
+    public class ChatRepository:PublicRepository
     {
         /// <summary>
         /// 默认保存的聊天数

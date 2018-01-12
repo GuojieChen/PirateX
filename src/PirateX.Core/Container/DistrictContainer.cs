@@ -57,8 +57,19 @@ namespace PirateX.Core.Container
         }
 
         public ISessionManager OnlineManager { get; private set; }
+
+        /// <summary>
+        /// 在初始化容器之前的准备
+        /// </summary>
+        protected virtual void Init()
+        {
+
+        }
+
         public void InitContainers(ContainerBuilder builder)
         {
+            Init();
+
             SqlMapper.AddTypeHandler(typeof(long[]), new ArrayJsonMapper<long>());
             SqlMapper.AddTypeHandler(typeof(int[]), new ArrayJsonMapper<int>());
             SqlMapper.AddTypeHandler(typeof(string[]), new ArrayJsonMapper<string>());

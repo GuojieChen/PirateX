@@ -12,6 +12,11 @@ namespace PirateX.Middleware.LetterSystem
     public interface IArchiveToLetter
     {
         /// <summary>
+        /// 数据归档，例如排行，
+        /// </summary>
+        void Archive();
+
+        /// <summary>
         /// 生成信件
         /// </summary>
         /// <param name="rid"></param>

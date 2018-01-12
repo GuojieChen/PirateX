@@ -6,11 +6,11 @@ using Dapper;
 using Dapper.Contrib.Extensions;
 using PirateX.Core.Domain.Repository;
 
-namespace PirateX.Middleware
+namespace PirateX.Middleware.LetterSystem
 {
     public class LetterRepository:RepositoryBase
     {
-        public int Insert(ILetter letter)
+        public virtual int Insert(ILetter letter)
         {
             using (var db = Resolver.Resolve<IDbConnection>())
             {
@@ -18,7 +18,7 @@ namespace PirateX.Middleware
             }
         }
 
-        public void Insert(IEnumerable<ILetter> letters)
+        public virtual void Insert(IEnumerable<ILetter> letters)
         {
             using (var db = Resolver.Resolve<IDbConnection>())
             {
@@ -26,7 +26,7 @@ namespace PirateX.Middleware
             }
         }
 
-        public int Delete(long rid,int id)
+        public virtual int Delete(long rid,int id)
         {
             using (var db = Resolver.Resolve<IDbConnection>())
             {
@@ -36,7 +36,7 @@ namespace PirateX.Middleware
             //TODO 这里可以根据情况做下归档
         }
 
-        public List<TLetter> GetList<TLetter>(long rid, int page, int size = 50) where TLetter : ILetter
+        public virtual List<TLetter> GetList<TLetter>(long rid, int page, int size = 50) where TLetter : ILetter
         {
             throw new NotImplementedException();
         }

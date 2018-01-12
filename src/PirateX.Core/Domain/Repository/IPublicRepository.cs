@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac;
+using PirateX.Core.Redis.StackExchange.Redis.Ex;
+using StackExchange.Redis;
 
 namespace PirateX.Core.Domain.Repository
 {
@@ -28,6 +30,10 @@ namespace PirateX.Core.Domain.Repository
                 return conn; 
             }
         }
+
+        protected IDatabase Redis => Resolver.Resolve<IDatabase>();
+
+        protected IRedisSerializer RedisSerializer => Resolver.Resolve<IRedisSerializer>();
 
         public void Dispose()
         {

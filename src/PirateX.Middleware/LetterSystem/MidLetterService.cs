@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using PirateX.Core;
-using PirateX.Middleware.LetterSystem;
 
-namespace PirateX.Middleware
+namespace PirateX.Middleware.LetterSystem
 {
     public class MidLetterService:ServiceBase
     {
