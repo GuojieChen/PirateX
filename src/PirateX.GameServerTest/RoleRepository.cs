@@ -2,7 +2,7 @@
 
 namespace PirateX.GameServerTest
 {
-    public class RoleRepository: RepositoryBase<Role>
+    public class RoleRepository: RepositoryBase
     {
 
     }

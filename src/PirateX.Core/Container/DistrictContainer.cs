@@ -92,6 +92,8 @@ namespace PirateX.Core.Container
 
             var configtypes = serverSetting.GetType().GetInterfaces();
 
+            #region 服务容器生成
+
             //默认在线管理  
             builder.Register(c => new MemorySessionManager())
                 .As<ISessionManager>()
@@ -140,12 +142,12 @@ namespace PirateX.Core.Container
                 .SingleInstance();
 
             ServerConfig(builder, districtConfigs);
-
             InitServerRepository(builder);
-
             BuildServerContainer(builder);
             _serverContainer = builder.Build();
+
             ServerIoc = _serverContainer.BeginLifetimeScope();
+            #endregion
 
             OnlineManager = ServerIoc.Resolve<ISessionManager>();
             if (Log.IsTraceEnabled)
@@ -199,40 +201,31 @@ namespace PirateX.Core.Container
                 .SingleInstance();
 
             if (Log.IsTraceEnabled)
-                Log.Trace("SetUp ConnectionStrings...");
+                Log.Trace("SetUp Connection ...");
 
-            SetUpConnectionStrings(builder);
+            builder.Register((c, p) => new SqlConnection(p.Named<string>(ConnectionStringName)))
+                .As<IDbConnection>()
+                .InstancePerDependency();
 
-            foreach (var config in configs)
-            {
-                builder.Register(c => config)
-                    .Keyed<IDistrictConfig>(config.Id)
-                    .AsSelf()
-                    .SingleInstance();
-            }
-        }
-
-        /// <summary>
-        /// 注册数据库连接
-        /// </summary>
-        /// <param name="builder"></param>
-        private void SetUpConnectionStrings(ContainerBuilder builder)
-        {
             foreach (var kp in GetNamedConnectionStrings())
             {
                 builder.Register(c => kp.Value)
                     .Keyed<string>($"{ConnectionStringName}:{kp.Key}")
                     .SingleInstance();
-
-                builder.Register((c, p) => new SqlConnection(p.Named<string>(ConnectionStringName)))
-                    .As<IDbConnection>()
-                    .InstancePerDependency();
             }
 
             foreach (var kv in GetNamedDatabaseInitializers())
             {
                 builder.Register(c => kv.Value)
                     .Keyed<IDatabaseInitializer>(kv.Key)
+                    .SingleInstance();
+            }
+
+            foreach (var config in configs)
+            {
+                builder.Register(c => config)
+                    .Keyed<IDistrictConfig>(config.Id)
+                    .AsSelf()
                     .SingleInstance();
             }
         }
@@ -306,8 +299,6 @@ namespace PirateX.Core.Container
             builder.Register(c => new DefaultGameCache(c.Resolve<IRedisSerializer>(), c.Resolve<IDatabase>()))
                 .As<IGameCache>()
                 .InstancePerDependency();
-
-            SetUpConnectionStrings(builder);
 
             builder.Register(c => districtConfig)
                 .As<IDistrictConfig>()
@@ -409,11 +400,11 @@ namespace PirateX.Core.Container
 
         private void InitServerRepository(ContainerBuilder builder)
         {
-            var services = GetRepositoryAssemblyList();
+            var repo = GetRepositoryAssemblyList();
 
-            if (services.Any())
+            if (repo.Any())
             {
-                services.ForEach(x =>
+                repo.ForEach(x =>
                 {
                     foreach (var type in x.GetTypes())
                     {
@@ -424,13 +415,12 @@ namespace PirateX.Core.Container
 
                         builder.Register(c =>
                         {
-                            var instance =Activator.CreateInstance(type);
-                            var obj = (IPublicRepository) instance;
+                            var instance = Activator.CreateInstance(type);
+                            var obj = (IPublicRepository)instance;
                             obj.Resolver = ServerIoc;
                             obj.ConnectionStringName = new NamedParameter(ConnectionStringName, c.ResolveKeyed<string>($"{ConnectionStringName}:{key}"));
                             return instance;
-                        })
-                            .As(type)
+                        }).As(type)
                          .SingleInstance();
                     }
                 });

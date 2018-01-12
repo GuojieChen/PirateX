@@ -7,7 +7,7 @@ using PirateX.Core.Domain.Repository;
 
 namespace GameServer.Console.SampleDomain
 {
-    public class RoleRepository: RepositoryBase<Role>
+    public class RoleRepository: RepositoryBase
     {
 
     }

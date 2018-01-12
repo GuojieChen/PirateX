@@ -12,11 +12,5 @@ namespace PirateX.Core.Domain.Repository
     public interface IRepository
     {
         ILifetimeScope Resolver { get; set; }
-
-        IDbTransaction DbTransaction { get; set; }
-
-        IDbConnection DbConnection { get; set; }
-
-        IDatabase Redis { get; set; }
     }
 }

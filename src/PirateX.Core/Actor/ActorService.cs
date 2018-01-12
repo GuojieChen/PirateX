@@ -123,6 +123,17 @@ namespace PirateX.Core.Actor
             if (Logger.IsTraceEnabled)
                 Logger.Trace($"Set ProtocolPackage = {ProtocolPackage.GetType().FullName}");
             #endregion
+
+            if (Logger.IsTraceEnabled)
+                Logger.Trace(@"
+.______    __  .______          ___   .___________. __________   ___ 
+|   _  \  |  | |   _  \        /   \  |           ||   ____\  \ /  / 
+|  |_)  | |  | |  |_)  |      /  ^  \ `---|  |----`|  |__   \     /  
+|   ___/  |  | |      /      /  /_\  \    |  |     |   __|   >   <   
+|  |      |  | |  |\  \----./  _____  \   |  |     |  |____ /  .  \  
+| _|      |__| | _| `._____/__/     \__\  |__|     |_______/__/ \__\ 
+");
+
         }
 
         public virtual void Start()

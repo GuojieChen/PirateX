@@ -8,7 +8,6 @@ using NLog;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Config;
 using PirateX.Core.Container;
-using PirateX.Core.Domain.Uow;
 using PirateX.Core.Push;
 using StackExchange.Redis;
 
@@ -17,8 +16,14 @@ namespace PirateX.Core
     public abstract class ServiceBase : IService
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public ILifetimeScope Resolver { get; set; }
 
+        /// <summary>
+        /// 当前服容器
+        /// </summary>
+        public ILifetimeScope Resolver { get; set; }
+        /// <summary>
+        /// 游戏容器
+        /// </summary>
         public IDistrictContainer Container { get; set; }
 
         /// <summary> Redis库操作对象
@@ -38,15 +43,15 @@ namespace PirateX.Core
         protected IPushService PushService => Resolver.Resolve<IPushService>();
         
 
-        protected IUnitOfWork CreateUnitOfWork()
-        {
-            return new UnitOfWork(Resolver);
-        }
+        //protected IUnitOfWork CreateUnitOfWork()
+        //{
+        //    return new UnitOfWork(Resolver);
+        //}
 
-        protected IUnitOfWork CreateUnitOfWork(string name)
-        {
-            return new UnitOfWork(Resolver,name);
-        }
+        //protected IUnitOfWork CreateUnitOfWork(string name)
+        //{
+        //    return new UnitOfWork(Resolver,name);
+        //}
 
         //TODO UnitOfWork  Repository
     }

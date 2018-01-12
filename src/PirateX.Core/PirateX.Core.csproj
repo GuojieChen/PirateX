@@ -129,8 +129,6 @@
     <Compile Include="Push\LogToFilePushService.cs" />
     <Compile Include="Container\DistrictContainer.cs" />
     <Compile Include="Domain\Entity\IEntity.cs" />
-    <Compile Include="Domain\Uow\IUnitOfWork.cs" />
-    <Compile Include="Domain\Uow\UnitOfWork.cs" />
     <Compile Include="Container\IDistrictConfig.cs" />
     <Compile Include="Container\IDistrictContainer.cs" />
     <Compile Include="Container\IServerSetting.cs" />

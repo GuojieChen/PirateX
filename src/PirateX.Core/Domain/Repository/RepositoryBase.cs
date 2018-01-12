@@ -16,11 +16,7 @@ namespace PirateX.Core.Domain.Repository
     public class RepositoryBase : IRepository,IDisposable
     {
         public ILifetimeScope Resolver { get; set; }
-        public IDbTransaction DbTransaction { get; set; }
-
-        public IDbConnection DbConnection { get; set; }
-        public IDatabase Redis { get; set; }
-
+        
         public IRedisSerializer RedisSerializer => Resolver.Resolve<IRedisSerializer>();
 
         protected IGameCache GameCache => Resolver.Resolve<IGameCache>();
@@ -28,14 +24,6 @@ namespace PirateX.Core.Domain.Repository
         public void Dispose()
         {
             Resolver?.Dispose();
-            DbTransaction?.Dispose();
-            DbConnection?.Dispose();
         }
-    }
-
-    public class RepositoryBase<T>: RepositoryBase
-        where T : class, IEntity
-    {
-        
     }
 }

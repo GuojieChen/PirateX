@@ -44,26 +44,7 @@ namespace PirateX.GameServerTest
             MessageBroadcast.Send(new {Name="abc",Content="Content"},1,2);
 
             MessageBroadcast.SendToDistrict(new { Name = "abc", Content = "Content" }, 1,2);
-
-            using (var uow = CreateUnitOfWork())
-            {
-                //uow.Repository<>()
-
-                //uow.Repository<RoleRepository>().Insert(new Role() {Id = 1,Name = "Test", });
-
-                //uow.Repository<RoleRepository>().GetById(1);
-
-
-                using (var now2 = CreateUnitOfWork("role"))
-                {
-
-
-
-                    now2.Commit();
-                }
-
-                uow.Commit();
-            }
+            
         }
     }
 }

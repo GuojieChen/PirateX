@@ -1,6 +1,5 @@
 ﻿using System;
 using Autofac;
-using PirateX.Core.Domain.Uow;
 using StackExchange.Redis;
 
 namespace PirateX.Core.Actor
@@ -46,17 +45,6 @@ namespace PirateX.Core.Actor
             }
 
             AfterPlay();
-        }
-
-        protected UnitOfWork NewUnitOfWork()
-        {
-            return new UnitOfWork(this.Reslover);
-        }
-
-
-        protected UnitOfWork NewServerUnitOfWork(string key = "")
-        {
-            return new UnitOfWork(this.ServerReslover,key);
         }
 
         //TODO 抽象到  IReqCache 中

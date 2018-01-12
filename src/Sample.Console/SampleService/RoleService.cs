@@ -11,7 +11,6 @@ using GameServer.Console.SampleDomain;
 using PirateX.Core;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Config;
-using PirateX.Core.Domain.Uow;
 using PirateX.Core.Push;
 using StackExchange.Redis;
 
@@ -56,22 +55,6 @@ namespace GameServer.Console.SampleService
             MessageBroadcast.Send(new {Name="abc",Content="Content"},1,2);
 
             MessageBroadcast.SendToDistrict(new { Name = "abc", Content = "Content" }, 1,2);
-
-            using (var uow = CreateUnitOfWork())
-            {
-                //uow.Repository<>()
-
-                //uow.Repository<RoleRepository>().Insert(new Role() {Id = 1,Name = "Test", });
-
-                //uow.Repository<RoleRepository>().GetById(1);
-
-
-                using (var now2 = CreateUnitOfWork(""))
-                {
-                }
-
-                uow.Commit();
-            }
         }
     }
 }

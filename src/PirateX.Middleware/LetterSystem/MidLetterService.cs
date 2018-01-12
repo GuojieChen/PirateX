@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Autofac;
 using PirateX.Core;
 
 namespace PirateX.Middleware.LetterSystem
@@ -14,20 +15,12 @@ namespace PirateX.Middleware.LetterSystem
         /// <param name="letter"></param>
         public int Send(ILetter letter)
         {
-            using (var uow = base.CreateUnitOfWork())
-            {
-                var repo = uow.Repository<LetterRepository>();
-                return repo.Insert(letter);   
-            }
+            return base.Resolver.Resolve<LetterRepository>().Insert(letter);
         }
 
         public void Send(IEnumerable<ILetter> letters)
         {
-            using (var uow = base.CreateUnitOfWork())
-            {
-                var repo = uow.Repository<LetterRepository>();
-                repo.Insert(letters);
-            }
+            base.Resolver.Resolve<LetterRepository>().Insert(letters);
         }
 
         /// <summary>
@@ -49,11 +42,7 @@ namespace PirateX.Middleware.LetterSystem
                     toLetter.Builder(rid);
             }
 
-            using (var uow = base.CreateUnitOfWork())
-            {
-                var repo = uow.Repository<LetterRepository>();
-                return repo.GetList<TLetter>(rid, page, size);
-            }
+            return base.Resolver.Resolve<LetterRepository>().GetList<TLetter>(rid, page, size);
         }
 
         /// <summary>
@@ -64,11 +53,7 @@ namespace PirateX.Middleware.LetterSystem
         /// <returns></returns>
         public int Delete(long rid, int id)
         {
-            using (var uow = base.CreateUnitOfWork())
-            {
-                var repo = uow.Repository<LetterRepository>();
-                return repo.Delete(rid, id);
-            }
+            return base.Resolver.Resolve<LetterRepository>().Delete(rid, id);
         }
     }
 }

@@ -11,7 +11,7 @@ using StackExchange.Redis;
 
 namespace PirateX.Middleware.RankingSystem
 {
-    public class MidRankingRepository: RepositoryBase
+    public class MidRankingRepository: PublicRepository
     {
         private string GetKey<TRanking>() where TRanking : IRanking
         {
@@ -76,6 +76,5 @@ namespace PirateX.Middleware.RankingSystem
         {
             return base.Redis.SortedSetRank(GetKey<TRanking>(), GetPrivateKey<TRanking>(rid), order);
         }
-
     }
 }
