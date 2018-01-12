@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Autofac;
+using PirateX.Core.Session;
 
 namespace PirateX.Core.Container
 {
@@ -20,7 +21,10 @@ namespace PirateX.Core.Container
         /// </summary>
         /// <returns></returns>
         IEnumerable<IDistrictConfig> GetDistrictConfigs();
-        
+
+
+        ISessionManager OnlineManager { get; }
+
         /// <summary>
         /// 初始化容器信息
         /// </summary>

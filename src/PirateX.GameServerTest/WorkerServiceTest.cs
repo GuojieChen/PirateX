@@ -31,7 +31,7 @@ namespace PirateX.GameServerTest
 
     public class TestActorService : ActorService<TestActorService>
     {
-        public TestActorService(ActorConfig config, IServerContainer serverContainer) : base(serverContainer)
+        public TestActorService(ActorConfig config, IDistrictContainer serverContainer) : base(serverContainer)
         {
         }
     }
@@ -59,7 +59,7 @@ namespace PirateX.GameServerTest
 
         private static int O = 0; 
 
-        private IServerContainer ServerContainer = new TestContainer();
+        private IDistrictContainer ServerContainer = new TestContainer();
 
         [SetUp]
         public void SetUp()

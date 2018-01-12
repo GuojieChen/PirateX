@@ -9,6 +9,21 @@
 
 
 ## 信件系统   
+```csharp
+    /// <summary>
+    /// 活动归档生成信件
+    /// </summary>
+    public interface IArchiveToLetter
+    {
+        /// <summary>
+        /// 生成信件
+        /// </summary>
+        /// <param name="rid"></param>
+        void Builder(int rid);
+    }
+```
+>该接口定义了生成信件的功能，在玩家获取信件列表的时候会执行所有注册的实现。
+
 
 
 ## 聊天系统

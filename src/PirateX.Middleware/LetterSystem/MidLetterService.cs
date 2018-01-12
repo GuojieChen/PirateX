@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using PirateX.Core;
+using PirateX.Middleware.LetterSystem;
 
 namespace PirateX.Middleware
 {
     public class MidLetterService:ServiceBase
-
     {
+        public IEnumerable<IArchiveToLetter> ArchiveToLetters { get; set; }
+
         /// <summary>
         /// 发送信件
         /// </summary>
@@ -35,8 +38,18 @@ namespace PirateX.Middleware
         /// <param name="page"></param>
         /// <param name="size"></param>
         /// <returns></returns>
-        public List<TLetter> GetLetters<TLetter>(long rid,int page, int size = 50) where TLetter : ILetter
+        public List<TLetter> GetLetters<TLetter>(int rid,int page, int size = 50) where TLetter : ILetter
         {
+            //这里查看其他系统是否需要生成信件
+            if (ArchiveToLetters.Any())
+            {
+                if(Logger.IsDebugEnabled)
+                    Logger.Debug($"ArchiveToLetter ->{rid}");
+
+                foreach (var toLetter in ArchiveToLetters)
+                    toLetter.Builder(rid);
+            }
+
             using (var uow = base.CreateUnitOfWork())
             {
                 var repo = uow.Repository<LetterRepository>();

@@ -17,7 +17,7 @@ namespace PirateX.UnitTest
 {
     public class TestServer: ActorService<TestServer>
     {
-        public TestServer(ActorConfig config, IServerContainer serverContainer) : base( serverContainer)
+        public TestServer(ActorConfig config, IDistrictContainer serverContainer) : base( serverContainer)
         {
         }
         

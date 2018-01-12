@@ -7,6 +7,7 @@ using Autofac;
 using NLog;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Config;
+using PirateX.Core.Container;
 using PirateX.Core.Domain.Uow;
 using PirateX.Core.Push;
 using StackExchange.Redis;
@@ -17,6 +18,8 @@ namespace PirateX.Core
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public ILifetimeScope Resolver { get; set; }
+
+        public IDistrictContainer Container { get; set; }
 
         /// <summary> Redis库操作对象
         /// </summary>

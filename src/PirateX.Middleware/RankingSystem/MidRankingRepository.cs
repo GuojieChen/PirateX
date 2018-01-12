@@ -17,11 +17,11 @@ namespace PirateX.Middleware.RankingSystem
         {
             return typeof(TRanking).Name.ToLower();
         }
-
         private string GetPrivateKey<TRanking>(long rid) where TRanking : IRanking
         {
             return $"{typeof(TRanking).Name.ToLower()}:{rid}";
         }
+
         /// <summary>
         /// 添加元素到排行中
         /// </summary>
@@ -43,7 +43,6 @@ namespace PirateX.Middleware.RankingSystem
             var itemkey = GetPrivateKey<IRanking>(ranking.Rid);
             base.Redis.SortedSetRemove(GetKey<IRanking>(), itemkey);
         }
-
         /// <summary>
         /// 获取排行列表
         /// </summary>
@@ -51,20 +50,19 @@ namespace PirateX.Middleware.RankingSystem
         /// <param name="page"></param>
         /// <param name="size"></param>
         /// <param name="order"></param>
-        public List<IRanking> GetRankings(int page=1,int size = 20,Order order=Order.Descending) 
+        public List<TRanking> GetRankings<TRanking>(int page=1,int size = 20,Order order=Order.Descending) where TRanking:IRanking
         {
-            var list = base.Redis.SortedSetRangeByRank(GetKey<IRanking>(), page * size, (page + 1) * size , order);
+            var list = base.Redis.SortedSetRangeByRank(GetKey<TRanking>(), page * size, (page + 1) * size , order);
 
-            var results = new List<IRanking>();
+            var results = new List<TRanking>();
 
             var items = base.Redis.StringGet(list.Select(item => (RedisKey)Convert.ToString(item)).ToArray());
 
             foreach (var item in items)
-                results.Add(base.RedisSerializer.Deserialize<IRanking>(item));
+                results.Add(base.RedisSerializer.Deserialize<TRanking>(item));
 
             return results;
         }
-
         /// <summary>
         /// 获取自己的排名
         /// </summary>

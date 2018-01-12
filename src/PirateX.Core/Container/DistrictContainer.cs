@@ -11,6 +11,7 @@ using Autofac.Builder;
 using Dapper;
 using Newtonsoft.Json;
 using NLog;
+using PirateX.Core.Actor.ProtoSync;
 using PirateX.Core.Actor.System;
 using PirateX.Core.Broadcas;
 using PirateX.Core.Cache;
@@ -20,7 +21,9 @@ using PirateX.Core.Domain.Entity;
 using PirateX.Core.Domain.Repository;
 using PirateX.Core.Push;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
+using PirateX.Core.Session;
 using PirateX.Core.Utils;
+using PirateX.Protocol.Package;
 using StackExchange.Redis;
 
 namespace PirateX.Core.Container
@@ -53,6 +56,7 @@ namespace PirateX.Core.Container
             return JsonConvert.DeserializeObject<T>(json);
         }
 
+        public ISessionManager OnlineManager { get; private set; }
         public void InitContainers(ContainerBuilder builder)
         {
             SqlMapper.AddTypeHandler(typeof(long[]), new ArrayJsonMapper<long>());
@@ -73,8 +77,34 @@ namespace PirateX.Core.Container
                 Log.Trace("~~~~~~~~~~ Init server containers ~~~~~~~~~~");
 
             var districtConfigs = GetDistrictConfigs();
-
             var serverSetting = GetServerSetting();
+
+            var configtypes = serverSetting.GetType().GetInterfaces();
+
+            //默认在线管理  
+            builder.Register(c => new MemorySessionManager())
+                .As<ISessionManager>()
+                .SingleInstance();
+
+            foreach (var type in configtypes)
+            {
+                var attrs = type.GetCustomAttributes(typeof(ServerSettingRegisterAttribute), false);
+                if (!attrs.Any())
+                    continue;
+                if (attrs[0] is ServerSettingRegisterAttribute attr)
+                    ((IServerSettingRegister)Activator.CreateInstance(attr.RegisterType))
+                        .Register(builder, serverSetting);
+            }
+
+            ////默认的包解析器
+            builder.Register(c => new ProtocolPackage())
+                .InstancePerDependency()
+                .As<IProtocolPackage>();
+
+            //默认消息广播
+            builder.Register(c => new DefaultMessageBroadcast()).SingleInstance();
+
+            builder.Register(c => new ProtobufService()).As<IProtoService>().SingleInstance();
 
             builder.Register(c => serverSetting)
                 .AsSelf()
@@ -90,7 +120,6 @@ namespace PirateX.Core.Container
                     ((IServerSettingRegister)Activator.CreateInstance(attr.RegisterType))
                         .Register(builder, serverSetting);
             }
-
             builder.Register(c => GetConfigAssemblyList())
                 .Keyed<List<Assembly>>("ConfigAssemblyList")
                 .SingleInstance();
@@ -107,6 +136,9 @@ namespace PirateX.Core.Container
             _serverContainer = builder.Build();
             ServerIoc = _serverContainer.BeginLifetimeScope();
 
+            OnlineManager = ServerIoc.Resolve<ISessionManager>();
+            if (Log.IsTraceEnabled)
+                Log.Trace($"Set OnlineManager = {OnlineManager.GetType().FullName}");
 
             if (Log.IsTraceEnabled)
                 Log.Trace("Setup ServerSetting.");
@@ -271,6 +303,9 @@ namespace PirateX.Core.Container
                 .AsImplementedInterfaces()
                 .SingleInstance();
 
+            builder.Register(c => this)
+                .As<IDistrictContainer>()
+                .SingleInstance();
 
             builder.Register(c => GetConfigAssemblyList())
                 .Keyed<List<Assembly>>("ConfigAssemblyList")

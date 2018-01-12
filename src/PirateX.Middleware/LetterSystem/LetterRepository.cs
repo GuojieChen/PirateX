@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using Autofac;
 using Dapper;
 using Dapper.Contrib.Extensions;
 using PirateX.Core.Domain.Repository;
@@ -10,18 +12,28 @@ namespace PirateX.Middleware
     {
         public int Insert(ILetter letter)
         {
-            return (int)base.DbConnection.Insert(letter);
+            using (var db = Resolver.Resolve<IDbConnection>())
+            {
+                return (int)db.Insert(letter);
+            }
         }
 
         public void Insert(IEnumerable<ILetter> letters)
         {
-            base.DbConnection.Insert(letters);
+            using (var db = Resolver.Resolve<IDbConnection>())
+            {
+                db.Insert(letters);
+            }
         }
 
         public int Delete(long rid,int id)
         {
+            using (var db = Resolver.Resolve<IDbConnection>())
+            {
+                return db.Execute($"delete from letter where rid = {rid} and Id = {id}");
+            }
+
             //TODO 这里可以根据情况做下归档
-            return base.DbConnection.Execute($"delete from letter where rid = {rid} and Id = {id}");
         }
 
         public List<TLetter> GetList<TLetter>(long rid, int page, int size = 50) where TLetter : ILetter

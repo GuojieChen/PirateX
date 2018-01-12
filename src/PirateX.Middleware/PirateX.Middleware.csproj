@@ -70,8 +70,8 @@
     <Compile Include="ChatSystem\ChatRepository.cs" />
     <Compile Include="ChatSystem\MidChatService.cs" />
     <Compile Include="ChatSystem\IChat.cs" />
-    <Compile Include="DataSync\DataSync.cs" />
-    <Compile Include="DataSync\RoleDatasVersion.cs" />
+    <Compile Include="LetterSystem\IArchive.cs" />
+    <Compile Include="LetterSystem\IArchiveToLetter.cs" />
     <Compile Include="LetterSystem\ILetter.cs" />
     <Compile Include="LetterSystem\LetterRepository.cs" />
     <Compile Include="LetterSystem\MidLetterService.cs" />

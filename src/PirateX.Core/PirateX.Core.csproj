@@ -124,7 +124,6 @@
     <Compile Include="Net\INetService.cs" />
     <Compile Include="ProfilerLog.cs" />
     <Compile Include="Profiler\PirateXProfiler.cs" />
-    <Compile Include="ServerService.cs" />
     <Compile Include="Session\MemorySessionManager.cs" />
     <Compile Include="Push\IPushService.cs" />
     <Compile Include="Push\LogToFilePushService.cs" />

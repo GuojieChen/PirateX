@@ -34,6 +34,7 @@ namespace PirateX.Core.Actor
     public interface IActorService
     {
         IActorNetService NetService { get; set; }
+        void Setup();
 
         void Start();
 
@@ -41,8 +42,11 @@ namespace PirateX.Core.Actor
 
         void OnReceive(ActorContext context);
     }
-
-    public class ActorService<TActorService> : ServerService,IActorService,IMessageSender
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TActorService"></typeparam>
+    public class ActorService<TActorService> : IActorService,IMessageSender
     {
         public static Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -58,17 +62,21 @@ namespace PirateX.Core.Actor
 
         protected int OnlineCount { get; set; }
 
-        public ActorService(IDistrictContainer districtContainer):base(districtContainer)
+        public ActorService(IDistrictContainer districtContainer)
         {
             DistrictContainer = districtContainer;
 
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="builder"></param>
-        protected override void Setup(ContainerBuilder builder)
+        public void Setup()
         {
+            var builder = new ContainerBuilder();
+            #region 通信相关组件
+
             builder.Register(c => this).As<IMessageSender>().SingleInstance();
             //注册内置命令
             RegisterActions(typeof(ActorService<TActorService>).Assembly.GetTypes());
@@ -96,12 +104,10 @@ namespace PirateX.Core.Actor
                 }
             }
 
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        protected override void Setuped()
-        {
+            #endregion
+            // 游戏容器
+            DistrictContainer.InitContainers(builder);
+            #region 通信框架初始化
             var list = new List<Assembly>();
             list.AddRange(DistrictContainer.GetServiceAssemblyList());
             list.AddRange(DistrictContainer.GetEntityAssemblyList());
@@ -116,6 +122,7 @@ namespace PirateX.Core.Actor
             ProtocolPackage = DistrictContainer.ServerIoc.Resolve<IProtocolPackage>();
             if (Logger.IsTraceEnabled)
                 Logger.Trace($"Set ProtocolPackage = {ProtocolPackage.GetType().FullName}");
+            #endregion
         }
 
         public virtual void Start()
@@ -201,10 +208,10 @@ namespace PirateX.Core.Actor
                 if(Logger.IsDebugEnabled)
                     Logger.Debug("Session Logout ~");
 
-                var session = OnlineManager.GetOnlineRole(context.SessionId);
+                var session = DistrictContainer.OnlineManager.GetOnlineRole(context.SessionId);
                 if (session != null)
                 {
-                    OnlineManager.Logout(session.Id);
+                    DistrictContainer.OnlineManager.Logout(session.Id);
                     OnSessionClosed(session);
                 }
 
@@ -278,7 +285,7 @@ namespace PirateX.Core.Actor
                         if (Equals(actionname, "NewSeed"))
                         {
                             //session 保存
-                            OnlineManager.Login(ToSession(context,context.Token));
+                            DistrictContainer.OnlineManager.Login(ToSession(context,context.Token));
                         }
                     }
                     catch (Exception exception)
@@ -425,7 +432,9 @@ namespace PirateX.Core.Actor
             }
             return null;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public virtual void Stop()
         {
 

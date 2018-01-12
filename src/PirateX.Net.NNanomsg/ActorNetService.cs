@@ -16,11 +16,8 @@ namespace PirateX.Net.NNanomsg
         private ActorConfig config;
         private IActorService _actorService;
 
-
         private PullSocket PullSocket { get; set; }
         private PushSocket PushSocket { get; set; }
-
-
 
         public ActorNetService(IActorService actorService, ActorConfig config)
         {
