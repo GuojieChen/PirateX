@@ -17,6 +17,7 @@ using PirateX.Core.Cache;
 using PirateX.Core.Config;
 using PirateX.Core.DapperMapper;
 using PirateX.Core.Domain.Entity;
+using PirateX.Core.Domain.Repository;
 using PirateX.Core.Push;
 using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using PirateX.Core.Utils;
@@ -67,7 +68,7 @@ namespace PirateX.Core.Container
             SqlMapper.AddTypeHandler(typeof(List<double>), new ListJsonMapper<double>());
             SqlMapper.AddTypeHandler(typeof(List<short>), new ListJsonMapper<short>());
             SqlMapper.AddTypeHandler(typeof(List<byte>), new ListJsonMapper<byte>());
-            
+
             if (Log.IsTraceEnabled)
                 Log.Trace("~~~~~~~~~~ Init server containers ~~~~~~~~~~");
 
@@ -100,6 +101,8 @@ namespace PirateX.Core.Container
 
             ServerConfig(builder, districtConfigs);
 
+            InitServerRepository(builder);
+
             BuildServerContainer(builder);
             _serverContainer = builder.Build();
             ServerIoc = _serverContainer.BeginLifetimeScope();
@@ -119,10 +122,10 @@ namespace PirateX.Core.Container
 
             foreach (var kv in GetNamedConnectionStrings())
             {
-                if(Log.IsTraceEnabled)
+                if (Log.IsTraceEnabled)
                     Log.Trace($"Initialize Db[{kv.Key}] = {kv.Value}");
 
-                if(ServerIoc.IsRegistered<IDatabaseInitializer>())
+                if (ServerIoc.IsRegisteredWithKey<IDatabaseInitializer>(kv.Key))
                     ServerIoc.ResolveKeyed<IDatabaseInitializer>(kv.Key).Initialize(kv.Value);
             }
 
@@ -147,16 +150,12 @@ namespace PirateX.Core.Container
 
         private void ServerConfig(ContainerBuilder builder, IEnumerable<IDistrictConfig> configs)
         {
-            builder.Register((c, p) => new SqlConnection(p.Named<string>(ConnectionStringName)))
-                .As<IDbConnection>()
-                .InstancePerDependency();
-
             //全局Redis序列化/反序列化方式
             builder.Register(c => new ProtobufRedisSerializer())
                 .As<IRedisSerializer>()
                 .SingleInstance();
 
-            if(Log.IsTraceEnabled)
+            if (Log.IsTraceEnabled)
                 Log.Trace("SetUp ConnectionStrings...");
 
             SetUpConnectionStrings(builder);
@@ -179,15 +178,14 @@ namespace PirateX.Core.Container
             foreach (var kp in GetNamedConnectionStrings())
             {
                 builder.Register(c => kp.Value)
-                    .Keyed<string>(kp.Key)
+                    .Keyed<string>($"{ConnectionStringName}:{kp.Key}")
                     .SingleInstance();
 
-                builder.Register(c => c.Resolve<IDbConnection>(new NamedParameter(ConnectionStringName, kp.Value)))
-                    .Keyed<IDbConnection>(kp.Key)
+                builder.Register((c, p) => new SqlConnection(p.Named<string>(ConnectionStringName)))
+                    .As<IDbConnection>()
                     .InstancePerDependency();
             }
 
-            //注册对应的 IDatabaseInitializer
             foreach (var kv in GetNamedDatabaseInitializers())
             {
                 builder.Register(c => kv.Value)
@@ -258,7 +256,7 @@ namespace PirateX.Core.Container
                 .As<IRedisSerializer>()
                 .SingleInstance();
 
-            builder.Register((c, p) => new SqlConnection(p.Named<string>(ConnectionStringName)))
+            builder.Register(c => new SqlConnection(c.ResolveKeyed<string>(ConnectionStringName)))
                 .As<IDbConnection>()
                 .InstancePerDependency();
 
@@ -295,6 +293,8 @@ namespace PirateX.Core.Container
                 builder.Register(c => ServerIoc.Resolve<IPushService>())
                     .As<IPushService>()
                     .SingleInstance();
+
+            InitDistrictRepository(builder);
 
             BuildDistrictContainer(builder);
 
@@ -341,6 +341,56 @@ namespace PirateX.Core.Container
             return container;
         }
 
+        private void InitDistrictRepository(ContainerBuilder builder)
+        {
+            var services = GetRepositoryAssemblyList();
+
+            if (services.Any())
+            {
+                services.ForEach(x =>
+                {
+                    foreach (var type in x.GetTypes())
+                    {
+                        if (type.IsInterface || type.IsAbstract || !typeof(IRepository).IsAssignableFrom(type) || type.GetCustomAttribute<PublicDbAttribute>() != null)
+                            continue;
+                        builder.RegisterType(type)
+                            .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
+                            .SingleInstance();
+                    }
+                });
+            }
+        }
+
+        private void InitServerRepository(ContainerBuilder builder)
+        {
+            var services = GetRepositoryAssemblyList();
+
+            if (services.Any())
+            {
+                services.ForEach(x =>
+                {
+                    foreach (var type in x.GetTypes())
+                    {
+                        if (type.IsInterface || type.IsAbstract || !typeof(IPublicRepository).IsAssignableFrom(type) || type.GetCustomAttribute<PublicDbAttribute>() == null)
+                            continue;
+
+                        var key = type.GetCustomAttribute<PublicDbAttribute>().Key;
+
+                        builder.Register(c =>
+                        {
+                            var instance =Activator.CreateInstance(type);
+                            var obj = (IPublicRepository) instance;
+                            obj.Resolver = ServerIoc;
+                            obj.ConnectionStringName = new NamedParameter(ConnectionStringName, c.ResolveKeyed<string>($"{ConnectionStringName}:{key}"));
+                            return instance;
+                        })
+                            .As(type)
+                         .SingleInstance();
+                    }
+                });
+            }
+        }
+
         public virtual List<Assembly> GetConfigAssemblyList()
         {
             return new List<Assembly>() { typeof(TDistrictContainer).Assembly, typeof(TDistrictContainer).Assembly };
@@ -352,6 +402,11 @@ namespace PirateX.Core.Container
         }
 
         public virtual List<Assembly> GetApiAssemblyList()
+        {
+            return new List<Assembly>() { typeof(TDistrictContainer).Assembly };
+        }
+
+        public virtual List<Assembly> GetRepositoryAssemblyList()
         {
             return new List<Assembly>() { typeof(TDistrictContainer).Assembly };
         }
@@ -396,7 +451,6 @@ namespace PirateX.Core.Container
             return new Dictionary<string, IDatabaseInitializer>();
         }
         #endregion
-
 
         public void Dispose()
         {

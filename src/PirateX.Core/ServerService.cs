@@ -21,7 +21,7 @@ namespace PirateX.Core
     /// <summary>
     /// 
     /// </summary>
-    public class ServerService //: IMessageSender
+    public class ServerService
     {
         /// <summary>
         /// 
@@ -42,6 +42,7 @@ namespace PirateX.Core
         /// 
         /// </summary>
         public static Logger Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// 加载各种配置
         /// </summary>

@@ -33,7 +33,12 @@ namespace PirateX.Core.Domain.Uow
             if (_resolver.IsRegistered<IDatabase>())
                 this._redisDatabase = _resolver.Resolve<IDatabase>();
 
-            _dbConnection?.Open();
+            if (_dbConnection != null)
+            {
+                if (_dbConnection.State != ConnectionState.Open)
+                    _dbConnection.Open();
+            }
+
         }
 
         public void BeginTrasaction()

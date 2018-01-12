@@ -13,7 +13,7 @@ using StackExchange.Redis;
 
 namespace PirateX.Core.Domain.Repository
 {
-    public class RepositoryBase : IRepository
+    public class RepositoryBase : IRepository,IDisposable
     {
         public ILifetimeScope Resolver { get; set; }
         public IDbTransaction DbTransaction { get; set; }
@@ -25,11 +25,11 @@ namespace PirateX.Core.Domain.Repository
 
         protected IGameCache GameCache => Resolver.Resolve<IGameCache>();
 
-        protected void Exe(Action action)
+        public void Dispose()
         {
-            DbConnection.Open();
-
-            DbConnection.Close();
+            Resolver?.Dispose();
+            DbTransaction?.Dispose();
+            DbConnection?.Dispose();
         }
     }
 

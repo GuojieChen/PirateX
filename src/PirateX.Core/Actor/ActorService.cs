@@ -431,7 +431,6 @@ namespace PirateX.Core.Actor
 
         }
 
-
         #region send message
         public void SendMessage<T>(ActorContext context, T t)
         {
@@ -454,7 +453,6 @@ namespace PirateX.Core.Actor
 
             SendMessage(context, headers, t);
         }
-
 
         /// <summary>
         /// 种子交换
@@ -501,7 +499,6 @@ namespace PirateX.Core.Actor
 
         //    NetService.PushMessage(sessionid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>("json").SerializeObject(t));
         //}
-
 
         public void PushMessage<T>(int rid, T t)
         {
@@ -601,10 +598,18 @@ namespace PirateX.Core.Actor
         #endregion
     }
 
+    /// <summary>
+    /// 消息类型
+    /// </summary>
     static class MessageType
     {
+        /// <summary>
+        /// 请求返回 消息
+        /// </summary>
         public const string Rep = "1";
-
+        /// <summary>
+        /// 推送 消息
+        /// </summary>
         public const string Boradcast = "2";
     }
 }

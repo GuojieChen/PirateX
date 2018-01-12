@@ -47,6 +47,8 @@ namespace PirateX.Core.Container
         List<Assembly> GetServiceAssemblyList();
         List<Assembly> GetApiAssemblyList();
 
+        List<Assembly> GetRepositoryAssemblyList();
+
         IServerSetting GetServerSetting();
     }
 
