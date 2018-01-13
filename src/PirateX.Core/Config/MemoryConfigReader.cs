@@ -235,7 +235,7 @@ namespace PirateX.Core.Config
 
         public IEnumerable<T> Select<T>() where T : IConfigEntity
         {
-            var listkeys = _cacheClient.Get<IList<string>>(GetCacheKeyListKey<T>());
+            var listkeys = _cacheClient.GetKeys(GetCacheKeyListKey<T>());
             if (listkeys != null)
                 return _cacheClient.GetAll<T>(listkeys).Values;
 

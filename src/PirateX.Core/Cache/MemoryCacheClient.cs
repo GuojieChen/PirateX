@@ -171,6 +171,12 @@ namespace PirateX.Core.Cache
             return null;
         }
 
+        public IEnumerable<string> GetKeys(string key)
+        {
+            var value = Get(key);
+            return (IEnumerable<string>) value;
+        }
+
         public T Get<T>(string key)
         {
             var value = Get(key);
