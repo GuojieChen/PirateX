@@ -73,6 +73,7 @@ namespace PirateX.Core.Container
             SqlMapper.AddTypeHandler(typeof(long[]), new ArrayJsonMapper<long>());
             SqlMapper.AddTypeHandler(typeof(int[]), new ArrayJsonMapper<int>());
             SqlMapper.AddTypeHandler(typeof(string[]), new ArrayJsonMapper<string>());
+            SqlMapper.AddTypeHandler(typeof(float[]), new ArrayJsonMapper<float>());
             SqlMapper.AddTypeHandler(typeof(double[]), new ArrayJsonMapper<double>());
             SqlMapper.AddTypeHandler(typeof(short[]), new ArrayJsonMapper<short>());
             SqlMapper.AddTypeHandler(typeof(byte[]), new ArrayJsonMapper<byte>());
@@ -80,6 +81,7 @@ namespace PirateX.Core.Container
             SqlMapper.AddTypeHandler(typeof(List<long>), new ListJsonMapper<long>());
             SqlMapper.AddTypeHandler(typeof(List<int>), new ListJsonMapper<int>());
             SqlMapper.AddTypeHandler(typeof(List<string>), new ListJsonMapper<string>());
+            SqlMapper.AddTypeHandler(typeof(List<float>), new ListJsonMapper<float>());
             SqlMapper.AddTypeHandler(typeof(List<double>), new ListJsonMapper<double>());
             SqlMapper.AddTypeHandler(typeof(List<short>), new ListJsonMapper<short>());
             SqlMapper.AddTypeHandler(typeof(List<byte>), new ListJsonMapper<byte>());
