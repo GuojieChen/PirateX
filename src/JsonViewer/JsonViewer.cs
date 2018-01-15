@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
+using System.Diagnostics.Eventing;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Design;
@@ -74,11 +75,22 @@ namespace EPocalipse.Json.Viewer
             var response = _pirateXPackage;
             var text = _pirateXPackage.ContentBytes== null?string.Empty: Encoding.UTF8.GetString(_pirateXPackage.ContentBytes);
 
-            _json = text;
-            txtJson.Text = text;
+            
             var viewitem = listViewIn.Items.Add(DateTime.Now.ToString());
             viewitem.SubItems.Add($"{string.Join("&", response.Headers.AllKeys.Select(a=>a+"="+ response.Headers[a]))}");
+
+            if (string.IsNullOrEmpty(text))
+            {
+                if (response.Headers.AllKeys.Contains("errorCode") && response.Headers.AllKeys.Contains("errorMsg"))
+                {
+                    text = $@"
+                        {"{"}""errorCode"":""{response.Headers["errorCode"]}"",
+                             ""errorMsg"":""{response.Headers["errorMsg"]}""{"}"}";
+                }
+            }
             viewitem.SubItems.Add(text);
+            _json = text;
+            txtJson.Text = text;
 
             try
             {
