@@ -55,8 +55,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.ConfigImport", "Pir
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{9A6D3F6F-C8C2-4A72-AEF3-504664703557}"
 	ProjectSection(SolutionItems) = preProject
-		..\docs\MiddleWare.md = ..\docs\MiddleWare.md
 		..\readme.md = ..\readme.md
+		..\docs\中间件说明.md = ..\docs\中间件说明.md
+		..\docs\可伸缩架构说明.md = ..\docs\可伸缩架构说明.md
+		..\docs\系统接口.md = ..\docs\系统接口.md
+		..\docs\通信协议说明.md = ..\docs\通信协议说明.md
+		..\docs\配置数据系统说明.md = ..\docs\配置数据系统说明.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.ApiHelper", "PirateX.ApiHelper\PirateX.ApiHelper.csproj", "{04CD4693-4D2E-47ED-A3A8-B1EA866E6AF0}"
