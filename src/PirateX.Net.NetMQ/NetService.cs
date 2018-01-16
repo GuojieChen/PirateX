@@ -91,12 +91,13 @@ namespace PirateX.Net.NetMQ
             IsSetuped = true;
         }
 
-
-
         //服务器向客户端下发数据
         protected virtual void ProcessResponse(object o, NetMQSocketEventArgs e)
         {
             //TODO https://netmq.readthedocs.io/en/latest/poller/   #Performance
+
+            if(Logger.IsTraceEnabled)
+                Logger.Trace($"ProcessResponse->ThreadID = {Thread.CurrentThread.ManagedThreadId}");
 
             var msg = e.Socket.ReceiveFrameBytes();//TryReceiveMultipartMessage();
 
@@ -197,7 +198,6 @@ namespace PirateX.Net.NetMQ
 
             Logger.Debug(sw.ElapsedMilliseconds);
         }
-
 
         /// <summary>
         /// 解析token信息

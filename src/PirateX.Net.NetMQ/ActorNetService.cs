@@ -46,9 +46,11 @@ namespace PirateX.Net.NetMQ
         {
             var bytes = e.Socket.ReceiveFrameBytes();
 
+            Logger.Debug($"ProcessTaskPullSocket1 {Thread.CurrentThread.ManagedThreadId} - {Thread.CurrentThread.IsThreadPoolThread}");
+
             ThreadPool.QueueUserWorkItem((obj) =>
             {
-                Logger.Debug($"ProcessTaskPullSocket {Thread.CurrentThread.ManagedThreadId} - {Thread.CurrentThread.IsThreadPoolThread}");
+                Logger.Debug($"ProcessTaskPullSocket2 {Thread.CurrentThread.ManagedThreadId} - {Thread.CurrentThread.IsThreadPoolThread}");
 
                 try
                 {
@@ -83,8 +85,6 @@ namespace PirateX.Net.NetMQ
                 }
 
             }, bytes);
-
-            
         }
 
         protected void EnqueueMessage(byte[] message)
@@ -133,7 +133,6 @@ namespace PirateX.Net.NetMQ
             }.ToProtobuf());
         }
 
-
         private byte[] GetHeaderBytes(NameValueCollection headers)
         {
             return Encoding.UTF8.GetBytes(string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a])));
@@ -161,7 +160,6 @@ namespace PirateX.Net.NetMQ
                 Profile = context.Profile
             }.ToProtobuf());
         }
-
 
         public void SendMessage(ActorContext context, NameValueCollection header, byte[] body)
         {

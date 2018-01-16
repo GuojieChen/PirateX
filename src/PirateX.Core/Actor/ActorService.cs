@@ -34,7 +34,7 @@ namespace PirateX.Core.Actor
     public interface IActorService
     {
         IActorNetService NetService { get; set; }
-        void Setup();
+        //void Setup();
 
         void Start();
 
@@ -72,7 +72,7 @@ namespace PirateX.Core.Actor
         /// 
         /// </summary>
         /// <param name="builder"></param>
-        public void Setup()
+        private void Setup()
         {
             var builder = new ContainerBuilder();
             #region 通信相关组件
@@ -138,7 +138,7 @@ namespace PirateX.Core.Actor
 
         public virtual void Start()
         {
-
+            Setup();
         }
 
         private void RegisterActions(IEnumerable<Type> actions)

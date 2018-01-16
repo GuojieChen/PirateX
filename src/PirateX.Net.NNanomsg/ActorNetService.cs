@@ -28,8 +28,6 @@ namespace PirateX.Net.NNanomsg
 
         private void SetUp()
         {
-            _actorService.Setup();
-
             PullSocket = new PullSocket();
 
             PushSocket = new PushSocket();

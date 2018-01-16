@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX.Core.Domain.Entity;
+using PirateX.Core.Utils;
 using ProtoBuf;
 using ServiceStack.DataAnnotations;
 
@@ -20,11 +21,11 @@ namespace GameServer.Console.SampleDomain
         public string Name { get; set; }
 
         [ProtoMember(2)]
-        public DateTime CreateUtcAt { get; set; }
+        public string CreateUtcAt { get; set; }
 
         public Role()
         {
-            CreateUtcAt = DateTime.UtcNow;
+            CreateUtcAt = DateTime.UtcNow.FromDateTime();
         }
         
         public byte[] Timestamp { get; set; }

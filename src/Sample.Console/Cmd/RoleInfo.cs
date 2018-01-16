@@ -8,6 +8,7 @@ using Autofac;
 using PirateX;
 using PirateX.Core.Actor;
 using PirateX.Core.Actor.System;
+using PirateX.Core.Utils;
 using PirateX.Protocol;
 using ProtoBuf;
 using StackExchange.Redis;
@@ -27,7 +28,7 @@ namespace GameServer.Console.Cmd
             {
                 Name = "mrglee",
                 Lv = 2,
-                CreateAt = DateTime.UtcNow,
+                CreateAt = DateTime.UtcNow.FromDateTime(),
                 A = new DateTime(Convert.ToInt64(ServerReslover.Resolve<IDatabase>().StringGet("a")))
             };
         }
@@ -45,7 +46,7 @@ namespace GameServer.Console.Cmd
         public int Lv { get; set; }
 
         [ProtoMember(3)]
-        public DateTime CreateAt { get; set; }
+        public string CreateAt { get; set; }
 
         [ProtoMember(4)]
         public TestData Data { get; set; }
