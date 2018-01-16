@@ -131,7 +131,7 @@ namespace PirateX.ApiHelper.App_Start
                     if (!type.IsClass)
                         continue;
 
-                    if (typeof(IAction).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
+                    if ((typeof(IAction).IsAssignableFrom(type) || typeof(IEntity).IsAssignableFrom(type)) && !type.IsAbstract && !type.IsInterface)
                         group.Types.Add(type);
                 }
 
