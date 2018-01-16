@@ -22,12 +22,11 @@ namespace PirateX.Net.NetMQ
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private ActorConfig config;
 
-        private PullSocket PullSocket { get; set; }
-        private PushSocket PushSocket { get; set; }
+        private ResponseSocket ResponseSocket { get; set; }
+
+        private PublisherSocket PublisherSocket { get; set; }
 
         private NetMQPoller Poller { get; set; }
-
-        private readonly NetMQQueue<byte[]> MessageQueue = new NetMQQueue<byte[]>();
 
         private IActorService _actorService;
         public ActorNetService(IActorService actorService, ActorConfig config)
@@ -42,68 +41,65 @@ namespace PirateX.Net.NetMQ
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void ProcessTaskPullSocket(object sender, NetMQSocketEventArgs e)
+        protected void ProcessRequest(object sender, NetMQSocketEventArgs e)
         {
             var bytes = e.Socket.ReceiveFrameBytes();
 
             Logger.Debug($"ProcessTaskPullSocket1 {Thread.CurrentThread.ManagedThreadId} - {Thread.CurrentThread.IsThreadPoolThread}");
 
-            ThreadPool.QueueUserWorkItem((obj) =>
-            {
+            //ThreadPool.QueueUserWorkItem((obj) =>
+            //{
                 Logger.Debug($"ProcessTaskPullSocket2 {Thread.CurrentThread.ManagedThreadId} - {Thread.CurrentThread.IsThreadPoolThread}");
 
-                try
+            byte[] response = null; 
+            try
+            {
+                var msg = (byte[]) bytes;
+
+                var din = msg.FromProtobuf<In>();
+
+                if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
+                    din.Profile.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
+
+                var context = new ActorContext()
                 {
-                    var msg = (byte[])obj;
+                    Version = din.Version, //版本号
+                    Action = (byte) din.Action,
+                    Request = new PirateXRequestInfo(
+                        din.HeaderBytes, //信息头
+                        din.QueryBytes) //信息体
+                    ,
+                    RemoteIp = din.Ip,
+                    LastNo = din.LastNo,
+                    SessionId = din.SessionId,
+                    Profile = din.Profile,
+                    ServerName = din.ServerName,
+                    ServerItmes = din.Items
+                };
 
-                    var din = msg.FromProtobuf<In>();
+                response = (_actorService.OnReceive(context));
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(exception);
+            }
+            finally
+            {
+                if(response!=null)
+                    e.Socket.SendFrame(response);
+                else
+                    e.Socket.SendFrameEmpty();
+            }
 
-                    if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
-                        din.Profile.Add("_itin_", $"{DateTime.UtcNow.Ticks}");
-
-                    var context = new ActorContext()
-                    {
-                        Version = din.Version,//版本号
-                        Action = (byte)din.Action,
-                        Request = new PirateXRequestInfo(
-                            din.HeaderBytes, //信息头
-                            din.QueryBytes)//信息体
-                        ,
-                        RemoteIp = din.Ip,
-                        LastNo = din.LastNo,
-                        SessionId = din.SessionId,
-                        Profile = din.Profile,
-                        ServerName = din.ServerName,
-                        ServerItmes = din.Items
-                    };
-
-                    _actorService.OnReceive(context);
-                }
-                catch (Exception exception)
-                {
-                    Logger.Error(exception);
-                }
-
-            }, bytes);
-        }
-
-        protected void EnqueueMessage(byte[] message)
-        {
-            MessageQueue.Enqueue(message);
+            //}, bytes);
         }
 
         public virtual void Start()
         {
-            PullSocket = new PullSocket(config.PullSocketString);
-            PullSocket.ReceiveReady += ProcessTaskPullSocket;
+            ResponseSocket = new ResponseSocket(config.ResponseSocketString);
+            ResponseSocket.ReceiveReady += ProcessRequest;
 
-            PushSocket = new PushSocket(config.PushsocketString);
-            Poller = new NetMQPoller() { MessageQueue, PullSocket };
-
-            MessageQueue.ReceiveReady += (sender, args) =>
-            {
-                PushSocket.SendFrame(args.Queue.Dequeue());
-            };
+            Poller = new NetMQPoller() { ResponseSocket };
 
             _actorService.Start();
             Poller.RunAsync();
@@ -115,14 +111,13 @@ namespace PirateX.Net.NetMQ
                 Logger.Debug("ActorNetService Stopping...");
 
             Poller?.Stop();
-
-            PullSocket?.Close();
+            ResponseSocket?.Close();
             _actorService.Stop();
         }
 
         public void PushMessage(int rid, NameValueCollection headers, byte[] body)
         {
-            EnqueueMessage(new Out()
+            PublisherSocket.SendFrame(new Out()
             {
                 Version = 1,
                 Action = Action.Push,
@@ -138,12 +133,12 @@ namespace PirateX.Net.NetMQ
             return Encoding.UTF8.GetBytes(string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a])));
         }
 
-        public void Seed(ActorContext context, NameValueCollection header, byte cryptobyte, byte[] clientkeys, byte[] serverkeys, byte[] body)
+        public byte[] Seed(ActorContext context, NameValueCollection header, byte cryptobyte, byte[] clientkeys, byte[] serverkeys, byte[] body)
         {
             if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
                 context.Profile.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
 
-            EnqueueMessage(new Out()
+            return new Out()
             {
                 Version = 1,
                 Action = Action.Seed,
@@ -158,10 +153,10 @@ namespace PirateX.Net.NetMQ
                 Crypto = cryptobyte,
 
                 Profile = context.Profile
-            }.ToProtobuf());
+            }.ToProtobuf();
         }
 
-        public void SendMessage(ActorContext context, NameValueCollection header, byte[] body)
+        public byte[] SendMessage(ActorContext context, NameValueCollection header, byte[] body)
         {
             if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
             {
@@ -169,7 +164,7 @@ namespace PirateX.Net.NetMQ
                     context.Profile.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
             }
 
-            EnqueueMessage(new Out()
+            return new Out()
             {
                 Version = 1,
                 Action = Action.Req,
@@ -179,7 +174,7 @@ namespace PirateX.Net.NetMQ
                 Id = context.Token.Rid,
                 Profile = context.Profile
 
-            }.ToProtobuf());
+            }.ToProtobuf();
         }
     }
 }

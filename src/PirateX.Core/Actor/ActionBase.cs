@@ -21,6 +21,7 @@ namespace PirateX.Core.Actor
         //public PirateSession Session { get; set; }
         public ActorContext Context { get; set; }
         public abstract void Execute();
+        public byte[] ResponseData { get; set; }
 
         /// <summary>
         /// 获取公共服连接

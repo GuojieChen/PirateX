@@ -29,10 +29,8 @@ namespace GameServer.Console
             ThreadPool.SetMinThreads(4, 4);*/
             HostServer = new GameAppServer(new NetService()
             {
-                PullSocketString = "@tcp://*:5001",
-                PushsocketString = "@tcp://*:5002",
-                XPubSocketString = "",
-                XSubSocketString = ""
+                ResponseHostString = ">tcp://localhost:5001",
+                PublisherSocketString = ">tcp://localhost:5002",
             });
             var b = HostServer.Setup(new ServerConfig()
             {
@@ -44,8 +42,8 @@ namespace GameServer.Console
             {
                 new ActorNetService(new WorkerService(),new ActorConfig
                 {
-                    PushsocketString = ">tcp://localhost:5001",
-                    PullSocketString = ">tcp://localhost:5002",
+                    ResponseSocketString = "@tcp://localhost:5001",
+                    PublisherSocketString = "@tcp://localhost:5002"
                 }),
                 /*new ActorNetService(new WorkerService(),new ActorConfig()
                 {

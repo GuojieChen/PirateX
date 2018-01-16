@@ -20,86 +20,51 @@ namespace PirateX.Net.NetMQ
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private INetManager NetSend { get; set; }
+        
+        private SubscriberSocket _subscriberSocket;
 
-        public string PushsocketString { get; set; }
-        public string PullSocketString { get; set; }
-        public string XPubSocketString { get; set; }
-        public string XSubSocketString { get; set; }
+        public string PublisherSocketString { get; set; }
+        public string ResponseHostString { get; set; }
 
-        /// <summary>
-        /// 下发任务
-        /// </summary>
-        private PushSocket sender;
-
-        /// <summary>
-        /// 上报配置和结果
-        /// </summary>
-        private PullSocket responseSocket;
-
-        private RequestSocket _requestSocket;
-
-        private string ResponseHost;
-
-        public TimeSpan TimeOuTimeSpan = new TimeSpan(0,0,5);
-
-        //接收全局信息，可能是tool 、gm等后台，广播给worker
-        private Proxy GlobalServerProxy { get; set; }
-
-        public NetMQQueue<byte[]> PushQueue = new NetMQQueue<byte[]>();
-
+        public TimeSpan DefaultTimeOuTimeSpan = new TimeSpan(0,0,5);
+        
         private NetMQPoller Poller;
-
-        private NetMQPoller ResponsePoller;
 
         private bool IsSetuped { get; set; }
         public virtual void Setup(INetManager netManager)
         {
-            if (string.IsNullOrEmpty(PushsocketString))
-                throw new ArgumentNullException(nameof(PushsocketString));
-            if (string.IsNullOrEmpty(PullSocketString))
-                throw new ArgumentNullException(nameof(PullSocketString));
-            if (netManager == null)
-                throw new ArgumentNullException(nameof(netManager));
+            if(string.IsNullOrEmpty(ResponseHostString))
+                throw new ArgumentNullException(nameof(ResponseHostString));
 
-            if (!string.IsNullOrEmpty(XPubSocketString) && !string.IsNullOrEmpty(XSubSocketString))
-            {
-                var PublisherSocket = new XPublisherSocket(XPubSocketString);
-
-                var SubscriberSocket = new XSubscriberSocket(XSubSocketString);
-
-                GlobalServerProxy = new Proxy(SubscriberSocket, PublisherSocket);
-            }
-
-            sender = new PushSocket(PushsocketString);
-            responseSocket = new PullSocket(PullSocketString);
+            _subscriberSocket = new SubscriberSocket(PublisherSocketString);
 
             Poller = new NetMQPoller()
             {
-                sender,
-                PushQueue,
-                
-            };
-
-            ResponsePoller = new NetMQPoller()
-            {
-                responseSocket,
+                _subscriberSocket,
             };
 
             NetSend = netManager;
 
-            PushQueue.ReceiveReady += (o, args) =>
-            {
-                sender.SendFrame(args.Queue.Dequeue());
-            };
-
-            responseSocket.ReceiveReady += ProcessResponse;
+            _subscriberSocket.ReceiveReady += ProcessSubscribe;
 
             IsSetuped = true;
         }
 
-        public virtual void ProcessResponse(byte[] msg)
+        //处理订阅收到的数据,然后发送给指定的Client
+        protected virtual void ProcessSubscribe(object o, NetMQSocketEventArgs e)
         {
+            //TODO https://netmq.readthedocs.io/en/latest/poller/   #Performance
+
+            if(Logger.IsTraceEnabled)
+                Logger.Trace($"ProcessSubscribe -> ThreadID = {Thread.CurrentThread.ManagedThreadId}");
+
+            var msg = e.Socket.ReceiveFrameBytes();//TryReceiveMultipartMessage();
+
             var dout = msg.FromProtobuf<Out>();
+
+            var protocolPackage = NetSend.GetProtocolPackage(dout.Id);
+            if (protocolPackage == null)
+                return;
 
             var response = new PirateXResponsePackage()
             {
@@ -107,109 +72,8 @@ namespace PirateX.Net.NetMQ
                 ContentBytes = dout.BodyBytes
             };
 
-            IProtocolPackage protocolPackage = null;
-
-            if (Equals(dout.Action, Action.Seed))
-            {
-                protocolPackage = NetSend.GetProtocolPackage(dout.SessionId);
-
-                if (protocolPackage == null)
-                {
-                    return;
-                }
-
-
-                protocolPackage.Rid = dout.Id;
-
-                NetSend.Attach(protocolPackage);
-            }
-            else
-                protocolPackage = NetSend.GetProtocolPackage(dout.Id);
-
-            if (protocolPackage == null)
-            {
-                return;
-            }
-
-            if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
-            {
-                if (dout.Action == Action.Req)
-                {
-                    dout.Profile.Add("_tout_", $"{DateTime.UtcNow.Ticks}");
-
-                    var r = new PirateXResponseInfo(response);
-
-                    foreach (var kp in dout.Profile)
-                    {
-                        if (kp.Key.StartsWith("_"))
-                            r.Headers.Add(kp.Key, $"{kp.Value}");
-                    }
-                    response.HeaderBytes = r.GetHeaderBytes();
-
-                    new ProfilerLog()
-                    {
-                        Token = r.Headers["token"],
-                        Ip = protocolPackage.RemoteEndPoint.ToString(),
-                        C = r.Headers["c"],
-                        Tin = Convert.ToInt64(dout.Profile["_itin_"]) - Convert.ToInt64(dout.Profile["_tin_"]),
-                        iTin = Convert.ToInt64(dout.Profile["_itout_"]) - Convert.ToInt64(dout.Profile["_itin_"]),
-                        Tout = Convert.ToInt64(dout.Profile["_tout_"]) - Convert.ToInt64(dout.Profile["_itout_"]),
-
-                        StartAt = new DateTime(Convert.ToInt64(dout.Profile["_tin_"]), DateTimeKind.Utc),
-                        EndAt = new DateTime(Convert.ToInt64(dout.Profile["_tout_"]), DateTimeKind.Utc)
-                    }.Log();
-                }
-            }
-
-            if (dout.LastNo >= 0)
-                protocolPackage.LastNo = dout.LastNo;
-
             var bytes = protocolPackage.PackPacketToBytes(response);
-
-
             protocolPackage.Send(bytes);
-
-            if (Equals(dout.Action, Action.Seed))
-            {
-                var clientkey = dout.ClientKeys;
-                var serverkey = dout.ServerKeys;
-                var crypto = dout.Crypto;
-
-                //种子交换  记录种子信息，后续收发数据用得到
-                protocolPackage.PackKeys = serverkey;
-                protocolPackage.UnPackKeys = clientkey;
-                protocolPackage.CryptoByte = crypto;
-            }
-        }
-
-        //服务器向客户端下发数据
-        protected virtual void ProcessResponse(object o, NetMQSocketEventArgs e)
-        {
-            //TODO https://netmq.readthedocs.io/en/latest/poller/   #Performance
-
-            if(Logger.IsTraceEnabled)
-                Logger.Trace($"ProcessResponse->ThreadID = {Thread.CurrentThread.ManagedThreadId}");
-
-            var msg = e.Socket.ReceiveFrameBytes();//TryReceiveMultipartMessage();
-
-            var sw = new Stopwatch();
-            sw.Start();
-            /* ThreadPool.QueueUserWorkItem(state =>
-                                                          {*/
-
-            try
-            {
-                //var msg = msg1;//(byte[])state;
-
-                
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(exception);
-            }
-            //            }, msg1);
-
-            Logger.Debug(sw.ElapsedMilliseconds);
         }
 
         /// <summary>
@@ -227,7 +91,7 @@ namespace PirateX.Net.NetMQ
         }
 
         /// <summary>
-        /// 收到客户端请求，交由Actor进行处理
+        /// 收到客户端请求，通过 REQ/REP的模式向远端Actor请求处理,并获得数据
         /// </summary>
         /// <param name="protocolPackage"></param>
         /// <param name="body"></param>
@@ -268,25 +132,27 @@ namespace PirateX.Net.NetMQ
             if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
                 din.Profile.Add("_tin_", $"{DateTime.UtcNow.Ticks}");
 
+            return RequestToRemoteResponseSocket(din);
+        }
+
+        private byte[] RequestToRemoteResponseSocket(In din)
+        {
             try
             {
                 //向远端Rep 服务器请求并获取数据
-                using (var req = new RequestSocket(ResponseHost) { Options = { } })
+                using (var req = new RequestSocket(ResponseHostString) { Options = { } })
                 {
                     req.SendFrame(din.ToProtobuf());
-
-                    if (req.TryReceiveFrameBytes(new TimeSpan(0, 0, 5), out var responseBytes))
-                    {
+                    if (req.TryReceiveFrameBytes(DefaultTimeOuTimeSpan, out var responseBytes))
                         return responseBytes;
-                    }
                 }
             }
             catch (Exception e)
             {
-                if(Logger.IsErrorEnabled)
+                if (Logger.IsErrorEnabled)
                     Logger.Error(e);
 
-                return null; 
+                return null;
             }
 
             return null;
@@ -294,12 +160,12 @@ namespace PirateX.Net.NetMQ
 
         public virtual void Ping(int onlinecount)
         {
-            PushQueue.Enqueue(new In()
+            RequestToRemoteResponseSocket(new In()
             {
                 Version = 1,
                 Action = Action.Ping,
                 Items = new Dictionary<string, string>() { { "OnlineCount", $"{onlinecount}" } }
-            }.ToProtobuf());
+            });
         }
 
         public virtual void OnSessionClosed(IProtocolPackage protocolPackage)
@@ -308,14 +174,14 @@ namespace PirateX.Net.NetMQ
                 return;
 
             //加入队列
-            PushQueue.Enqueue(new In()
+            RequestToRemoteResponseSocket(new In()
             {
                 Version = 1,
                 Action = Action.Closed,
-                Ip = (protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString(),
+                Ip = (protocolPackage.RemoteEndPoint as IPEndPoint)?.Address.ToString(),
                 LastNo = protocolPackage.LastNo,
                 SessionId = protocolPackage.Id,
-            }.ToProtobuf());
+            });
         }
 
         public virtual void Start()
@@ -324,22 +190,12 @@ namespace PirateX.Net.NetMQ
                 throw new ApplicationException("Please Setup firset!");
 
             Poller.RunAsync();
-            ResponsePoller.RunAsync();
-            //GlobalServerProxy?.Start();
         }
 
         public virtual void Stop()
         {
             if (Logger.IsDebugEnabled)
                 Logger.Debug("Stopping...");
-
-            //GlobalServerProxy?.Stop();
-
-            if (Logger.IsDebugEnabled)
-                Logger.Debug("Stopping ResponsePoller...");
-
-            ResponsePoller?.StopAsync();
-            ResponsePoller = null;
 
             if (Logger.IsDebugEnabled)
                 Logger.Debug("Stopping Poller...");

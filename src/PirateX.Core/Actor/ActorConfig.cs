@@ -2,8 +2,8 @@
 {
     public class ActorConfig
     {
-        public string PullSocketString { get; set; }
+        public string ResponseSocketString { get; set; }
 
-        public string PushsocketString { get; set; }
+        public string PublisherSocketString { get; set; }
     }
 }

@@ -40,7 +40,7 @@ namespace PirateX.Core.Actor
 
         void Stop();
 
-        void OnReceive(ActorContext context);
+        byte[] OnReceive(ActorContext context);
     }
     /// <summary>
     /// 
@@ -198,10 +198,10 @@ namespace PirateX.Core.Actor
 
         public virtual void Ping(string servername,int onlinecount)
         {
-            
+
         }
 
-        public void OnReceive(ActorContext context)
+        public byte[] OnReceive(ActorContext context)
         {
             if (context.Action == 0)
             {
@@ -212,7 +212,7 @@ namespace PirateX.Core.Actor
                     onlinecount = Convert.ToInt32(context.ServerItmes["OnlineCount"]);
 
                 Ping(context.ServerName, onlinecount);
-                return;
+                return null; 
             }
             else if (context.Action == 2)//断线
             {
@@ -226,7 +226,7 @@ namespace PirateX.Core.Actor
                     OnSessionClosed(session);
                 }
 
-                return;
+                return null ;
             }
 
             var token = GetToken(context.Request.Token);
@@ -262,7 +262,7 @@ namespace PirateX.Core.Actor
             if (context.Request.O <= context.LastNo)
             {
                 Logger.Warn($"C2S Timeout o #{context.SessionId}# #{context.RemoteIp}# {context.Request.Headers} ");
-                return;
+                return null ;
             }
 
             //执行动作
@@ -298,29 +298,28 @@ namespace PirateX.Core.Actor
                             //session 保存
                             DistrictContainer.OnlineManager.Login(ToSession(context,context.Token));
                         }
+
+                        return action.ResponseData;
                     }
                     catch (Exception exception)
                     {
-                        HandleException(context, exception);
+                        return HandleException(context, exception);
                     }
-                }
-                else
-                {
-                    var headers = new NameValueCollection()
-                    {
-                        {"c", context.Request.C},
-                        {"i", MessageType.Boradcast},
-                        {"o", Convert.ToString(context.Request.O)},
-                        {"code", Convert.ToString((int) StatusCode.NotFound)},
-                        {"errorCode", "NotFound"},
-                        {"errorMsg", $"Action {actionname} not found!"}
-                    };
-                    //返回类型 
-
-                    SendMessage<string>(context, headers, null);
                 }
             }
 
+            var headers = new NameValueCollection()
+            {
+                {"c", context.Request.C},
+                {"i", MessageType.Boradcast},
+                {"o", Convert.ToString(context.Request.O)},
+                {"code", Convert.ToString((int) StatusCode.NotFound)},
+                {"errorCode", "NotFound"},
+                {"errorMsg", $"Action {actionname} not found!"}
+            };
+            //返回类型 
+
+            return SendMessage<string>(context, headers, null);
         }
 
         public virtual void OnSessionConnected(PirateSession session)
@@ -377,7 +376,7 @@ namespace PirateX.Core.Actor
             return false;
         }
 
-        protected virtual void HandleException(ActorContext context, Exception e)
+        protected virtual byte[] HandleException(ActorContext context, Exception e)
         {
             //#ERROR#
             short code = StatusCode.Exception;
@@ -428,7 +427,7 @@ namespace PirateX.Core.Actor
             };
             //返回类型 
 
-            SendMessage<string>(context, headers, null);
+            return SendMessage<string>(context, headers, null);
         }
 
         private IAction GetActionInstanceByName(string actionname)
@@ -452,7 +451,7 @@ namespace PirateX.Core.Actor
         }
 
         #region send message
-        public void SendMessage<T>(ActorContext context, T t)
+        public byte[] SendMessage<T>(ActorContext context, T t)
         {
             var headers = new NameValueCollection
             {
@@ -469,9 +468,7 @@ namespace PirateX.Core.Actor
                     headers.Add(key, context.Request.Headers[key]);
             }
 #endif
-
-
-            SendMessage(context, headers, t);
+            return SendMessage(context, headers, t);
         }
 
         /// <summary>
@@ -480,7 +477,7 @@ namespace PirateX.Core.Actor
         /// <typeparam name="T"></typeparam>
         /// <param name="context"></param>
         /// <param name="t"></param>
-        public void SendSeed<T>(ActorContext context, byte cryptobyte, byte[] clientkeys, byte[] serverkeys, T t)
+        public byte[] SendSeed<T>(ActorContext context, byte cryptobyte, byte[] clientkeys, byte[] serverkeys, T t)
         {
             var headers = new NameValueCollection
             {
@@ -505,7 +502,7 @@ namespace PirateX.Core.Actor
                 Logger.Debug($"S2C #{context.Token.Rid}# #{context.RemoteIp}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {Encoding.UTF8.GetString(body)}");
             }
 
-            NetService.Seed(context, headers, cryptobyte, clientkeys, serverkeys, body);
+            return NetService.Seed(context, headers, cryptobyte, clientkeys, serverkeys, body);
         }
 
         //public void PushMessage<T>(string sessionid, T t)
@@ -561,7 +558,7 @@ namespace PirateX.Core.Actor
             NetService.PushMessage(rid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
         }
 
-        public void SendMessage<T>(ActorContext context, string name, T t)
+        public byte[] SendMessage<T>(ActorContext context, string name, T t)
         {
             var headers = new NameValueCollection
             {
@@ -574,9 +571,9 @@ namespace PirateX.Core.Actor
             if (Equals(DefaultResponseCovnert, "protobuf"))
                 headers["responsetype"] = typeof(T).Name;
 
-            SendMessage(context, headers, t);
+            return SendMessage(context, headers, t);
         }
-        public void SendMessage(ActorContext context, string name, string msg)
+        public byte[] SendMessage(ActorContext context, string name, string msg)
         {
             var headers = new NameValueCollection
             {
@@ -588,10 +585,10 @@ namespace PirateX.Core.Actor
             };
             //通知类型 
 
-            NetService.SendMessage(context, headers, Encoding.UTF8.GetBytes(msg));
+            return NetService.SendMessage(context, headers, Encoding.UTF8.GetBytes(msg));
         }
 
-        private void SendMessage<T>(ActorContext context, NameValueCollection header, T rep)
+        private byte[] SendMessage<T>(ActorContext context, NameValueCollection header, T rep)
         {
             header["format"] = context.ResponseCovnert;
 
@@ -607,7 +604,7 @@ namespace PirateX.Core.Actor
                 Logger.Debug($"S2C #{context.Token.Rid}# #{context.RemoteIp}# {string.Join("&", header.AllKeys.Select(a => a + "=" + header[a]))} {(body==null?"":Encoding.UTF8.GetString(body))}");
             }
 
-            NetService.SendMessage(context, header, body);
+            return NetService.SendMessage(context, header, body);
         }
 
         private byte[] GetHeaderBytes(NameValueCollection headers)

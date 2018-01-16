@@ -27,14 +27,11 @@ namespace PirateX.Core.Actor
             var ServerKeys = new KeyGenerator(serverSeed).MakeKey();
             var cryptobyte = new BitArray(CryptoByte).ConvertToByte();
 
-            base.MessageSender.SendSeed(base.Context, cryptobyte, ClientKeys, ServerKeys, new NewSeedResponse()
+            ResponseData = base.MessageSender.SendSeed(base.Context, cryptobyte, ClientKeys, ServerKeys, new NewSeedResponse()
             {
                 Seed = serverSeed
             });
-
-
         }
-
     }
 
 
