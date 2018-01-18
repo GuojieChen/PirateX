@@ -39,9 +39,14 @@ namespace PirateX.Core.Actor.System
     [ProtoContract]
     public class ProtoSyncResponse
     {
+        /// <summary>
+        /// hash值
+        /// </summary>
         [ProtoMember(1)]
         public string Hash { get; set; }
-
+        /// <summary>
+        /// proto内容
+        /// </summary>
         [ProtoMember(2)]
         public byte[] Proto { get; set; }
     }

@@ -22,7 +22,7 @@ namespace PirateX.Core.Actor
     public class PingResponse
     {
         /// <summary>
-        /// 服务器当前时间 UTC
+        /// 
         /// </summary>
         [ProtoMember(1)]
         public string Now { get; set; }
