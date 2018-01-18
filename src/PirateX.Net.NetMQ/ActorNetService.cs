@@ -13,6 +13,7 @@ using PirateX.Core.Actor;
 using PirateX.Core.Net;
 using PirateX.Core.Session;
 using PirateX.Core.Utils;
+using PirateX.Protocol;
 using PirateX.Protocol.Package;
 
 namespace PirateX.Net.NetMQ
@@ -29,10 +30,11 @@ namespace PirateX.Net.NetMQ
         private NetMQPoller Poller { get; set; }
 
         private IActorService _actorService;
+
         public ActorNetService(IActorService actorService, ActorConfig config)
         {
             this._actorService = actorService;
-            _actorService.NetService = this;
+            _actorService.ActorNetService = this;
             this.config = config;
         }
 
@@ -45,11 +47,10 @@ namespace PirateX.Net.NetMQ
         {
             var bytes = e.Socket.ReceiveFrameBytes();
 
-            Logger.Debug($"ProcessTaskPullSocket1 {Thread.CurrentThread.ManagedThreadId} - {Thread.CurrentThread.IsThreadPoolThread}");
+            Logger.Debug($"ProcessRequest {Thread.CurrentThread.ManagedThreadId} - {Thread.CurrentThread.IsThreadPoolThread}");
 
             //ThreadPool.QueueUserWorkItem((obj) =>
             //{
-                Logger.Debug($"ProcessTaskPullSocket2 {Thread.CurrentThread.ManagedThreadId} - {Thread.CurrentThread.IsThreadPoolThread}");
 
             byte[] response = null; 
             try
@@ -114,13 +115,18 @@ namespace PirateX.Net.NetMQ
             ResponseSocket?.Close();
             _actorService.Stop();
         }
-
+        /// <summary>
+        /// 采用订阅发布的方式,向所有网关推送消息
+        /// </summary>
+        /// <param name="rid"></param>
+        /// <param name="headers"></param>
+        /// <param name="body"></param>
         public void PushMessage(int rid, NameValueCollection headers, byte[] body)
         {
             PublisherSocket.SendFrame(new Out()
             {
                 Version = 1,
-                Action = Action.Push,
+                Action = PirateXAction.Push,
                 LastNo = -1,
                 HeaderBytes = GetHeaderBytes(headers),
                 BodyBytes = body,
@@ -141,7 +147,7 @@ namespace PirateX.Net.NetMQ
             return new Out()
             {
                 Version = 1,
-                Action = Action.Seed,
+                Action = PirateXAction.Seed,
                 SessionId = context.SessionId,
                 LastNo = context.Request.O,
                 HeaderBytes = GetHeaderBytes(header),
@@ -167,7 +173,7 @@ namespace PirateX.Net.NetMQ
             return new Out()
             {
                 Version = 1,
-                Action = Action.Req,
+                Action = PirateXAction.Req,
                 LastNo = context.Request.O,
                 HeaderBytes = GetHeaderBytes(header),
                 BodyBytes = body,

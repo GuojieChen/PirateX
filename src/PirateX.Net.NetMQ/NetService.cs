@@ -122,7 +122,7 @@ namespace PirateX.Net.NetMQ
             var din = new In()
             {
                 Version = 1,
-                Action = Action.Req,
+                Action = PirateXAction.Req,
                 HeaderBytes = request.HeaderBytes,
                 QueryBytes = request.ContentBytes,
                 Ip = (protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString(),
@@ -163,7 +163,7 @@ namespace PirateX.Net.NetMQ
             RequestToRemoteResponseSocket(new In()
             {
                 Version = 1,
-                Action = Action.Ping,
+                Action = PirateXAction.Ping,
                 Items = new Dictionary<string, string>() { { "OnlineCount", $"{onlinecount}" } }
             });
         }
@@ -177,7 +177,7 @@ namespace PirateX.Net.NetMQ
             RequestToRemoteResponseSocket(new In()
             {
                 Version = 1,
-                Action = Action.Closed,
+                Action = PirateXAction.Closed,
                 Ip = (protocolPackage.RemoteEndPoint as IPEndPoint)?.Address.ToString(),
                 LastNo = protocolPackage.LastNo,
                 SessionId = protocolPackage.Id,

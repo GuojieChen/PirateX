@@ -6,11 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using PirateX.Core;
 using PirateX.Core.Utils;
-using PirateX.Net.NetMQ;
+using PirateX.Protocol;
 using PirateX.Protocol.Package;
 using SuperSocket.SocketBase.Command;
 using SuperSocket.SocketBase.Protocol;
-using Action = PirateX.Net.NetMQ.Action;
 
 namespace PirateX.Net.SuperSocket
 {
@@ -30,7 +29,7 @@ namespace PirateX.Net.SuperSocket
                 ContentBytes = dout.BodyBytes
             };
 
-            if (Equals(dout.Action, Action.Seed))
+            if (Equals(dout.Action, PirateXAction.Seed))
             {
                 session.Rid = dout.Id;
                 session.AppServer.Attach(session);
@@ -42,7 +41,7 @@ namespace PirateX.Net.SuperSocket
             var bytes = session.PackPacketToBytes(response);
             session.Send(bytes);
 
-            if (Equals(dout.Action, Action.Seed))
+            if (Equals(dout.Action, PirateXAction.Seed))
             {
                 var clientkey = dout.ClientKeys;
                 var serverkey = dout.ServerKeys;

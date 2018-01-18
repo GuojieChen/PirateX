@@ -33,7 +33,7 @@ namespace PirateX.Core.Actor
 {
     public interface IActorService
     {
-        IActorNetService NetService { get; set; }
+        IActorNetService ActorNetService { get; set; }
         //void Setup();
 
         void Start();
@@ -50,7 +50,7 @@ namespace PirateX.Core.Actor
     {
         public static Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public IActorNetService NetService { get; set; }
+        public IActorNetService ActorNetService { get; set; }
 
         private IDictionary<string, IAction> Actions = new Dictionary<string, IAction>(StringComparer.OrdinalIgnoreCase);
 
@@ -502,7 +502,7 @@ namespace PirateX.Core.Actor
                 Logger.Debug($"S2C #{context.Token.Rid}# #{context.RemoteIp}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {Encoding.UTF8.GetString(body)}");
             }
 
-            return NetService.Seed(context, headers, cryptobyte, clientkeys, serverkeys, body);
+            return ActorNetService.Seed(context, headers, cryptobyte, clientkeys, serverkeys, body);
         }
 
         //public void PushMessage<T>(string sessionid, T t)
@@ -514,7 +514,7 @@ namespace PirateX.Core.Actor
         //        {"format","json"} // TODO 默认解析器
         //    };
 
-        //    NetService.PushMessage(sessionid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>("json").SerializeObject(t));
+        //    ActorNetService.PushMessage(sessionid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>("json").SerializeObject(t));
         //}
 
         public void PushMessage<T>(int rid, T t)
@@ -535,7 +535,7 @@ namespace PirateX.Core.Actor
                 Logger.Debug($"S2C #{rid}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {JsonConvert.SerializeObject(t)}");
             }
 
-            NetService.PushMessage(rid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
+            ActorNetService.PushMessage(rid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
         }
 
         public void PushMessage<T>(int rid, string name, T t)
@@ -555,7 +555,7 @@ namespace PirateX.Core.Actor
                 Logger.Debug($"S2C #{rid}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {JsonConvert.SerializeObject(t)}");
             }
 
-            NetService.PushMessage(rid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
+            ActorNetService.PushMessage(rid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
         }
 
         public byte[] SendMessage<T>(ActorContext context, string name, T t)
@@ -585,7 +585,7 @@ namespace PirateX.Core.Actor
             };
             //通知类型 
 
-            return NetService.SendMessage(context, headers, Encoding.UTF8.GetBytes(msg));
+            return ActorNetService.SendMessage(context, headers, Encoding.UTF8.GetBytes(msg));
         }
 
         private byte[] SendMessage<T>(ActorContext context, NameValueCollection header, T rep)
@@ -604,7 +604,7 @@ namespace PirateX.Core.Actor
                 Logger.Debug($"S2C #{context.Token.Rid}# #{context.RemoteIp}# {string.Join("&", header.AllKeys.Select(a => a + "=" + header[a]))} {(body==null?"":Encoding.UTF8.GetString(body))}");
             }
 
-            return NetService.SendMessage(context, header, body);
+            return ActorNetService.SendMessage(context, header, body);
         }
 
         private byte[] GetHeaderBytes(NameValueCollection headers)

@@ -37,9 +37,6 @@ namespace PirateX.Net.SuperSocket
 
             var datas = bodyBuffer.CloneRange(offset, length);
             return new BinaryRequestInfo("ReqRep", datas);
-            _session.AppServer.NetService.ProcessRequest(_session, datas);
-
-            return null;
         }
     }
 }

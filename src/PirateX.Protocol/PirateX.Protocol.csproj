@@ -51,7 +51,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PirateXAction.cs" />
+    <Compile Include="In.cs" />
     <Compile Include="KeyGenerator.cs" />
+    <Compile Include="Out.cs" />
     <Compile Include="Package\IPirateXPackage.cs" />
     <Compile Include="Package\IPirateXRequestInfoBase.cs" />
     <Compile Include="Package\IPirateXResponseInfo.cs" />
