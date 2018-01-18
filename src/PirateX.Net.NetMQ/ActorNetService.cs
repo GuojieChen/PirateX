@@ -78,7 +78,7 @@ namespace PirateX.Net.NetMQ
                     ServerItmes = din.Items
                 };
 
-                response = (_actorService.OnReceive(context));
+                response = _actorService.OnReceive(context);
             }
             catch (Exception exception)
             {

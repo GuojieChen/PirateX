@@ -281,9 +281,7 @@ namespace PirateX.Core.Actor
                         {
                             //session = OnlineManager.GetOnlineRole(token.Rid);
                             var container = DistrictContainer.GetDistrictContainer(token.Did);
-                            if (container == null)
-                                throw new PirateXException("ContainerNull", "容器未定义") { Code = StatusCode.ContainerNull };
-                            action.Reslover = container.BeginLifetimeScope();
+                            action.Reslover = container ?? throw new PirateXException("ContainerNull", "容器未定义") { Code = StatusCode.ContainerNull }; //.BeginLifetimeScope();
                         }
 
                         action.ServerReslover = DistrictContainer.ServerIoc;
@@ -338,7 +336,8 @@ namespace PirateX.Core.Actor
                 Uid = token.Uid,
                 StartTimestamp = DateTime.UtcNow.GetTimestampAsSecond(),
                 ResponseConvert = context.ResponseCovnert,
-                ServerName = context.ServerName
+                ServerName = context.ServerName,
+                SocketAddress = context.SocketAddress,
             };
 
             return session;

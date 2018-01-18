@@ -34,6 +34,11 @@ namespace PirateX.Core.Session
         public string ResponseConvert { get; set; }
         [ProtoMember(11)]
         public long LastUtcAt { get; set; }
+        /// <summary>
+        /// 内部网络地址，用以服务器推送快速定位
+        /// </summary>
+        [ProtoMember(12)]
+        public string SocketAddress { get; set; }
 
         public DateTime GetLastAtUtc()
         {
