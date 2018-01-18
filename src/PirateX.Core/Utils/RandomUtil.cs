@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PirateX.Core.Utils
 {
@@ -17,6 +18,24 @@ namespace PirateX.Core.Utils
                 }
                 return _random;
             }
+        }
+
+        public static List<int> RandomList(int all, int part)
+        {
+            var list = new List<int>();
+            while (true)
+            {
+                int n = Random.Next(0, all);
+                if (!list.Contains(n))
+                {
+                    list.Add(n);
+                    if (list.Count == part)
+                    {
+                        break;
+                    }
+                }
+            }
+            return list;
         }
     }
 }
