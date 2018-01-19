@@ -133,11 +133,20 @@ namespace PirateX.Core.Actor.ProtoSync
                         BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
                     .MakeGenericMethod(type)
                     .Invoke(this, null);
-
+                
+                PrepareSerializer(type);
                 stringBuilder.Append(proto);
             }
 
             return stringBuilder.ToString();
+        }
+
+        private void PrepareSerializer(Type type)
+        {
+            typeof(Serializer).GetMethod("PrepareSerializer",
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
+                .MakeGenericMethod(type)
+                .Invoke(this, null);
         }
 
         public string GetProtosHash()

@@ -37,7 +37,7 @@ namespace PirateX.Core.Container
 
         /// <summary> 容器集合
         /// </summary>
-        private readonly IDictionary<int, IContainer> _containers = new SortedDictionary<int, IContainer>();
+        private readonly IDictionary<int, ILifetimeScope> _containers = new SortedDictionary<int, ILifetimeScope>();
 
         private readonly object _loadContainerLockHelper = new object();
 
@@ -233,7 +233,7 @@ namespace PirateX.Core.Container
             }
         }
 
-        public IContainer GetDistrictContainer(int districtid)
+        public ILifetimeScope GetDistrictContainer(int districtid)
         {
             if (_containers.ContainsKey(districtid))
                 return _containers[districtid];
@@ -253,7 +253,7 @@ namespace PirateX.Core.Container
             }
         }
 
-        public IContainer ReLoadContainer(int districtid)
+        public ILifetimeScope ReLoadContainer(int districtid)
         {
             var districtConfig = GetDistrictConfig(districtid);
 
@@ -269,7 +269,7 @@ namespace PirateX.Core.Container
 
         public abstract IEnumerable<IDistrictConfig> GetDistrictConfigs();
 
-        private IContainer LoadDistrictContainer(IDistrictConfig districtConfig)
+        private ILifetimeScope LoadDistrictContainer(IDistrictConfig districtConfig)
         {
             if (districtConfig == null)
                 return null;
@@ -378,7 +378,7 @@ namespace PirateX.Core.Container
 
             if (Log.IsTraceEnabled)
                 Log.Trace("");
-            return container;
+            return container.BeginLifetimeScope();
         }
 
         private void InitDistrictRepository(ContainerBuilder builder)

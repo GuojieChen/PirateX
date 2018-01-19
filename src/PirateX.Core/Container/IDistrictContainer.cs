@@ -16,7 +16,7 @@ namespace PirateX.Core.Container
         /// </summary>
         /// <param name="districtid"></param>
         /// <returns></returns>
-        IContainer GetDistrictContainer(int districtid);
+        ILifetimeScope GetDistrictContainer(int districtid);
         /// <summary> 获取管理的配置列表
         /// </summary>
         /// <returns></returns>

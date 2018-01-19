@@ -37,7 +37,7 @@ namespace PirateX.Core.Actor
 
         public void Dispose()
         {
-            Reslover?.Dispose();
+
         }
     }
 }
