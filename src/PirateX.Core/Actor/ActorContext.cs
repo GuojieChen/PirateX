@@ -35,5 +35,9 @@ namespace PirateX.Core.Actor
         public int OnlineCount { get; set; }
 
         public Dictionary<string,string> ServerItmes { get; set; }
+        /// <summary>
+        /// 内部网络地址
+        /// </summary>
+        public string SocketAddress { get; set; }
     }
 }

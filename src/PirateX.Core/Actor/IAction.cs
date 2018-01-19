@@ -20,5 +20,8 @@ namespace PirateX.Core.Actor
         ActorContext Context { get; set; }
 
         void Execute();
+
+        byte[] ResponseData { get; set; }
+
     }
 }

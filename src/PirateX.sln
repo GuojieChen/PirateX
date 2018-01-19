@@ -55,11 +55,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.ConfigImport", "Pir
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{9A6D3F6F-C8C2-4A72-AEF3-504664703557}"
 	ProjectSection(SolutionItems) = preProject
-		..\docs\MiddleWare.md = ..\docs\MiddleWare.md
 		..\readme.md = ..\readme.md
+		..\docs\中间件说明.md = ..\docs\中间件说明.md
+		..\docs\可伸缩架构说明.md = ..\docs\可伸缩架构说明.md
+		..\docs\系统接口.md = ..\docs\系统接口.md
+		..\docs\通信协议说明.md = ..\docs\通信协议说明.md
+		..\docs\配置数据系统说明.md = ..\docs\配置数据系统说明.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.ApiHelper", "PirateX.ApiHelper\PirateX.ApiHelper.csproj", "{04CD4693-4D2E-47ED-A3A8-B1EA866E6AF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.LRUBroker", "PirateX.LRUBroker\PirateX.LRUBroker.csproj", "{9C8E9E19-0071-4CF2-B5A1-EBE92C9AF654}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -151,6 +157,10 @@ Global
 		{04CD4693-4D2E-47ED-A3A8-B1EA866E6AF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04CD4693-4D2E-47ED-A3A8-B1EA866E6AF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04CD4693-4D2E-47ED-A3A8-B1EA866E6AF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C8E9E19-0071-4CF2-B5A1-EBE92C9AF654}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C8E9E19-0071-4CF2-B5A1-EBE92C9AF654}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C8E9E19-0071-4CF2-B5A1-EBE92C9AF654}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C8E9E19-0071-4CF2-B5A1-EBE92C9AF654}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -178,6 +188,7 @@ Global
 		{C48880E9-3155-4274-9406-85DC6731FD34} = {CB3452E6-7B7B-46FC-8F90-D92DB4A29E06}
 		{FD8C86BA-953D-43A9-A77C-427F3FC979E8} = {5D993072-2805-4156-8EAD-28FCE571AF42}
 		{04CD4693-4D2E-47ED-A3A8-B1EA866E6AF0} = {2827A0D1-32C1-4B18-94BC-91CC1E3A90A6}
+		{9C8E9E19-0071-4CF2-B5A1-EBE92C9AF654} = {4C3DAE84-BA97-441C-8800-F53797CA1E45}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E57F08D0-2E96-4CD4-9542-02759C9C5CBC}

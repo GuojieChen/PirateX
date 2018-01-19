@@ -11,9 +11,9 @@ namespace PirateX.Core.Actor
 
         void PushMessage(int rid,NameValueCollection headers,byte[] body);
 
-        void Seed(ActorContext context, NameValueCollection header, byte cryptobyte, byte[] clientkeys,
+        byte[] Seed(ActorContext context, NameValueCollection header, byte cryptobyte, byte[] clientkeys,
             byte[] serverkeys, byte[] body);
 
-        void SendMessage(ActorContext context, NameValueCollection headers, byte[] body);
+        byte[] SendMessage(ActorContext context, NameValueCollection headers, byte[] body);
     }
 }

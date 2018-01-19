@@ -3,19 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PirateX.Protocol;
 using PirateX.Protocol.Package;
 
 namespace PirateX.Core.Net
 {
+    /// <summary>
+    /// 外部请求分发给内部逻辑服务器
+    /// </summary>
     public interface INetService
     {
         void Setup(INetManager netManager);
         /// <summary>
-        /// 收到客户端请求，交由Actor进行处理
+        /// 收到客户端请求，处理并获取返回结果
         /// </summary>
         /// <param name="protocolPackage"></param>
         /// <param name="body"></param>
-        void ProcessRequest(IProtocolPackage protocolPackage, byte[] body);
+        Out ProcessRequest(IProtocolPackage protocolPackage, byte[] body);
 
         void Ping(int onlinecount);
 

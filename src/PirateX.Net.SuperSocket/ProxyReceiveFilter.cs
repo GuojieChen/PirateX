@@ -36,10 +36,7 @@ namespace PirateX.Net.SuperSocket
             //原始数据
 
             var datas = bodyBuffer.CloneRange(offset, length);
-            //return new BinaryRequestInfo("PushCmd", datas);
-            _session.AppServer.NetService.ProcessRequest(_session, datas);
-
-            return null;
+            return new BinaryRequestInfo("ReqRep", datas);
         }
     }
 }

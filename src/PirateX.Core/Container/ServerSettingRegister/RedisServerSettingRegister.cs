@@ -38,7 +38,6 @@ namespace PirateX.Core.Container.ServerSettingRegister
                 .As<ConnectionMultiplexer>()
                 .SingleInstance();
 
-
             builder.Register(c => c.Resolve<ConnectionMultiplexer>().GetDatabase(redisconfig.RedisDb))
                 .As<IDatabase>()
                 .InstancePerDependency();

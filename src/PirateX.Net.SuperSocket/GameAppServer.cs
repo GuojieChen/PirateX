@@ -35,13 +35,14 @@ namespace PirateX.Net.SuperSocket
         public override bool Start()
         {
             NetService.Start();
-            _pingtimer = new Timer(PingTick, null, 1000 * 60, 1000 * 60);
+
+            //_pingtimer = new Timer(PingTick, null, 1000 * 60, 1000 * 60);
             return base.Start();
         }
 
         private void PingTick(object state)
         {
-            //NetService.Ping(base.GetAllSessions().GroupBy(l=>l.Rid).Count());
+            NetService.Ping(base.GetAllSessions().GroupBy(l => l.Rid).Count());
         }
 
         public override void Stop()

@@ -27,7 +27,6 @@ namespace PirateX.Core
         public long iTin { get; set; }
         public long Tout { get; set; }
 
-
         private JsonSerializerSettings _settings = new JsonSerializerSettings()
         {
             NullValueHandling = NullValueHandling.Ignore

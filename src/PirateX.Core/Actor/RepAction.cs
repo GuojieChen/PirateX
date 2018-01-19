@@ -20,7 +20,7 @@ namespace PirateX.Core.Actor
                 //获取和保存需要保持一致
 
                 if (!string.IsNullOrEmpty(cachekey))
-                    MessageSender.SendMessage(base.Context, GetFromCache(cachekey));
+                    ResponseData = MessageSender.SendMessage(base.Context, GetFromCache(cachekey));
             }
             else
             {
@@ -37,7 +37,7 @@ namespace PirateX.Core.Actor
                 }
 
 
-                MessageSender.SendMessage(base.Context, response);
+                ResponseData = MessageSender.SendMessage(base.Context, response);
 
                 //缓存返回值
                 if (!string.IsNullOrEmpty(cachekey))

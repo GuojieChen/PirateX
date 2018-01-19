@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using ProtoBuf;
 
-namespace PirateX.Net.NetMQ
+namespace PirateX.Protocol
 {
 
     [ProtoContract]
@@ -16,7 +12,7 @@ namespace PirateX.Net.NetMQ
         public byte Version { get; set; }
 
         [ProtoMember(2)]
-        public Action Action { get; set; }
+        public PirateXAction Action { get; set; }
 
         [ProtoMember(3)]
         public byte[] HeaderBytes { get; set; } = new byte[0];
