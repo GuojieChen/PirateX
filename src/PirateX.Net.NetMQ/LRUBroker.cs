@@ -21,7 +21,6 @@ namespace PirateX.Net.NetMQ
         private RouterSocket _frontend;
         private RouterSocket _backend;
 
-        public int FrontendPort { get; private set; }
         public int BackendPort { get; private set; }
 
         public static string ReadyString = "READY";
@@ -29,7 +28,8 @@ namespace PirateX.Net.NetMQ
         public LRUBroker(string frontConnectionString, string backendConnectionString)
         {
             _frontend = new RouterSocket(frontConnectionString);
-            _backend = new RouterSocket(backendConnectionString);
+            _backend = new RouterSocket();
+            BackendPort = _backend.BindRandomPort(backendConnectionString.TrimStart(new char[] { '@' }));
 
             _frontend.ReceiveReady += FrontendReceiveReady;
             _backend.ReceiveReady += BackendReceiveReady;
@@ -69,7 +69,7 @@ namespace PirateX.Net.NetMQ
             // 第三帧是“READY”或是一个client的地址
             var clientAddress = e.Socket.ReceiveFrameBytes();
             //  如果是一个应答消息，则转发给client
-            if (clientAddress.Length>1)
+            if (clientAddress.Length > 1)
             {
                 //空帧
                 e.Socket.ReceiveFrameBytes();

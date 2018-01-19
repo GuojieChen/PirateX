@@ -45,9 +45,10 @@ namespace PirateX.Net.NetMQ
             //在检测到 ResponseSocketString 是已 @开头的 自己内置一个LRUBroker
             if (config.ResponseSocketString.StartsWith("@"))
             {
-                //TODO 最好是绑定动态端口//或者可以进行配置
-                _broker = new LRUBroker(config.ResponseSocketString, "@tcp://localhost:3001");
-                connectto = ">tcp://localhost:3001";
+                _broker = new LRUBroker(config.ResponseSocketString, "tcp://*");
+                connectto = $">tcp://localhost:{_broker.BackendPort}";
+                if (Logger.IsTraceEnabled)
+                    Logger.Trace($"start inner LRUBroker Service with random port {_broker.BackendPort}");
             }
 
             _actorService.Start();
