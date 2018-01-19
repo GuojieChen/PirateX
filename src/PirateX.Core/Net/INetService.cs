@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PirateX.Protocol;
 using PirateX.Protocol.Package;
 
 namespace PirateX.Core.Net
@@ -18,7 +19,7 @@ namespace PirateX.Core.Net
         /// </summary>
         /// <param name="protocolPackage"></param>
         /// <param name="body"></param>
-        byte[] ProcessRequest(IProtocolPackage protocolPackage, byte[] body);
+        Out ProcessRequest(IProtocolPackage protocolPackage, byte[] body);
 
         void Ping(int onlinecount);
 

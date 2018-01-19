@@ -19,9 +19,7 @@ namespace PirateX.Net.SuperSocket
         {
             var sw = new Stopwatch();
             sw.Start();
-            var msg = session.AppServer.NetService.ProcessRequest(session, requestInfo.Body);
-
-            var dout = msg.FromProtobuf<Out>();
+            var dout = session.AppServer.NetService.ProcessRequest(session, requestInfo.Body);
 
             var response = new PirateXResponsePackage()
             {
@@ -55,5 +53,7 @@ namespace PirateX.Net.SuperSocket
 
             var r = new PirateXResponseInfo(response);
         }
+
+
     }
 }

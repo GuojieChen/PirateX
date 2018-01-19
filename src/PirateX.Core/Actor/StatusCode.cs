@@ -89,6 +89,11 @@
         /// </summary>
         public const short VersionLow = 508;
         /// <summary>
+        /// 超时
+        /// </summary>
+        public const short Timeout = 509;
+
+        /// <summary>
         /// 配置数据缺少
         /// </summary>
         public const short ConfigDataNull = 599;

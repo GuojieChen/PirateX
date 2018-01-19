@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -10,6 +11,7 @@ using NetMQ;
 using NetMQ.Sockets;
 using NLog;
 using PirateX.Core;
+using PirateX.Core.Actor;
 using PirateX.Core.Net;
 using PirateX.Core.Utils;
 using PirateX.Protocol;
@@ -96,8 +98,9 @@ namespace PirateX.Net.NetMQ
         /// </summary>
         /// <param name="protocolPackage"></param>
         /// <param name="body"></param>
-        public virtual byte[] ProcessRequest(IProtocolPackage protocolPackage, byte[] body)
+        public virtual Out ProcessRequest(IProtocolPackage protocolPackage, byte[] body)
         {
+            //LRU
             //REQ --- Router/Router --- REQ
 
             if (protocolPackage == null)
@@ -136,7 +139,7 @@ namespace PirateX.Net.NetMQ
             return RequestToRemoteResponseSocket(din);
         }
 
-        private byte[] RequestToRemoteResponseSocket(In din)
+        private Out RequestToRemoteResponseSocket(In din)
         {
             try
             {
@@ -146,7 +149,7 @@ namespace PirateX.Net.NetMQ
                     req.Options.Identity = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString("N"));
                     req.SendFrame(din.ToProtobuf());
                     if (req.TryReceiveFrameBytes(DefaultTimeOuTimeSpan, out var responseBytes))
-                        return responseBytes;
+                        return responseBytes.FromProtobuf<Out>();
                 }
             }
             catch (Exception e)
@@ -159,7 +162,7 @@ namespace PirateX.Net.NetMQ
 
             return null;
         }
-
+        
         public virtual void Ping(int onlinecount)
         {
             RequestToRemoteResponseSocket(new In()

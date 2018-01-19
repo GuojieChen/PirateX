@@ -21,6 +21,9 @@ namespace PirateX.Net.NetMQ
         private RouterSocket _frontend;
         private RouterSocket _backend;
 
+        public int FrontendPort { get; private set; }
+        public int BackendPort { get; private set; }
+
         public static string ReadyString = "READY";
 
         public LRUBroker(string frontConnectionString, string backendConnectionString)
