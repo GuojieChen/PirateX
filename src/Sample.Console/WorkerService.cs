@@ -44,17 +44,18 @@ namespace GameServer.Console
         public int Id { get; set; }
         public string SecretKey { get; set; }
         public int TargetId { get; set; }
-        public string Redis { get; set; }
-        public int RedisDb { get; set; }
+        //public string Redis { get; set; }
+        //public int RedisDb { get; set; }
     }
 
-    public class ServerSetting : IServerSetting,IRedisServerSetting
+    public class ServerSetting : IServerSetting
+        //,IRedisServerSetting
     {
         public string Id { get; set; }
         public string Name { get; set; }
 
-        public string RedisHosts { get; set; }
-        public int RedisDb { get; set; }
+        //public string RedisHosts { get; set; }
+        //public int RedisDb { get; set; }
 
     }
 
@@ -65,14 +66,14 @@ namespace GameServer.Console
             new DistrictConfig {
                 Id = 1,
                 Name = "test 01",
-                Redis = "127.0.0.1:6379,password=glee1234",
-                RedisDb = 1,
+                //Redis = "127.0.0.1:6379,password=glee1234",
+                //RedisDb = 1,
                 },
             new DistrictConfig {
                 Id = 2,
                 Name = "test 02",
-                Redis = "127.0.0.1:6379,password=glee1234",
-                RedisDb = 2,
+                //Redis = "127.0.0.1:6379,password=glee1234",
+                //RedisDb = 2,
                 }
         };
 

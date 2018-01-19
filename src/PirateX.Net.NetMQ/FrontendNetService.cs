@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
 using NetMQ;
 using NetMQ.Sockets;
@@ -16,7 +17,7 @@ using PirateX.Protocol.Package;
 
 namespace PirateX.Net.NetMQ
 {
-    public class NetService : INetService
+    public class FrontendNetService : INetService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private INetManager NetSend { get; set; }
@@ -97,7 +98,7 @@ namespace PirateX.Net.NetMQ
         /// <param name="body"></param>
         public virtual byte[] ProcessRequest(IProtocolPackage protocolPackage, byte[] body)
         {
-            //REQ --- Router/Dealer --- REP
+            //REQ --- Router/Router --- REQ
 
             if (protocolPackage == null)
                 return null ;
@@ -142,6 +143,7 @@ namespace PirateX.Net.NetMQ
                 //向远端Rep 服务器请求并获取数据
                 using (var req = new RequestSocket(ResponseHostString) { Options = { } })
                 {
+                    req.Options.Identity = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString("N"));
                     req.SendFrame(din.ToProtobuf());
                     if (req.TryReceiveFrameBytes(DefaultTimeOuTimeSpan, out var responseBytes))
                         return responseBytes;

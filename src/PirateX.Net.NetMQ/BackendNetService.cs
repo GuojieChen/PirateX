@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,12 +20,10 @@ using PirateX.Protocol.Package;
 
 namespace PirateX.Net.NetMQ
 {
-    public class ActorNetService : IActorNetService
+    public class BackendNetService : IActorNetService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private ActorConfig config;
-
-        private ResponseSocket ResponseSocket { get; set; }
 
         private PublisherSocket PublisherSocket { get; set; }
 
@@ -31,7 +31,7 @@ namespace PirateX.Net.NetMQ
 
         private IActorService _actorService;
 
-        public ActorNetService(IActorService actorService, ActorConfig config)
+        public BackendNetService(IActorService actorService, ActorConfig config)
         {
             this._actorService = actorService;
             _actorService.ActorNetService = this;
@@ -45,18 +45,17 @@ namespace PirateX.Net.NetMQ
         /// <param name="e"></param>
         protected void ProcessRequest(object sender, NetMQSocketEventArgs e)
         {
-            var bytes = e.Socket.ReceiveFrameBytes();
-
-            Logger.Debug($"ProcessRequest {Thread.CurrentThread.ManagedThreadId} - {Thread.CurrentThread.IsThreadPoolThread}");
-
-            //ThreadPool.QueueUserWorkItem((obj) =>
-            //{
+            //  将消息中空帧之前的所有内容（信封）保存起来，
+            //  本例中空帧之前只有一帧，但可以有更多。
+            var address = e.Socket.ReceiveFrameString();
+            //Console.WriteLine("[B] Message received: {0}", address);
+            var empty = e.Socket.ReceiveFrameString();
+            //Console.WriteLine("[B] Message received: {0}", empty);
+            var msg = e.Socket.ReceiveFrameBytes();
 
             byte[] response = null; 
             try
             {
-                var msg = (byte[]) bytes;
-
                 var din = msg.FromProtobuf<In>();
 
                 if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
@@ -82,28 +81,52 @@ namespace PirateX.Net.NetMQ
             }
             catch (Exception exception)
             {
+                //TODO 处理，，，
                 Logger.Error(exception);
             }
             finally
             {
-                if(response!=null)
+                e.Socket.SendMoreFrame(address);
+                e.Socket.SendMoreFrame("");
+                if (response != null)
                     e.Socket.SendFrame(response);
                 else
-                    e.Socket.SendFrameEmpty();
+                    e.Socket.SendFrame("");
             }
-
-            //}, bytes);
+            //TODO 需要处理 finnaly的异常，感知socket 然后重启
         }
 
+        private LRUBroker _broker = null;
+        private List<RequestSocket> Workers = new List<RequestSocket>(); 
         public virtual void Start()
         {
-            ResponseSocket = new ResponseSocket(config.ResponseSocketString);
-            ResponseSocket.ReceiveReady += ProcessRequest;
+            var connectto = config.ResponseSocketString;
+            //在检测到 ResponseSocketString 是已 @开头的 自己内置一个LRUBroker
+            if (config.ResponseSocketString.StartsWith("@"))
+            {
+                _broker = new LRUBroker(config.ResponseSocketString, "@tcp://localhost:3001");
+                connectto = ">tcp://localhost:3001";
+            }
 
-            Poller = new NetMQPoller() { ResponseSocket };
+            Poller = new NetMQPoller();
+
+            for (int i = 0; i < 1; i++)
+            {
+                //这里可以多开几个
+                var responseSocket = new RequestSocket(connectto);
+                responseSocket.Options.Identity = Encoding.UTF8.GetBytes($"{Dns.GetHostName()}_{Process.GetCurrentProcess().Id}_{i}");
+                responseSocket.ReceiveReady += ProcessRequest;
+                Poller.Add(responseSocket);
+                Workers.Add(responseSocket);
+            }
 
             _actorService.Start();
+            _broker.StartAsync();
             Poller.RunAsync();
+            
+            Thread.Sleep(200);
+            foreach (var worker in Workers)
+                worker.SendFrame(new byte[]{1});
         }
 
         public virtual void Stop()
@@ -112,7 +135,11 @@ namespace PirateX.Net.NetMQ
                 Logger.Debug("ActorNetService Stopping...");
 
             Poller?.Stop();
-            ResponseSocket?.Close();
+            foreach (var worker in Workers)
+                worker.Close();
+
+            _broker?.Stop();
+
             _actorService.Stop();
         }
         /// <summary>

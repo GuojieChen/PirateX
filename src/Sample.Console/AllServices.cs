@@ -21,13 +21,13 @@ namespace GameServer.Console
     {
         private GameAppServer HostServer;
 
-        private ActorNetService[] WorkerServer;
+        private BackendNetService[] WorkerServer;
 
         public AllServices()
         {
             /*ThreadPool.SetMaxThreads(8, 8);
             ThreadPool.SetMinThreads(4, 4);*/
-            HostServer = new GameAppServer(new NetService()
+            HostServer = new GameAppServer(new FrontendNetService()
             {
                 ResponseHostString = ">tcp://localhost:5001",
                 PublisherSocketString = ">tcp://localhost:5002",
@@ -38,9 +38,9 @@ namespace GameServer.Console
                 MaxConnectionNumber = 10000
             });
 
-            WorkerServer = new ActorNetService[]
+            WorkerServer = new BackendNetService[]
             {
-                new ActorNetService(new WorkerService(),new ActorConfig
+                new BackendNetService(new WorkerService(),new ActorConfig
                 {
                     ResponseSocketString = "@tcp://localhost:5001",
                     PublisherSocketString = "@tcp://localhost:5002"
