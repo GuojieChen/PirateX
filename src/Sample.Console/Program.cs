@@ -30,12 +30,12 @@ namespace GameServer.Console
             System.Console.WriteLine(ProtoBuf.Serializer.GetProto<ProtoSyncResponse>());
             var host = HostFactory.New(c =>
             {
-                c.UseNLog() ;
-                
+                c.UseNLog();
+
                 c.Service<AllServices>(s =>
                 {
                     s.ConstructUsing(name => new AllServices());
-                    
+
                     s.WhenStarted(t => t.Start());
 
                     s.WhenStopped(t => t.Stop());

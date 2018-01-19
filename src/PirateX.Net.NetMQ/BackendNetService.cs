@@ -37,8 +37,7 @@ namespace PirateX.Net.NetMQ
         }
 
         private LRUBroker _broker = null;
-        private static int ThreadWorkerCount = 5; 
-        private List<Task> ThreadWorkers = new List<Task>(ThreadWorkerCount);
+        private List<Task> ThreadWorkers = new List<Task>();
         private CancellationTokenSource _c_token = new CancellationTokenSource();
         public virtual void Start()
         {
@@ -55,7 +54,7 @@ namespace PirateX.Net.NetMQ
             _broker.StartAsync();
 
             Thread.Sleep(200);
-            for (int i = 0; i < ThreadWorkerCount; i++)
+            for (int i = 0; i < config.BackendWorkersPerService; i++)
                 ThreadWorkers.Add(Task.Factory.StartNew(WorkerTask,connectto,_c_token.Token));
         }
 
