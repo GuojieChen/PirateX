@@ -95,7 +95,7 @@ namespace PirateX.Core.Actor.ProtoSync
                     builder.AppendLine("不支持DateTime字段，请用时间戳（long或者int）来替换");
                 }
 
-                if (line.StartsWith("message"))
+                if (line.EndsWith("{"))
                     tempbuilder = new StringBuilder();
                 else if (line.StartsWith("}") && tempbuilder != null)
                 {
