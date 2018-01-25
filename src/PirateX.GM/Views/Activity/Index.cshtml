@@ -1,0 +1,33 @@
+﻿@using System.Reflection
+@using PirateX.Middleware.ActiveSystem
+
+@{
+    ViewBag.Title = "活动列表";
+}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>名称</th>
+            <th>描述</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+
+@foreach (Type type in ViewBag.List)
+{
+    var descAttr = type.GetCustomAttribute<ActivityDataItemDescriptonAttribute>();
+
+    if (descAttr == null)
+    {
+        continue;
+    }
+
+    <tr>
+        <td>@descAttr.Name</td>
+        <td>@descAttr.Des</td>
+        <td>@Html.ActionLink("创建","New", new {name = type.Name}, new { css = "button" }) </td>
+    </tr>
+}
+    
+</table>

@@ -8,7 +8,7 @@ using PirateX.Core.Domain.Repository;
 
 namespace PirateX.Middleware.LetterSystem
 {
-    public class LetterRepository:RepositoryBase
+    public class MidLetterRepository:RepositoryBase
     {
         public virtual int Insert(ILetter letter)
         {

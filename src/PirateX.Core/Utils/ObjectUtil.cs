@@ -167,6 +167,24 @@ namespace PirateX.Core.Utils
 
             return proto.ToString();
         }
-        
+
+        /// <summary>
+        /// 短ID生成方法
+        /// </summary>
+        /// <param name="len"></param>
+        /// <returns></returns>
+        public static string ShortIdGeneratoer(int len = 8)
+        {
+            StringBuilder builder = new StringBuilder();
+            Enumerable
+                .Range(65, 26)
+                .Select(e => ((char)e).ToString())
+                .Concat(Enumerable.Range(97, 26).Select(e => ((char)e).ToString()))
+                .Concat(Enumerable.Range(0, 10).Select(e => e.ToString()))
+                .OrderBy(e => Guid.NewGuid())
+                .Take(len)
+                .ToList().ForEach(e => builder.Append(e));
+            return builder.ToString();
+        }
     }
 }

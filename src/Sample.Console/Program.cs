@@ -34,7 +34,7 @@ namespace GameServer.Console
 
                 c.Service<AllServices>(s =>
                 {
-                    s.ConstructUsing(name => new AllServices());
+                    s.ConstructUsing(name => new AllServices()); 
 
                     s.WhenStarted(t => t.Start());
 

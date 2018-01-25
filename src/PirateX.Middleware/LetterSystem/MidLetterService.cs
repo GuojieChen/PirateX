@@ -15,12 +15,12 @@ namespace PirateX.Middleware.LetterSystem
         /// <param name="letter"></param>
         public int Send(ILetter letter)
         {
-            return base.Resolver.Resolve<LetterRepository>().Insert(letter);
+            return base.Resolver.Resolve<MidLetterRepository>().Insert(letter);
         }
 
         public void Send(IEnumerable<ILetter> letters)
         {
-            base.Resolver.Resolve<LetterRepository>().Insert(letters);
+            base.Resolver.Resolve<MidLetterRepository>().Insert(letters);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace PirateX.Middleware.LetterSystem
                     toLetter.Builder(rid);
             }
 
-            return base.Resolver.Resolve<LetterRepository>().GetList<TLetter>(rid, page, size);
+            return base.Resolver.Resolve<MidLetterRepository>().GetList<TLetter>(rid, page, size);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace PirateX.Middleware.LetterSystem
         /// <returns></returns>
         public int Delete(long rid, int id)
         {
-            return base.Resolver.Resolve<LetterRepository>().Delete(rid, id);
+            return base.Resolver.Resolve<MidLetterRepository>().Delete(rid, id);
         }
     }
 }
