@@ -4,7 +4,7 @@ using System.Linq;
 using PirateX.Core.Domain.Repository;
 using PirateX.Core.Utils;
 
-namespace PirateX.Middleware.ChatSystem
+namespace PirateX.Middleware
 {
     public class ChatRepository:PublicRepository
     {

@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autofac;
-using PirateX.Core.Domain.Entity;
 using PirateX.Core.Domain.Repository;
-using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using StackExchange.Redis;
 
-namespace PirateX.Middleware.RankingSystem
+namespace PirateX.Middleware
 {
     public class MidRankingRepository: PublicRepository
     {

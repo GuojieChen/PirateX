@@ -64,6 +64,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActiveSystem\IActivity.cs" />
+    <Compile Include="ActiveSystem\IActivityDataItem.cs" />
+    <Compile Include="ActiveSystem\MidActivityRepository.cs" />
     <Compile Include="CalculateSystem\CalculateHandler.cs" />
     <Compile Include="CalculateSystem\ICalculateContext.cs" />
     <Compile Include="CalculateSystem\ICalculateHandler.cs" />
@@ -73,7 +76,7 @@
     <Compile Include="LetterSystem\IArchive.cs" />
     <Compile Include="LetterSystem\IArchiveToLetter.cs" />
     <Compile Include="LetterSystem\ILetter.cs" />
-    <Compile Include="LetterSystem\LetterRepository.cs" />
+    <Compile Include="LetterSystem\MidLetterRepository.cs" />
     <Compile Include="LetterSystem\MidLetterService.cs" />
     <Compile Include="RankingSystem\IRanking.cs" />
     <Compile Include="RankingSystem\MidRankingRepository.cs" />
@@ -96,9 +99,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ActiveSystem\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

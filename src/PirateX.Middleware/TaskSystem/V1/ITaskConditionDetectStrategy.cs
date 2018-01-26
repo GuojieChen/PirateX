@@ -1,6 +1,6 @@
 ﻿
 
-namespace PirateX.Middleware.TaskSystem
+namespace PirateX.Middleware
 {
     /// <summary> 任务检测的接口
     /// </summary>

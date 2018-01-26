@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PirateX.Middleware.CalculateSystem
+﻿namespace PirateX.Middleware
 {
     /// <summary>
     /// 用以职责链计算模型

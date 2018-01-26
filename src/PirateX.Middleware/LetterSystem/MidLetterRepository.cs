@@ -6,9 +6,9 @@ using Dapper;
 using Dapper.Contrib.Extensions;
 using PirateX.Core.Domain.Repository;
 
-namespace PirateX.Middleware.LetterSystem
+namespace PirateX.Middleware
 {
-    public class LetterRepository:RepositoryBase
+    public class MidLetterRepository:RepositoryBase
     {
         public virtual int Insert(ILetter letter)
         {

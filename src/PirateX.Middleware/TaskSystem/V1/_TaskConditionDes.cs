@@ -1,4 +1,4 @@
-﻿namespace PirateX.Middleware.TaskSystem
+﻿namespace PirateX.Middleware
 {
     public class _TaskConditionDes
     {

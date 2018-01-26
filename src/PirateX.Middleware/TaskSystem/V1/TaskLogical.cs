@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NLog;
 using PirateX.Core.Config;
 
-namespace PirateX.Middleware.TaskSystem
+namespace PirateX.Middleware
 {
     public class TaskLogical : ILogical
     {

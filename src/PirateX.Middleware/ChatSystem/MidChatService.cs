@@ -2,7 +2,7 @@
 using Autofac;
 using PirateX.Core;
 
-namespace PirateX.Middleware.ChatSystem
+namespace PirateX.Middleware
 {
     public class ChatService:ServiceBase
     {
