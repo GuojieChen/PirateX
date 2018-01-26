@@ -49,6 +49,8 @@
   <ItemGroup>
     <Compile Include="DemoDistrictContainer.cs" />
     <Compile Include="ActivityDataItems\DoctorTaskActive.cs" />
+    <Compile Include="Domain\Activity.cs" />
+    <Compile Include="GMRepository.cs" />
     <Compile Include="GMSDKService.cs" />
     <Compile Include="GMUIListDataProviders\GMUIDoctoerTypeListProvider.cs" />
     <Compile Include="GMUIListDataProviders\GMUIPetListProvider.cs" />
@@ -72,5 +74,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

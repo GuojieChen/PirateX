@@ -11,10 +11,9 @@ namespace PirateX.GMSDK
     /// </summary>
     public class GMUINav
     {
-        /// <summary>
-        /// 标识
-        /// </summary>
-        public string Name { get; set; }
+        public string ControllerName { get; set; }
+
+        public string ActionName { get; set; } = "Index" ; 
 
         /// <summary>
         /// 显示的名称

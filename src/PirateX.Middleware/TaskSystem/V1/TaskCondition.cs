@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PirateX.Middleware.TaskSystem
+namespace PirateX.Middleware
 {
     public class TaskCondition
     {

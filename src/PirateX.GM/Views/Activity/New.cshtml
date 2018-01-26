@@ -1,6 +1,7 @@
 ﻿@using System.Reflection
 @using PirateX.GMSDK
-@using PirateX.Middleware.ActiveSystem
+@using PirateX.GMSDK.Mapping
+@using PirateX.Middleware
 
 @{
     /**/
@@ -9,19 +10,18 @@
 }
 
 @{
-    Type type = ViewBag.Type;
-    ActivityDataItemDescriptonAttribute typeAttr = type.GetCustomAttribute<ActivityDataItemDescriptonAttribute>();
+    IGMUIItemMap map = ViewBag.ItemMap;
 }
 
 
 <div class="card">
     <div class="card-header bg-light">
-        @typeAttr.Name
+        @map.Name
     </div>
     @using (Html.BeginForm("New", "Activity", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-group card-body" }))
     {
         <div class="alert alert-dismissible alert-secondary">
-            @typeAttr.Des
+            @map.Des
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">×</span>
             </button>
@@ -30,7 +30,7 @@
         <div>
             <div class="row form-group">
                 <div class="col-lg-1">开始时间</div>
-                <div class="col-lg-3"><input type="text" name="startat" class="form-control" /></div>
+                <div class="col-lg-3"><input type="text" name="_startat_" class="form-control" /></div>
                 <div class="col-lg-8">
                     <small class="form-text">xxxxx</small>
                 </div>
@@ -38,7 +38,7 @@
 
             <div class="row form-group">
                 <div class="col-lg-1">结束时间</div>
-                <div class="col-lg-3"><input type="text" name="startat" class="form-control" /></div>
+                <div class="col-lg-3"><input type="text" name="_endat_" class="form-control" /></div>
                 <div class="col-lg-8">
                     <small class="form-text">xxxxx</small>
                 </div>
@@ -60,39 +60,36 @@
                 </div>
             </div>
 
-            @foreach (PropertyInfo info in type.GetProperties())
+            @foreach (IGMUIPropertyMap info in map.PropertyMaps)
             {
-                var attr = info.GetCustomAttribute<GMUIItemAttribute>();
-                if (attr != null)
-                {
-                    var attrType = attr.GetType();
-
-                    <div class="row form-group">
-                        <div class="col-lg-1">
-                            @attr.DisplayName
-                        </div>
-                        <div class="col-lg-3">
-                            @if (typeof(GMUIItemTextBoxAttribute).IsAssignableFrom(attrType))
-                            {
-                                <input type="text" name="@info.Name" class="form-control" />
-                            }
-                            else if (typeof(GMUIItemDropdownAttribute).IsAssignableFrom(attrType))
-                            {
-                                IGMUIListDataProvider listprovider = (IGMUIListDataProvider)Activator.CreateInstance(((GMUIItemDropdownAttribute)attr).ListSourceProvider);
-
-                                <select name="@info.Name" class="form-control">
-                                    @foreach (GMUIListItem item in listprovider.GetListItems())
-                                    {
-                                        <option value="@item.Value">@item.Name</option>
-                                    }
-                                </select>
-                            }
-                        </div>
-                        <div class="col-lg-8">
-                            <small class="form-text">@attr.Tips</small>
-                        </div>
+                <div class="row form-group">
+                    <div class="col-lg-1">
+                        @info.DisplayName
                     </div>
-                }
+                    <div class="col-lg-3">
+                        @if (info is GMUITextBoxPropertyMap)
+                        {
+                            <input type="text" name="@info.Name" class="form-control" />
+                        }
+                        else if (info is GMUIDropdownPropertyMap)
+                        {
+                            
+                            <select name="@info.Name" class="form-control">
+                                @foreach (GMUIListItem item in ((GMUIDropdownPropertyMap)info).ListDataProvider.GetListItems())
+                                {
+                                    <option value="@item.Value">@item.Name</option>
+                                }
+                            </select>
+                        }
+                        else
+                        {
+                            <div>控件没有实现！！！</div>
+                        }
+                    </div>
+                    <div class="col-lg-8">
+                        <small class="form-text">@info.Tips</small>
+                    </div>
+                </div>
             }
         </div>
     }

@@ -43,13 +43,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GMUIItems\GMUIItemDropdownAttribute.cs" />
-    <Compile Include="GMUIItems\GMUIItemTextBoxAttribute.cs" />
+    <Compile Include="Mapping\GMUIDropdownPropertyMap.cs" />
+    <Compile Include="Mapping\GMUIItemMap.cs" />
+    <Compile Include="Mapping\GMUITextBoxPropertyMap.cs" />
     <Compile Include="GMUINav.cs" />
-    <Compile Include="IGMUIItem.cs" />
+    <Compile Include="IGMRepository.cs" />
     <Compile Include="IGMSDKService.cs" />
     <Compile Include="IGMUIListDataProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Mapping\GMUIPropertyMap.cs" />
+    <Compile Include="Mapping\ReflectionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PirateX.Core\PirateX.Core.csproj">

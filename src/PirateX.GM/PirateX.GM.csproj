@@ -227,6 +227,9 @@
     <Content Include="Content\simple-line-icons\fonts\Simple-Line-Icons.woff2" />
     <Content Include="Views\Activity\Index.cshtml" />
     <Content Include="Views\Activity\New.cshtml" />
+    <Content Include="Views\Home\Nav.cshtml" />
+    <Content Include="Views\Activity\NewList.cshtml" />
+    <Content Include="Views\Activity\_ButtonAdd.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

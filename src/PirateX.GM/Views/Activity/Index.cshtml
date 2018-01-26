@@ -1,33 +1,55 @@
-﻿@using System.Reflection
-@using PirateX.Middleware.ActiveSystem
+﻿@using PirateX.Middleware
 
 @{
-    ViewBag.Title = "活动列表";
+    /**/
+
+    ViewBag.Title = "配置活动";
 }
 
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th>名称</th>
-            <th>描述</th>
-            <th>操作</th>
-        </tr>
-    </thead>
+<div class="card">
+    <div class="card-header bg-light">
+        操作
+    </div>
 
-@foreach (Type type in ViewBag.List)
-{
-    var descAttr = type.GetCustomAttribute<ActivityDataItemDescriptonAttribute>();
+    <div class="card-body">
+        @RenderPage("~/Views/Activity/_ButtonAdd.cshtml")
+    </div>
+</div>
 
-    if (descAttr == null)
-    {
-        continue;
-    }
 
-    <tr>
-        <td>@descAttr.Name</td>
-        <td>@descAttr.Des</td>
-        <td>@Html.ActionLink("创建","New", new {name = type.Name}, new { css = "button" }) </td>
-    </tr>
-}
+<div class="card">
+    <div class="card-header bg-light">
+        活动列表
+    </div>
     
-</table>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>选择</th>
+                <th>名称</th>
+                <th>备注</th>
+                <th>起止时间</th>
+                <th>周期</th>
+                <th>状态</th>
+            </tr>
+            </thead>
+    
+            <tbody>
+        
+            @foreach (IActivity item in  ViewBag.List)
+            {
+                <tr>
+                    <td></td>
+                    <td>@item.Name</td>
+                    <td>@item.Remark</td>
+                    <td>@($"{item.StartAt} - {item.EndAt}")</td>
+                    <td>@(string.Join(",", item.Days))</td>
+                    <td></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+

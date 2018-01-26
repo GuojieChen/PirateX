@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PirateX.Middleware.LetterSystem
+﻿namespace PirateX.Middleware
 {
     /// <summary>
     /// 活动归档生成信件

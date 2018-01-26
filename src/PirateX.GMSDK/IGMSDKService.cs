@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using PirateX.Core.Container;
-using PirateX.Middleware.ActiveSystem;
+using PirateX.GMSDK.Mapping;
 
 namespace PirateX.GMSDK
 {
@@ -24,6 +24,8 @@ namespace PirateX.GMSDK
 
         ContainerBuilder InitContainerBuilder();
 
-        Type[] GetActivityDatas();
+        IGMUIItemMap[] GetActivityMaps();
+
+        IGMRepository GetGmRepository();
     }
 }

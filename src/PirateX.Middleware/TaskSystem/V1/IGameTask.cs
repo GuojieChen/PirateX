@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PirateX.Core.Domain.Entity;
 
-namespace PirateX.Middleware.TaskSystem
+namespace PirateX.Middleware
 {
     public interface IGameTask<TTaskId> : IEntity<int>, IEntityPrivate, IEntityCreateAt
     {

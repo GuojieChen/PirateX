@@ -8,6 +8,13 @@ namespace PirateX.GMSDK.Demo.GMUIListDataProviders
 {
     public class GMUIDoctoerTypeListProvider : IGMUIListDataProvider
     {
+        public static GMUIDoctoerTypeListProvider Instance = new GMUIDoctoerTypeListProvider();
+
+        private GMUIDoctoerTypeListProvider()
+        {
+
+        }
+
         public IEnumerable<GMUIListItem> GetListItems()
         {
             return new List<GMUIListItem>()

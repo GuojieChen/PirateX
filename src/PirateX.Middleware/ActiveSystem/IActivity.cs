@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PirateX.Core.Domain.Entity;
 
-namespace PirateX.Middleware.ActiveSystem
+namespace PirateX.Middleware
 {
     /// <summary>
     /// 活动模型
     /// </summary>
-    public interface IActivity:IEnumerable<int>,IEntityDistrict,IEntityCreateAt
+    public interface IActivity:IEntity<int>,IEntityDistrict
     {
+        /// <summary>
+        /// 活动名称
+        /// </summary>
+        string Name { get; set; }
+
         /// <summary>
         /// 开始时间
         /// </summary>
@@ -20,6 +22,10 @@ namespace PirateX.Middleware.ActiveSystem
         /// 结束时间
         /// </summary>
         DateTime EndAt { get; set; }
+        /// <summary>
+        /// 活动类型
+        /// </summary>
+        int Type { get; set; }
         /// <summary>
         /// 哪些天开放
         /// </summary>

@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using PirateX.Core.Container;
-using PirateX.Middleware.ActiveSystem;
+using PirateX.GMSDK.Demo.ActivityDataItems;
+using PirateX.GMSDK.Mapping;
 
 namespace PirateX.GMSDK.Demo
 {
@@ -17,45 +18,64 @@ namespace PirateX.GMSDK.Demo
         {
             new GMUINav()
             {
-                Name = "search",
+                ControllerName = "Search",
                 DisplayName = "综合查询",
                 SubNavs = new GMUINav[]
                 {
                     new GMUINav()
                     {
-                        Name = "search-role",
+                        ActionName = "search-role",
                         DisplayName = "角色查询",
                     },
                     new GMUINav()
                     {
-                        Name = "search-activity",
+                        ActionName = "search-activity",
                         DisplayName = "活动查询",
                     },
                 }
             },
             new GMUINav()
             {
-                Name = "letter",
+                ControllerName = "Letter",
                 DisplayName = "信件管理",
                 SubNavs = new GMUINav[]
                 {
                     new GMUINav()
                     {
-                        Name = "letter-attachment",
+                        ActionName = "letter-attachment",
                         DisplayName = "附件管理",
                     },
                     new GMUINav()
                     {
-                        Name = "letter-all",
+                        ActionName = "letter-all",
                         DisplayName = "全服信件",
                     },
                     new GMUINav()
                     {
-                        Name = "letter-part",
+                        ActionName = "letter-part",
                         DisplayName = "部分信件",
                     },
                 }
             },
+
+            new GMUINav()
+            {
+                ControllerName = "Activity",
+                DisplayName = "活动管理",
+                SubNavs = new GMUINav[]
+                {
+                    new GMUINav()
+                    {
+                        ActionName = "Index",
+                        DisplayName = "活动配置",
+                    },
+                    new GMUINav()
+                    {
+                        ActionName = "Index",
+                        DisplayName = "配置附件",
+                    },
+                }
+            }
         };
 
         public ContainerBuilder InitContainerBuilder()
@@ -65,13 +85,20 @@ namespace PirateX.GMSDK.Demo
             return builder;
         }
 
-        public Type[] GetActivityDatas()
+        public IGMUIItemMap[] GetActivityMaps()
         {
-            return new Type[]
+            return new IGMUIItemMap[]
             {
-                typeof(DoctorTaskActive),
-                typeof(LuckyDrawActive),
+                new GMUIDoctorTaskActiveMap(), 
+                new GMUILuckyDrawActiveMap(), 
             };
+        }
+
+
+        private GMRepository _gmRepository = new GMRepository();
+        public IGMRepository GetGmRepository()
+        {
+            return _gmRepository;
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Linq;
 using Autofac;
 using PirateX.Core;
 
-namespace PirateX.Middleware.LetterSystem
+namespace PirateX.Middleware
 {
     public class MidLetterService:ServiceBase
     {

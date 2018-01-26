@@ -1,22 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PirateX.GMSDK.Demo.GMUIListDataProviders;
-using PirateX.Middleware.ActiveSystem;
+﻿using PirateX.GMSDK.Demo.GMUIListDataProviders;
+using PirateX.GMSDK.Mapping;
+using PirateX.Middleware;
 
-namespace PirateX.GMSDK.Demo
+namespace PirateX.GMSDK.Demo.ActivityDataItems
 {
-    [ActivityDataItemDescripton(Name = "博士的任务",Des = "博士的任务xxxxxxx")]
     public class DoctorTaskActive:IActivityDataItem
     {
-        [GMUIItemDropdown(DisplayName = "类型", Tips = "xxx",ListSourceProvider = typeof(GMUIDoctoerTypeListProvider))]
         public byte Type { get; set; }
 
-        [GMUIItemTextBox(DisplayName = "数量",Tips = "xxx")]
         public int Cnt { get; set; }
 
         //奖励呢。。
+    }
+
+    public class GMUIDoctorTaskActiveMap : GMUIItemMap<DoctorTaskActive>
+    {
+        public GMUIDoctorTaskActiveMap()
+        {
+            base.Name = "博士的任务";
+            base.Des = "博士的任务xxxxxxx";
+
+            Map<GMUIDropdownPropertyMap>(item => item.Type)
+                .ToDisplayName("类型")
+                .ToTips("xxxxxx")
+                .ToListDataProvider(GMUIDoctoerTypeListProvider.Instance);
+
+            Map<GMUITextBoxPropertyMap>(item=>item.Cnt)
+                .ToDisplayName("数量")
+                .ToTips("xxxxxx");
+        }
     }
 }

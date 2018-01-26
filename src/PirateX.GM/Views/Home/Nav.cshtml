@@ -1,0 +1,38 @@
+﻿@using PirateX.GMSDK
+<div class="sidebar">
+    <nav class="sidebar-nav">
+        <ul class="nav">
+            <li class="nav-title">Navigation</li>
+
+            <li class="nav-item">
+                <a href="/Home" class="nav-link active">
+                    <i class="icon icon-speedometer"></i> Dashboard
+                </a>
+            </li>
+            
+            @foreach (GMUINav item in ViewBag.Navs)
+            {
+                <li class="nav-item nav-dropdown">
+                    <span href="#" class="nav-link nav-dropdown-toggle">
+                        <i class="icon icon-target"></i> @item.DisplayName <i class="fa fa-caret-left"></i>
+                    </span>
+
+                    @if (item.SubNavs.Any())
+                    {
+                        <ul class="nav-dropdown-items">
+                            @foreach (GMUINav subItem in item.SubNavs)
+                            {
+                                <li class="nav-item">
+                                    @Html.ActionLink(subItem.DisplayName, subItem.ActionName, (string.IsNullOrEmpty(subItem.ControllerName) ? item.ControllerName : subItem.ControllerName),new{},new{ @class = "nav-link" })
+                                </li>
+                            }
+                        </ul>
+                    }
+                </li>
+            }
+
+            <li class="nav-title">More</li>
+
+        </ul>
+    </nav>
+</div>

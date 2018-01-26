@@ -1,20 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PirateX.GMSDK.Demo.GMUIListDataProviders;
-using PirateX.Middleware.ActiveSystem;
+﻿using PirateX.GMSDK.Demo.GMUIListDataProviders;
+using PirateX.GMSDK.Mapping;
+using PirateX.Middleware;
 
-namespace PirateX.GMSDK.Demo
+namespace PirateX.GMSDK.Demo.ActivityDataItems
 {
-    [ActivityDataItemDescripton(Name = "幸运转盘活动", Des = "幸运转盘活动xxxxxxx")]
     public class LuckyDrawActive:IActivityDataItem
     {
-        [GMUIItemDropdown(DisplayName = "主打精灵", Tips = "注意：必须保证所选精灵在 转盘可配置的精灵表.xlsx 中！", ListSourceProvider = typeof(GMUIPetListProvider))]
         public int PetId { get; set; }
 
-        [GMUIItemTextBox(DisplayName = "免费次数", Tips = "xxx")]
         public int FreeCnt { get; set; }
+    }
+
+    public class GMUILuckyDrawActiveMap : GMUIItemMap<LuckyDrawActive>
+    {
+        public GMUILuckyDrawActiveMap()
+        {
+            base.Name = "幸运转盘活动";
+            base.Des = "幸运转盘活动xxxxxxx";
+
+            Map<GMUIDropdownPropertyMap>(item => item.PetId)
+                .ToDisplayName("主打精灵")
+                .ToTips("注意：必须保证所选精灵在 转盘可配置的精灵表.xlsx 中！")
+                .ToListDataProvider(GMUIPetListProvider.Instance);
+
+            Map<GMUITextBoxPropertyMap>(item => item.FreeCnt)
+                .ToDisplayName("免费次数")
+                .ToTips("xxx");
+
+        }
     }
 }
