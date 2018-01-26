@@ -169,16 +169,10 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Scripts\jquery-3.3.1.intellisense.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\carbon.js" />
     <Content Include="Scripts\demo.js" />
-    <Content Include="Scripts\jquery-3.3.1.js" />
-    <Content Include="Scripts\jquery-3.3.1.min.js" />
-    <Content Include="Scripts\jquery-3.3.1.slim.js" />
-    <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Scripts\chart.js\chart.js" />
-    <Content Include="Scripts\chart.js\chart.min.js" />
+    <Content Include="Scripts\chart.min.js" />
     <Content Include="Content\font-awesome\css\fa-brands.css" />
     <Content Include="Content\font-awesome\css\fa-brands.min.css" />
     <Content Include="Content\font-awesome\css\fa-regular.css" />
@@ -192,6 +186,7 @@
     <Content Include="Content\font-awesome\webfonts\fa-brands-400.svg" />
     <Content Include="Content\font-awesome\webfonts\fa-regular-400.svg" />
     <Content Include="Content\font-awesome\webfonts\fa-solid-900.svg" />
+    <Content Include="Scripts\jquery.min.js" />
     <Content Include="Scripts\popper.min.js" />
     <Content Include="Content\simple-line-icons\css\simple-line-icons.css" />
     <Content Include="Content\simple-line-icons\fonts\Simple-Line-Icons.svg" />
@@ -237,8 +232,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
-    <Content Include="Scripts\jquery-3.3.1.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

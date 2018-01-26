@@ -9,7 +9,7 @@ namespace PirateX.GM
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-{version}.js"));
+                        "~/Scripts/jquery.min.js"));
 
             //bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
             //            "~/Scripts/jquery.validate*"));
@@ -19,9 +19,9 @@ namespace PirateX.GM
             //bundles.Add(new ScriptBundle("~/bundles/modernizr").Include("~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-                      "~/Scripts/bootstrap.min.js",
                       "~/Scripts/popper.min.js",
-                      "~/Scripts/chat/chart.min.js",
+                      "~/Scripts/bootstrap.min.js",
+                      "~/Scripts/chart.min.js",
                       "~/Scripts/carbon.js",
                       "~/Scripts/demo.js"
                           //"~/Scripts/respond.js"

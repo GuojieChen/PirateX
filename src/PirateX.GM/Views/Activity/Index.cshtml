@@ -1,9 +1,11 @@
 ﻿@using PirateX.Middleware
 
 @{
-    /**/
+                /**/
 
-    ViewBag.Title = "配置活动";
+                /**/
+
+                ViewBag.Title = "配置活动";
 }
 
 <div class="card">
@@ -21,35 +23,34 @@
     <div class="card-header bg-light">
         活动列表
     </div>
-    
+
     <div class="card-body">
         <table class="table">
             <thead>
-            <tr>
-                <th>选择</th>
-                <th>名称</th>
-                <th>备注</th>
-                <th>起止时间</th>
-                <th>周期</th>
-                <th>状态</th>
-            </tr>
-            </thead>
-    
-            <tbody>
-        
-            @foreach (IActivity item in  ViewBag.List)
-            {
                 <tr>
-                    <td></td>
-                    <td>@item.Name</td>
-                    <td>@item.Remark</td>
-                    <td>@($"{item.StartAt} - {item.EndAt}")</td>
-                    <td>@(string.Join(",", item.Days))</td>
-                    <td></td>
+                    <th>选择</th>
+                    <th>名称</th>
+                    <th>备注</th>
+                    <th>起止时间</th>
+                    <th>周期</th>
+                    <th>状态</th>
                 </tr>
-            }
+            </thead>
+
+            <tbody>
+
+                @foreach (IActivity item in ViewBag.List)
+                {
+                    <tr>
+                        <td></td>
+                        <td>@item.Name</td>
+                        <td>@item.Remark</td>
+                        <td>@($"{item.StartAt} - {item.EndAt}")</td>
+                        <td>@(string.Join(",", item.Days))</td>
+                        <td></td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
 </div>
-
