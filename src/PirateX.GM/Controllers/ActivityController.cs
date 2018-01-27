@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using PirateX.GM.App_Start;
+using PirateX.GMSDK;
+using PirateX.GMSDK.Mapping;
 
 namespace PirateX.GM.Controllers
 {
@@ -26,8 +28,22 @@ namespace PirateX.GM.Controllers
 
         public ActionResult New(string name)
         {
-            ViewBag.ItemMap = AutofacConfig.GmsdkService.GetActivityMaps()
+            var map = AutofacConfig.GmsdkService.GetActivityMaps()
                 .FirstOrDefault(item => Equals(item.Name, name));
+
+            var maps = new List<IGMUIPropertyMap>(map.PropertyMaps);
+            maps.AddRange(new GMUIActivityBasicMap().PropertyMaps);
+            var groups = maps.GroupBy(item => item.GroupName).OrderBy(item=>item.Key); 
+            var colclass = "col-md-4";
+            if (groups.Count() < 3)
+            {
+                colclass = "col-md-12";
+            }
+
+            ViewBag.ItemMap = map;
+            ViewBag.Groups = groups;
+            ViewBag.ColClass = colclass;
+
 
             return View();
         }

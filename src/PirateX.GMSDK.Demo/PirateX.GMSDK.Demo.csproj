@@ -47,11 +47,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActivityDataItems\TimeCopyActive.cs" />
     <Compile Include="DemoDistrictContainer.cs" />
     <Compile Include="ActivityDataItems\DoctorTaskActive.cs" />
     <Compile Include="Domain\Activity.cs" />
     <Compile Include="GMRepository.cs" />
     <Compile Include="GMSDKService.cs" />
+    <Compile Include="GMUIListDataProviders\GMUIConTypeListDataProvider.cs" />
+    <Compile Include="GMUIListDataProviders\GMUIConValueListDataProvider.cs" />
     <Compile Include="GMUIListDataProviders\GMUIDoctoerTypeListProvider.cs" />
     <Compile Include="GMUIListDataProviders\GMUIPetListProvider.cs" />
     <Compile Include="ActivityDataItems\LuckyDrawActive.cs" />

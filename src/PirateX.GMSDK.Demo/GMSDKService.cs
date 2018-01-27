@@ -91,6 +91,7 @@ namespace PirateX.GMSDK.Demo
             {
                 new GMUIDoctorTaskActiveMap(), 
                 new GMUILuckyDrawActiveMap(), 
+                new GMUITimeCopyActivePropertyMap(),
             };
         }
 
@@ -99,6 +100,11 @@ namespace PirateX.GMSDK.Demo
         public IGMRepository GetGmRepository()
         {
             return _gmRepository;
+        }
+
+        public IGMUIItemMap GetRewardItemMap()
+        {
+            return new GMUIRewardMap();
         }
     }
 }

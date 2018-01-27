@@ -19,14 +19,14 @@ namespace PirateX.GMSDK.Demo.GMUIListDataProviders
         {
             return new List<GMUIListItem>()
             {
-                new GMUIListItem(){Value = "1", Name = "使用面包"},
-                new GMUIListItem(){Value = "2", Name = "副本战斗"},
-                new GMUIListItem(){Value = "3", Name = "竞技场战斗"},
-                new GMUIListItem(){Value = "4", Name = "探宝"},
-                new GMUIListItem(){Value = "5", Name = "试炼通关"},
-                new GMUIListItem(){Value = "6", Name = "开启宝箱"},
-                new GMUIListItem(){Value = "7", Name = "装备重铸"},
-                new GMUIListItem(){Value = "8", Name = "招财喵喵"},
+                new GMUIListItem(){Value = "1", Text = "使用面包"},
+                new GMUIListItem(){Value = "2", Text = "副本战斗"},
+                new GMUIListItem(){Value = "3", Text = "竞技场战斗"},
+                new GMUIListItem(){Value = "4", Text = "探宝"},
+                new GMUIListItem(){Value = "5", Text = "试炼通关"},
+                new GMUIListItem(){Value = "6", Text = "开启宝箱"},
+                new GMUIListItem(){Value = "7", Text = "装备重铸"},
+                new GMUIListItem(){Value = "8", Text = "招财喵喵"},
             };
         }
     }

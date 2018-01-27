@@ -14,6 +14,54 @@ namespace PirateX.GM.Controllers
     /// </summary>
     public class HomeController : Controller
     {
+        private static GMUINav activityNavs = new GMUINav()
+        {
+            ControllerName = "Activity",
+            DisplayName = "活动管理",
+            SubNavs = new GMUINav[]
+                {
+                    new GMUINav()
+                    {
+                        ActionName = "Index",
+                        DisplayName = "活动配置",
+                    },
+                    new GMUINav()
+                    {
+                        ActionName = "NewRewards",
+                        DisplayName = "配置奖励",
+                    },
+                    new GMUINav()
+                    {
+                        ActionName = "Publish",
+                        DisplayName = "活动发布",
+                    },
+                }
+        };
+
+        private static GMUINav letterNavs = new GMUINav()
+        {
+            ControllerName = "Letter",
+            DisplayName = "信件管理",
+            SubNavs = new GMUINav[]
+            {
+                    new GMUINav()
+                    {
+                        ActionName = "letter-attachment",
+                        DisplayName = "附件管理",
+                    },
+                    new GMUINav()
+                    {
+                        ActionName = "letter-all",
+                        DisplayName = "全服信件",
+                    },
+                    new GMUINav()
+                    {
+                        ActionName = "letter-part",
+                        DisplayName = "部分信件",
+                    },
+            }
+        };
+
         public ActionResult Index()
         {
             return View();
@@ -39,7 +87,12 @@ namespace PirateX.GM.Controllers
         /// <returns></returns>
         public ActionResult Nav()
         {
-            ViewBag.Navs = AutofacConfig.GmsdkService.GmuiNavs;
+            List<GMUINav> navs = new List<GMUINav>();
+
+            navs.Add(activityNavs);
+            navs.Add(letterNavs);
+
+            ViewBag.Navs = navs;//AutofacConfig.GmsdkService.GmuiNavs;
 
             return PartialView();
         }

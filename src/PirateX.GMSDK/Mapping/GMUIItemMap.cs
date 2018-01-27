@@ -33,7 +33,6 @@ namespace PirateX.GMSDK.Mapping
             PropertyMaps = new List<IGMUIPropertyMap>();
         }
 
-        
         public IList<IGMUIPropertyMap> PropertyMaps { get; }
 
         protected TPropertyMap Map<TPropertyMap>(Expression<Func<TGMUIItem, object>> expression)
@@ -42,12 +41,13 @@ namespace PirateX.GMSDK.Mapping
             var info = (PropertyInfo)ReflectionHelper.GetMemberInfo(expression);
             var propertyMap = Activator.CreateInstance<TPropertyMap>();
             propertyMap.PropertyInfo = info;
+            //if (info.PropertyType.IsArray)
+            //    propertyMap.CanMulti(true);
 
             ThrowIfDuplicateMapping(propertyMap);
             PropertyMaps.Add(propertyMap);
             return propertyMap;
         }
-
 
         private void ThrowIfDuplicateMapping(IGMUIPropertyMap map)
         {
