@@ -1,0 +1,39 @@
+﻿@using PirateX.GMSDK.Mapping;
+@{
+
+
+    ViewBag.Title = "NewRewards";
+
+    IGMUIItemMap map = ViewBag.ItemMap;
+}
+
+<h2>NewRewards</h2>
+
+@using (Html.BeginForm("New", "Publish", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form" }))
+{
+
+    <div class="form-group">
+        <label>备注名（必须唯一）</label>
+        @Html.TextBox("Name", null, new { @class = "form-control" })
+    </div>
+
+    {
+        IEnumerable<IGrouping<string, IGMUIPropertyMap>> groups = ViewBag.Groups;
+        var length = groups.Count();
+        var rowcount = (length % 3 == 0) ? length / 3 : (length / 3) + 1;
+
+        for (var i = 0; i < rowcount; i++)
+        {
+            var list = groups.Skip(i * 3).Take(3);
+            <div class="row">
+                @foreach (var item in list)
+                {
+                    @UIHelper.ConvertToCard("配置奖励", ViewBag.ColClass, map.PropertyMaps)
+                }
+            </div>
+        }
+    }
+
+
+    <button type="submit" class="btn btn-block btn-primary">提交并保存</button>
+}

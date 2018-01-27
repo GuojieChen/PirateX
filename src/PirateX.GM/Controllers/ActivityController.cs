@@ -47,5 +47,29 @@ namespace PirateX.GM.Controllers
 
             return View();
         }
+
+        public ActionResult Publish()
+        {
+            return View();
+        }
+
+        public ActionResult NewRewards()
+        {
+            var map = AutofacConfig.GmsdkService.GetRewardItemMap();
+            var maps = new List<IGMUIPropertyMap>(map.PropertyMaps);
+
+            var groups = maps.GroupBy(item => item.GroupName).OrderBy(item => item.Key);
+            var colclass = "col-md-4";
+            if (groups.Count() < 3)
+            {
+                colclass = "col-md-12";
+            }
+
+            ViewBag.ItemMap = map;
+            ViewBag.Groups = groups;
+            ViewBag.ColClass = colclass;
+
+            return View();
+        }
     }
 }

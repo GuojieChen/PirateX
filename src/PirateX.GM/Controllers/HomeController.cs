@@ -96,5 +96,6 @@ namespace PirateX.GM.Controllers
 
             return PartialView();
         }
+
     }
 }

@@ -39,7 +39,7 @@
                 <div class="row">
                     @foreach (var item in list)
                     {
-                        @ConvertToCard(item.Key ?? "基础配置", item.AsEnumerable<IGMUIPropertyMap>())
+                        @UIHelper.ConvertToCard(item.Key ?? "基础配置",ViewBag.ColClass, item.AsEnumerable<IGMUIPropertyMap>())
                     }
                 </div>
             }
@@ -47,82 +47,4 @@
 
         <button type="button" class="btn btn-block btn-primary">提交并保存</button>
     }
-
-
 </div>
-
-@helper ConvertToCard(string headerText, IEnumerable<IGMUIPropertyMap> maps)
-    {
-        <div class="@ViewBag.ColClass">
-            <div class="card">
-                <div class="card-header bg-light">
-                    @headerText
-
-                    <div class="card-actions">
-                        <a href="#" class="btn">
-                            <i class="fa fa-copy"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    @foreach (var subItem in maps.OrderBy(x => x.OrderId))
-        {
-            @ConvertToGMUI(subItem, true)
-}
-                </div>
-            </div>
-        </div>
-}
-
-@helper ConvertToGMUI(IGMUIPropertyMap info, bool showlable = false)
-    {
-        if (info is GMUITextBoxPropertyMap)
-        {
-            <div class="form-group">
-                @if (showlable)
-                {
-                    <label class="form-control-label">@info.DisplayName</label>
-                }
-
-                @Html.TextBox(@info.Name, null, new { @class = "form-control" })
-            </div>
-        }
-        else if (info is GMUIDropdownPropertyMap)
-        {
-            <div class="form-group">
-                @if (showlable)
-                {
-                    <label class="form-control-label">@info.DisplayName</label>
-                }
-
-                @Html.DropDownList(@info.Name, ((GMUIDropdownPropertyMap)info).ListDataProvider.GetListItems().Select(item => new SelectListItem { Text = item.Text, Value = item.Value }), new { @class = "form-control" })
-            </div>
-        }
-        else if (info is GMUIMapPropertyMap)
-        {
-            foreach (var subItem in (info as GMUIMapPropertyMap).Map.PropertyMaps)
-            {
-                @ConvertToGMUI(subItem, true)
-            }
-        }
-        else if (info is GMUICheckBoxPropertyMap)
-        {
-            <div class="form-group">
-                @if (showlable)
-                {
-                    <label class="form-control-label">@info.DisplayName</label>
-                }
-
-                @foreach (var subitem in (info as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
-                {
-                    <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked"> @subitem.Text
-                }
-
-            </div>
-        }
-        else
-        {
-            <span>控件没有实现！！！</span>
-        }
-}
