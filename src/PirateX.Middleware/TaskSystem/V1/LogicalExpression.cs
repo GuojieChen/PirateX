@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PirateX.Middleware.TaskSystem
+namespace PirateX.Middleware
 {
     public class LogicalExpression
     {

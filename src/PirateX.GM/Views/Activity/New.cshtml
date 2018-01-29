@@ -1,0 +1,50 @@
+﻿@using PirateX.GMSDK
+@using PirateX.GMSDK.Mapping
+
+@{
+    ViewBag.Title = "New";
+}
+
+@{
+    IGMUIItemMap map = ViewBag.ItemMap;
+}
+
+
+<div class="">
+    @*<div class="card-header bg-light">
+            @map.Name
+        </div>*@
+    @using (Html.BeginForm("New", "Activity", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form" }))
+    {
+        <div class="alert alert-dismissible alert-secondary">
+            @map.Des
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+
+        <div class="form-group">
+            <label>备注名（必须唯一）</label>
+            @Html.TextBox("Remark", null, new { @class = "form-control" })
+        </div>
+
+        {
+            IEnumerable<IGrouping<string, IGMUIPropertyMap>> groups = ViewBag.Groups;
+            var length = groups.Count();
+            var rowcount = (length % 3 == 0) ? length / 3 : (length / 3) + 1;
+
+            for (var i = 0; i < rowcount; i++)
+            {
+                var list = groups.Skip(i * 3).Take(3);
+                <div class="row">
+                    @foreach (var item in list)
+                    {
+                        @UIHelper.ConvertToCard(item.Key ?? "基础配置",ViewBag.ColClass, item.AsEnumerable<IGMUIPropertyMap>())
+                    }
+                </div>
+            }
+        }
+
+        <button type="button" class="btn btn-block btn-primary">提交并保存</button>
+    }
+</div>

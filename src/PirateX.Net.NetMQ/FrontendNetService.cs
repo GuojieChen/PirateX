@@ -106,17 +106,20 @@ namespace PirateX.Net.NetMQ
             if (protocolPackage == null)
                 return null ;
             if(Logger.IsDebugEnabled)
-                Logger.Debug($"request from {protocolPackage.RemoteEndPoint}");
+                Logger.Debug($"request from #{protocolPackage.Id}# {protocolPackage.RemoteEndPoint}");
 
             if (protocolPackage.CryptoByte > 0)
             {
                 var last = NetSend.GetProtocolPackage(protocolPackage.Rid);
                 if (!Equals(last.Id, protocolPackage.Id))
                 {
+                    if (Logger.IsDebugEnabled)
+                        Logger.Warn($"!Equals(last.Id, protocolPackage.Id)");
+
                     protocolPackage.Close();
 
                     if (Logger.IsDebugEnabled)
-                        Logger.Debug($"!Equals(last.Id, protocolPackage.Id)");
+                        Logger.Debug($"#{protocolPackage.Id}# !Equals(last.Id, protocolPackage.Id)");
                     return null ;
                 }
             }

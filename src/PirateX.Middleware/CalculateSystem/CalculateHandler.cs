@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PirateX.Middleware.CalculateSystem
+﻿namespace PirateX.Middleware
 {
     public abstract class CalculateHandlerBase<TCalculateContext> :ICalculateHandler<TCalculateContext>
      where TCalculateContext : ICalculateContext

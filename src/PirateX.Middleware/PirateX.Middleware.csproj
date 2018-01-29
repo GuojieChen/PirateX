@@ -37,17 +37,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\..\PokemonIII\Server\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
+      <HintPath>..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.1.50.2\lib\net451\Dapper.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Dapper.Contrib, Version=1.50.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\PokemonIII\Server\packages\Dapper.Contrib.1.50.0\lib\net45\Dapper.Contrib.dll</HintPath>
+      <HintPath>..\packages\Dapper.Contrib.1.50.0\lib\net45\Dapper.Contrib.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\PokemonIII\Server\packages\NLog.4.4.9\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.4.9\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="StackExchange.Redis, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\StackExchange.Redis.1.2.3\lib\net45\StackExchange.Redis.dll</HintPath>
@@ -64,6 +63,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActiveSystem\IActivity.cs" />
+    <Compile Include="ActiveSystem\IActivityDataItem.cs" />
+    <Compile Include="ActiveSystem\MidActivityRepository.cs" />
     <Compile Include="CalculateSystem\CalculateHandler.cs" />
     <Compile Include="CalculateSystem\ICalculateContext.cs" />
     <Compile Include="CalculateSystem\ICalculateHandler.cs" />
@@ -73,7 +75,7 @@
     <Compile Include="LetterSystem\IArchive.cs" />
     <Compile Include="LetterSystem\IArchiveToLetter.cs" />
     <Compile Include="LetterSystem\ILetter.cs" />
-    <Compile Include="LetterSystem\LetterRepository.cs" />
+    <Compile Include="LetterSystem\MidLetterRepository.cs" />
     <Compile Include="LetterSystem\MidLetterService.cs" />
     <Compile Include="RankingSystem\IRanking.cs" />
     <Compile Include="RankingSystem\MidRankingRepository.cs" />
@@ -96,9 +98,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ActiveSystem\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

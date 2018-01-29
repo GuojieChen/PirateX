@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PirateX.Middleware.TaskSystem
+﻿namespace PirateX.Middleware
 {
     class TaskConditionDetectContext
     {

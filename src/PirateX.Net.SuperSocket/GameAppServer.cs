@@ -71,6 +71,9 @@ namespace PirateX.Net.SuperSocket
 
         protected override void OnSessionClosed(ProxySession session, CloseReason reason)
         {
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"session closed #{session.SessionID}# , {reason}");
+
             NetService.OnSessionClosed(GetProtocolPackage(session.Id));
 
             base.OnSessionClosed(session, reason);

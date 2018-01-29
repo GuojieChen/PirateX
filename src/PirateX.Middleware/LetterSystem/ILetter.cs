@@ -1,6 +1,6 @@
 ﻿using PirateX.Core.Domain.Entity;
 
-namespace PirateX.Middleware.LetterSystem
+namespace PirateX.Middleware
 {
     public interface ILetter:IEntity<int>,IEntityPrivate,IEntityCreateAt
     {

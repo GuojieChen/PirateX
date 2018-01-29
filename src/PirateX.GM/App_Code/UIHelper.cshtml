@@ -1,0 +1,88 @@
+﻿@{
+    Layout = null;
+}
+
+@using PirateX.GMSDK;
+@using PirateX.GMSDK.Mapping;
+
+
+
+@helper ConvertToCard(string headerText, string colClass, IEnumerable<IGMUIPropertyMap> maps)
+    {
+        <div class="@colClass">
+            <div class="card">
+                <div class="card-header bg-light">
+                    @headerText
+
+                    <div class="card-actions">
+                        <a href="#" class="btn">
+                            <i class="fa fa-copy"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    @foreach (var subItem in maps.OrderBy(x => x.OrderId))
+                    {
+                        @ConvertToGMUI(subItem, true)
+                    }
+                </div>
+            </div>
+        </div>
+}
+
+@helper ConvertToGMUI(IGMUIPropertyMap info, bool showlable = false)
+    {
+        if (info is GMUITextBoxPropertyMap)
+        {
+            <div class="form-group">
+                @if (showlable)
+                {
+                    <label class="form-control-label">@info.DisplayName</label>
+                }
+                <input type="text" class="form-control" name="@info.Name" />
+            </div>
+        }
+        else if (info is GMUIDropdownPropertyMap)
+        {
+            <div class="form-group">
+                @if (showlable)
+                {
+                    <label class="form-control-label">@info.DisplayName</label>
+                }
+
+                <select name="@info.Name" class="form-control">
+                    @foreach (var item in ((GMUIDropdownPropertyMap)info).ListDataProvider.GetListItems())
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </div>
+        }
+        else if (info is GMUIMapPropertyMap)
+        {
+            foreach (var subItem in (info as GMUIMapPropertyMap).Map.PropertyMaps)
+            {
+                @ConvertToGMUI(subItem, true)
+            }
+        }
+        else if (info is GMUICheckBoxPropertyMap)
+        {
+            <div class="form-group">
+                @if (showlable)
+                {
+                    <label class="form-control-label">@info.DisplayName</label>
+                }
+
+                @foreach (var subitem in (info as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
+                {
+                    <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked"> @subitem.Text
+                }
+
+            </div>
+        }
+        else
+        {
+            <span>控件没有实现！！！</span>
+        }
+}
