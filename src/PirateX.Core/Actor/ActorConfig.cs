@@ -8,6 +8,6 @@
         /// <summary>
         /// 默认初始的后端工作队列数量
         /// </summary>
-        public int BackendWorkersPerService { get; set; } = 5;
+        public int BackendWorkersPerService { get; set; } = 2;
     }
 }
