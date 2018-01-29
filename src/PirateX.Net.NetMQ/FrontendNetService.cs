@@ -150,9 +150,14 @@ namespace PirateX.Net.NetMQ
                 using (var req = new RequestSocket(ResponseHostString) { Options = { } })
                 {
                     req.Options.Identity = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString("N"));
-                    req.SendFrame(din.ToProtobuf());
+                    req.TrySendFrame(din.ToProtobuf());
                     if (req.TryReceiveFrameBytes(DefaultTimeOuTimeSpan, out var responseBytes))
                         return responseBytes.FromProtobuf<Out>();
+                    else
+                    {
+                        if (Logger.IsWarnEnabled)
+                            Logger.Warn("request to remote timeout");
+                    }
                 }
             }
             catch (Exception e)
@@ -181,7 +186,7 @@ namespace PirateX.Net.NetMQ
             if (protocolPackage == null)
                 return;
 
-            //加入队列
+            // 加入队列
             RequestToRemoteResponseSocket(new In()
             {
                 Version = 1,

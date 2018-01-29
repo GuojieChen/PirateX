@@ -68,11 +68,11 @@ namespace PirateX.Net.SuperSocket
             NetService.Ping(base.GetAllSessions().GroupBy(l => l.Rid).Count());
         }
 
-
+        private static NLog.Logger NLogger = NLog.LogManager.GetCurrentClassLogger();
         protected override void OnSessionClosed(ProxySession session, CloseReason reason)
         {
-            if (Logger.IsDebugEnabled)
-                Logger.Debug($"session closed #{session.SessionID}# , {reason}");
+            if (NLogger.IsWarnEnabled)
+                NLogger.Warn($"session closed #{session.SessionID}# , {reason}");
 
             NetService.OnSessionClosed(GetProtocolPackage(session.Id));
 

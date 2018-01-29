@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
+using NLog;
 
 namespace PirateX.Net.NetMQ
 {
@@ -14,6 +15,7 @@ namespace PirateX.Net.NetMQ
     /// </summary>
     public class LRUBroker
     {
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
 
         private NetMQPoller _poller = new NetMQPoller();
         private ConcurrentQueue<byte[]> workerQueue = new ConcurrentQueue<byte[]>();
@@ -49,6 +51,10 @@ namespace PirateX.Net.NetMQ
             var msg = e.Socket.ReceiveFrameBytes();
             //从backend中获取一个可用的
             byte[] backendAddress = null;
+
+            if (Logger.IsTraceEnabled)
+                Logger.Trace($"LRUBroker.WorkerQueue = {workerQueue.Count}");
+
             if (workerQueue.TryDequeue(out backendAddress))
             {
                 _backend.SendMoreFrame(backendAddress);
@@ -56,6 +62,11 @@ namespace PirateX.Net.NetMQ
                 _backend.SendMoreFrame(clientAddress);
                 _backend.SendMoreFrame("");
                 _backend.SendFrame(msg);
+            }
+            else
+            {
+                if(Logger.IsWarnEnabled)
+                    Logger.Warn("No BackendNetService available");
             }
         }
 
@@ -87,12 +98,20 @@ namespace PirateX.Net.NetMQ
 
         public void Start()
         {
-            _poller.Run();
+            _poller.RunAsync();
         }
 
         public void StartAsync()
         {
             _poller.RunAsync();
+        }
+
+        public bool IsRunning()
+        {
+            if (_poller == null)
+                return false; 
+
+            return _poller.IsRunning;
         }
 
         public void Stop()

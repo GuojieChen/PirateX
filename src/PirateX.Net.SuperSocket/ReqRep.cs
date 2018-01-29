@@ -21,6 +21,9 @@ namespace PirateX.Net.SuperSocket
             sw.Start();
             var dout = session.AppServer.NetService.ProcessRequest(session, requestInfo.Body);
 
+            if (dout == null)
+                return;
+
             var response = new PirateXResponsePackage()
             {
                 HeaderBytes = dout.HeaderBytes,
