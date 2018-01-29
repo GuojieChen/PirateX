@@ -1,11 +1,7 @@
-﻿@using System.Reflection
-@using PirateX.GMSDK
+﻿@using PirateX.GMSDK
 @using PirateX.GMSDK.Mapping
-@using PirateX.Middleware
 
 @{
-    /**/
-
     ViewBag.Title = "New";
 }
 
@@ -14,11 +10,11 @@
 }
 
 
-<div class="card">
-    <div class="card-header bg-light">
-        @map.Name
-    </div>
-    @using (Html.BeginForm("New", "Activity", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-group card-body" }))
+<div class="">
+    @*<div class="card-header bg-light">
+            @map.Name
+        </div>*@
+    @using (Html.BeginForm("New", "Activity", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form" }))
     {
         <div class="alert alert-dismissible alert-secondary">
             @map.Des
@@ -27,71 +23,28 @@
             </button>
         </div>
 
-        <div>
-            <div class="row form-group">
-                <div class="col-lg-1">开始时间</div>
-                <div class="col-lg-3"><input type="text" name="_startat_" class="form-control" /></div>
-                <div class="col-lg-8">
-                    <small class="form-text">xxxxx</small>
-                </div>
-            </div>
+        <div class="form-group">
+            <label>备注名（必须唯一）</label>
+            @Html.TextBox("Remark", null, new { @class = "form-control" })
+        </div>
 
-            <div class="row form-group">
-                <div class="col-lg-1">结束时间</div>
-                <div class="col-lg-3"><input type="text" name="_endat_" class="form-control" /></div>
-                <div class="col-lg-8">
-                    <small class="form-text">xxxxx</small>
-                </div>
-            </div>
+        {
+            IEnumerable<IGrouping<string, IGMUIPropertyMap>> groups = ViewBag.Groups;
+            var length = groups.Count();
+            var rowcount = (length % 3 == 0) ? length / 3 : (length / 3) + 1;
 
-            <div class="row form-group">
-                <div class="col-lg-1">开放时间</div>
-                <div class="col-lg-3">
-                    <input type="checkbox"> 周一
-                    <input type="checkbox"> 周二
-                    <input type="checkbox"> 周三
-                    <input type="checkbox"> 周四
-                    <input type="checkbox"> 周五
-                    <input type="checkbox"> 周六
-                    <input type="checkbox"> 周七
-                </div>
-                <div class="col-lg-8">
-                    <small class="form-text">xxxxxx</small>
-                </div>
-            </div>
-
-            @foreach (IGMUIPropertyMap info in map.PropertyMaps)
+            for (var i = 0; i < rowcount; i++)
             {
-                <div class="row form-group">
-                    <div class="col-lg-1">
-                        @info.DisplayName
-                    </div>
-                    <div class="col-lg-3">
-                        @if (info is GMUITextBoxPropertyMap)
-                        {
-                            <input type="text" name="@info.Name" class="form-control" />
-                        }
-                        else if (info is GMUIDropdownPropertyMap)
-                        {
-                            
-                            <select name="@info.Name" class="form-control">
-                                @foreach (GMUIListItem item in ((GMUIDropdownPropertyMap)info).ListDataProvider.GetListItems())
-                                {
-                                    <option value="@item.Value">@item.Name</option>
-                                }
-                            </select>
-                        }
-                        else
-                        {
-                            <div>控件没有实现！！！</div>
-                        }
-                    </div>
-                    <div class="col-lg-8">
-                        <small class="form-text">@info.Tips</small>
-                    </div>
+                var list = groups.Skip(i * 3).Take(3);
+                <div class="row">
+                    @foreach (var item in list)
+                    {
+                        @UIHelper.ConvertToCard(item.Key ?? "基础配置",ViewBag.ColClass, item.AsEnumerable<IGMUIPropertyMap>())
+                    }
                 </div>
             }
-        </div>
+        }
+
+        <button type="button" class="btn btn-block btn-primary">提交并保存</button>
     }
 </div>
-

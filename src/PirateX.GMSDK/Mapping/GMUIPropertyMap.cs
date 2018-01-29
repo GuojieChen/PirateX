@@ -14,10 +14,14 @@ namespace PirateX.GMSDK.Mapping
 
         bool IsRequired { get;  }
 
+        bool CanMulti { get; }
+
+        string GroupName { get; }
+
         PropertyInfo PropertyInfo { get; set; }
 
-
-    }  
+        int OrderId { get; }
+    }
     
     /// <summary>
     /// Represents the mapping of a property.
@@ -25,7 +29,6 @@ namespace PirateX.GMSDK.Mapping
     public abstract class GMUIPropertyMap<TGMUIPropertyMap> : IGMUIPropertyMap
     where TGMUIPropertyMap : class, IGMUIPropertyMap 
     {
-        
         public PropertyInfo PropertyInfo { get; set; }
 
         private string _name;
@@ -58,10 +61,40 @@ namespace PirateX.GMSDK.Mapping
         }
 
         public bool IsRequired { get; private set; }
-
+        
         public TGMUIPropertyMap Required(bool required)
         {
             this.IsRequired = required;
+            return this as TGMUIPropertyMap;
+        }
+
+        private bool? canMulti; 
+        public bool CanMulti {
+            get {
+                if (canMulti.HasValue)
+                    return canMulti.Value;
+
+                return !PropertyInfo.PropertyType.IsPrimitive;
+            } }
+
+        public string GroupName { get; private set; }
+
+        public TGMUIPropertyMap ToGroupName(string name)
+        {
+            this.GroupName = name;
+            return this as TGMUIPropertyMap;
+        }
+
+        public IGMUIPropertyMap Multi(bool multi)
+        {
+            canMulti = multi;
+            return this as TGMUIPropertyMap;
+        }
+
+        public int OrderId { get; private set; }
+        public TGMUIPropertyMap ToOrderId(int orderid)
+        {
+            OrderId = orderid;
             return this as TGMUIPropertyMap;
         }
 

@@ -27,5 +27,11 @@ namespace PirateX.GMSDK
         IGMUIItemMap[] GetActivityMaps();
 
         IGMRepository GetGmRepository();
+
+        /// <summary>
+        /// 获取奖励类型的映射
+        /// </summary>
+        /// <returns></returns>
+        IGMUIItemMap GetRewardItemMap();
     }
 }

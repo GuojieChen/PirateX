@@ -20,8 +20,5 @@ namespace PirateX.GMSDK
         IActivity GetActivityById(int id);
 
         #endregion
-
-
-
     }
 }

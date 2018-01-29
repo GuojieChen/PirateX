@@ -113,6 +113,9 @@ namespace PirateX.Net.NetMQ
                 var last = NetSend.GetProtocolPackage(protocolPackage.Rid);
                 if (!Equals(last.Id, protocolPackage.Id))
                 {
+                    if (Logger.IsDebugEnabled)
+                        Logger.Warn($"!Equals(last.Id, protocolPackage.Id)");
+
                     protocolPackage.Close();
 
                     if (Logger.IsDebugEnabled)
