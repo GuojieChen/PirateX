@@ -36,8 +36,10 @@ namespace PirateX.Net.NetMQ
             this.config = config;
         }
 
-        private LRUBroker _broker = null;
+        private Proxy _broker = null;
+        private INetMQPoller _poller = null;
         private List<Task> ThreadWorkers = new List<Task>();
+        private List<ResponseSocket> ResponseSockets = new List<ResponseSocket>();
         private CancellationTokenSource _c_token = new CancellationTokenSource();
         public virtual void Start()
         {
@@ -45,28 +47,27 @@ namespace PirateX.Net.NetMQ
             //在检测到 ResponseSocketString 是已 @开头的 自己内置一个LRUBroker
             if (config.ResponseSocketString.StartsWith("@"))
             {
-                _broker = new LRUBroker(config.ResponseSocketString, "tcp://*");
-                connectto = $">tcp://localhost:{_broker.BackendPort}";
+                var dealer = new DealerSocket("@inproc://backend");
+                _broker = new Proxy(new RouterSocket(config.ResponseSocketString), dealer); // new LRUBroker(config.ResponseSocketString, "tcp://*");
+                connectto = $">inproc://backend";
                 if (Logger.IsTraceEnabled)
-                    Logger.Trace($"start inner LRUBroker Service with random port {_broker.BackendPort}");
+                    Logger.Trace($"start inner proxy");
             }
 
+            Task.Factory.StartNew(_broker.Start);
             _actorService.Start();
-            _broker.StartAsync();
 
-            Thread.Sleep(200);
             for (int i = 0; i < config.BackendWorkersPerService; i++)
-                ThreadWorkers.Add(Task.Factory.StartNew(WorkerTask,connectto,_c_token.Token));
+                ThreadWorkers.Add(Task.Factory.StartNew(WorkerTask, connectto, _c_token.Token));
         }
 
         private void WorkerTask(object connectTo)
         {
-            using (var server = new RequestSocket(Convert.ToString(connectTo)))
+            using (var server = new ResponseSocket(Convert.ToString(connectTo)))
             {
-                server.Options.Identity = Encoding.UTF8.GetBytes($"{Dns.GetHostName()}_{Process.GetCurrentProcess().Id}_{Thread.CurrentThread.ManagedThreadId}");
-                server.SendFrame(new byte[] { 1 });
                 while (!_c_token.Token.IsCancellationRequested)
                 {
+                    server.TryReceiveFrameBytes(out var msg);
                     ThreadProcessRequest(server);
                 }
             }
@@ -74,16 +75,10 @@ namespace PirateX.Net.NetMQ
 
         private void ThreadProcessRequest(NetMQSocket socket)
         {
-            if (Logger.IsTraceEnabled)
-                Logger.Trace($"ProcessRequest Socket[{Encoding.UTF8.GetString(socket.Options.Identity)}], IsThreadPoolThread = {Thread.CurrentThread.IsThreadPoolThread}");
-
-            //  将消息中空帧之前的所有内容（信封）保存起来，
-            //  本例中空帧之前只有一帧，但可以有更多。
-            var address = socket.ReceiveFrameString();
-            //Console.WriteLine("[B] Message received: {0}", address);
-            var empty = socket.ReceiveFrameString();
-            //Console.WriteLine("[B] Message received: {0}", empty);
             var msg = socket.ReceiveFrameBytes();
+
+            if (Logger.IsTraceEnabled)
+                Logger.Trace($"ProcessRequest, Thread[{Thread.CurrentThread.ManagedThreadId}] IsThreadPoolThread = {Thread.CurrentThread.IsThreadPoolThread}");
 
             byte[] response = null;
             try
@@ -118,8 +113,8 @@ namespace PirateX.Net.NetMQ
             }
             finally
             {
-                socket.SendMoreFrame(address);
-                socket.SendMoreFrame("");
+                //socket.SendMoreFrame(address);
+                //socket.SendMoreFrame("");
                 if (response != null)
                     socket.SendFrame(response);
                 else
