@@ -1,4 +1,4 @@
-﻿namespace PirateX.Middleware
+﻿namespace PirateX.Middleware.CalculateSystem
 {
     public abstract class CalculateHandlerBase<TCalculateContext> :ICalculateHandler<TCalculateContext>
      where TCalculateContext : ICalculateContext

@@ -1,4 +1,4 @@
-﻿namespace PirateX.Middleware
+﻿namespace PirateX.Middleware.CalculateSystem
 {
     /// <summary>
     /// 用以职责链计算模型

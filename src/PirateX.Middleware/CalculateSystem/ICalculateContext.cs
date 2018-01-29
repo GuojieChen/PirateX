@@ -1,4 +1,4 @@
-﻿namespace PirateX.Middleware
+﻿namespace PirateX.Middleware.CalculateSystem
 {
     /// <summary>
     /// 用作计算的上下文
