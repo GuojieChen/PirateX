@@ -42,6 +42,8 @@ namespace PirateX.Net.NetMQ
 
         private void FrontendReceiveReady(object sender, NetMQSocketEventArgs e)
         {
+            Logger.Trace($"------------FrontendReceiveReady----------------");
+
             //front 收到数据
             //client地址
             var clientAddress = e.Socket.ReceiveFrameBytes();
@@ -72,6 +74,8 @@ namespace PirateX.Net.NetMQ
 
         private void BackendReceiveReady(object sender, NetMQSocketEventArgs e)
         {
+            Logger.Trace($"+++++++++++++++++FrontendReceiveReady+++++++++++++++++");
+
             //  将worker的地址入队
             var address = e.Socket.ReceiveFrameBytes();
             workerQueue.Enqueue(address);

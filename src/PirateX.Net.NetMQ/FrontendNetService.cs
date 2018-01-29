@@ -29,7 +29,7 @@ namespace PirateX.Net.NetMQ
         public string PublisherSocketString { get; set; }
         public string ResponseHostString { get; set; }
 
-        public TimeSpan DefaultTimeOuTimeSpan = new TimeSpan(0,0,5);
+        public TimeSpan DefaultTimeOuTimeSpan = TimeSpan.FromSeconds(2);
         
         private NetMQPoller Poller;
 
@@ -150,13 +150,21 @@ namespace PirateX.Net.NetMQ
                 using (var req = new RequestSocket(ResponseHostString) { Options = { } })
                 {
                     req.Options.Identity = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString("N"));
-                    req.TrySendFrame(din.ToProtobuf());
-                    if (req.TryReceiveFrameBytes(DefaultTimeOuTimeSpan, out var responseBytes))
-                        return responseBytes.FromProtobuf<Out>();
+
+                    if(req.TrySendFrame(TimeSpan.FromMilliseconds(200),din.ToProtobuf()))
+                    {
+                        if (req.TryReceiveFrameBytes(DefaultTimeOuTimeSpan, out var responseBytes))
+                            return responseBytes.FromProtobuf<Out>();
+                        else
+                        {
+                            if (Logger.IsWarnEnabled)
+                                Logger.Warn("request to remote TryReceive timeout");
+                        }
+                    }
                     else
                     {
                         if (Logger.IsWarnEnabled)
-                            Logger.Warn("request to remote timeout");
+                            Logger.Warn("request to remote TrySend timeout");
                     }
                 }
             }
