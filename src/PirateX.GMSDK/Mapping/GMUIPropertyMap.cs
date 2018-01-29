@@ -17,7 +17,7 @@ namespace PirateX.GMSDK.Mapping
         PropertyInfo PropertyInfo { get; set; }
 
 
-    }
+    }  
     
     /// <summary>
     /// Represents the mapping of a property.

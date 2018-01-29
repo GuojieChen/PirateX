@@ -217,7 +217,7 @@ namespace PirateX.Core.Actor
             else if (context.Action == 2)//断线
             {
                 if(Logger.IsDebugEnabled)
-                    Logger.Debug("Session Logout ~");
+                    Logger.Debug($"Session[{context.SessionId}] Logout ~");
 
                 var session = DistrictContainer.OnlineManager.GetOnlineRole(context.SessionId);
                 if (session != null)
@@ -531,7 +531,7 @@ namespace PirateX.Core.Actor
 
             if (Logger.IsDebugEnabled && t != null)
             {
-                Logger.Debug($"S2C #{rid}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {JsonConvert.SerializeObject(t)}");
+                Logger.Debug($"S2C PUSH #{rid}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {JsonConvert.SerializeObject(t)}");
             }
 
             ActorNetService.PushMessage(rid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
@@ -600,7 +600,7 @@ namespace PirateX.Core.Actor
 
             if (Logger.IsDebugEnabled)
             {
-                Logger.Debug($"S2C #{context.Token.Rid}# #{context.RemoteIp}# {string.Join("&", header.AllKeys.Select(a => a + "=" + header[a]))} {(body==null?"":Encoding.UTF8.GetString(body))}");
+                Logger.Debug($"S2C SEND #{context.Token.Rid}# #{context.RemoteIp}# {string.Join("&", header.AllKeys.Select(a => a + "=" + header[a]))} {(body==null?"":Encoding.UTF8.GetString(body))}");
             }
 
             return ActorNetService.SendMessage(context, header, body);
