@@ -59,10 +59,24 @@ namespace PirateX.Core.Actor.ProtoSync
                 throw new FileLoadException("加载中出现异常，请查看protos\\model.proto中的描述");
 
             #region Generate .bin file
-            var proc = new Process { StartInfo = { WorkingDirectory = ProtoDir, FileName = "..\\protoc" ,Arguments = "--descriptor_set_out=model.bin --include_imports model.proto" } };
+            var proc = new Process { StartInfo = { WorkingDirectory = ProtoDir, FileName = $"{AppDomain.CurrentDomain.BaseDirectory}\\protoc.exe" ,Arguments = "--descriptor_set_out=model.bin --include_imports model.proto" } };
+            proc.StartInfo.CreateNoWindow = true;
+            proc.StartInfo.ErrorDialog = false;
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.RedirectStandardError = true;
+            proc.StartInfo.RedirectStandardInput = true;
+            proc.StartInfo.RedirectStandardOutput = true;
+            proc.EnableRaisingEvents = true;
+            proc.OutputDataReceived += (sender, args) =>
+            {
+                Console.WriteLine(args.Data);
+            };
             proc.Start();
-            proc.WaitForExit();
+            
+            if(Logger.IsTraceEnabled)
+                Logger.Trace(proc.StandardOutput.ReadToEnd());
 
+            proc.WaitForExit();
             _proto = File.ReadAllBytes(Path.Combine(ProtoDir, "model.bin"));
 
             _currentModuleVersionId = _proto.GetMD5();
