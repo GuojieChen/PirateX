@@ -148,7 +148,10 @@ namespace PirateX.Core.Utils
         public static List<T> StringToList<T>(this string str)
         {
             if (string.IsNullOrEmpty(str))
-                return null; 
+                return null;
+
+            if (str.StartsWith("{"))
+                str = $"[{str.TrimStart('{').TrimEnd('}')}]";
 
             return JsonConvert.DeserializeObject<List<T>>(str);
         }
