@@ -104,7 +104,8 @@ namespace PirateX.Core.Config
         private void LoadConfigData<T>() where T : IConfigIdEntity
         {
             var list = _configProvider.LoadConfigData<T>();
-
+            if (list == null)
+                return;
             var type = typeof(T);
 
             var listkeys = new List<string>();
