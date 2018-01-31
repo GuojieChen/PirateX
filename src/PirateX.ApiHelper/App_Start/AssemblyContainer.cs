@@ -185,7 +185,7 @@ namespace PirateX.ApiHelper.App_Start
             return detail;
         }
 
-        private IEnumerable<ResponseDes> GetResponseDeses(Type type)
+        public IEnumerable<ResponseDes> GetResponseDeses(Type type)
         {
             if (type != null)
             {
@@ -235,10 +235,13 @@ namespace PirateX.ApiHelper.App_Start
 
         public IEnumerable<ResponseDes> GetResponseDeses(string modelid, string id)
         {
-            var assembly = _assemblies[modelid];
-            var type = assembly.GetTypes().FirstOrDefault(item => Equals(id, item.GUID.ToString("N")));
+            return GetResponseDeses(GetModelType(modelid,id));
+        }
 
-            return GetResponseDeses(type);
+        public Type GetModelType(string modelid, string id)
+        {
+            var assembly = _assemblies[modelid];
+            return assembly.GetTypes().FirstOrDefault(item => Equals(id, item.GUID.ToString("N")));
         }
 
         public List<string> GetAssemblyXmlList()

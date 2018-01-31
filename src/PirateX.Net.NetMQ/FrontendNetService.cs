@@ -25,7 +25,7 @@ namespace PirateX.Net.NetMQ
         public string PublisherSocketString { get; set; }
         public string ResponseHostString { get; set; }
 
-        public TimeSpan DefaultTimeOuTimeSpan = TimeSpan.FromSeconds(2);
+        public TimeSpan DefaultTimeOuTimeSpan = TimeSpan.FromSeconds(5);
         
         private NetMQPoller Poller;
 

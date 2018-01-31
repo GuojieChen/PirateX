@@ -1,5 +1,5 @@
 @echo off
-set version=1.0.2.1
+set version=1.0.2.2
 set OutputDirectory=bin\packages\%version%
 
 if not exist %OutputDirectory% mkdir %OutputDirectory%
