@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 using NUnit.Framework;
-using PirateX.Protocol.Zip;
+using PirateX.Protocol;
 using ServiceStack.Text;
 using zlib;
 

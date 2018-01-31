@@ -1,5 +1,5 @@
 @echo off
-set version=1.0.2
+set version=1.0.2.1
 set OutputDirectory=bin\packages\%version%
 
 if not exist %OutputDirectory% mkdir %OutputDirectory%
@@ -12,6 +12,7 @@ nuget pack %cd%\src\PirateX.Net.SuperSocket\PirateX.Net.SuperSocket.csproj  -Pro
 nuget pack %cd%\src\PirateX.Protocol\PirateX.Protocol.csproj  -Properties -IncludeReferencedProjects -OutputDirectory %OutputDirectory% -version %version%
 nuget pack %cd%\src\PirateX.ServiceStackV3\PirateX.ServiceStackV3.csproj  -Properties -IncludeReferencedProjects -OutputDirectory %OutputDirectory% -version %version%
 nuget pack %cd%\src\PirateX.Middleware\PirateX.Middleware.csproj  -Properties -IncludeReferencedProjects -OutputDirectory %OutputDirectory% -version %version%
+nuget pack %cd%\src\PirateX.ProtobufInitialize\PirateX.ProtobufInitialize.csproj  -Properties -IncludeReferencedProjects -OutputDirectory %OutputDirectory% -version %version%
 
 
 echo "push to ProGet"

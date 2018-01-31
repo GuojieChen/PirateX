@@ -1,4 +1,4 @@
-﻿namespace PirateX.Protocol.Zip
+﻿namespace PirateX.Protocol
 {
     public class ZipFactory
     {

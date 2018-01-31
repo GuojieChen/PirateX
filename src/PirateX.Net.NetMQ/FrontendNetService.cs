@@ -11,11 +11,7 @@ using NetMQ;
 using NetMQ.Sockets;
 using NLog;
 using PirateX.Core;
-using PirateX.Core.Actor;
-using PirateX.Core.Net;
-using PirateX.Core.Utils;
 using PirateX.Protocol;
-using PirateX.Protocol.Package;
 
 namespace PirateX.Net.NetMQ
 {

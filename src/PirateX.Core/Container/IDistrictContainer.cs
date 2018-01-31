@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Autofac;
-using PirateX.Core.Session;
 
-namespace PirateX.Core.Container
+namespace PirateX.Core
 {
     public interface IDistrictContainer:IDisposable
     {

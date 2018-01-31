@@ -7,7 +7,6 @@ using System.Web;
 using System.Web.Mvc;
 using PirateX.ApiHelper.App_Start;
 using PirateX.ApiHelper.Test;
-using PirateX.Core.Actor;
 
 namespace PirateX.ApiHelper.Controllers
 {

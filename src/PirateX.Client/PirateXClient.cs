@@ -15,8 +15,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PirateX.Client.Command;
 using PirateX.Protocol;
-using PirateX.Protocol.Package;
-using PirateX.Protocol.Package.ResponseConvert;
+using PirateX.Protocol.ResponseConvert;
 using SuperSocket.ClientEngine;
 using ErrorEventArgs = System.IO.ErrorEventArgs;
 

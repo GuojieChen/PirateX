@@ -7,9 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using Newtonsoft.Json;
-using PirateX.Core.Actor;
-using PirateX.Core.Domain.Entity;
-using PirateX.Core.Utils;
+using PirateX.Core;
 using ProtoBuf;
 using TestDataGenerator;
 
@@ -70,7 +68,7 @@ namespace PirateX.ApiHelper.App_Start
 
                 list.Add(Assembly.LoadFrom(file));
             }
-            list.Add(typeof(PirateX.Core.Actor.ProtoSync.ProtobufService).Assembly);
+            list.Add(typeof(IDistrictContainer).Assembly);
             _instance.Load(list.ToArray());
         }
         private AssemblyContainer()

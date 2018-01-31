@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using StackExchange.Redis;
 
-namespace PirateX.Core.Actor
+namespace PirateX.Core
 {
     public interface IReqCache
     {

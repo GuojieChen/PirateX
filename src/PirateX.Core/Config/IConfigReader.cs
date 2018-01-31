@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Data;
-using PirateX.Core.Container;
 
-namespace PirateX.Core.Config
+namespace PirateX.Core
 {
     /// <summary> 配置数据读取抽象
     /// </summary>

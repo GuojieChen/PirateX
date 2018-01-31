@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using PirateX.Core.Actor;
+using PirateX.Core;
 using ProtoBuf;
 
 namespace PirateX.ApiHelper.Test

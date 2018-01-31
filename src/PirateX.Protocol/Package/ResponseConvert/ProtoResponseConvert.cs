@@ -2,7 +2,7 @@
 using System.IO;
 using ProtoBuf;
 
-namespace PirateX.Protocol.Package.ResponseConvert
+namespace PirateX.Protocol.ResponseConvert
 {
     [DisplayColumn("protobuf")]
     public class ProtoResponseConvert: IResponseConvert

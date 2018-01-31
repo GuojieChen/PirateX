@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using PirateX.Core.Domain.Entity;
+using PirateX.Core;
 
 namespace PirateX.Middleware
 {

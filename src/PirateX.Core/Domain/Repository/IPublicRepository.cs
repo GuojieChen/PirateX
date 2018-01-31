@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data;
 using Autofac;
-using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using StackExchange.Redis;
 
-namespace PirateX.Core.Domain.Repository
+namespace PirateX.Core
 {
     /// <summary>
     /// 

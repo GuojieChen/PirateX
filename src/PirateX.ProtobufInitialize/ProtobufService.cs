@@ -6,11 +6,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using NLog;
-using PirateX.Core.Domain.Entity;
-using PirateX.Core.Utils;
+using PirateX.Core;
 using ProtoBuf;
 
-namespace PirateX.Core.Actor.ProtoSync
+namespace PirateX.ProtobufInitialize
 {
     /// <summary>
     /// proto协议描述同步服务
@@ -150,7 +149,11 @@ namespace PirateX.Core.Actor.ProtoSync
                 
                 PrepareSerializer(type);
                 stringBuilder.Append(proto);
+
+                if (Logger.IsTraceEnabled)
+                    Logger.Trace($"GetProtos->{type.Name}");
             }
+
 
             return stringBuilder.ToString();
         }

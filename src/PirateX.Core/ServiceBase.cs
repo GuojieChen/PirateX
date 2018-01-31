@@ -5,10 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using NLog;
-using PirateX.Core.Broadcas;
-using PirateX.Core.Config;
-using PirateX.Core.Container;
-using PirateX.Core.Push;
 using StackExchange.Redis;
 
 namespace PirateX.Core

@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NLog;
-using PirateX.Core.Utils;
 
-namespace PirateX.Core.i18n
+namespace PirateX.Core
 {
     //http://www.codeproject.com/Articles/16068/Zeta-Resource-Editor
     public static class I18N

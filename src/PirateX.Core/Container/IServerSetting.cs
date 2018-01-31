@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using Autofac;
-using StackExchange.Redis;
-
-namespace PirateX.Core.Container
+﻿namespace PirateX.Core
 {
     public interface IServerSetting
     {

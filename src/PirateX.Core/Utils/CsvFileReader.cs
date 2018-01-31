@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace PirateX.Core.Utils
+namespace PirateX.Core
 {
     /*
     using (CsvFileReader reader = new CsvFileReader(@"D:\ReadTest.csv"))

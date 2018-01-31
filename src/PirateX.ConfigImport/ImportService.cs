@@ -15,9 +15,9 @@ using NLog;
 using ServiceStack.Data;
 using ServiceStack.OrmLite;
 using ServiceStack.OrmLite.SqlServer;
-using PirateX.Core.Config;
 using ExcelExporter;
 using Excel;
+using PirateX.Core;
 
 namespace PirateX.ConfigImport
 {

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PirateX.Core.Utils;
 
 namespace PirateX.Core.UnitTest.Utils
 {

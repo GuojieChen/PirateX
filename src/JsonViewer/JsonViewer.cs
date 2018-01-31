@@ -13,7 +13,7 @@ using System.Threading;
 using EPocalipse.Json.Viewer.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PirateX.Protocol.Package;
+using PirateX.Protocol;
 
 namespace EPocalipse.Json.Viewer
 {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using PirateX.Core.Container;
 using PirateX.GM.App_Start;
 using PirateX.GMSDK;
 

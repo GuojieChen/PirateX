@@ -2,7 +2,7 @@
 using System.Linq;
 using StackExchange.Redis;
 
-namespace PirateX.Core.Redis.StackExchange.Redis.Ex
+namespace PirateX.Core
 {
     public static class RedisDataBaseExtension
     {

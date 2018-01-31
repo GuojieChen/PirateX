@@ -2,34 +2,20 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Web;
 using Autofac;
-using Dapper;
 using Newtonsoft.Json;
 using NLog;
-using PirateX.Core.Actor.ProtoSync;
-using PirateX.Core.Broadcas;
-using PirateX.Core.Container;
-using PirateX.Core.DapperMapper;
-using PirateX.Core.Net;
-using PirateX.Core.Redis.StackExchange.Redis.Ex;
-using PirateX.Core.Session;
-using PirateX.Core.Utils;
-using PirateX.Protocol.Package;
-using PirateX.Protocol.Package.ResponseConvert;
-using ProtoBuf;
-using StackExchange.Redis;
+using PirateX.Protocol;
+using PirateX.Protocol.ResponseConvert;
 
-namespace PirateX.Core.Actor
+namespace PirateX.Core
 {
     public interface IActorService
     {
@@ -110,12 +96,16 @@ namespace PirateX.Core.Actor
             // 游戏容器
             DistrictContainer.InitContainers(builder);
             #region 通信框架初始化
-            var list = new List<Assembly>();
-            list.AddRange(DistrictContainer.GetServiceAssemblyList());
-            list.AddRange(DistrictContainer.GetEntityAssemblyList());
-            list.AddRange(DistrictContainer.GetApiAssemblyList());
-            DistrictContainer.ServerIoc.Resolve<IProtoService>()
-                .Init(list);
+
+            if (DistrictContainer.ServerIoc.IsRegistered<IProtoService>())
+            {
+                var list = new List<Assembly>();
+                list.AddRange(DistrictContainer.GetServiceAssemblyList());
+                list.AddRange(DistrictContainer.GetEntityAssemblyList());
+                list.AddRange(DistrictContainer.GetApiAssemblyList());
+                DistrictContainer.ServerIoc.Resolve<IProtoService>()
+                    .Init(list);
+            }
 
             RedisDataBaseExtension.RedisSerilazer = DistrictContainer.ServerIoc.Resolve<IRedisSerializer>();
             if (Logger.IsTraceEnabled)
@@ -367,7 +357,7 @@ namespace PirateX.Core.Actor
         {
             var isign = $"{token.Did}{token.Rid}{token.Ts}{token.Uid}{config.SecretKey}".GetMD5();
 
-            if (DateTime.UtcNow.GetTimestamp()/1000 - token.Ts >= 1000 * 60 * 60 *5)//5h
+            if (TimeUtil.GetTimestamp(DateTime.UtcNow)/1000 - token.Ts >= 1000 * 60 * 60 *5)//5h
                 return false;
 
             if (Equals(isign, token.Sign))

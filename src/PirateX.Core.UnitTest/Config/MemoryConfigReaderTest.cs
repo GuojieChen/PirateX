@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PirateX.Core.Config;
 using ServiceStack.Data;
 using ServiceStack.OrmLite;
 using TestDataGenerator;

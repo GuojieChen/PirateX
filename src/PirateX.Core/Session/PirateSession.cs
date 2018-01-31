@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using PirateX.Core.Utils;
 using ProtoBuf;
 
-namespace PirateX.Core.Session
+namespace PirateX.Core
 {
     [Serializable]
     [ProtoContract]

@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using PirateX.Core.Actor;
-using PirateX.Core.Domain.Entity;
+using PirateX.Core;
 
 namespace PirateX.ApiHelper.App_Start
 {

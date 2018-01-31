@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Specialized;
-using PirateX.Core.Session;
+﻿using System.Collections.Specialized;
 
-namespace PirateX.Core.Actor
+namespace PirateX.Core
 {
     public interface IActorNetService
     {

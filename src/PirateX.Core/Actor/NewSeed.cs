@@ -2,9 +2,8 @@
 using System.Collections;
 using PirateX.Protocol;
 using ProtoBuf;
-using RandomUtil = PirateX.Core.Utils.RandomUtil;
 
-namespace PirateX.Core.Actor
+namespace PirateX.Core
 {
     /// <summary>
     /// 种子交换

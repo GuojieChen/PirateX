@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace PirateX.Core.Cache
+namespace PirateX.Core
 {
     public class MemoryCacheClient
     {

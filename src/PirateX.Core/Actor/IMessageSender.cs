@@ -1,6 +1,4 @@
-﻿using PirateX.Core.Session;
-
-namespace PirateX.Core.Actor
+﻿namespace PirateX.Core
 {
     public interface IMessageSender
     {

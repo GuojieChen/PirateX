@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace PirateX.Core.Session
+﻿namespace PirateX.Core
 {
 
     public interface ISessionManager

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PirateX.Protocol;
-using PirateX.Protocol.Package;
+﻿using PirateX.Protocol;
 
-namespace PirateX.Core.Net
+namespace PirateX.Core
 {
     /// <summary>
     /// 外部请求分发给内部逻辑服务器

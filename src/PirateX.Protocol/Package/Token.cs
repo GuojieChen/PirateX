@@ -1,7 +1,7 @@
 ﻿using System;
 using ProtoBuf;
 
-namespace PirateX.Protocol.Package
+namespace PirateX.Protocol
 {
     public interface IToken
     {

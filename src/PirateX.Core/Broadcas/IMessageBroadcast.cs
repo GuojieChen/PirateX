@@ -1,4 +1,4 @@
-﻿namespace PirateX.Core.Broadcas
+﻿namespace PirateX.Core
 {
     public interface IMessageBroadcast
     {

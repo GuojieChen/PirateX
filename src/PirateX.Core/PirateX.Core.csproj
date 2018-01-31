@@ -31,7 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>ico.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
@@ -78,8 +79,7 @@
     <Compile Include="Actor\Ping.cs" />
     <Compile Include="Actor\PirateXException.cs" />
     <Compile Include="Actor\ApiDocAttribute.cs" />
-    <Compile Include="Actor\ProtoSync\IProtoService.cs" />
-    <Compile Include="Actor\ProtoSync\ProtobufService.cs" />
+    <Compile Include="Actor\IProtoService.cs" />
     <Compile Include="Actor\RepAction.cs" />
     <Compile Include="Actor\RequestDocAttribute.cs" />
     <Compile Include="Actor\StatusCode.cs" />
@@ -158,12 +158,6 @@
       <Project>{ebde20ee-7293-4b51-99f4-6688ebdd3d2b}</Project>
       <Name>PirateX.Protocol</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ico.ico" />
-    <Content Include="protoc.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

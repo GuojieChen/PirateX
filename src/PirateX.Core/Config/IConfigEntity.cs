@@ -1,4 +1,4 @@
-﻿namespace PirateX.Core.Config
+﻿namespace PirateX.Core
 {
     public interface IConfigEntity
     {

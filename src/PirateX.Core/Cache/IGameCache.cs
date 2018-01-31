@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PirateX.Core.Domain.Entity;
-using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using StackExchange.Redis;
 
-namespace PirateX.Core.Cache
+namespace PirateX.Core
 {
     public interface IGameCache
     {

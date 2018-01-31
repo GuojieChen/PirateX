@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PirateX.Core.Domain.Entity
+﻿namespace PirateX.Core
 {
     /// <summary>
     /// 标记数据需要时间戳来标记数据的变化

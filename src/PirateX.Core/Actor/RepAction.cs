@@ -2,7 +2,7 @@
 using Autofac;
 using StackExchange.Redis;
 
-namespace PirateX.Core.Actor
+namespace PirateX.Core
 {
     public abstract class RepAction : ActionBase
     {

@@ -1,4 +1,4 @@
-﻿namespace PirateX.Protocol.Crypto
+﻿namespace PirateX.Protocol
 {
     public class NoneCrypto : ICrypto
     {

@@ -2,7 +2,7 @@
 using System.IO;
 using zlib;
 
-namespace PirateX.Protocol.Zip
+namespace PirateX.Protocol
 {
     public class DefaultZip:IZip
     {

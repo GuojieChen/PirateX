@@ -5,12 +5,11 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using ProtoBuf;
 using StackExchange.Redis;
 
-namespace PirateX.Core.Utils
+namespace PirateX.Core
 {
     public static class ObjectUtil
     {

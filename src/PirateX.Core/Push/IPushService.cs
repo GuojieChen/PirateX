@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PirateX.Core.Push
+namespace PirateX.Core
 {
     /// <summary> 设备信息推送接口
     /// </summary>

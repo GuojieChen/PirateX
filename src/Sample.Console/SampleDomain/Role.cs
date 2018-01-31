@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PirateX.Core.Domain.Entity;
-using PirateX.Core.Utils;
+using PirateX.Core;
 using ProtoBuf;
 using ServiceStack.DataAnnotations;
 

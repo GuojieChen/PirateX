@@ -9,18 +9,9 @@ using GameServer.Console.SampleDomain;
 using GameServer.Console.SampleService;
 using PirateX;
 using PirateX.Core;
-using PirateX.Core.Actor;
-using PirateX.Core.Broadcas;
-using PirateX.Core.Container;
-using PirateX.Core.Container.Register;
-using PirateX.Core.Container.ServerSettingRegister;
-using PirateX.Core.Redis.StackExchange.Redis.Ex;
-using PirateX.Core.Session;
 using PirateX.Net;
 using PirateX.Protocol;
-using PirateX.ServiceStackV3;
-using PirateX.Net.SuperSocket;
-using PirateX.Protocol.Package;
+using PirateX.ProtobufInitialize;
 
 namespace GameServer.Console
 {
@@ -104,6 +95,10 @@ namespace GameServer.Console
         {
             builder.Register(c => new MemorySessionManager())
                 .As<ISessionManager>()
+                .SingleInstance();
+
+            builder.Register(c => new ProtobufService())
+                .As<IProtoService>()
                 .SingleInstance();
 
         }

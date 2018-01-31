@@ -13,8 +13,7 @@ using System.Web;
 using System.Windows.Forms;
 using PirateX.Client;
 using PirateX.Protocol;
-using PirateX.Protocol.Package;
-using PirateX.Protocol.Package.ResponseConvert;
+using PirateX.Protocol.ResponseConvert;
 
 namespace PirateX.WinClient
 {
@@ -71,7 +70,7 @@ namespace PirateX.WinClient
                     Uid = tokenQuery["uid"]
                 };
 
-                var pbCovnert = new PirateX.Protocol.Package.ResponseConvert.ProtoResponseConvert();
+                var pbCovnert = new ProtoResponseConvert();
                 tokenbase64 = Convert.ToBase64String(pbCovnert.SerializeObject(token));
             }
 

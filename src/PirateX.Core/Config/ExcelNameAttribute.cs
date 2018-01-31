@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PirateX.Core.Config
+namespace PirateX.Core
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class ExcelNameAttribute:Attribute

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PirateX.Core.Domain.Entity
+﻿namespace PirateX.Core
 {
     public interface IEntity
     {

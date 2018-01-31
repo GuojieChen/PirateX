@@ -1,4 +1,4 @@
-﻿using PirateX.Core.Domain.Entity;
+﻿using PirateX.Core;
 
 namespace PirateX.Middleware
 {

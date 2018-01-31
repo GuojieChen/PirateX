@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PirateX.Core.Domain.Entity
+﻿namespace PirateX.Core
 {
     /// <summary> 私有数据，归属于某个角色 </summary>
     public interface IEntityPrivate

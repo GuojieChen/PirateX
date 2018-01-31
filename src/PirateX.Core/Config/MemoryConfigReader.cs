@@ -1,20 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Autofac;
-using Dapper;
 using NLog;
-using PirateX.Core.Cache;
-using PirateX.Core.Container;
-using PirateX.Core.Container.Register;
-using PirateX.Core.Utils;
 
-namespace PirateX.Core.Config
+namespace PirateX.Core
 {
     public class MemoryConfigReader : IConfigReader
     {

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using NLog;
-using PirateX.Core.Redis.StackExchange.Redis.Ex;
 
-namespace PirateX.Core.Push
+namespace PirateX.Core
 {
     /// <summary>
     /// 将PUSH内容由NLOG写入到文件中

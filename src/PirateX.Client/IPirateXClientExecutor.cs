@@ -1,6 +1,5 @@
 ﻿using System.Collections.Specialized;
-using PirateX.Protocol.Package;
-using PirateX.Protocol.Package.ResponseConvert;
+using PirateX.Protocol.ResponseConvert;
 
 namespace PirateX.Client
 {
