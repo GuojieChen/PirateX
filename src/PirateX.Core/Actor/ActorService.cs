@@ -71,17 +71,19 @@ namespace PirateX.Core.Actor
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="builder"></param>
         private void Setup()
         {
             var builder = new ContainerBuilder();
             #region 通信相关组件
 
             builder.Register(c => this).As<IMessageSender>().SingleInstance();
-            //注册内置命令
-            RegisterActions(typeof(ActorService<TActorService>).Assembly.GetTypes());
-            //注册外置命令
-            RegisterActions(GetActions());
+            ////注册内置命令
+            //RegisterActions(typeof(ActorService<TActorService>).Assembly.GetTypes());
+            ////注册外置命令
+            //RegisterActions(GetActions());
+
+            //注册命令
+            RegisterActions(DistrictContainer.GetApiAssemblyList());
 
             builder.Register(c => Actions)
                 .AsSelf()
@@ -141,6 +143,14 @@ namespace PirateX.Core.Actor
             Setup();
         }
 
+        private void RegisterActions(IEnumerable<Assembly> assemblies)
+        {
+            foreach (var assembly in assemblies)
+            {
+                RegisterActions(assembly.GetTypes());
+            }
+        }
+
         private void RegisterActions(IEnumerable<Type> actions)
         {
             if (actions == null)
@@ -157,15 +167,6 @@ namespace PirateX.Core.Actor
                 var action = ((IAction)Activator.CreateInstance(type));
                 Actions.Add(string.IsNullOrEmpty(action.Name) ? type.Name : action.Name, action);
             }
-        }
-
-        /// <summary>
-        /// 获取额外的接口列表
-        /// </summary>
-        /// <returns></returns>
-        public virtual IEnumerable<Type> GetActions()
-        {
-            return typeof(TActorService).Assembly.GetTypes();
         }
         ///// <summary>
         ///// 多线程处理请求
