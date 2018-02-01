@@ -263,7 +263,7 @@ namespace PirateX.Core.Config
             var dic = index.ToDictionary();
             var urn = GetCacheIndexKey2<T>(dic);
 
-            var keys = _cacheClient.Get<IList<string>>(urn);
+            var keys = _cacheClient.Get<List<string>>(urn);
             if (keys != null)
                 return _cacheClient.GetAll<T>(keys).Values;
 
