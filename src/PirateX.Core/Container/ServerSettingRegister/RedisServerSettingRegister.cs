@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using StackExchange.Redis;
 
-namespace PirateX.Core.ServerSettingRegister
+namespace PirateX.Core
 {
     [ServerSettingRegister(typeof(RedisServerSettingRegister))]
     public interface IRedisServerSetting

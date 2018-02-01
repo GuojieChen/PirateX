@@ -216,7 +216,7 @@ namespace PirateX.Core
             }
         }
 
-        public ILifetimeScope GetDistrictContainer(int districtid)
+        public ILifetimeScope GetDistrictContainer(int districtid = 0)
         {
             if (_containers.ContainsKey(districtid))
                 return _containers[districtid];

@@ -138,21 +138,32 @@ namespace PirateX.Core
         {
             return (b & (1 << bitNumber)) != 0;
         }
-
-        public static List<int> ToIntArray(this string str)
+        [Obsolete("建议采用ToArray方法")]
+        public static List<int> ToIntList(this string str)
         {
             return str.StringToList<int>();
         }
-
+        [Obsolete("建议采用ToArray方法")]
         public static List<T> StringToList<T>(this string str)
         {
             if (string.IsNullOrEmpty(str))
-                return null;
+                return new List<T>();
 
             if (str.StartsWith("{"))
                 str = $"[{str.TrimStart('{').TrimEnd('}')}]";
 
             return JsonConvert.DeserializeObject<List<T>>(str);
+        }
+        
+        public static T[] ToArray<T>(this string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return new T[0];
+
+            if (str.StartsWith("{"))
+                str = $"[{str.TrimStart('{').TrimEnd('}')}]";
+
+            return JsonConvert.DeserializeObject<T[]>(str);
         }
 
         public static string ArrayToString<T>(this IEnumerable<T> array)
