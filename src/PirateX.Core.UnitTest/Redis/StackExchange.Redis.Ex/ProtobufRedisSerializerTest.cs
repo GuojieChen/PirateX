@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using ProtoBuf;
 using ServiceStack;
 using StackExchange.Redis;

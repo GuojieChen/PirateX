@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PirateX.Core.Domain.Entity;
 
 namespace PirateX.Core
 {

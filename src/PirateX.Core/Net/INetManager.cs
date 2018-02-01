@@ -1,6 +1,6 @@
-﻿using PirateX.Protocol.Package;
+﻿using PirateX.Protocol;
 
-namespace PirateX.Core.Net
+namespace PirateX.Core
 {
     public interface INetManager
     {

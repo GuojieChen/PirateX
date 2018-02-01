@@ -1,5 +1,5 @@
 ﻿using System;
-using PirateX.Protocol.Package;
+using PirateX.Protocol;
 
 namespace PirateX.Client
 {

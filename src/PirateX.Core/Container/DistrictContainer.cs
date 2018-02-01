@@ -5,29 +5,14 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Autofac;
-using Autofac.Builder;
 using Dapper;
 using Newtonsoft.Json;
 using NLog;
-using PirateX.Core.Actor;
-using PirateX.Core.Actor.ProtoSync;
-using PirateX.Core.Actor.System;
-using PirateX.Core.Broadcas;
-using PirateX.Core.Cache;
-using PirateX.Core.Config;
-using PirateX.Core.DapperMapper;
-using PirateX.Core.Domain.Entity;
-using PirateX.Core.Domain.Repository;
-using PirateX.Core.Push;
-using PirateX.Core.Redis.StackExchange.Redis.Ex;
-using PirateX.Core.Session;
-using PirateX.Core.Utils;
-using PirateX.Protocol.Package;
+using PirateX.Protocol;
 using StackExchange.Redis;
 
-namespace PirateX.Core.Container
+namespace PirateX.Core
 {
     /// <summary> 默认的游戏容器实现
     /// </summary>
@@ -119,8 +104,6 @@ namespace PirateX.Core.Container
 
             //默认消息广播
             builder.Register(c => new DefaultMessageBroadcast()).SingleInstance();
-
-            builder.Register(c => new ProtobufService()).As<IProtoService>().SingleInstance();
 
             builder.Register(c => serverSetting)
                 .AsSelf()
@@ -233,7 +216,7 @@ namespace PirateX.Core.Container
             }
         }
 
-        public ILifetimeScope GetDistrictContainer(int districtid)
+        public ILifetimeScope GetDistrictContainer(int districtid = 0)
         {
             if (_containers.ContainsKey(districtid))
                 return _containers[districtid];

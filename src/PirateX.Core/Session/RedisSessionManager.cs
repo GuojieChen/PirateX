@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
-using PirateX.Core.Redis.StackExchange.Redis.Ex;
 using StackExchange.Redis;
 
-namespace PirateX.Core.Session
+namespace PirateX.Core
 {
     public class RedisOnlineManager : ISessionManager
     {

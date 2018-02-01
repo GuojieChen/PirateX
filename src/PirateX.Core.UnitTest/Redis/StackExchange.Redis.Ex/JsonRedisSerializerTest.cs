@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using PirateX.Core.Redis.StackExchange.Redis.Ex;
 
 namespace PirateX.Core.UnitTest.Redis.StackExchange.Redis.Ex
 {

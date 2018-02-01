@@ -6,8 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using PirateX.Client;
-using PirateX.Protocol.Package;
-using PirateX.Protocol.Package.ResponseConvert;
+using PirateX.Protocol;
+using PirateX.Protocol.ResponseConvert;
 
 namespace PirateX.FrameLossTest
 {

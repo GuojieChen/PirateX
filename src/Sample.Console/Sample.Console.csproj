@@ -154,6 +154,10 @@
       <Project>{b7f6062e-033c-420c-b575-0a619655cbe5}</Project>
       <Name>PirateX.Net.SuperSocket</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PirateX.ProtobufInitialize\PirateX.ProtobufInitialize.csproj">
+      <Project>{8aaf2f82-caad-4fbd-8347-1e86f980733c}</Project>
+      <Name>PirateX.ProtobufInitialize</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PirateX.Protocol\PirateX.Protocol.csproj">
       <Project>{ebde20ee-7293-4b51-99f4-6688ebdd3d2b}</Project>
       <Name>PirateX.Protocol</Name>

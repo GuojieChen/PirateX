@@ -1,6 +1,6 @@
 using System.Collections.Specialized;
 
-namespace PirateX.Protocol.Package
+namespace PirateX.Protocol
 {
     public interface IPirateXResponseInfo
     {

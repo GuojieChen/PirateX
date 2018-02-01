@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PirateX.Core.Broadcas
+namespace PirateX.Core
 {
     public class RedisMqMessageBroadcast:IMessageBroadcast
     {

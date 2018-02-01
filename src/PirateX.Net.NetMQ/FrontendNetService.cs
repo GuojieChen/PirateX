@@ -11,11 +11,7 @@ using NetMQ;
 using NetMQ.Sockets;
 using NLog;
 using PirateX.Core;
-using PirateX.Core.Actor;
-using PirateX.Core.Net;
-using PirateX.Core.Utils;
 using PirateX.Protocol;
-using PirateX.Protocol.Package;
 
 namespace PirateX.Net.NetMQ
 {
@@ -29,7 +25,7 @@ namespace PirateX.Net.NetMQ
         public string PublisherSocketString { get; set; }
         public string ResponseHostString { get; set; }
 
-        public TimeSpan DefaultTimeOuTimeSpan = TimeSpan.FromSeconds(2);
+        public TimeSpan DefaultTimeOuTimeSpan = TimeSpan.FromSeconds(5);
         
         private NetMQPoller Poller;
 

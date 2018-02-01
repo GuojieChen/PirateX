@@ -1,5 +1,5 @@
 ﻿using System;
-using PirateX.Core.Config;
+using PirateX.Core;
 
 namespace PirateX.Middleware
 {

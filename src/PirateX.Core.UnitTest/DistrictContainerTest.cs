@@ -7,9 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using NUnit.Framework;
-using PirateX.Core.Container;
-using PirateX.Core.Container.Register;
-using PirateX.Core.Container.ServerSettingRegister;
 using ServiceStack.OrmLite;
 
 namespace PirateX.Core.UnitTest

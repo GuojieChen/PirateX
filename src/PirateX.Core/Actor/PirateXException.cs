@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PirateX.Core.Actor
+namespace PirateX.Core
 {
     public class PirateXException:Exception
     {

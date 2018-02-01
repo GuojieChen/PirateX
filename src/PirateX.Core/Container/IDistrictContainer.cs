@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Autofac;
-using PirateX.Core.Session;
 
-namespace PirateX.Core.Container
+namespace PirateX.Core
 {
     public interface IDistrictContainer:IDisposable
     {
@@ -16,7 +15,7 @@ namespace PirateX.Core.Container
         /// </summary>
         /// <param name="districtid"></param>
         /// <returns></returns>
-        ILifetimeScope GetDistrictContainer(int districtid);
+        ILifetimeScope GetDistrictContainer(int districtid = 0);
         /// <summary> 获取管理的配置列表
         /// </summary>
         /// <returns></returns>

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using Newtonsoft.Json;
 
-namespace PirateX.Core.Redis.StackExchange.Redis.Ex
+namespace PirateX.Core
 {
     public class JsonRedisSerializer : IRedisSerializer
     {

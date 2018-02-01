@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace PirateX.Core.Utils
+namespace PirateX.Core
 {
     public static class TimeUtil
     {

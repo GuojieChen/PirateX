@@ -1,11 +1,9 @@
 ﻿using System.Data;
 using Autofac;
 using NLog;
-using PirateX.Core.Redis.StackExchange.Redis.Ex;
-using PirateX.Core.Session;
 using StackExchange.Redis;
 
-namespace PirateX.Core.Actor
+namespace PirateX.Core
 {
     public abstract class ActionBase:IAction
     {

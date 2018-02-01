@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using PirateX.Protocol.Package;
+using PirateX.Protocol;
 
-namespace PirateX.Core.Actor
+namespace PirateX.Core
 {
     public class ActorContext
     {

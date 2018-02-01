@@ -1,4 +1,4 @@
-﻿namespace PirateX.Core.Container
+﻿namespace PirateX.Core
 {
     /// <summary> 游戏配置模型
     /// </summary>

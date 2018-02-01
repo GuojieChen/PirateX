@@ -1,4 +1,4 @@
-﻿namespace PirateX.Core.Actor
+﻿namespace PirateX.Core
 {
     public class ActorConfig
     {

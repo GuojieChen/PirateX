@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PirateX.Core.Domain.Entity;
+﻿using System.Collections.Generic;
 
-namespace PirateX.Core.Domain.Repository
+namespace PirateX.Core
 {
     //TODO ,可以对基本对象的一个简单抽象
 

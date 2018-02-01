@@ -9,7 +9,6 @@ using System.Web;
 using NUnit.Framework;
 using PirateX.Client.Crypto;
 using PirateX.Protocol;
-using PirateX.Protocol.Package;
 using ServiceStack;
 
 namespace PirateX.UnitTest.Protocol.Package
@@ -221,7 +220,7 @@ namespace PirateX.UnitTest.Protocol.Package
         {
 
             var keys = new KeyGenerator(1).MakeKey();
-            var xxtea = new XXTea();
+            var xxtea = new PirateX.Protocol.XXTea();
 
             var packet = xxtea.Encode(Encoding.UTF8.GetBytes("hello"), keys);
             Console.WriteLine(string.Join(",", packet));

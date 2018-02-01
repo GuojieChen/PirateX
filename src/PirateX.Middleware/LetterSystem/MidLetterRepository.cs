@@ -4,7 +4,7 @@ using System.Data;
 using Autofac;
 using Dapper;
 using Dapper.Contrib.Extensions;
-using PirateX.Core.Domain.Repository;
+using PirateX.Core;
 
 namespace PirateX.Middleware
 {

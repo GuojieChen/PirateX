@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autofac;
+﻿using Autofac;
 
-namespace PirateX.Core.Container.Register
+namespace PirateX.Core
 {
     public class ConnectionRegister:IDistrictConfigRegister
     {

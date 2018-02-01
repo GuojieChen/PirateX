@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using PirateX.Core;
-using PirateX.Core.Container;
 using PirateX.ServiceStackV3;
 
 namespace PirateX.UnitTest

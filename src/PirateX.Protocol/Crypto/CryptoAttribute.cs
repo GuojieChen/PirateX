@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PirateX.Protocol.Crypto
+namespace PirateX.Protocol
 {
     public class CryptoAttribute:Attribute
     {

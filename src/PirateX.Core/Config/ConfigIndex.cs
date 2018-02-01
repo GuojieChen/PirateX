@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PirateX.Core.Config
+namespace PirateX.Core
 {
     /// <summary> 泳衣配置模型的 索引键
     /// </summary>

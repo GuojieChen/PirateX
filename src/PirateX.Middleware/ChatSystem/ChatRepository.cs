@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PirateX.Core.Domain.Repository;
-using PirateX.Core.Utils;
+using PirateX.Core;
 
 namespace PirateX.Middleware
 {

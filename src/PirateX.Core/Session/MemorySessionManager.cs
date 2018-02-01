@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 
-namespace PirateX.Core.Session
+namespace PirateX.Core
 {
     public class MemorySessionManager : ISessionManager
     {

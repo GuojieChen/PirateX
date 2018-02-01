@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using PirateX.Protocol.Crypto;
-using PirateX.Protocol.Zip;
+﻿using System.Net;
 
-namespace PirateX.Protocol.Package
+namespace PirateX.Protocol
 {
     public interface IProtocolPackage
     {

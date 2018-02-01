@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autofac;
-using PirateX.Core.Container.ServerSettingRegister;
+﻿using Autofac;
 using StackExchange.Redis;
 
-namespace PirateX.Core.Container.Register
+namespace PirateX.Core
 {
     public class RedisRegister:IDistrictConfigRegister
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using PirateX.Core.Actor;
+using PirateX.Core;
 using PirateX.Net;
 using PirateX.Net.NetMQ;
 using PirateX.Net.SuperSocket;

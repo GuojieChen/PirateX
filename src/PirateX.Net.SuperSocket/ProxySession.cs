@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Net;
-using PirateX.Protocol.Package;
-using PirateX.Protocol.Zip;
+using PirateX.Protocol;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Protocol;
 

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.IO.Compression;
 
-namespace PirateX.Protocol.Zip
+namespace PirateX.Protocol
 {
     public class GZip:IZip
     {

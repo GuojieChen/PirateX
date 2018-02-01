@@ -1,8 +1,7 @@
 ﻿using System;
-using PirateX.Core.Utils;
 using ProtoBuf;
 
-namespace PirateX.Core.Actor
+namespace PirateX.Core
 {
     /// <summary>
     /// ping

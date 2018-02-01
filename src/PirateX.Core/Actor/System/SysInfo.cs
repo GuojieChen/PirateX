@@ -1,8 +1,7 @@
 ﻿using Autofac;
 using ProtoBuf;
-using PirateX.Core.Actor.ProtoSync;
 
-namespace PirateX.Core.Actor.System
+namespace PirateX.Core
 {
     /// <summary>
     /// 获取系统信息

@@ -5,9 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX.Core;
-using PirateX.Core.Utils;
 using PirateX.Protocol;
-using PirateX.Protocol.Package;
 using SuperSocket.SocketBase.Command;
 using SuperSocket.SocketBase.Protocol;
 

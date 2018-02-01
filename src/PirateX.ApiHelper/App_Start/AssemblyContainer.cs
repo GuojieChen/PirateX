@@ -7,9 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using Newtonsoft.Json;
-using PirateX.Core.Actor;
-using PirateX.Core.Domain.Entity;
-using PirateX.Core.Utils;
+using PirateX.Core;
 using ProtoBuf;
 using TestDataGenerator;
 
@@ -70,7 +68,7 @@ namespace PirateX.ApiHelper.App_Start
 
                 list.Add(Assembly.LoadFrom(file));
             }
-            list.Add(typeof(PirateX.Core.Actor.ProtoSync.ProtobufService).Assembly);
+            list.Add(typeof(IDistrictContainer).Assembly);
             _instance.Load(list.ToArray());
         }
         private AssemblyContainer()
@@ -187,7 +185,7 @@ namespace PirateX.ApiHelper.App_Start
             return detail;
         }
 
-        private IEnumerable<ResponseDes> GetResponseDeses(Type type)
+        public IEnumerable<ResponseDes> GetResponseDeses(Type type)
         {
             if (type != null)
             {
@@ -237,10 +235,13 @@ namespace PirateX.ApiHelper.App_Start
 
         public IEnumerable<ResponseDes> GetResponseDeses(string modelid, string id)
         {
-            var assembly = _assemblies[modelid];
-            var type = assembly.GetTypes().FirstOrDefault(item => Equals(id, item.GUID.ToString("N")));
+            return GetResponseDeses(GetModelType(modelid,id));
+        }
 
-            return GetResponseDeses(type);
+        public Type GetModelType(string modelid, string id)
+        {
+            var assembly = _assemblies[modelid];
+            return assembly.GetTypes().FirstOrDefault(item => Equals(id, item.GUID.ToString("N")));
         }
 
         public List<string> GetAssemblyXmlList()

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PirateX.Core.DataSync
+namespace PirateX.Core
 {
     public interface IDataSync<out T>
     {

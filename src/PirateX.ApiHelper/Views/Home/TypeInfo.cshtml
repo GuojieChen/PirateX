@@ -1,5 +1,5 @@
 ﻿@using PirateX.ApiHelper.App_Start
-@using PirateX.Core.Actor
+@using PirateX.Core
 
 @{
     ViewBag.Title = "TypeInfo";
@@ -12,32 +12,37 @@
 
 <table class="table table-hover">
     <thead>
-        <tr>
-            <th>字段</th>
-            <th>类型</th>
-            <th>描述</th>
-            <th>ProtoTag</th>
-        </tr>
+    <tr>
+        <th>字段</th>
+        <th>类型</th>
+        <th>描述</th>
+        <th>ProtoTag</th>
+    </tr>
     </thead>
 
     <tbody>
-        @foreach (ResponseDes item in ViewBag.Protomembers)
-        {
-            <tr>
-                <td>@Html.Raw(item.Name)</td>
-                <td>
-                    @if (item.IsPrimitive)
-                    {
-                        <span>@Html.Raw(item.TypeName)</span>
-                    }
-                    else
-                    {
-                        <span>@Html.ActionLink(item.TypeName, "TypeInfo", new { modelid = item.ModelId, id = item.TypeId })</span>
-                    }
-                </td>
-                <td>@Html.Raw(item.Commonts?.Summary.InnerText)</td>
-                <td>@Html.Raw(item.ProtoMember.Value)</td>
-            </tr>
-        }
+    @foreach (ResponseDes item in ViewBag.Protomembers)
+    {
+        <tr>
+            <td>@Html.Raw(item.Name)</td>
+            <td>
+                @if (item.IsPrimitive)
+                {
+                    <span>@Html.Raw(item.TypeName)</span>
+                }
+                else
+                {
+                    <span>@Html.ActionLink(item.TypeName, "TypeInfo", new { modelid = item.ModelId, id = item.TypeId })</span>
+                }
+            </td>
+            <td>@Html.Raw(item.Commonts?.Summary?.InnerText)</td>
+            <td>@Html.Raw(item.ProtoMember.Value)</td>
+        </tr>
+    }
     </tbody>
 </table>
+
+<h3>proto</h3>
+<pre>
+@Html.Raw((ViewBag.Type as Type).GetProto())
+</pre>

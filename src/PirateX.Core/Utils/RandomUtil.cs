@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PirateX.Core.Utils
+namespace PirateX.Core
 {
     public class RandomUtil
     {

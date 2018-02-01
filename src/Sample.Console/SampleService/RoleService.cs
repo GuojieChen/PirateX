@@ -9,9 +9,6 @@ using Dapper;
 using GameServer.Console.SampleConfig;
 using GameServer.Console.SampleDomain;
 using PirateX.Core;
-using PirateX.Core.Broadcas;
-using PirateX.Core.Config;
-using PirateX.Core.Push;
 using StackExchange.Redis;
 
 namespace GameServer.Console.SampleService

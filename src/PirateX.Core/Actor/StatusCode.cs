@@ -1,4 +1,4 @@
-﻿namespace PirateX.Core.Actor
+﻿namespace PirateX.Core
 {
     /// <summary>
     /// 服务器系统状态码

@@ -1,4 +1,4 @@
-﻿using PirateX.Core.Domain.Repository;
+﻿using PirateX.Core;
 
 namespace PirateX.Middleware
 {

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autofac;
-using PirateX.Core.Session;
+﻿using Autofac;
 using StackExchange.Redis;
 
-namespace PirateX.Core.Container.ServerSettingRegister
+namespace PirateX.Core
 {
     [ServerSettingRegister(typeof(RedisServerSettingRegister))]
     public interface IRedisServerSetting

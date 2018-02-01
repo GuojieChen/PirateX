@@ -1,4 +1,4 @@
-﻿namespace PirateX.Core.Redis.StackExchange.Redis.Ex
+﻿namespace PirateX.Core
 {
     public interface IRedisSerializer
     {
