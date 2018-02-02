@@ -123,8 +123,8 @@ namespace PirateX.UnitTest.Protocol.Package
                 }).ConvertToByte(),
             };
 
-            var clientKeys = new KeyGenerator(100).MakeKey();
-            var serverKeys = new KeyGenerator(200).MakeKey();
+            var clientKeys = KeyGenerator.MakeKey(100);
+            var serverKeys = KeyGenerator.MakeKey(200);
             //client
             clientPackage.PackKeys = clientKeys;
             clientPackage.UnPackKeys = serverKeys;
@@ -190,7 +190,7 @@ namespace PirateX.UnitTest.Protocol.Package
                 }).ConvertToByte(),
             };
 
-            var clientKeys = new KeyGenerator(1).MakeKey();
+            var clientKeys = KeyGenerator.MakeKey(1);
             clientPackage.PackKeys = clientKeys;
 
             var requestPackage = new PirateXRequestPackage()
@@ -207,7 +207,7 @@ namespace PirateX.UnitTest.Protocol.Package
         [Test]
         public void key()
         {
-            var keys = new KeyGenerator(1).MakeKey();
+            var keys = KeyGenerator.MakeKey(1);
 
             Console.WriteLine(string.Join(",",keys));
 
@@ -219,7 +219,7 @@ namespace PirateX.UnitTest.Protocol.Package
         public void crypto()
         {
 
-            var keys = new KeyGenerator(1).MakeKey();
+            var keys = KeyGenerator.MakeKey(1);
             var xxtea = new PirateX.Protocol.XXTea();
 
             var packet = xxtea.Encode(Encoding.UTF8.GetBytes("hello"), keys);

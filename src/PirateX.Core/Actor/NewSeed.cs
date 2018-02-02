@@ -22,8 +22,8 @@ namespace PirateX.Core
 
             var serverSeed = (int)(new DateTime(DateTime.Now.Ticks + RandomUtil.Random.Next(-10001, 10001)).GetTimestamp() / 1000);
 
-            var ClientKeys = new KeyGenerator(seed).MakeKey();
-            var ServerKeys = new KeyGenerator(serverSeed).MakeKey();
+            var ClientKeys = KeyGenerator.MakeKey(seed);
+            var ServerKeys = KeyGenerator.MakeKey(serverSeed);
             var cryptobyte = new BitArray(CryptoByte).ConvertToByte();
 
             ResponseData = base.MessageSender.SendSeed(base.Context, cryptobyte, ClientKeys, ServerKeys, new NewSeedResponse()

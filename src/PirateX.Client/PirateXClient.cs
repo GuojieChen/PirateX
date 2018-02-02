@@ -397,8 +397,8 @@ namespace PirateX.Client
             //CommandReader = ProtocolProcessor.CreateHandshakeReader(this);
             //ProtocolProcessor.SendHandshake(this);
             _clientSeed = Utils.GetTimestampAsSecond();
-            var clientKey = new KeyGenerator(_clientSeed);
-            PackageProcessor.PackKeys = clientKey.MakeKey();
+            var clientKey = KeyGenerator.MakeKey(_clientSeed);
+            PackageProcessor.PackKeys = clientKey;
 
             Send("NewSeed", $"seed={_clientSeed}", new NameValueCollection() { { "format", DefaultFormat } });
         }

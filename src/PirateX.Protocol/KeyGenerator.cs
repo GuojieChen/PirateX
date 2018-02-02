@@ -8,24 +8,17 @@ namespace PirateX.Protocol
 {
     public class KeyGenerator
     {
-        public int Seed { get; private set; }
-
-        public KeyGenerator(int seed)
-        {
-            this.Seed = seed;
-        }
-
         /// <summary>
         /// 随机算法
         /// </summary>
         /// <returns></returns>
-        public int Rand()
+        private static int Rand(int seed)
         {
-            Seed = Seed * 0x343fd + 0x269EC3;  // a=214013, b=2531011
-            return (Seed >> 0x10) & 0x7FFF;
+            seed = seed * 0x343fd + 0x269EC3;  // a=214013, b=2531011
+            return (seed >> 0x10) & 0x7FFF;
         }
 
-        public byte[] MakeKey()
+        public static byte[] MakeKey(int seed)
         {
             const int tableSize = 128;
             var originals = new int[tableSize];
@@ -37,7 +30,7 @@ namespace PirateX.Protocol
 
             for (var i = 0; i < tableSize; i++)
             {
-                var rand = ((char)(Rand() % tableSize));
+                var rand = ((char)(Rand(seed) % tableSize));
 
                 var tmp = originals[i];
                 originals[i] = originals[rand];
@@ -45,7 +38,7 @@ namespace PirateX.Protocol
             }
 
             //size [4,16)
-            var size = Rand() % 12 + 4;
+            var size = Rand(seed) % 12 + 4;
             var keys = new byte[size];
 
             for (var i = 0; i < size; i++)

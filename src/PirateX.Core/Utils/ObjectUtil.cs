@@ -138,6 +138,15 @@ namespace PirateX.Core
         {
             return (b & (1 << bitNumber)) != 0;
         }
+
+        public static int ToInt(this string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return 0;
+
+            return int.Parse(str);
+        }
+
         [Obsolete("建议采用ToArray方法")]
         public static List<int> ToIntList(this string str)
         {

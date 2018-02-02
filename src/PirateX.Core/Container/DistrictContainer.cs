@@ -72,6 +72,8 @@ namespace PirateX.Core
             SqlMapper.AddTypeHandler(typeof(List<short>), new ListJsonMapper<short>());
             SqlMapper.AddTypeHandler(typeof(List<byte>), new ListJsonMapper<byte>());
 
+            SqlMapper.AddTypeHandler(typeof(Dictionary<int,int>),new DictionaryMapper<int,int>());
+
             if (Log.IsTraceEnabled)
                 Log.Trace("~~~~~~~~~~ Init server containers ~~~~~~~~~~");
 
