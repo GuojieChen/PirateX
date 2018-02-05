@@ -14,7 +14,7 @@ namespace GameServer.Console.Cmd
         public override void Execute()
         {
 
-            var b = Reslover.Resolve<IMessageBroadcast>();
+            var b = Resolver.Resolve<IMessageBroadcast>();
             b.Send(Context.Request, 1, 2, 3);
         }
     }
