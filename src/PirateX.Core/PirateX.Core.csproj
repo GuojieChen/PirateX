@@ -83,6 +83,7 @@
     <Compile Include="Actor\RepAction.cs" />
     <Compile Include="Actor\RequestDocAttribute.cs" />
     <Compile Include="Actor\StatusCode.cs" />
+    <Compile Include="Actor\System\CommandList.cs" />
     <Compile Include="Actor\System\ProtoSync.cs" />
     <Compile Include="Actor\System\SysInfo.cs" />
     <Compile Include="Broadcas\IMessageBroadcast.cs" />

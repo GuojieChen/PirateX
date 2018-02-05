@@ -30,6 +30,7 @@
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnDisconn = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.btnSend = new System.Windows.Forms.Button();
@@ -46,11 +47,12 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.jsonViewer1 = new EPocalipse.Json.Viewer.JsonViewer();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.lable_duration = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.btnDisconn = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.cbbCMDList = new System.Windows.Forms.ComboBox();
+            this.jsonViewer1 = new EPocalipse.Json.Viewer.JsonViewer();
             this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -65,7 +67,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(644, 189);
+            this.groupBox1.Size = new System.Drawing.Size(644, 250);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
@@ -84,8 +86,19 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(408, 17);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(233, 169);
+            this.panel2.Size = new System.Drawing.Size(233, 230);
             this.panel2.TabIndex = 1;
+            // 
+            // btnDisconn
+            // 
+            this.btnDisconn.Enabled = false;
+            this.btnDisconn.Location = new System.Drawing.Point(73, 182);
+            this.btnDisconn.Name = "btnDisconn";
+            this.btnDisconn.Size = new System.Drawing.Size(108, 23);
+            this.btnDisconn.TabIndex = 8;
+            this.btnDisconn.Text = "断开连接";
+            this.btnDisconn.UseVisualStyleBackColor = true;
+            this.btnDisconn.Click += new System.EventHandler(this.btnDisconn_Click);
             // 
             // label4
             // 
@@ -108,7 +121,7 @@
             // btnSend
             // 
             this.btnSend.Enabled = false;
-            this.btnSend.Location = new System.Drawing.Point(149, 116);
+            this.btnSend.Location = new System.Drawing.Point(137, 136);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(75, 23);
             this.btnSend.TabIndex = 5;
@@ -118,7 +131,7 @@
             // 
             // btnConn
             // 
-            this.btnConn.Location = new System.Drawing.Point(30, 116);
+            this.btnConn.Location = new System.Drawing.Point(21, 136);
             this.btnConn.Name = "btnConn";
             this.btnConn.Size = new System.Drawing.Size(77, 23);
             this.btnConn.TabIndex = 4;
@@ -162,6 +175,8 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.cbbCMDList);
+            this.panel1.Controls.Add(this.label6);
             this.panel1.Controls.Add(this.txtQuery);
             this.panel1.Controls.Add(this.txtHeader);
             this.panel1.Controls.Add(this.txtToken);
@@ -171,12 +186,12 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(3, 17);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(405, 169);
+            this.panel1.Size = new System.Drawing.Size(405, 230);
             this.panel1.TabIndex = 0;
             // 
             // txtQuery
             // 
-            this.txtQuery.Location = new System.Drawing.Point(83, 77);
+            this.txtQuery.Location = new System.Drawing.Point(83, 128);
             this.txtQuery.Multiline = true;
             this.txtQuery.Name = "txtQuery";
             this.txtQuery.Size = new System.Drawing.Size(279, 77);
@@ -185,11 +200,11 @@
             // 
             // txtHeader
             // 
-            this.txtHeader.Location = new System.Drawing.Point(83, 48);
+            this.txtHeader.Location = new System.Drawing.Point(83, 54);
             this.txtHeader.Name = "txtHeader";
             this.txtHeader.Size = new System.Drawing.Size(279, 21);
             this.txtHeader.TabIndex = 10;
-            this.txtHeader.Text = "c=RoleInfo&lang=zh-CN";
+            this.txtHeader.Text = "lang=zh-CN";
             // 
             // txtToken
             // 
@@ -202,7 +217,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(26, 90);
+            this.label3.Location = new System.Drawing.Point(26, 141);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 12);
             this.label3.TabIndex = 8;
@@ -211,7 +226,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(26, 57);
+            this.label2.Location = new System.Drawing.Point(26, 63);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(41, 12);
             this.label2.TabIndex = 7;
@@ -230,32 +245,23 @@
             // 
             this.groupBox2.Controls.Add(this.jsonViewer1);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(0, 189);
+            this.groupBox2.Location = new System.Drawing.Point(0, 250);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(644, 416);
+            this.groupBox2.Size = new System.Drawing.Size(644, 355);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "groupBox2";
             // 
-            // jsonViewer1
-            // 
-            this.jsonViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.jsonViewer1.Location = new System.Drawing.Point(3, 17);
-            this.jsonViewer1.Name = "jsonViewer1";
-            this.jsonViewer1.ResponseInfo = null;
-            this.jsonViewer1.Size = new System.Drawing.Size(638, 396);
-            this.jsonViewer1.TabIndex = 0;
-            // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(32, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(33, 17);
             this.toolStripStatusLabel1.Text = "耗时";
             // 
             // lable_duration
             // 
             this.lable_duration.Name = "lable_duration";
-            this.lable_duration.Size = new System.Drawing.Size(15, 17);
+            this.lable_duration.Size = new System.Drawing.Size(13, 17);
             this.lable_duration.Text = "0";
             // 
             // statusStrip1
@@ -269,16 +275,31 @@
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // btnDisconn
+            // label6
             // 
-            this.btnDisconn.Enabled = false;
-            this.btnDisconn.Location = new System.Drawing.Point(68, 143);
-            this.btnDisconn.Name = "btnDisconn";
-            this.btnDisconn.Size = new System.Drawing.Size(108, 23);
-            this.btnDisconn.TabIndex = 8;
-            this.btnDisconn.Text = "断开连接";
-            this.btnDisconn.UseVisualStyleBackColor = true;
-            this.btnDisconn.Click += new System.EventHandler(this.btnDisconn_Click);
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(26, 98);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(23, 12);
+            this.label6.TabIndex = 12;
+            this.label6.Text = "CMD";
+            // 
+            // cbbCMDList
+            // 
+            this.cbbCMDList.FormattingEnabled = true;
+            this.cbbCMDList.Location = new System.Drawing.Point(83, 93);
+            this.cbbCMDList.Name = "cbbCMDList";
+            this.cbbCMDList.Size = new System.Drawing.Size(279, 20);
+            this.cbbCMDList.TabIndex = 13;
+            // 
+            // jsonViewer1
+            // 
+            this.jsonViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.jsonViewer1.Location = new System.Drawing.Point(3, 17);
+            this.jsonViewer1.Name = "jsonViewer1";
+            this.jsonViewer1.ResponseInfo = null;
+            this.jsonViewer1.Size = new System.Drawing.Size(638, 335);
+            this.jsonViewer1.TabIndex = 0;
             // 
             // Form1
             // 
@@ -328,6 +349,8 @@
         private System.Windows.Forms.ToolStripStatusLabel lable_duration;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.Button btnDisconn;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox cbbCMDList;
     }
 }
 

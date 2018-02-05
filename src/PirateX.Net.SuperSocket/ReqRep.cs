@@ -15,8 +15,6 @@ namespace PirateX.Net.SuperSocket
     {
         public override void ExecuteCommand(ProxySession session, BinaryRequestInfo requestInfo)
         {
-            var sw = new Stopwatch();
-            sw.Start();
             var dout = session.AppServer.NetService.ProcessRequest(session, requestInfo.Body);
 
             if (dout == null)
@@ -51,10 +49,6 @@ namespace PirateX.Net.SuperSocket
                 session.UnPackKeys = clientkey;
                 session.CryptoByte = crypto;
             }
-
-            var r = new PirateXResponseInfo(response);
         }
-
-
     }
 }

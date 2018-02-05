@@ -96,6 +96,16 @@ namespace PirateX.WinClient
                     var tin = Convert.ToInt64(args.Package.Headers["_tin_"]);
                     var tout = Convert.ToInt64(args.Package.Headers["_tout_"]);
 
+                    if (Equals(args.Package.Headers["c"], "_CommandList_"))
+                    {
+                        var list = Encoding.UTF8.GetString(args.Package.ContentBytes).Split(new char[] {','});
+                        foreach (var item in list)
+                        {
+                            cbbCMDList.Items.Add(item);
+                        }
+
+                        cbbCMDList.Text = list[0];
+                    }
 
                     this.jsonViewer1.ResponseInfo = args.Package;
                     btnSend.Enabled = true;
@@ -165,6 +175,8 @@ namespace PirateX.WinClient
 
                 btnSend.Enabled = true;
                 btnDisconn.Enabled = true;
+
+                _client.Send("_CommandList_", "", new NameValueCollection(){{"format","txt"}});
             });
         }
 
@@ -172,7 +184,7 @@ namespace PirateX.WinClient
         {
             var exHeaders = HttpUtility.ParseQueryString(txtHeader.Text.Trim());
             exHeaders.Add("format", comboBox1.Text.Trim());
-            _client.Send("",txtQuery.Text.Trim(), exHeaders);
+            _client.Send(cbbCMDList.Text,txtQuery.Text.Trim(), exHeaders);
         }
 
         private void btnDisconn_Click(object sender, EventArgs e)

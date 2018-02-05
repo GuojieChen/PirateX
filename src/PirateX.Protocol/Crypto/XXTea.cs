@@ -8,7 +8,7 @@ namespace PirateX.Protocol
     {
         public byte[] Encode(byte[] datas, byte[] key)
         {
-            if (datas.Length == 0)
+            if (datas == null || datas.Length == 0)
             {
                 return datas;
             }

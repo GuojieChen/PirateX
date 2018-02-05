@@ -72,7 +72,7 @@ namespace PirateX.Core
             RegisterActions(DistrictContainer.GetApiAssemblyList());
 
             builder.Register(c => Actions)
-                .AsSelf()
+                .As<IDictionary<string, IAction>>()
                 .SingleInstance();
 
             //数据格式
