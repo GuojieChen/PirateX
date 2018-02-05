@@ -23,7 +23,11 @@ namespace PirateX.Core
             if (string.IsNullOrEmpty(str))
                 return new T[0];
 
-            return str.TrimStart('[').TrimEnd(']').Split(new char[] {','})
+            str = str.TrimStart('[').TrimEnd(']');
+            if (string.IsNullOrEmpty(str))
+                return new T[0];
+
+            return str.Split(new char[] {','})
                     .Select(item => (T)Convert.ChangeType(item, typeof(T))).ToArray()
                 ;
 
@@ -46,7 +50,11 @@ namespace PirateX.Core
             if (string.IsNullOrEmpty(str))
                 return new List<T>();
 
-            return str.TrimStart('[').TrimEnd(']').Split(new char[] { ',' })
+            str = str.TrimStart('[').TrimEnd(']');
+            if (string.IsNullOrEmpty(str))
+                return new List<T>();
+
+            return str.Split(new char[] { ',' })
                     .Select(item => (T)Convert.ChangeType(item, typeof(T))).ToList()
                 ;
 
