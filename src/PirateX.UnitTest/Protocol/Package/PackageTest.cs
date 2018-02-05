@@ -218,7 +218,6 @@ namespace PirateX.UnitTest.Protocol.Package
         [Test]
         public void crypto()
         {
-
             var keys = new KeyGenerator(1).MakeKey();
             var xxtea = new PirateX.Protocol.XXTea();
 
