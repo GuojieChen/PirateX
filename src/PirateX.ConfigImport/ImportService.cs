@@ -71,6 +71,9 @@ namespace PirateX.ConfigImport
 
             foreach (var file in files)
             {
+                if (!file.EndsWith(".dll") || file.EndsWith("PirateX.Core.dll"))
+                    continue;
+
                 Assembly assembly = Assembly.LoadFrom(file);
                 var list = assembly.GetTypes()
                 .Where(item =>
@@ -81,9 +84,12 @@ namespace PirateX.ConfigImport
                 );
 
                 types.AddRange(list);
+
+                Logger.Debug(string.Format("TEMP:{0}  {1}", file, list.Count()));
             }
 
             if (Logger.IsDebugEnabled)
+
                 Logger.Debug($"types.cuont:{types.Count}");
 
             progressBar1.Maximum = types.Count();
