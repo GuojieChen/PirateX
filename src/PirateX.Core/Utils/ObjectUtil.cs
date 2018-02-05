@@ -208,5 +208,15 @@ namespace PirateX.Core
                 .ToList().ForEach(e => builder.Append(e));
             return builder.ToString();
         }
+
+        public static int Max(this int[] ts)
+        {
+            var max = 0;
+
+            foreach (var i in ts)
+                max = Math.Max(max, i);
+
+            return max;
+        }
     }
 }

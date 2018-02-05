@@ -14,6 +14,7 @@ namespace PirateX.Core
         {
             Code = StatusCode.Exception;
             this.ErrorCode = errorCode;
+            this.ErrorMsg = errorMsg;
         }
     }
 }
