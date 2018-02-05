@@ -310,7 +310,7 @@ namespace PirateX.Core
 
             return SendMessage<string>(context, headers, null);
         }
-
+         
         public virtual void OnSessionConnected(PirateSession session)
         {
             OnlineCount++;
