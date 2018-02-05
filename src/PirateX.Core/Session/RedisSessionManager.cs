@@ -20,7 +20,7 @@ namespace PirateX.Core
             Expiry = new TimeSpan(0, 0, 30, 0);// 默认一分钟
         }
 
-        public async void Login(PirateSession pirateSession)
+        public void Login(PirateSession pirateSession)
         {
             if (pirateSession == null)
                 return;
@@ -34,7 +34,7 @@ namespace PirateX.Core
 
             db.StringSet(urn, Serializer.Serilazer(pirateSession), Expiry);
             db.StringSet(GetUrnOnlineRole(pirateSession.SessionId), urn, Expiry);
-            db.HashSet(GetDidUrn(pirateSession.Did), Convert.ToString(pirateSession.Id), urn);//TODO 需要定时清理
+            db.HashSet(GetDidUrn(pirateSession.Did), Convert.ToString(pirateSession.Id), urn);
         }
 
         public async void Logout(long rid)

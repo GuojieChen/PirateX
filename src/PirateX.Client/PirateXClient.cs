@@ -186,6 +186,7 @@ namespace PirateX.Client
             AutoSendPingInterval = -1; //-1 表示启用自动ping
         }
 
+        public NameValueCollection Headers = new NameValueCollection();
 
         void client_DataReceived(object sender, DataEventArgs e)
         {
@@ -400,7 +401,9 @@ namespace PirateX.Client
             var clientKey = new KeyGenerator(_clientSeed).MakeKey();
             PackageProcessor.PackKeys = clientKey;
 
-            Send("NewSeed", $"seed={_clientSeed}", new NameValueCollection() { { "format", DefaultFormat } });
+            Headers.Add("format",DefaultFormat);
+
+            Send("NewSeed", $"seed={_clientSeed}", Headers);
         }
 
         private void ClearTimer()

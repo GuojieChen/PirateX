@@ -70,14 +70,15 @@ namespace PirateX.Net.NetMQ
 
         private void ThreadProcessRequest(NetMQSocket socket)
         {
-            var msg = socket.ReceiveFrameBytes();
-
-            if (Logger.IsTraceEnabled)
-                Logger.Trace($"ProcessRequest, Thread[{Thread.CurrentThread.ManagedThreadId}] IsThreadPoolThread = {Thread.CurrentThread.IsThreadPoolThread}");
-
             byte[] response = null;
+
             try
             {
+                var msg = socket.ReceiveFrameBytes();
+
+                if (Logger.IsTraceEnabled)
+                    Logger.Trace($"ProcessRequest, Thread[{Thread.CurrentThread.ManagedThreadId}] IsThreadPoolThread = {Thread.CurrentThread.IsThreadPoolThread}");
+
                 var din = msg.FromProtobuf<In>();
 
                 if (ProfilerLog.ProfilerLogger.IsInfoEnabled)

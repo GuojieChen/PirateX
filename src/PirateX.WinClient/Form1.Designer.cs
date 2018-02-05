@@ -40,6 +40,8 @@
             this.txtHost = new System.Windows.Forms.TextBox();
             this.lable4 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cbbCMDList = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.txtQuery = new System.Windows.Forms.TextBox();
             this.txtHeader = new System.Windows.Forms.TextBox();
             this.txtToken = new System.Windows.Forms.TextBox();
@@ -47,12 +49,10 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.jsonViewer1 = new EPocalipse.Json.Viewer.JsonViewer();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.lable_duration = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.label6 = new System.Windows.Forms.Label();
-            this.cbbCMDList = new System.Windows.Forms.ComboBox();
-            this.jsonViewer1 = new EPocalipse.Json.Viewer.JsonViewer();
             this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -189,6 +189,23 @@
             this.panel1.Size = new System.Drawing.Size(405, 230);
             this.panel1.TabIndex = 0;
             // 
+            // cbbCMDList
+            // 
+            this.cbbCMDList.FormattingEnabled = true;
+            this.cbbCMDList.Location = new System.Drawing.Point(83, 93);
+            this.cbbCMDList.Name = "cbbCMDList";
+            this.cbbCMDList.Size = new System.Drawing.Size(279, 20);
+            this.cbbCMDList.TabIndex = 13;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(26, 98);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(23, 12);
+            this.label6.TabIndex = 12;
+            this.label6.Text = "CMD";
+            // 
             // txtQuery
             // 
             this.txtQuery.Location = new System.Drawing.Point(83, 128);
@@ -204,7 +221,7 @@
             this.txtHeader.Name = "txtHeader";
             this.txtHeader.Size = new System.Drawing.Size(279, 21);
             this.txtHeader.TabIndex = 10;
-            this.txtHeader.Text = "lang=zh-CN";
+            this.txtHeader.Text = "lang=zh-CN&Os=Windows&Phone=PC";
             // 
             // txtToken
             // 
@@ -252,6 +269,15 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "groupBox2";
             // 
+            // jsonViewer1
+            // 
+            this.jsonViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.jsonViewer1.Location = new System.Drawing.Point(3, 17);
+            this.jsonViewer1.Name = "jsonViewer1";
+            this.jsonViewer1.ResponseInfo = null;
+            this.jsonViewer1.Size = new System.Drawing.Size(638, 335);
+            this.jsonViewer1.TabIndex = 0;
+            // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
@@ -274,32 +300,6 @@
             this.statusStrip1.Size = new System.Drawing.Size(644, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(26, 98);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(23, 12);
-            this.label6.TabIndex = 12;
-            this.label6.Text = "CMD";
-            // 
-            // cbbCMDList
-            // 
-            this.cbbCMDList.FormattingEnabled = true;
-            this.cbbCMDList.Location = new System.Drawing.Point(83, 93);
-            this.cbbCMDList.Name = "cbbCMDList";
-            this.cbbCMDList.Size = new System.Drawing.Size(279, 20);
-            this.cbbCMDList.TabIndex = 13;
-            // 
-            // jsonViewer1
-            // 
-            this.jsonViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.jsonViewer1.Location = new System.Drawing.Point(3, 17);
-            this.jsonViewer1.Name = "jsonViewer1";
-            this.jsonViewer1.ResponseInfo = null;
-            this.jsonViewer1.Size = new System.Drawing.Size(638, 335);
-            this.jsonViewer1.TabIndex = 0;
             // 
             // Form1
             // 

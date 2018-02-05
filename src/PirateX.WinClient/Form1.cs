@@ -77,6 +77,7 @@ namespace PirateX.WinClient
             
 
             _client = new PirateXClient($"ps://{txtHost.Text.Trim()}:{txtPort.Text.Trim()}", tokenbase64 );
+            _client.Headers = HttpUtility.ParseQueryString(txtHeader.Text.Trim());
             if (!string.IsNullOrEmpty(comboBox1.Text))
                 _client.DefaultFormat = comboBox1.Text;
             //_client.ExHeaders
@@ -153,6 +154,7 @@ namespace PirateX.WinClient
                 txtPort.Enabled = true;
                 btnConn.Enabled = true;
                 txtToken.Enabled = true;
+                txtHeader.Enabled = true;
                 btnSend.Enabled = false;
                 btnDisconn.Enabled = false;
             });
@@ -172,7 +174,7 @@ namespace PirateX.WinClient
                 txtHost.Enabled = false;
                 txtPort.Enabled = false;
                 txtToken.Enabled = false;
-
+                txtHeader.Enabled = false; 
                 btnSend.Enabled = true;
                 btnDisconn.Enabled = true;
 
@@ -182,9 +184,9 @@ namespace PirateX.WinClient
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            var exHeaders = HttpUtility.ParseQueryString(txtHeader.Text.Trim());
+            var exHeaders = new NameValueCollection();
             exHeaders.Add("format", comboBox1.Text.Trim());
-            _client.Send(cbbCMDList.Text,txtQuery.Text.Trim(), exHeaders);
+            _client.Send(cbbCMDList.Text,txtQuery.Text.Trim(),exHeaders);
         }
 
         private void btnDisconn_Click(object sender, EventArgs e)
@@ -192,7 +194,7 @@ namespace PirateX.WinClient
             txtToken.Enabled = true;
             btnSend.Enabled = false;
             btnDisconn.Enabled = false;
-
+            txtHeader.Enabled = true;
             txtHost.Enabled = true;
             txtPort.Enabled = true;
         }
