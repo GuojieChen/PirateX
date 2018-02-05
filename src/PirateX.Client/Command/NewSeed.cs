@@ -17,7 +17,7 @@ namespace PirateX.Client.Command
 
         public override void Excute(PirateXClient pSocket, NewSeedResponse data)
         {
-            pSocket.PackageProcessor.UnPackKeys = KeyGenerator.MakeKey(data.Seed);
+            pSocket.PackageProcessor.UnPackKeys = new KeyGenerator(data.Seed).MakeKey();
             pSocket.PackageProcessor.CryptoByte = new BitArray(CryptoByte).ConvertToByte();
         }
     }
