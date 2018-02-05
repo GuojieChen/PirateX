@@ -196,6 +196,7 @@
             this.cbbCMDList.Name = "cbbCMDList";
             this.cbbCMDList.Size = new System.Drawing.Size(279, 20);
             this.cbbCMDList.TabIndex = 13;
+            this.cbbCMDList.SelectedValueChanged += new System.EventHandler(this.cbbCMDList_SelectedValueChanged);
             // 
             // label6
             // 

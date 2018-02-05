@@ -100,12 +100,17 @@ namespace PirateX.WinClient
                     if (Equals(args.Package.Headers["c"], "_CommandList_"))
                     {
                         var list = Encoding.UTF8.GetString(args.Package.ContentBytes).Split(new char[] {','});
+                        cbbCMDList.Items.Clear();
                         foreach (var item in list)
                         {
                             cbbCMDList.Items.Add(item);
                         }
 
                         cbbCMDList.Text = list[0];
+                    }else if (Equals(args.Package.Headers["c"], "_CommandArgs_"))
+                    {
+                        if(args.Package.ContentBytes.Length>0)
+                            txtQuery.Text = Encoding.UTF8.GetString(args.Package.ContentBytes).Replace(",","={xxxxx}&")+"={xxxxx}"; 
                     }
 
                     this.jsonViewer1.ResponseInfo = args.Package;
@@ -197,6 +202,11 @@ namespace PirateX.WinClient
             txtHeader.Enabled = true;
             txtHost.Enabled = true;
             txtPort.Enabled = true;
+        }
+
+        private void cbbCMDList_SelectedValueChanged(object sender, EventArgs e)
+        {
+            _client.Send("_CommandArgs_",$"cmd={cbbCMDList.Text}", new NameValueCollection() { { "format", "txt" } });
         }
     }
 }
