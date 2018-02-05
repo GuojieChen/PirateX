@@ -272,7 +272,7 @@ namespace PirateX.Core
                         {
                             //session = OnlineManager.GetOnlineRole(token.Rid);
                             var container = DistrictContainer.GetDistrictContainer(token.Did);
-                            action.Reslover = container ?? throw new PirateXException("ContainerNull", "容器未定义") { Code = StatusCode.ContainerNull }; //.BeginLifetimeScope();
+                            action.Resolver = container ?? throw new PirateXException("ContainerNull", "容器未定义") { Code = StatusCode.ContainerNull }; //.BeginLifetimeScope();
                         }
 
                         action.ServerReslover = DistrictContainer.ServerIoc;
