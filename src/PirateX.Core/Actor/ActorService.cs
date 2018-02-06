@@ -72,7 +72,7 @@ namespace PirateX.Core
             RegisterActions(DistrictContainer.GetApiAssemblyList());
 
             builder.Register(c => Actions)
-                .AsSelf()
+                .As<IDictionary<string, IAction>>()
                 .SingleInstance();
 
             //数据格式
@@ -210,7 +210,7 @@ namespace PirateX.Core
                 if(Logger.IsDebugEnabled)
                     Logger.Debug($"Session[{context.SessionId}] Logout ~");
 
-                var session = DistrictContainer.OnlineManager.GetOnlineRole(context.SessionId);
+                var session = DistrictContainer.OnlineManager.GetSession(context.SessionId);
                 if (session != null)
                 {
                     DistrictContainer.OnlineManager.Logout(session.Id);
@@ -270,7 +270,7 @@ namespace PirateX.Core
                         }
                         else
                         {
-                            //session = OnlineManager.GetOnlineRole(token.Rid);
+                            //session = OnlineManager.GetSession(token.Rid);
                             var container = DistrictContainer.GetDistrictContainer(token.Did);
                             action.Resolver = container ?? throw new PirateXException("ContainerNull", "容器未定义") { Code = StatusCode.ContainerNull }; //.BeginLifetimeScope();
                         }
@@ -310,7 +310,7 @@ namespace PirateX.Core
 
             return SendMessage<string>(context, headers, null);
         }
-
+         
         public virtual void OnSessionConnected(PirateSession session)
         {
             OnlineCount++;
@@ -328,7 +328,7 @@ namespace PirateX.Core
                 StartTimestamp = DateTime.UtcNow.GetTimestampAsSecond(),
                 ResponseConvert = context.ResponseCovnert,
                 ServerName = context.ServerName,
-                SocketAddress = context.SocketAddress,
+                FrontendID = context.FrontendID,
             };
 
             return session;
@@ -507,7 +507,8 @@ namespace PirateX.Core
         //    ActorNetService.PushMessage(sessionid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>("json").SerializeObject(t));
         //}
 
-        public void PushMessage<T>(int rid, T t)
+
+        public void PushMessage<T>(PirateSession session, T t)
         {
             var headers = new NameValueCollection
             {
@@ -516,36 +517,32 @@ namespace PirateX.Core
                 {"format",DefaultResponseCovnert} // TODO 默认解析器
             };
 
-            if(Equals(DefaultResponseCovnert,"protobuf"))
-                headers["responsetype"] = typeof(T).Name;
-
-
-            if (Logger.IsDebugEnabled && t != null)
-            {
-                Logger.Debug($"S2C PUSH #{rid}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {JsonConvert.SerializeObject(t)}");
-            }
-
-            ActorNetService.PushMessage(rid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
-        }
-
-        public void PushMessage<T>(int rid, string name, T t)
-        {
-            var headers = new NameValueCollection
-            {
-                {"c",name},
-                { "i", MessageType.Boradcast},
-                {"format",DefaultResponseCovnert} // TODO 默认解析器
-            };
-
             if (Equals(DefaultResponseCovnert, "protobuf"))
                 headers["responsetype"] = typeof(T).Name;
 
+
             if (Logger.IsDebugEnabled && t != null)
             {
-                Logger.Debug($"S2C #{rid}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {JsonConvert.SerializeObject(t)}");
+                Logger.Debug($"S2C PUSH #{session.Id}# {string.Join("&", headers.AllKeys.Select(a => a + "=" + headers[a]))} {JsonConvert.SerializeObject(t)}");
             }
 
-            ActorNetService.PushMessage(rid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
+            ActorNetService.PushMessage(session.FrontendID, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
+        }
+        
+
+        public void PushMessage<T>(int rid, T t)
+        {
+            var session = DistrictContainer.OnlineManager.GetSession(rid);
+            if (session == null)
+                return;
+
+            PushMessage(session,t);
+        }
+
+
+        public void PushMessageToDistrict<T>(int did, T t)
+        {
+            //DistrictContainer.OnlineManager.GetSession()
         }
 
         public byte[] SendMessage<T>(ActorContext context, string name, T t)

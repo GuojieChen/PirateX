@@ -41,6 +41,9 @@ namespace PirateX.Protocol
         [ProtoMember(10)]
         public string ServerName { get; set; }
 
+        [ProtoMember(11)]
+        public string FrontendID { get; set; }
+
         public In()
         {
             ServerName = Dns.GetHostName();

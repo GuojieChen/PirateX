@@ -13,6 +13,9 @@ namespace PirateX.Core
         public IRedisSerializer RedisSerializer => ServerReslover.Resolve<IRedisSerializer>();
         public virtual IDatabase Redis => Resolver.Resolve<IDatabase>();
         public IDbConnection DbConnection => Resolver.Resolve<IDbConnection>();
+
+        public ISessionManager SessionManager => ServerReslover.Resolve<ISessionManager>();
+
         public ILifetimeScope ServerReslover { get; set; }
         public ILifetimeScope Resolver { get; set; }
         public virtual string Name { get; set; }

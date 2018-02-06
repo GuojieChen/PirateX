@@ -21,6 +21,11 @@ namespace PirateX.Net.NetMQ
         private INetManager NetSend { get; set; }
         
         private SubscriberSocket _subscriberSocket;
+        /// <summary>
+        /// 前段处理器标识
+        /// 用以sub/pub 
+        /// </summary>
+        private string FrontendID = $"{Dns.GetHostName()}-{Process.GetCurrentProcess().Id}";
 
         public string PublisherSocketString { get; set; }
         public string ResponseHostString { get; set; }
@@ -36,6 +41,7 @@ namespace PirateX.Net.NetMQ
                 throw new ArgumentNullException(nameof(ResponseHostString));
 
             _subscriberSocket = new SubscriberSocket(PublisherSocketString);
+            _subscriberSocket.Subscribe(FrontendID);
 
             Poller = new NetMQPoller()
             {
@@ -131,6 +137,7 @@ namespace PirateX.Net.NetMQ
                 Ip = (protocolPackage.RemoteEndPoint as IPEndPoint).Address.ToString(),
                 LastNo = protocolPackage.LastNo,
                 SessionId = protocolPackage.Id,
+                FrontendID = FrontendID,
             };
             if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
                 din.Profile.Add("_tin_", $"{DateTime.UtcNow.Ticks}");

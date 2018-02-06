@@ -1,4 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace PirateX.Core
 {
@@ -31,7 +33,7 @@ namespace PirateX.Core
                 _sessionDic[session.Id] = session;
         }
 
-        public PirateSession GetOnlineRole(long rid)
+        public PirateSession GetSession(long rid)
         {
             PirateSession session;
             _sessionDic.TryGetValue(rid, out session);
@@ -39,7 +41,7 @@ namespace PirateX.Core
             return session;
         }
 
-        public PirateSession GetOnlineRole(string sessionid)
+        public PirateSession GetSession(string sessionid)
         {
             long rid = 0;
             _sessionidDic.TryGetValue(sessionid, out rid);
@@ -52,6 +54,11 @@ namespace PirateX.Core
             }
 
             return null;
+        }
+
+        public IEnumerable<string> GetFrontendIDListByDid(int did)
+        {
+            throw new NotImplementedException();
         }
     }
 }

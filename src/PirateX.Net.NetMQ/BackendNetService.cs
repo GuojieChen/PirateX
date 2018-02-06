@@ -32,6 +32,7 @@ namespace PirateX.Net.NetMQ
         }
 
         private Proxy _broker = null;
+        private Proxy _pubBroker = null;
         private INetMQPoller _poller = null;
         private List<Task> ThreadWorkers = new List<Task>();
         private List<ResponseSocket> ResponseSockets = new List<ResponseSocket>();
@@ -46,14 +47,27 @@ namespace PirateX.Net.NetMQ
                 _broker = new Proxy(new RouterSocket(config.ResponseSocketString), dealer); // new LRUBroker(config.ResponseSocketString, "tcp://*");
                 connectto = $">inproc://backend";
                 if (Logger.IsTraceEnabled)
-                    Logger.Trace($"start inner proxy");
+                    Logger.Trace($"start inner req/rep proxy");
             }
+            /*
+            var pubConnectTo = config.PublisherSocketString;
+            if (config.PublisherSocketString.StartsWith("@"))
+            {
+                _pubBroker = new Proxy(new XSubscriberSocket("@inproc://subfrontend"),new XPublisherSocket("@inproc://pubbackend") );
+                pubConnectTo = $">inproc://pubbackend";
 
+                if (Logger.IsTraceEnabled)
+                    Logger.Trace($"start inner sub/pub proxy");
+            }
+            */
             Task.Factory.StartNew(_broker.Start);
+            //Task.Factory.StartNew(_pubBroker.Start);
             _actorService.Start();
 
             for (int i = 0; i < config.BackendWorkersPerService; i++)
                 ThreadWorkers.Add(Task.Factory.StartNew(WorkerTask, connectto, _c_token.Token));
+
+            //PublisherSocket = new PublisherSocket(pubConnectTo);
         }
 
         private void WorkerTask(object connectTo)
@@ -70,14 +84,15 @@ namespace PirateX.Net.NetMQ
 
         private void ThreadProcessRequest(NetMQSocket socket)
         {
-            var msg = socket.ReceiveFrameBytes();
-
-            if (Logger.IsTraceEnabled)
-                Logger.Trace($"ProcessRequest, Thread[{Thread.CurrentThread.ManagedThreadId}] IsThreadPoolThread = {Thread.CurrentThread.IsThreadPoolThread}");
-
             byte[] response = null;
+
             try
             {
+                var msg = socket.ReceiveFrameBytes();
+
+                if (Logger.IsTraceEnabled)
+                    Logger.Trace($"ProcessRequest, Thread[{Thread.CurrentThread.ManagedThreadId}] IsThreadPoolThread = {Thread.CurrentThread.IsThreadPoolThread}");
+
                 var din = msg.FromProtobuf<In>();
 
                 if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
@@ -96,6 +111,7 @@ namespace PirateX.Net.NetMQ
                     SessionId = din.SessionId,
                     Profile = din.Profile,
                     ServerName = din.ServerName,
+                    FrontendID = din.FrontendID,
                     ServerItmes = din.Items
                 };
 
@@ -133,16 +149,15 @@ namespace PirateX.Net.NetMQ
         /// <param name="rid"></param>
         /// <param name="headers"></param>
         /// <param name="body"></param>
-        public void PushMessage(int rid, NameValueCollection headers, byte[] body)
+        public void PushMessage(string frontendID, NameValueCollection headers, byte[] body)
         {
-            PublisherSocket.SendFrame(new Out()
+            PublisherSocket.SendMoreFrame(frontendID).SendFrame(new Out()
             {
                 Version = 1,
                 Action = PirateXAction.Push,
                 LastNo = -1,
                 HeaderBytes = GetHeaderBytes(headers),
                 BodyBytes = body,
-                Id = rid,
             }.ToProtobuf());
         }
 
