@@ -45,12 +45,12 @@ namespace PirateX.Net.NetMQ
 
             Poller = new NetMQPoller()
             {
-                _subscriberSocket,
+                //_subscriberSocket,
             };
 
             NetSend = netManager;
 
-            _subscriberSocket.ReceiveReady += ProcessSubscribe;
+            //_subscriberSocket.ReceiveReady += ProcessSubscribe;
 
             IsSetuped = true;
         }
