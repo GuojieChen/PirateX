@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B989BABA-4B8C-406F-83FB-16C5412B9250}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>PirateX.Schedule</RootNamespace>
-    <AssemblyName>PirateX.Schedule</AssemblyName>
+    <ProjectGuid>{555423DD-4407-434D-9C7B-A6E74CE4B959}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>PirateX.Schedule.Worker</RootNamespace>
+    <AssemblyName>PirateX.Schedule.Worker</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -31,61 +31,59 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AsyncIO, Version=0.1.25.0, Culture=neutral, PublicKeyToken=44a94435bd6f33f8, processorArchitecture=MSIL">
-      <HintPath>..\packages\AsyncIO.0.1.26.0\lib\net40\AsyncIO.dll</HintPath>
-    </Reference>
     <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="NetMQ, Version=4.0.0.1, Culture=neutral, PublicKeyToken=a6decef4ddc58b3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\NetMQ.4.0.0.1\lib\net40\NetMQ.dll</HintPath>
+      <HintPath>..\..\src\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\src\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.4.9\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\..\src\packages\NLog.4.4.9\lib\net45\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="Quartz, Version=2.6.1.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Quartz.2.6.1\lib\net40\Quartz.dll</HintPath>
+    <Reference Include="ServiceStack.Text, Version=4.5.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\ServiceStack.Text.4.5.4\lib\net45\ServiceStack.Text.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Topshelf, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\Topshelf.4.0.3\lib\net452\Topshelf.dll</HintPath>
+    </Reference>
+    <Reference Include="Topshelf.NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\Topshelf.NLog.4.0.3\lib\net452\Topshelf.NLog.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CronScheduleAttribute.cs" />
-    <Compile Include="IGameJobTask.cs" />
+    <Compile Include="GameContainer.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScheduleHostService.cs" />
-    <Compile Include="TaskSender.cs" />
-    <Compile Include="ScheduleWorkerService.cs" />
+    <Compile Include="TestJob.cs" />
+    <Compile Include="WorkerService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PirateX.Core\PirateX.Core.csproj">
+    <ProjectReference Include="..\..\src\PirateX.Core\PirateX.Core.csproj">
       <Project>{af6f5077-f2f6-4293-afd2-21c9e1ebc296}</Project>
       <Name>PirateX.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\PirateX.Schedule\PirateX.Schedule.csproj">
+      <Project>{b989baba-4b8c-406f-83fb-16c5412b9250}</Project>
+      <Name>PirateX.Schedule</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

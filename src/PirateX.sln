@@ -77,6 +77,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.GMSDK.Demo", "Pirat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.ProtobufInitialize", "PirateX.ProtobufInitialize\PirateX.ProtobufInitialize.csproj", "{8AAF2F82-CAAD-4FBD-8347-1E86F980733C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.Schedule.Host", "..\test\PirateX.Schedule.Host\PirateX.Schedule.Host.csproj", "{B58B78B5-2140-4B17-BF2B-34295EF20580}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.Schedule.Worker", "..\test\PirateX.Schedule.Worker\PirateX.Schedule.Worker.csproj", "{555423DD-4407-434D-9C7B-A6E74CE4B959}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -187,6 +191,14 @@ Global
 		{8AAF2F82-CAAD-4FBD-8347-1E86F980733C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AAF2F82-CAAD-4FBD-8347-1E86F980733C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AAF2F82-CAAD-4FBD-8347-1E86F980733C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B58B78B5-2140-4B17-BF2B-34295EF20580}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B58B78B5-2140-4B17-BF2B-34295EF20580}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B58B78B5-2140-4B17-BF2B-34295EF20580}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B58B78B5-2140-4B17-BF2B-34295EF20580}.Release|Any CPU.Build.0 = Release|Any CPU
+		{555423DD-4407-434D-9C7B-A6E74CE4B959}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{555423DD-4407-434D-9C7B-A6E74CE4B959}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{555423DD-4407-434D-9C7B-A6E74CE4B959}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{555423DD-4407-434D-9C7B-A6E74CE4B959}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -220,6 +232,8 @@ Global
 		{C7C5CCC1-E9F3-4F65-8C7D-8AA480B15BE8} = {8A426B74-7B76-4757-A496-5FDB5A7B023A}
 		{E1B5F681-E8EF-4E00-92DA-90D742FE9EF8} = {8A426B74-7B76-4757-A496-5FDB5A7B023A}
 		{8AAF2F82-CAAD-4FBD-8347-1E86F980733C} = {2827A0D1-32C1-4B18-94BC-91CC1E3A90A6}
+		{B58B78B5-2140-4B17-BF2B-34295EF20580} = {CB3452E6-7B7B-46FC-8F90-D92DB4A29E06}
+		{555423DD-4407-434D-9C7B-A6E74CE4B959} = {CB3452E6-7B7B-46FC-8F90-D92DB4A29E06}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E57F08D0-2E96-4CD4-9542-02759C9C5CBC}

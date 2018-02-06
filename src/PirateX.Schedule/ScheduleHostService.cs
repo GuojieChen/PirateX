@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
+using PirateX.Core;
 using Quartz;
 using Quartz.Impl;
 
@@ -19,18 +21,30 @@ namespace PirateX.Schedule
         /// <summary>
         /// 下发任务
         /// </summary>
-        private static PushSocket sender = new PushSocket(System.Configuration.ConfigurationManager.AppSettings["PushConnectionString"]);//"@tcp://*:5557"
+        private static PushSocket pushSocket = null;
+
         /// <summary>
         /// 上报配置和结果
         /// </summary>
-        private static ResponseSocket responseSocket = new ResponseSocket(System.Configuration.ConfigurationManager.AppSettings["ResponseConnectionString"]);//"@tcp://*:5558"
+        private static ResponseSocket responseSocket;
 
-        private NetMQPoller Poller = new NetMQPoller()
+        private IEnumerable<IDistrictConfig> Configs = null;
+
+        public ScheduleHost(string pushConnectionString,string responseConnectionString)
         {
-            sender,
-            responseSocket,
-            NetMqQueue
-        };
+            pushSocket = new PushSocket(pushConnectionString);
+
+            responseSocket = new ResponseSocket(responseConnectionString);
+
+            Poller = new NetMQPoller()
+            {
+                pushSocket,
+                responseSocket,
+                NetMqQueue
+            };
+        }
+
+        private NetMQPoller Poller;
 
         public void Start()
         {
@@ -40,7 +54,7 @@ namespace PirateX.Schedule
             NetMqQueue.ReceiveReady += (o, args) =>
             {
                 var msg = NetMqQueue.Dequeue();
-                sender.SendFrame(msg);
+                pushSocket.SendFrame(msg);
             };
 
             Poller.RunAsync();
@@ -48,7 +62,7 @@ namespace PirateX.Schedule
             //pull tasksconfig
             NetMqQueue.Enqueue(JsonConvert.SerializeObject(new
             {
-                Cmd = "tasksconfig"
+                Cmd = "hoststart"
             }));
 
             Logger.Debug("start ok");
@@ -59,13 +73,18 @@ namespace PirateX.Schedule
             //接收配置
             var msgstr = responseSocket.ReceiveFrameString();
             var jsonMsg = JObject.Parse(msgstr);
-            if (Logger.IsInfoEnabled) Logger.Info(msgstr);
+            if (Logger.IsInfoEnabled)
+                Logger.Info(msgstr);
 
             var result = string.Empty;
             try
             {
                 switch (jsonMsg["Cmd"].ToString().ToLower())
                 {
+                    case "configs":
+                        Configs = jsonMsg["List"].Values<ScheduleDistrictConfig>();
+                        break;
+
                     case "schedule":
                         var identity = jsonMsg.Value<string>("Identity");
                         var name = jsonMsg.Value<string>("Name");
@@ -83,7 +102,7 @@ namespace PirateX.Schedule
                         jobDetail.JobDataMap.Add("identity", identity);
                         jobDetail.JobDataMap.Add("queue", NetMqQueue);
                         jobDetail.JobDataMap.Add("name", name);
-                        jobDetail.JobDataMap.Add("container", gameContainer2);
+                        jobDetail.JobDataMap.Add("configs", Configs);
 
                         var trigger = TriggerBuilder.Create()
                             .WithIdentity(identity)
@@ -98,13 +117,11 @@ namespace PirateX.Schedule
 
                         break;
                     case "getconfig": //启动
-                        //result = JsonConvert.SerializeObject(new
-                        //{
-                        //    Cmd = "getconfig",
-                        //    ShareDb = shareDb,
-                        //    MongoHost = System.Configuration.ConfigurationManager.AppSettings["MongoHost"] ?? "",
-                        //    MongoDatabase = System.Configuration.ConfigurationManager.AppSettings["MongoDatabase"],
-                        //});
+                        result = JsonConvert.SerializeObject(new
+                        {
+                            Cmd = "getconfig",
+                            ConfigUrl = "http://192.168.1.54/serverconfig.json",
+                        });
                         break;
                     case "taskinfo":
 
@@ -127,8 +144,8 @@ namespace PirateX.Schedule
         {
             Scheduler.Shutdown();
 
-            sender?.Close();
-            sender?.Dispose();
+            pushSocket?.Close();
+            pushSocket?.Dispose();
 
             responseSocket?.Close();
             responseSocket?.Dispose();
@@ -136,5 +153,12 @@ namespace PirateX.Schedule
             Poller.Stop();
         }
 
+
+        public class ScheduleDistrictConfig : IDistrictConfig
+        {
+            public int Id { get; set; }
+            public string SecretKey { get; set; }
+            public int TargetId { get; set; }
+        }
     }
 }

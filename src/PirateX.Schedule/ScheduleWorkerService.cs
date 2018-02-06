@@ -13,72 +13,91 @@ using NetMQ.Sockets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
-using PirateX.Core.Container;
+using PirateX.Core;
 
 namespace PirateX.Schedule
 {
-    public class ScheduleWorkerService<TWorkerService>
+    public abstract class ScheduleWorkerService<TWorkerService>
     {
         public static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly IDictionary<string, Type> TaskDic = new Dictionary<string, Type>();
 
         private static CancellationTokenSource ct = new CancellationTokenSource();
-        /// <summary>
-        /// 拉取任务
-        /// </summary>
-        private static PullSocket tasks = new PullSocket(System.Configuration.ConfigurationManager.AppSettings.Get("PullConnectionString"));
 
-        private static NetMQPoller poller = new NetMQPoller() { tasks };
+        private static NetMQPoller poller = null;
 
         private static JObject ConfigJson = null;
 
         private IDistrictContainer _districtContainer;
 
+
+        private string _pullConnectionString;
+        private string _requestConnectionString;
+        public ScheduleWorkerService(string pullConnectionString, string requestConnectionString)
+        {
+            _pullConnectionString = pullConnectionString;
+            _requestConnectionString = requestConnectionString;
+        }
+
         public void Start()
         {
-            var jsonStr = Req(new { Cmd = "getconfig" });
+            var jsonStr = Req(new { Cmd = "getconfig"});
             var json = JObject.Parse(jsonStr);
             ConfigJson = json;
-            if (Logger.IsInfoEnabled) Logger.Info(jsonStr);
+            if (Logger.IsInfoEnabled)
+                Logger.Info(jsonStr);
 
-            //gameContainer2 = new GameContainer2(this, json.Value<string>("ShareDb"));
-            //gameContainer2.SetUp2(true);
-            //gameContainer2.Load();
-
+            _districtContainer = GetDistrictContainer(json);
             _districtContainer.InitContainers(new ContainerBuilder());
 
+            Req(new
+            {
+                Cmd = "configs",
+                List = _districtContainer.GetDistrictConfigs()
+            });
+
             AddJobs();
-            tasks.ReceiveReady += ProcessTask;
+
+            poller = new NetMQPoller();
+
+            for (int i = 0; i < 2; i++)
+            {
+                var  task = new PullSocket(_pullConnectionString);
+                task.ReceiveReady += ProcessTask;
+                poller.Add(task);
+            }
 
             poller.RunAsync();
         }
 
+        protected abstract IDistrictContainer GetDistrictContainer(JObject jObject);
+
         private void ProcessTask(object sender, NetMQSocketEventArgs e)
         {
-            var msg = e.Socket.ReceiveFrameString();
-
-            var json = JObject.Parse(msg);
-            if (Logger.IsDebugEnabled)
-                Logger.Debug($"thread:{Thread.CurrentThread.ManagedThreadId}:{Thread.CurrentThread.IsThreadPoolThread}->{msg}");
-            var cmd = json.Value<string>("Cmd");
-
-            switch (cmd)
+            try
             {
-                case "task":
-                    var name = json.Value<string>("Name");
-                    var serverconfig = json.Value<IDistrictConfig>("Config");
-                    var culture = json.Value<string>("Culture");
+                var msg = e.Socket.ReceiveFrameString();
 
-                    if (!TaskDic.ContainsKey(name))
-                        return;
-                    var type = TaskDic[name];
-                    if (!(Activator.CreateInstance(type) is IGameJobTask task))
-                        return;
-                    task.ConfigJson = ConfigJson;
+                var json = JObject.Parse(msg);
+                if (Logger.IsDebugEnabled)
+                    Logger.Debug($"thread:{Thread.CurrentThread.ManagedThreadId}:{Thread.CurrentThread.IsThreadPoolThread}->{msg}");
+                var cmd = json.Value<string>("Cmd");
 
-                    Task.Factory.StartNew(() =>
-                    {
+                switch (cmd)
+                {
+                    case "task":
+                        var name = json.Value<string>("Name");
+                        var serverconfig = json.Value<IDistrictConfig>("Config");
+                        var culture = json.Value<string>("Culture");
+
+                        if (!TaskDic.ContainsKey(name))
+                            return;
+                        var type = TaskDic[name];
+                        if (!(Activator.CreateInstance(type) is IGameJobTask task))
+                            return;
+                        task.ConfigJson = ConfigJson;
+
                         try
                         {
                             if (!string.IsNullOrEmpty(culture))
@@ -124,29 +143,36 @@ namespace PirateX.Schedule
                             });
 
                         }
-                    });
+                        break;
+                    case "hoststart"://上报任务
+                        // 上报配置和任务信息
+                        Req(new
+                        {
+                            Cmd = "configs",
+                            List = _districtContainer.GetDistrictConfigs()
+                        });
 
-                    break;
-                case "tasksconfig"://上报任务
-                    AddJobs();
-                    break;
+                        AddJobs();
+                        break;
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(exception);
             }
         }
 
-        private static string Req(object msg)
+        private string Req(object msg)
         {
             if (Logger.IsDebugEnabled) Logger.Debug(JsonConvert.SerializeObject(msg));
 
-            using (var r = new RequestSocket(System.Configuration.ConfigurationManager.AppSettings.Get("RequestConnectionString")))
+            using (var r = new RequestSocket(_requestConnectionString))
             {
-                r.SendFrame(JsonConvert.SerializeObject(msg));
+                r.TrySendFrame(JsonConvert.SerializeObject(msg));
 
-                string repMsg = r.ReceiveFrameString();
+                r.TryReceiveFrameString(TimeSpan.FromSeconds(5),out var repMsg);
 
-                if (string.IsNullOrEmpty(repMsg))
-                    return string.Empty;
-
-                return repMsg;
+                return string.IsNullOrEmpty(repMsg) ? string.Empty : repMsg;
             }
         }
 
@@ -196,7 +222,6 @@ namespace PirateX.Schedule
         public void Stop()
         {
             ct.Cancel();
-            tasks.Close();
             poller.Stop();
         }
 
