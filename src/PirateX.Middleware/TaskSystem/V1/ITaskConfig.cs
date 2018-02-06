@@ -40,38 +40,5 @@ namespace PirateX.Middleware
         /// </summary>
         public byte Rate { get; set; }
     }
-
-    /// <summary> 信件任务
-    /// </summary>
-    [Serializable]
-    public class _TaskConditionLetter
-    {
-        public int Id { get; set; }
-
-        public int ConditionId { get; set; }
-
-        public EnumTaskLetterCategory Category { get; set; }
-
-        public string Title { get; set; }
-
-        public string Content { get; set; }
-
-        public string Name { get; set; }
-    }
-
-    public enum EnumTaskLetterCategory : byte
-    {
-        TaskStart = 1,
-        Visit = 2,
-        Win = 3
-    }
-
-    public enum EnumPosition : byte
-    {
-        Random = 0,
-        North = 1,
-        East = 2,
-        South = 3,
-        Western = 4,
-    }
+    
 }

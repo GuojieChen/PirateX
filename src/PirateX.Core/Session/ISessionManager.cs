@@ -1,4 +1,6 @@
-﻿namespace PirateX.Core
+﻿using System.Collections.Generic;
+
+namespace PirateX.Core
 {
 
     public interface ISessionManager
@@ -24,8 +26,14 @@
         /// </summary>
         /// <param name="rid"></param>
         /// <returns></returns>
-        PirateSession GetOnlineRole(long rid);
+        PirateSession GetSession(long rid);
 
-        PirateSession GetOnlineRole(string sessionid);
+        PirateSession GetSession(string sessionid);
+        /// <summary>
+        /// 获取某个服的session列表
+        /// </summary>
+        /// <param name="did"></param>
+        /// <returns></returns>
+        IEnumerable<string> GetFrontendIDListByDid(int did);
     }
 }

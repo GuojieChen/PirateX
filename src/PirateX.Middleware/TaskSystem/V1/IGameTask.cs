@@ -19,7 +19,7 @@ namespace PirateX.Middleware
         /// </summary>
         bool IsReceived { get; set; }
 
-        IList<Int32> StaticConditions { get; set; }
+        IList<int> StaticConditions { get; set; }
         List<TaskCondition> Conditions { get; set; }
     }
 

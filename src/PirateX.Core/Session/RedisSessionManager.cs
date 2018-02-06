@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using StackExchange.Redis;
 
 namespace PirateX.Core
@@ -37,7 +39,7 @@ namespace PirateX.Core
             db.HashSet(GetDidUrn(pirateSession.Did), Convert.ToString(pirateSession.Id), urn);
         }
 
-        public async void Logout(long rid)
+        public void Logout(long rid)
         {
             if (rid <= 0)
                 return;
@@ -53,6 +55,7 @@ namespace PirateX.Core
 
             db.KeyDelete(urn);
             db.HashDelete(GetDidUrn(onlineRole.Did), Convert.ToString(rid));
+            db.HashDelete(GetFrontendIDDIDUrn(onlineRole.Did), onlineRole.FrontendID);
         }
 
         public bool IsOnline(long rid)
@@ -71,7 +74,7 @@ namespace PirateX.Core
             db.StringSet(urn, Serializer.Serilazer(session), Expiry);
         }
 
-        public PirateSession GetOnlineRole(long rid)
+        public PirateSession GetSession(long rid)
         {
             var urn = GetUrnOnlineRole(rid);
             var db = _connectionMultiplexer.GetDatabase();
@@ -81,7 +84,7 @@ namespace PirateX.Core
             return Serializer.Deserialize<PirateSession>(onlineRoleStr);
         }
 
-        public PirateSession GetOnlineRole(string sessionid)
+        public PirateSession GetSession(string sessionid)
         {
             var db = _connectionMultiplexer.GetDatabase();
             var urn = db.StringGet(GetUrnOnlineRole(sessionid));
@@ -94,6 +97,12 @@ namespace PirateX.Core
 
 
             return Serializer.Deserialize<PirateSession>(data);
+        }
+
+        public IEnumerable<string> GetFrontendIDListByDid(int did)
+        {
+            var db = _connectionMultiplexer.GetDatabase();
+            return db.HashGetAll(GetFrontendIDDIDUrn(did)).Select(item => Convert.ToString(item));
         }
 
         private static string GetUrnOnlineRole(long rid)
@@ -109,6 +118,11 @@ namespace PirateX.Core
         private static string GetDidUrn(int did)
         {
             return $"core:onlinerole_dids:{did}";
+        }
+
+        private static string GetFrontendIDDIDUrn(int did)
+        {
+            return $"core:frontendid_dids:{did}";
         }
     }
 }

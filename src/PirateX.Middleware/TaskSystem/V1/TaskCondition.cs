@@ -6,10 +6,10 @@ namespace PirateX.Middleware
     {
         /// <summary> 条件的
         /// </summary>
-        public Int32 _ID { get; set; }
+        public int _ID { get; set; }
         /// <summary> 是否有完成
         /// </summary>
-        public Boolean OK { get; set; }
+        public bool OK { get; set; }
         /// <summary>
         /// 如果是有关地图点的 表示地图点信息
         /// </summary>

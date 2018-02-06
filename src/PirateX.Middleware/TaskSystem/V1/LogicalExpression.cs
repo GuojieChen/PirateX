@@ -44,16 +44,16 @@ namespace PirateX.Middleware
         {
             if (string.IsNullOrEmpty(expression))
                 throw new ArgumentNullException("expression");
-            char[] c = expression.ToCharArray();
-            int length = c.Length;
-            bool flag = false;
-            bool start = false; //是否有过一次 与或计算
-            bool mark = false; //读取括号中的内容
-            bool logic = true; //true是& false是|
-            Queue<char> queue = new Queue<char>();//存入数字
-            bool temp = false; //最小表达式的值
+            var c = expression.ToCharArray();
+            var length = c.Length;
+            var flag = false;
+            var start = false; //是否有过一次 与或计算
+            var mark = false; //读取括号中的内容
+            var logic = true; //true是& false是|
+            var queue = new Queue<char>();//存入数字
+            var temp = false; //最小表达式的值
 
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 if (c[i].Equals('('))
                 {
@@ -62,7 +62,7 @@ namespace PirateX.Middleware
                 }
                 else if (c[i].Equals(')'))
                 {
-                    bool b = Process(true, new string(queue.ToArray()));
+                    var b = Process(true, new string(queue.ToArray()));
                     flag = GetLogicValue(start, logic, flag, b);
 
                     temp = GetLogicValue(false, logic, temp, b);
