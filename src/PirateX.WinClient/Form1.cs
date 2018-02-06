@@ -101,7 +101,7 @@ namespace PirateX.WinClient
                     {
                         var list = Encoding.UTF8.GetString(args.Package.ContentBytes).Split(new char[] {','});
                         cbbCMDList.Items.Clear();
-                        foreach (var item in list)
+                        foreach (var item in list.OrderBy(s => s))
                         {
                             cbbCMDList.Items.Add(item);
                         }
