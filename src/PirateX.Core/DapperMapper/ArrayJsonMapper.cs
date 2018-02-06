@@ -13,7 +13,6 @@ namespace PirateX.Core
         public override void SetValue(IDbDataParameter parameter, T[] value)
         {
             parameter.Value = string.Join(",", value);
-
             //parameter.Value = JsonConvert.SerializeObject(value);
         }
 

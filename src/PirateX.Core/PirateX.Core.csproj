@@ -106,6 +106,7 @@
     <Compile Include="Container\ServerSettingRegister\RedisServerSettingRegister.cs" />
     <Compile Include="DapperMapper\ArrayJsonMapper.cs" />
     <Compile Include="DapperMapper\DictionaryMapper.cs" />
+    <Compile Include="DapperMapper\SqlinList.cs" />
     <Compile Include="DataSync\IDataSync.cs" />
     <Compile Include="DefaultServerSetting.cs" />
     <Compile Include="Domain\Entity\IEntityCreateAt.cs" />

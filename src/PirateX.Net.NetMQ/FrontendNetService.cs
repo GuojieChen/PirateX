@@ -40,8 +40,8 @@ namespace PirateX.Net.NetMQ
             if(string.IsNullOrEmpty(ResponseHostString))
                 throw new ArgumentNullException(nameof(ResponseHostString));
 
-            _subscriberSocket = new SubscriberSocket(PublisherSocketString);
-            _subscriberSocket.Subscribe(FrontendID);
+            //_subscriberSocket = new SubscriberSocket(PublisherSocketString);
+            //_subscriberSocket.Subscribe(FrontendID);
 
             Poller = new NetMQPoller()
             {

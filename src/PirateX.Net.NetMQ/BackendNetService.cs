@@ -49,19 +49,21 @@ namespace PirateX.Net.NetMQ
                 if (Logger.IsTraceEnabled)
                     Logger.Trace($"start inner req/rep proxy");
             }
-            /*
-            var pubConnectTo = config.PublisherSocketString;
-            if (config.PublisherSocketString.StartsWith("@"))
-            {
-                _pubBroker = new Proxy(new XSubscriberSocket("@inproc://subfrontend"),new XPublisherSocket("@inproc://pubbackend") );
-                pubConnectTo = $">inproc://pubbackend";
 
-                if (Logger.IsTraceEnabled)
-                    Logger.Trace($"start inner sub/pub proxy");
-            }
-            */
-            Task.Factory.StartNew(_broker.Start);
-            //Task.Factory.StartNew(_pubBroker.Start);
+            var pubConnectTo = config.PublisherSocketString;
+            //if (config.PublisherSocketString.StartsWith("@"))
+            //{
+            //    _pubBroker = new Proxy(new XSubscriberSocket("@inproc://subfrontend"), new XPublisherSocket("@inproc://pubbackend"));
+            //    pubConnectTo = $">inproc://pubbackend";
+
+            //    if (Logger.IsTraceEnabled)
+            //        Logger.Trace($"start inner sub/pub proxy");
+            //}
+
+            if (_broker != null)
+                Task.Factory.StartNew(_broker.Start);
+            if (_pubBroker != null)
+                Task.Factory.StartNew(_pubBroker.Start);
             _actorService.Start();
 
             for (int i = 0; i < config.BackendWorkersPerService; i++)
@@ -193,7 +195,7 @@ namespace PirateX.Net.NetMQ
         {
             if (ProfilerLog.ProfilerLogger.IsInfoEnabled)
             {
-                if(!context.Profile.ContainsKey("_itout_"))
+                if (!context.Profile.ContainsKey("_itout_"))
                     context.Profile.Add("_itout_", $"{DateTime.UtcNow.Ticks}");
             }
 
