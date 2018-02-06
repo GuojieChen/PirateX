@@ -5,9 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NNanomsg.Protocols;
-using PirateX.Core.Actor;
-using PirateX.Core.Session;
-using PirateX.Core.Utils;
+using PirateX.Core;
 
 namespace PirateX.Net.NNanomsg
 {
@@ -22,7 +20,6 @@ namespace PirateX.Net.NNanomsg
         public ActorNetService(IActorService actorService, ActorConfig config)
         {
             this._actorService = actorService;
-            _actorService.NetService = this;
             this.config = config;
         }
 
@@ -39,8 +36,6 @@ namespace PirateX.Net.NNanomsg
 
             _actorService.Start();
 
-            PushSocket.Bind(config.PushsocketString);
-            PullSocket.Bind(config.PullSocketString);
         }
 
         public void Stop()
@@ -93,6 +88,16 @@ namespace PirateX.Net.NNanomsg
                 Body = body
 
             }.ToProtobuf());
+        }
+
+        byte[] IActorNetService.Seed(ActorContext context, NameValueCollection header, byte cryptobyte, byte[] clientkeys, byte[] serverkeys, byte[] body)
+        {
+            throw new NotImplementedException();
+        }
+
+        byte[] IActorNetService.SendMessage(ActorContext context, NameValueCollection headers, byte[] body)
+        {
+            throw new NotImplementedException();
         }
     }
 }

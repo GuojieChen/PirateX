@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using NLog;
-using PirateX.Core.Container;
+using PirateX.Core;
 
 namespace PirateX.Schedule
 {

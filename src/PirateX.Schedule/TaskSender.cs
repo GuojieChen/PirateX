@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using NetMQ;
 using Newtonsoft.Json;
 using NLog;
-using PirateX.Core.Container;
+using PirateX.Core;
 using Quartz;
 
 namespace PirateX.Schedule

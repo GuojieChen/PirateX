@@ -13,7 +13,7 @@ using NetMQ.Sockets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
-using PirateX.Core.Container;
+using PirateX.Core;
 
 namespace PirateX.Schedule
 {
