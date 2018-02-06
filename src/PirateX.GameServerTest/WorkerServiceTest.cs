@@ -10,12 +10,8 @@ using NetMQ;
 using NetMQ.Sockets;
 using NLog;
 using NUnit.Framework;
-using PirateX.Core.Actor;
-using PirateX.Core.Container;
-using PirateX.Core.Session;
+using PirateX.Core;
 using PirateX.Protocol;
-using PirateX.Protocol.Package;
-using PirateX.ServiceStackV3;
 using ProtoBuf;
 using Topshelf.Logging;
 
@@ -97,8 +93,6 @@ namespace PirateX.GameServerTest
 
             _actorService = new TestActorService(new ActorConfig()
             {
-                PullSocketString = ">tcp://localhost:4556",
-                PushsocketString = ">tcp://localhost:4557"
             }, ServerContainer);
 
             var districtConfig = ServerContainer.GetDistrictConfig(1);
@@ -224,7 +218,7 @@ namespace PirateX.GameServerTest
         {
             var sessionid = Guid.NewGuid().ToString();
             var version = (byte)1;
-            var o = DateTime.UtcNow.GetTimestamp()/10000;
+            var o = TimeUtil.GetTimestamp(DateTime.UtcNow)/10000;
 
             var msg = new NetMQMessage();
             msg.Append(new byte[] { version });//版本号

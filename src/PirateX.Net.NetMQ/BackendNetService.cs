@@ -49,7 +49,7 @@ namespace PirateX.Net.NetMQ
                 if (Logger.IsTraceEnabled)
                     Logger.Trace($"start inner req/rep proxy");
             }
-
+            /*
             var pubConnectTo = config.PublisherSocketString;
             if (config.PublisherSocketString.StartsWith("@"))
             {
@@ -59,15 +59,15 @@ namespace PirateX.Net.NetMQ
                 if (Logger.IsTraceEnabled)
                     Logger.Trace($"start inner sub/pub proxy");
             }
-
+            */
             Task.Factory.StartNew(_broker.Start);
-            Task.Factory.StartNew(_pubBroker.Start);
+            //Task.Factory.StartNew(_pubBroker.Start);
             _actorService.Start();
 
             for (int i = 0; i < config.BackendWorkersPerService; i++)
                 ThreadWorkers.Add(Task.Factory.StartNew(WorkerTask, connectto, _c_token.Token));
 
-            PublisherSocket = new PublisherSocket(pubConnectTo);
+            //PublisherSocket = new PublisherSocket(pubConnectTo);
         }
 
         private void WorkerTask(object connectTo)

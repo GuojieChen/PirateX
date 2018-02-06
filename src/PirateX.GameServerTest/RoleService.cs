@@ -1,8 +1,6 @@
 ﻿using System.Data;
 using Autofac;
 using PirateX.Core;
-using PirateX.Core.Broadcas;
-using PirateX.Core.Config;
 using StackExchange.Redis;
 
 namespace PirateX.GameServerTest

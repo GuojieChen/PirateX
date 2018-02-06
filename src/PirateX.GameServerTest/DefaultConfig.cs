@@ -1,4 +1,4 @@
-﻿using PirateX.Core.Config;
+﻿using PirateX.Core;
 
 namespace PirateX.GameServerTest
 {
