@@ -32,17 +32,18 @@ namespace PirateX.Schedule
         private IDistrictContainer _districtContainer;
 
 
-        private string _pullConnectionString;
+        private string _frontendConnect;
         private string _requestConnectionString;
-        public ScheduleWorkerService(string pullConnectionString, string requestConnectionString)
+        public ScheduleWorkerService(string frontendConnect, string requestConnectionString)
         {
-            _pullConnectionString = pullConnectionString;
+            _frontendConnect = frontendConnect;
             _requestConnectionString = requestConnectionString;
         }
 
         public void Start()
         {
-            var jsonStr = Req(new { Cmd = "getconfig"});
+            var jsonStr = Req(new { Cmd = "getconfig"},10);
+
             var json = JObject.Parse(jsonStr);
             ConfigJson = json;
             if (Logger.IsInfoEnabled)
@@ -51,24 +52,104 @@ namespace PirateX.Schedule
             _districtContainer = GetDistrictContainer(json);
             _districtContainer.InitContainers(new ContainerBuilder());
 
-            Req(new
+            if (!json["Configs"].HasValues)
             {
-                Cmd = "configs",
-                List = _districtContainer.GetDistrictConfigs()
-            });
+                Req(new
+                {
+                    Cmd = "configs",
+                    List = _districtContainer.GetDistrictConfigs()
+                });
 
-            AddJobs();
+                AddJobs();
+            }
+
 
             poller = new NetMQPoller();
 
             for (int i = 0; i < 2; i++)
-            {
-                var  task = new PullSocket(_pullConnectionString);
-                task.ReceiveReady += ProcessTask;
-                poller.Add(task);
-            }
+                Task.Factory.StartNew(WorkerTask, _frontendConnect, _c_token.Token);
 
             poller.RunAsync();
+        }
+
+        private CancellationTokenSource _c_token = new CancellationTokenSource();
+        private void WorkerTask(object connectTo)
+        {
+            using (var server = new ResponseSocket(Convert.ToString(connectTo)))
+            {
+                while (!_c_token.Token.IsCancellationRequested)
+                {
+                    ThreadProcessRequest(server);
+                }
+            }
+        }
+
+        private void ThreadProcessRequest(NetMQSocket socket)
+        {
+            string response = string.Empty;
+            bool receiveok = false; 
+            try
+            {
+                if (socket.TryReceiveFrameString(out var msg))
+                {
+                    receiveok = true;
+                    var json = JObject.Parse(msg);
+                    if (Logger.IsDebugEnabled)
+                        Logger.Debug(
+                            $"Thread:{Thread.CurrentThread.ManagedThreadId}:{Thread.CurrentThread.IsThreadPoolThread}->{msg}");
+
+                    var name = json.Value<string>("Name");
+                    var serverconfig = json["Config"].ToObject<ScheduleHost.ScheduleDistrictConfig>();
+
+                    if (!TaskDic.ContainsKey(name))
+                        return;
+                    var type = TaskDic[name];
+                    if (!(Activator.CreateInstance(type) is IGameJobTask task))
+                        return;
+                    task.ConfigJson = ConfigJson;
+
+                    try
+                    {
+                        var sw = new Stopwatch();
+                        sw.Start();
+                        task.Execute(_districtContainer, serverconfig);
+                        sw.Stop();
+
+                        response = JsonConvert.SerializeObject(new
+                        {
+                            Host = Dns.GetHostName(),
+                            Name = name,
+                            Msg = "done",
+                            Id = serverconfig.Id,
+                            sw.ElapsedMilliseconds
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        if (Logger.IsErrorEnabled) Logger.Error(ex);
+
+                        response = JsonConvert.SerializeObject(new
+                        {
+                            Host = Dns.GetHostName(),
+                            Name = name,
+                            Id = serverconfig.Id,
+                            Msg = "error",
+                            Error = ex
+                        });
+                    }
+                }
+                else
+                    return;
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(exception);
+            }
+            finally
+            {
+                if(receiveok)
+                    socket.SendFrame(response);
+            }
         }
 
         protected abstract IDistrictContainer GetDistrictContainer(JObject jObject);
@@ -87,62 +168,7 @@ namespace PirateX.Schedule
                 switch (cmd)
                 {
                     case "task":
-                        var name = json.Value<string>("Name");
-                        var serverconfig = json.Value<IDistrictConfig>("Config");
-                        var culture = json.Value<string>("Culture");
-
-                        if (!TaskDic.ContainsKey(name))
-                            return;
-                        var type = TaskDic[name];
-                        if (!(Activator.CreateInstance(type) is IGameJobTask task))
-                            return;
-                        task.ConfigJson = ConfigJson;
-
-                        try
-                        {
-                            if (!string.IsNullOrEmpty(culture))
-                            {
-                                Thread.CurrentThread.CurrentCulture = Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture(culture);
-                                Thread.CurrentThread.CurrentUICulture.DateTimeFormat = new CultureInfo("zh-CN", false).DateTimeFormat;
-                            }
-
-                            Req(new
-                            {
-                                Cmd = "taskinfo",
-                                Host = Dns.GetHostName(),
-                                Name = name,
-                                Msg = "start",
-                                Id = serverconfig.Id
-                            });
-                            var sw = new Stopwatch();
-                            sw.Start();
-                            task.Execute(_districtContainer, serverconfig);
-                            sw.Stop();
-                            Req(new
-                            {
-                                Cmd = "taskinfo",
-                                Host = Dns.GetHostName(),
-                                Name = name,
-                                Msg = "done",
-                                Id = serverconfig.Id,
-                                sw.ElapsedMilliseconds
-                            });
-                        }
-                        catch (Exception ex)
-                        {
-                            if (Logger.IsErrorEnabled) Logger.Error(ex);
-
-                            Req(new
-                            {
-                                Cmd = "taskinfo",
-                                Host = Dns.GetHostName(),
-                                Name = name,
-                                Id = serverconfig.Id,
-                                Msg = "error",
-                                Error = ex
-                            });
-
-                        }
+                        
                         break;
                     case "hoststart"://上报任务
                         // 上报配置和任务信息
@@ -162,18 +188,29 @@ namespace PirateX.Schedule
             }
         }
 
-        private string Req(object msg)
+        private string Req(object msg,int trycount = 0)
         {
-            if (Logger.IsDebugEnabled) Logger.Debug(JsonConvert.SerializeObject(msg));
+            if (Logger.IsDebugEnabled)
+                Logger.Debug($"SEND->{JsonConvert.SerializeObject(msg)}");
 
             using (var r = new RequestSocket(_requestConnectionString))
             {
-                r.TrySendFrame(JsonConvert.SerializeObject(msg));
+                if (r.TrySendFrame(JsonConvert.SerializeObject(msg)))
+                {
+                    if (r.TryReceiveFrameString(TimeSpan.FromSeconds(5), out var repMsg))
+                    {
+                        return string.IsNullOrEmpty(repMsg) ? string.Empty : repMsg;
+                    }
+                }
 
-                r.TryReceiveFrameString(TimeSpan.FromSeconds(5),out var repMsg);
-
-                return string.IsNullOrEmpty(repMsg) ? string.Empty : repMsg;
+                if (trycount > 0)
+                {
+                    Thread.Sleep(1000);
+                    return Req(msg, trycount--);
+                }
             }
+
+            return string.Empty;
         }
 
         private void AddJobs()

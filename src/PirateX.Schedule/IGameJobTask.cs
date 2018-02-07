@@ -24,7 +24,7 @@ namespace PirateX.Schedule
         public void Execute(IDistrictContainer container, IDistrictConfig config)
         {
             if (Logger.IsDebugEnabled)
-                Logger.Debug($"{typeof(T).Name} START!");
+                Logger.Debug($"TASK [{typeof(T).Name}] START!");
 
             if (!Continue())
             {
@@ -37,7 +37,7 @@ namespace PirateX.Schedule
             SubJob(container, config);
 
             if (Logger.IsDebugEnabled)
-                Logger.Debug($"{typeof(T).Name} DONE!");
+                Logger.Debug($"TASK [{typeof(T).Name}] DONE!");
         }
 
         protected virtual bool Continue()

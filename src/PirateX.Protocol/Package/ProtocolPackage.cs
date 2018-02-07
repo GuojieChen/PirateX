@@ -67,7 +67,7 @@ namespace PirateX.Protocol
             zipByte[0] = ZipEnable ? (byte)Math.Pow(2, 7) : (byte)0;
 
             var headerLen = headerbytes.Length;
-            var contentLen = contentbytes.Length;
+            var contentLen = contentbytes?.Length ?? 0;
 
             using (var stream = new MemoryStream())
             {
@@ -76,7 +76,8 @@ namespace PirateX.Protocol
                 stream.Write(new[] { CryptoByte }, 0, 1);
                 stream.Write(BitConverter.GetBytes(headerLen), 0, 4);
                 stream.Write(headerbytes, 0, headerLen);
-                stream.Write(contentbytes, 0, contentLen);
+                if(contentbytes!=null )
+                    stream.Write(contentbytes, 0, contentLen);
                 return stream.ToArray();
             }
         }

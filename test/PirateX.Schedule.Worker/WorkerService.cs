@@ -10,14 +10,14 @@ namespace PirateX.Schedule.Worker
 {
     public class WorkerService:ScheduleWorkerService<WorkerService>
     {
-        public WorkerService(string pullConnectionString, string requestConnectionString) 
-            : base(pullConnectionString, requestConnectionString)
+        public WorkerService(string frontendConnect, string requestConnectionString) 
+            : base(frontendConnect, requestConnectionString)
         {
         }
 
         protected override IDistrictContainer GetDistrictContainer(JObject jObject)
         {
-            return new GameContainer(jObject["ConfigUrl"].Value<string>());
+            return new GameContainer(jObject["ConfigString"].Value<string>());
         }
     }
 }

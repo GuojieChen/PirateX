@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,11 +16,15 @@ namespace PirateX.Schedule.Host
             {
                 c.Service<ScheduleHost>(s =>
                 {
-                    s.ConstructUsing(name => new ScheduleHost("@tcp://localhost:5601","@tcp://localhost:5602"));
+                    s.ConstructUsing(name => new ScheduleHost(
+                        ConfigurationManager.AppSettings["BackendConnectionString"]
+                        , ConfigurationManager.AppSettings["ResponseConnectionString"],
+                        ConfigurationManager.AppSettings["ConfigString"]));
                     s.WhenStarted(t => t.Start());
                     s.WhenStopped(t => t.Stop());
                 });
 
+                c.SetServiceName(ConfigurationManager.AppSettings["ServiceName"]);
                 c.UseNLog();
             });
 

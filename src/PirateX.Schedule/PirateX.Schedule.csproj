@@ -76,7 +76,7 @@
     <Compile Include="IGameJobTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScheduleHostService.cs" />
-    <Compile Include="TaskSender.cs" />
+    <Compile Include="TaskDistributionJob.cs" />
     <Compile Include="ScheduleWorkerService.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -78,7 +78,7 @@ namespace PirateX.Net.NetMQ
             {
                 while (!_c_token.Token.IsCancellationRequested)
                 {
-                    server.TryReceiveFrameBytes(out var msg);
+                    //server.TryReceiveFrameBytes(out var msg);
                     ThreadProcessRequest(server);
                 }
             }

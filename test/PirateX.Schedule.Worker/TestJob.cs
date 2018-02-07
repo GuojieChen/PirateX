@@ -7,7 +7,7 @@ using PirateX.Core;
 
 namespace PirateX.Schedule.Worker
 {
-    [CronSchedule("0 0/1 * 1/1 * ? *")]
+    [CronSchedule("0/1 * * 1/1 * ? *")]
     public class TestJob: GameJobTaskBase<TestJob>
     {
         protected override void SubJob(IDistrictContainer container, IDistrictConfig config)

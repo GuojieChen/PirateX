@@ -428,7 +428,7 @@ namespace PirateX.Core
 
         public virtual List<Assembly> GetApiAssemblyList()
         {
-            return new List<Assembly>() { typeof(TDistrictContainer).Assembly};
+            return new List<Assembly>() { typeof(TDistrictContainer).Assembly,typeof(NewSeed).Assembly};
         }
 
         public virtual List<Assembly> GetRepositoryAssemblyList()
