@@ -44,7 +44,7 @@
                                     var comments = CommentsDocContainer.Instance.GetTypeCommontsMember(CommentsDocContainer.Instance.GetCommentsDoc(type.Assembly), type);
                                     if (comments != null)
                                     {
-                                        <span>@Html.Raw(comments.Summary.InnerText)</span>
+                                        <span>@Html.Raw(comments.Summary?.InnerText)</span>
                                     }
                                 }
                             </td>

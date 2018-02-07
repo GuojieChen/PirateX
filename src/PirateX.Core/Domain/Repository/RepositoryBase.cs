@@ -11,6 +11,8 @@ namespace PirateX.Core
 
         protected IGameCache GameCache => Resolver.Resolve<IGameCache>();
 
+        protected IConfigReader ConfigReader => Resolver.Resolve<IConfigReader>();
+
         public void Dispose()
         {
             Resolver?.Dispose();

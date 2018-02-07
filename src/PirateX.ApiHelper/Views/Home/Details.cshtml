@@ -11,7 +11,7 @@
 
 }
 <h3>@details.Name</h3>
-<h5>@details.Comments.Summary.InnerText</h5>
+<h5>@(details.Comments.Summary?.InnerText)</h5>
 
 <div>
     <h4>请求参数</h4>

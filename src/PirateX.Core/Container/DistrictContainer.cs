@@ -51,7 +51,10 @@ namespace PirateX.Core
         {
 
         }
-
+        /// <summary>
+        /// 初始化容器
+        /// </summary>
+        /// <param name="builder"></param>
         public void InitContainers(ContainerBuilder builder)
         {
             Init();
@@ -322,8 +325,6 @@ namespace PirateX.Core
 
             InitDistrictRepository(builder);
 
-            BuildDistrictContainer(builder);
-
             var services = GetServiceAssemblyList();
 
             if (services.Any())
@@ -335,16 +336,18 @@ namespace PirateX.Core
                         if (type.IsInterface || type.IsAbstract || !typeof(IService).IsAssignableFrom(type))
                             continue;
                         builder.RegisterType(type)
-                        //.Where(item => typeof(IService).IsAssignableFrom(item))
-                        //.WithProperty("Test",123)
-                        .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
-                        //.WithProperty(new ResolvedParameter((pi, context) => pi.Name == "Resolver", (pi, ctx) => ctx))
-                        .AsSelf()
-                        .SingleInstance();
+                            //.Where(item => typeof(IService).IsAssignableFrom(item))
+                            //.WithProperty("Test",123)
+                            .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
+                            //.WithProperty(new ResolvedParameter((pi, context) => pi.Name == "Resolver", (pi, ctx) => ctx))
+                            .AsSelf()
+                            .SingleInstance();
                     }
                 });
             }
 
+            BuildDistrictContainer(builder);
+            
             var container = builder.Build();
 
             foreach (var type in configtypes)
@@ -364,6 +367,7 @@ namespace PirateX.Core
 
             if (Log.IsTraceEnabled)
                 Log.Trace("");
+
             return container.BeginLifetimeScope();
         }
 
