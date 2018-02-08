@@ -40,17 +40,17 @@ namespace PirateX.Net.NetMQ
             if(string.IsNullOrEmpty(ResponseHostString))
                 throw new ArgumentNullException(nameof(ResponseHostString));
 
-            //_subscriberSocket = new SubscriberSocket(PublisherSocketString);
-            //_subscriberSocket.Subscribe(FrontendID);
+            _subscriberSocket = new SubscriberSocket(PublisherSocketString);
+            _subscriberSocket.Subscribe(FrontendID);
 
             Poller = new NetMQPoller()
             {
-                //_subscriberSocket,
+                _subscriberSocket,
             };
 
             NetSend = netManager;
 
-            //_subscriberSocket.ReceiveReady += ProcessSubscribe;
+            _subscriberSocket.ReceiveReady += ProcessSubscribe;
 
             IsSetuped = true;
         }
@@ -63,7 +63,8 @@ namespace PirateX.Net.NetMQ
             if(Logger.IsTraceEnabled)
                 Logger.Trace($"ProcessSubscribe -> ThreadID = {Thread.CurrentThread.ManagedThreadId}");
 
-            var msg = e.Socket.ReceiveFrameBytes();//TryReceiveMultipartMessage();
+            var topic = e.Socket.ReceiveFrameBytes();//TryReceiveMultipartMessage();
+            var msg = e.Socket.ReceiveFrameBytes();
 
             var dout = msg.FromProtobuf<Out>();
 
@@ -154,21 +155,25 @@ namespace PirateX.Net.NetMQ
                 {
                     req.Options.Identity = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString("N"));
 
-                    if(req.TrySendFrame(TimeSpan.FromMilliseconds(200),din.ToProtobuf()))
-                    {
-                        if (req.TryReceiveFrameBytes(DefaultTimeOuTimeSpan, out var responseBytes))
-                            return responseBytes.FromProtobuf<Out>();
-                        else
-                        {
-                            if (Logger.IsWarnEnabled)
-                                Logger.Warn("request to remote TryReceive timeout");
-                        }
-                    }
-                    else
-                    {
-                        if (Logger.IsWarnEnabled)
-                            Logger.Warn("request to remote TrySend timeout");
-                    }
+                    req.SendFrame(din.ToProtobuf());
+
+                    return req.ReceiveFrameBytes().FromProtobuf<Out>();
+
+                    //if (req.TrySendFrame(TimeSpan.FromMilliseconds(200),din.ToProtobuf()))
+                    //{
+                    //    if (req.TryReceiveFrameBytes(DefaultTimeOuTimeSpan, out var responseBytes))
+                    //        return responseBytes.FromProtobuf<Out>();
+                    //    else
+                    //    {
+                    //        if (Logger.IsWarnEnabled)
+                    //            Logger.Warn("request to remote TryReceive timeout");
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    if (Logger.IsWarnEnabled)
+                    //        Logger.Warn("request to remote TrySend timeout");
+                    //}
                 }
             }
             catch (Exception e)

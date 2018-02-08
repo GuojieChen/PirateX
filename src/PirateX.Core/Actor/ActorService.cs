@@ -288,7 +288,10 @@ namespace PirateX.Core
                             DistrictContainer.OnlineManager.Login(ToSession(context,context.Token));
                         }
 
-                        return action.ResponseData;
+                        var result = action.ResponseData;
+                        if (result == null)
+                            return this.SendMessage(context,string.Empty);
+                        return result;
                     }
                     catch (Exception exception)
                     {
@@ -441,26 +444,6 @@ namespace PirateX.Core
         }
 
         #region send message
-        public byte[] SendMessage<T>(ActorContext context, T t)
-        {
-            var headers = new NameValueCollection
-            {
-                {"c", context.Request.C},
-                {"i", MessageType.Rep},
-                {"o", Convert.ToString(context.Request.O)},
-                {"code", Convert.ToString((int) StatusCode.Ok)}
-            };
-
-#if PERFORM
-            foreach (string key in context.Request.Headers.AllKeys)
-            {
-                if (key.StartsWith("_"))
-                    headers.Add(key, context.Request.Headers[key]);
-            }
-#endif
-            return SendMessage(context, headers, t);
-        }
-
         /// <summary>
         /// 种子交换
         /// </summary>
@@ -495,19 +478,6 @@ namespace PirateX.Core
             return ActorNetService.Seed(context, headers, cryptobyte, clientkeys, serverkeys, body);
         }
 
-        //public void PushMessage<T>(string sessionid, T t)
-        //{
-        //    var headers = new NameValueCollection
-        //    {
-        //        {"c", typeof(T).Name},
-        //        { "i", MessageType.Boradcast},
-        //        {"format","json"} // TODO 默认解析器
-        //    };
-
-        //    ActorNetService.PushMessage(sessionid, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>("json").SerializeObject(t));
-        //}
-
-
         public void PushMessage<T>(PirateSession session, T t)
         {
             var headers = new NameValueCollection
@@ -528,7 +498,6 @@ namespace PirateX.Core
 
             ActorNetService.PushMessage(session.FrontendID, headers, DistrictContainer.ServerIoc.ResolveKeyed<IResponseConvert>(DefaultResponseCovnert).SerializeObject(t));
         }
-        
 
         public void PushMessage<T>(int rid, T t)
         {
@@ -539,18 +508,17 @@ namespace PirateX.Core
             PushMessage(session,t);
         }
 
-
         public void PushMessageToDistrict<T>(int did, T t)
         {
             //DistrictContainer.OnlineManager.GetSession()
         }
 
-        public byte[] SendMessage<T>(ActorContext context, string name, T t)
+        public byte[] SendMessage<T>(ActorContext context, T t)
         {
             var headers = new NameValueCollection
             {
                 {"c", context.Request.C},
-                {"i", MessageType.Boradcast},
+                {"i", MessageType.Rep},
                 {"o", Convert.ToString(context.Request.O)},
                 {"code", Convert.ToString((int) StatusCode.Ok)}
             };
@@ -560,12 +528,13 @@ namespace PirateX.Core
 
             return SendMessage(context, headers, t);
         }
-        public byte[] SendMessage(ActorContext context, string name, string msg)
+
+        public byte[] SendMessage(ActorContext context,string msg)
         {
             var headers = new NameValueCollection
             {
                 {"c", context.Request.C},
-                {"i", MessageType.Boradcast},
+                {"i", MessageType.Rep},
                 {"o", Convert.ToString(context.Request.O)},
                 {"code", Convert.ToString((int) StatusCode.Ok)},
                 { "format" , "json"}

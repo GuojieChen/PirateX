@@ -52,6 +52,14 @@ namespace PirateX.Core
 
         }
         /// <summary>
+        /// 容器初始化完成后
+        /// </summary>
+        protected virtual void OnInited()
+        {
+
+        }
+
+        /// <summary>
         /// 初始化容器
         /// </summary>
         /// <param name="builder"></param>
@@ -181,6 +189,8 @@ namespace PirateX.Core
 
                 _containers.Add(config.Id, c);
             }
+
+            OnInited();
         }
 
         protected static string ConnectionStringName = "ConnectionString";
@@ -473,7 +483,6 @@ namespace PirateX.Core
         {
             return new Dictionary<string, string>();
         }
-
 
         public virtual IDictionary<string, IDatabaseInitializer> GetNamedDatabaseInitializers()
         {

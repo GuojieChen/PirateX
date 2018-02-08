@@ -53,7 +53,7 @@ namespace PirateX.Net.NetMQ
             var pubConnectTo = config.PublisherSocketString;
             //if (config.PublisherSocketString.StartsWith("@"))
             //{
-            //    _pubBroker = new Proxy(new XSubscriberSocket("@inproc://subfrontend"), new XPublisherSocket("@inproc://pubbackend"));
+            //    _pubBroker = new Proxy(new XSubscriberSocket(config.PublisherSocketString), new XPublisherSocket("@inproc://pubbackend"));
             //    pubConnectTo = $">inproc://pubbackend";
 
             //    if (Logger.IsTraceEnabled)
@@ -69,7 +69,7 @@ namespace PirateX.Net.NetMQ
             for (int i = 0; i < config.BackendWorkersPerService; i++)
                 ThreadWorkers.Add(Task.Factory.StartNew(WorkerTask, connectto, _c_token.Token));
 
-            //PublisherSocket = new PublisherSocket(pubConnectTo);
+            PublisherSocket = new PublisherSocket(pubConnectTo);
         }
 
         private void WorkerTask(object connectTo)
@@ -160,6 +160,7 @@ namespace PirateX.Net.NetMQ
                 LastNo = -1,
                 HeaderBytes = GetHeaderBytes(headers),
                 BodyBytes = body,
+
             }.ToProtobuf());
         }
 
