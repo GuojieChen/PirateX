@@ -11,7 +11,7 @@ namespace PirateX.GMSDK
     {
         #region 活动相关
 
-        IEnumerable<IActivity> GetActivities();
+        IEnumerable<IActivity> GetActivities(int page = 1, int size = 10);
 
         IActivity AddActivity(IActivity activity);
 

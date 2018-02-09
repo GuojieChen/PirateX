@@ -245,9 +245,11 @@
   <ItemGroup>
     <Content Include="App_Code\UIHelper.cshtml" />
     <None Include="packages.config" />
-    <Content Include="Views\Activity\NewRewards.cshtml" />
+    <Content Include="Views\Activity\NewAttachment.cshtml" />
     <Content Include="Views\Activity\Publish.cshtml" />
     <Content Include="Views\Activity\_GMUI.cshtml" />
+    <Content Include="Views\Activity\SaveAttachment.cshtml" />
+    <Content Include="Views\Activity\_ButtonSelectAll.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

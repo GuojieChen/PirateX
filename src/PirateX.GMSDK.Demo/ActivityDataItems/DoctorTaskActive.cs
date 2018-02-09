@@ -1,4 +1,6 @@
-﻿using PirateX.GMSDK.Demo.GMUIListDataProviders;
+﻿using System;
+using System.Collections.Specialized;
+using PirateX.GMSDK.Demo.GMUIListDataProviders;
 using PirateX.GMSDK.Mapping;
 using PirateX.Middleware;
 
@@ -23,7 +25,12 @@ namespace PirateX.GMSDK.Demo.ActivityDataItems
             Map<GMUIDropdownPropertyMap>(item => item.Type)
                 .ToDisplayName("类型")
                 .ToTips("xxxxxx")
-                .ToListDataProvider(GMUIDoctoerTypeListProvider.Instance);
+                .ToListDataProvider(GMUIDoctoerTypeListProvider.Instance)
+                .Validate(s =>
+                {
+                    if(Equals(s,"0"))
+                        throw new Exception("请选择");
+                });
 
             Map<GMUITextBoxPropertyMap>(item=>item.Cnt)
                 .ToDisplayName("数量")

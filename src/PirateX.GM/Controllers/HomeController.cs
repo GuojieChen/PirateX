@@ -26,7 +26,12 @@ namespace PirateX.GM.Controllers
                     },
                     new GMUINav()
                     {
-                        ActionName = "NewRewards",
+                        ActionName = "NewList",
+                        DisplayName = "添加活动",
+                    },
+                    new GMUINav()
+                    {
+                        ActionName = "NewAttachment",
                         DisplayName = "配置奖励",
                     },
                     new GMUINav()

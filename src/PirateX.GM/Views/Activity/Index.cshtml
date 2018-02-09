@@ -1,11 +1,11 @@
 ﻿@using PirateX.Middleware
 
 @{
-                /**/
+    /**/
 
-                /**/
+    /**/
 
-                ViewBag.Title = "配置活动";
+    ViewBag.Title = "配置活动";
 }
 
 <div class="card">
@@ -15,6 +15,17 @@
 
     <div class="card-body">
         @RenderPage("~/Views/Activity/_ButtonAdd.cshtml")
+
+        <button class="btn btn-outline-secondary">
+            全选/反选
+        </button>
+        <button class="btn btn-outline-secondary">
+            导入
+        </button>
+        <button class="btn btn-outline-secondary">
+            导出
+        </button>
+
     </div>
 </div>
 
@@ -25,32 +36,33 @@
     </div>
 
     <div class="card-body">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>选择</th>
-                    <th>名称</th>
-                    <th>备注</th>
-                    <th>起止时间</th>
-                    <th>周期</th>
-                    <th>状态</th>
-                </tr>
-            </thead>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>选择</th>
+                        <th>名称</th>
+                        <th>状态</th>
+                        <th>周期</th>
+                        <th>备注</th>
+                        <th>起止时间</th>
+                    </tr>
+                </thead>
 
-            <tbody>
-
-                @foreach (IActivity item in ViewBag.List)
-                {
+                <tbody>
+                    @foreach (IActivity item in ViewBag.List)
+                    {
                     <tr>
                         <td></td>
-                        <td>@item.Name</td>
-                        <td>@item.Remark</td>
-                        <td>@($"{item.StartAt} - {item.EndAt}")</td>
-                        <td>@(string.Join(",", item.Days))</td>
+                        <td class="text-nowrap">@item.Name</td>
                         <td></td>
+                        <td class="text-nowrap">@(string.Join(",", item.Days))</td>
+                        <td class="text-nowrap">@($"{item.StartAt} - {item.EndAt}")</td>
+                        <td class="text-nowrap">@item.Remark</td>
                     </tr>
-                }
-            </tbody>
-        </table>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

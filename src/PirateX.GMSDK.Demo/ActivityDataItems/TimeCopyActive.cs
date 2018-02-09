@@ -2,6 +2,7 @@
 using PirateX.GMSDK.Mapping;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -86,7 +87,6 @@ namespace PirateX.GMSDK.Demo.ActivityDataItems
                 .ToDisplayName("兑换项目")
                 .ToPropertyMap(new GMUIExItemMap());
         }
-        
     }
 
     public class TimeCopyStageCfg
@@ -113,7 +113,6 @@ namespace PirateX.GMSDK.Demo.ActivityDataItems
         {
             Map<GMUITextBoxPropertyMap>(item=>item.StageName)
                 .ToDisplayName("关卡名称");
-
             Map<GMUITextBoxPropertyMap>(item => item.Hp)
                 .ToDisplayName("NPC生命");
             Map<GMUITextBoxPropertyMap>(item => item.Atk)

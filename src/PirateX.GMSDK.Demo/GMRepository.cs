@@ -13,18 +13,24 @@ namespace PirateX.GMSDK.Demo
         {
             for (int i = 0; i < 50; i++)
             {
-                Activities.Add(new Activity{ Id = i +1 ,Days = new int[]{1,2,3,4,5,6,7},StartAt = new DateTime(2018,1,1),EndAt = new DateTime(2018,10,1),Args = "{}"});
+                Activities.Add(new Activity{
+                    Id = i +1 
+                         ,Remark = $"{(i / 5)+1}00.【数据展示】 测试活动[{i+1}]"
+                    ,Days = new int[]{1,2,3,4,5,6,7}
+                    ,StartAt = new DateTime(2018,1,1)
+                    ,EndAt = new DateTime(2018,10,1)
+                    ,Args = "{}"});
             }
         }
 
-
-        public IEnumerable<IActivity> GetActivities()
+        public IEnumerable<IActivity> GetActivities(int page = 1,int size = 10)
         {
-            return Activities.OrderByDescending(item => item.Id);
+            return Activities.OrderByDescending(item => item.Id).Skip((page-1) *size).Take(size);
         }
 
         public IActivity AddActivity(IActivity activity)
         {
+            activity.Id = Activities.Count + 1;
             Activities.Add((Activity)activity);
 
             return activity;

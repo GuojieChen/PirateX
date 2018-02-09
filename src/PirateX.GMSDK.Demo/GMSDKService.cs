@@ -7,6 +7,7 @@ using Autofac;
 using PirateX.Core;
 using PirateX.GMSDK.Demo.ActivityDataItems;
 using PirateX.GMSDK.Mapping;
+using PirateX.Middleware;
 
 namespace PirateX.GMSDK.Demo
 {
@@ -105,6 +106,11 @@ namespace PirateX.GMSDK.Demo
         public IGMUIItemMap GetRewardItemMap()
         {
             return new GMUIRewardMap();
+        }
+
+        public IActivity GetActivityInstance()
+        {
+            return new Activity();
         }
     }
 }

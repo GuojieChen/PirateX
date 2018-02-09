@@ -1,7 +1,4 @@
-﻿@{
-    Layout = null;
-}
-
+﻿
 @using PirateX.GMSDK;
 @using PirateX.GMSDK.Mapping;
 
@@ -13,7 +10,7 @@
             <div class="card">
                 <div class="card-header bg-light">
                     @headerText
-
+                    
                     <div class="card-actions">
                         <a href="#" class="btn">
                             <i class="fa fa-copy"></i>
@@ -40,7 +37,7 @@
                 {
                     <label class="form-control-label">@info.DisplayName</label>
                 }
-                <input type="text" class="form-control" name="@info.Name" />
+                <input type="text" class="form-control" name="@info.Name" value="@info.DevaultValue" />
             </div>
         }
         else if (info is GMUIDropdownPropertyMap)
@@ -54,7 +51,7 @@
                 <select name="@info.Name" class="form-control">
                     @foreach (var item in ((GMUIDropdownPropertyMap)info).ListDataProvider.GetListItems())
                     {
-                        <option value="@item.Value">@item.Text</option>
+                        <option value="@item.Value" selected="@Equals(item.Value,info.DevaultValue)">@item.Text</option>
                     }
                 </select>
             </div>
@@ -76,7 +73,7 @@
 
                 @foreach (var subitem in (info as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
                 {
-                    <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked"> @subitem.Text
+                    <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name" > @subitem.Text
                 }
 
             </div>

@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivityBasic.cs" />
+    <Compile Include="IAttachment.cs" />
     <Compile Include="IGMUICheckedDataProvider.cs" />
     <Compile Include="Mapping\GMUICheckBoxPropertyMap.cs" />
     <Compile Include="Mapping\GMUIMapPropertyMap.cs" />

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using PirateX.Middleware;
 
 namespace PirateX.GMSDK.Mapping
 {
@@ -21,9 +23,8 @@ namespace PirateX.GMSDK.Mapping
     {
     }
 
-    public class GMUIItemMap<TGMUIItem> : IGMUIItemMap<TGMUIItem>
+    public  abstract class GMUIItemMap<TGMUIItem> : IGMUIItemMap<TGMUIItem>
     {
-
         public string Name { get; protected set; }
 
         public string Des { get; protected set; }

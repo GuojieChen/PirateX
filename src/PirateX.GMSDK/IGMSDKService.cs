@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Autofac;
 using PirateX.Core;
 using PirateX.GMSDK.Mapping;
+using PirateX.Middleware;
 
 namespace PirateX.GMSDK
 {
@@ -33,5 +34,10 @@ namespace PirateX.GMSDK
         /// </summary>
         /// <returns></returns>
         IGMUIItemMap GetRewardItemMap();
+        /// <summary>
+        /// 返回一个新的活动实例
+        /// </summary>
+        /// <returns></returns>
+        IActivity GetActivityInstance();
     }
 }

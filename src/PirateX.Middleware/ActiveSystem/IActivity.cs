@@ -9,11 +9,12 @@ namespace PirateX.Middleware
     /// </summary>
     public interface IActivity:IEntity<int>,IEntityDistrict
     {
+        int Id { get; set; }
+
         /// <summary>
         /// 活动名称
         /// </summary>
         string Name { get; set; }
-
         /// <summary>
         /// 开始时间
         /// </summary>

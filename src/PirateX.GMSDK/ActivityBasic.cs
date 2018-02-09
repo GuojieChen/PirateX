@@ -1,6 +1,7 @@
 ﻿using PirateX.GMSDK.Mapping;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,9 +23,11 @@ namespace PirateX.GMSDK
         {
             Map<GMUITextBoxPropertyMap>(item=>item.StartAt)
                 .ToDisplayName("开始时间")
+                .ToDevaultValue(DateTime.Now)
                 .ToOrderId(-3);
             Map<GMUITextBoxPropertyMap>(item => item.EndAt)
                 .ToDisplayName("结束时间")
+                .ToDevaultValue(DateTime.Now)
                 .ToOrderId(-2);
             Map<GMUICheckBoxPropertyMap>(item => item.Days)
                 .ToDisplayName("周期")

@@ -17,10 +17,15 @@ namespace PirateX.GMSDK.Mapping
         bool CanMulti { get; }
 
         string GroupName { get; }
+        string DevaultValue { get; }
 
         PropertyInfo PropertyInfo { get; set; }
 
         int OrderId { get; }
+
+        Action<string> ValidateAction { get; }
+
+        void Validate(Action<string> actions);
     }
     
     /// <summary>
@@ -95,6 +100,20 @@ namespace PirateX.GMSDK.Mapping
         public TGMUIPropertyMap ToOrderId(int orderid)
         {
             OrderId = orderid;
+            return this as TGMUIPropertyMap;
+        }
+
+        public Action<string> ValidateAction { get; set; }
+
+        public void Validate(Action<string> action)
+        {
+            ValidateAction = action;
+        }
+
+        public string DevaultValue { get; private set; }
+        public TGMUIPropertyMap ToDevaultValue(object value)
+        {
+            DevaultValue = Convert.ToString(value);
             return this as TGMUIPropertyMap;
         }
 
