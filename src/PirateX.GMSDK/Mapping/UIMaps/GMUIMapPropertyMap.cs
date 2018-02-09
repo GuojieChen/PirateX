@@ -1,11 +1,4 @@
-﻿using PirateX.GMSDK.Mapping;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PirateX.GMSDK
+﻿namespace PirateX.GMSDK.Mapping
 {
     /// <summary>
     /// 表示控件对应了一个实体
@@ -17,6 +10,7 @@ namespace PirateX.GMSDK
         public GMUIMapPropertyMap ToPropertyMap(IGMUIItemMap propertyMap)
         {
             ToGroupName(this.DisplayName);
+            ToCanMulti(true);
             Map = propertyMap;
             return this as GMUIMapPropertyMap;
         }

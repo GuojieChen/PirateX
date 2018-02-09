@@ -41,9 +41,27 @@ namespace PirateX.GM.Controllers
             var map = AutofacConfig.GmsdkService.GetActivityMaps()
                 .FirstOrDefault(item => Equals(item.Name, name));
 
+            int groupid = 1 ; 
             var maps = new List<IGMUIPropertyMap>(map.PropertyMaps);
             maps.AddRange(new GMUIActivityBasicMap().PropertyMaps);
-            var groups = maps.GroupBy(item => item.GroupName).OrderBy(item => item.Key);
+            //普通类型
+            var groups = maps.Where(item=> !item.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
+                .GroupBy(item => item.GroupName).OrderBy(item => item.Key)
+                .Select(item=>new GMUIGroup()
+                {
+                    Id = $"uigroup_{groupid++}",
+                    DisplayName = item.Key,
+                    Maps = item.AsEnumerable<IGMUIPropertyMap>()
+                }).ToList();
+            //自定义类型
+            groups.AddRange(maps.Where(item => item.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
+                .Select(item => new GMUIGroup()
+                {
+                    Id = $"uigroup_{groupid++}",
+                    DisplayName = item.GroupName,
+                    Maps = (item as GMUIMapPropertyMap).Map.PropertyMaps,
+                    CanMulti = item.CanMulti
+                }));
 
             var colclass = "col-md-4";//默认横向放三个
             if (groups.Count() < 3)//一个card占满一行

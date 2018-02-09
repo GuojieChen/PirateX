@@ -2,24 +2,24 @@
 @using PirateX.GMSDK;
 @using PirateX.GMSDK.Mapping;
 
-
-
-@helper ConvertToCard(string headerText, string colClass, IEnumerable<IGMUIPropertyMap> maps)
+@helper ConvertToCard(GMUIGroup item, string colClass)
     {
-        <div class="@colClass">
+        <div class="@colClass" id="@item.Id">
             <div class="card">
                 <div class="card-header bg-light">
-                    @headerText
-                    
-                    <div class="card-actions">
-                        <a href="#" class="btn">
+                    @(item.DisplayName ?? "基础配置")
+
+                    @if(item.CanMulti)
+                    {<div class="card-actions">
+                        <a href="#@item.Id" class="btn">
                             <i class="fa fa-copy"></i>
                         </a>
                     </div>
+                    }
                 </div>
 
                 <div class="card-body">
-                    @foreach (var subItem in maps.OrderBy(x => x.OrderId))
+                    @foreach (var subItem in item.Maps.OrderBy(x => x.OrderId))
                     {
                         @ConvertToGMUI(subItem, true)
                     }
@@ -73,13 +73,13 @@
 
                 @foreach (var subitem in (info as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
                 {
-                    <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name" > @subitem.Text
+                    <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name"> @subitem.Text
                 }
 
             </div>
         }
         else
         {
-            <span>控件没有实现！！！</span>
+            <span class="alert alert-warning">控件没有实现！！！</span>
         }
 }
