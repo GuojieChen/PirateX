@@ -16,8 +16,6 @@ namespace PirateX.GMSDK.Mapping
 
         string GroupName { get; }
 
-        bool CanMulti { get; }
-
         string DevaultValue { get; }
 
         PropertyInfo PropertyInfo { get; set; }
@@ -75,13 +73,6 @@ namespace PirateX.GMSDK.Mapping
         }
 
         public string GroupName { get; private set; }
-        public bool CanMulti { get; private set; }
-        public TGMUIPropertyMap ToCanMulti(bool multi)
-        {
-            this.CanMulti = multi;
-            return this as TGMUIPropertyMap;
-        }
-
         public TGMUIPropertyMap ToGroupName(string name)
         {
             this.GroupName = name;

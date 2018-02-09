@@ -4,17 +4,17 @@
 
 @helper ConvertToCard(GMUIGroup item, string colClass)
     {
-        <div class="@colClass" id="@item.Id">
+        <div class="col-md-4" id="@item.Id">
             <div class="card">
                 <div class="card-header bg-light">
                     @(item.DisplayName ?? "基础配置")
 
-                    @if(item.CanMulti)
+                    @if (item.CanMulti)
                     {<div class="card-actions">
-                        <a href="#@item.Id" class="btn">
-                            <i class="fa fa-copy"></i>
-                        </a>
-                    </div>
+                            <a href="#@item.Id" class="btn copybtn">
+                                <i class="fa fa-copy"></i>
+                            </a>
+                        </div>
                     }
                 </div>
 
@@ -66,16 +66,14 @@
         else if (info is GMUICheckBoxPropertyMap)
         {
             <div class="form-group">
-                @if (showlable)
-                {
-                    <label class="form-control-label">@info.DisplayName</label>
-                }
+                <label class="form-control-label">@info.DisplayName</label>
 
-                @foreach (var subitem in (info as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
-                {
-                    <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name"> @subitem.Text
-                }
-
+                <div>
+                    @foreach (var subitem in (info as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
+                    {
+                        <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name"> @subitem.Text
+                    }
+                </div>
             </div>
         }
         else

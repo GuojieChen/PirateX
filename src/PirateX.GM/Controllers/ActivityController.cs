@@ -60,7 +60,7 @@ namespace PirateX.GM.Controllers
                     Id = $"uigroup_{groupid++}",
                     DisplayName = item.GroupName,
                     Maps = (item as GMUIMapPropertyMap).Map.PropertyMaps,
-                    CanMulti = item.CanMulti
+                    CanMulti = item.PropertyInfo.PropertyType.IsArray
                 }));
 
             var colclass = "col-md-4";//默认横向放三个
@@ -89,7 +89,7 @@ namespace PirateX.GM.Controllers
             var map = AutofacConfig.GmsdkService.GetActivityMaps()
                 .FirstOrDefault(item => Equals(item.Name, name));
 
-            Dictionary<string,string> values = new Dictionary<string, string>();
+            Dictionary<string,object> values = new Dictionary<string, object>();
             try
             {
                 if(string.IsNullOrEmpty(Request.Form["Remark"]))
@@ -97,11 +97,18 @@ namespace PirateX.GM.Controllers
 
                 foreach (var propertyMap in map.PropertyMaps)
                 {
-                    var value = Request.Form[propertyMap.Name];
-
-                    propertyMap?.ValidateAction(value);
-
-                    values.Add(propertyMap.Name, value);
+                    if (propertyMap.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
+                    {//对象
+                        //var item = propertyMap as GMUIMapPropertyMap;
+                        
+                    }
+                    else
+                    {
+                        var value = Request.Form[propertyMap.Name];
+                        propertyMap?.ValidateAction(value);
+                        values.Add(propertyMap.Name, value);
+                    }
+                    
                 }
 
                 Session["Activity.New.ShowSuccess"] = true;
@@ -118,6 +125,7 @@ namespace PirateX.GM.Controllers
             activity.Days = Request.Form[nameof(ActivityBasicEmpty.Days)].Split(new char[] { ',' }).Select(int.Parse).ToArray();
             activity.Name = map.Name;
             activity.Remark = Request.Form["Remark"];
+            activity.Args = ""; 
             AutofacConfig.GmsdkService.GetGmRepository().AddActivity(activity);
 
             //保存活动

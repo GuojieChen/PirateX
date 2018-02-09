@@ -10,9 +10,8 @@
         public GMUIMapPropertyMap ToPropertyMap(IGMUIItemMap propertyMap)
         {
             ToGroupName(this.DisplayName);
-            ToCanMulti(true);
             Map = propertyMap;
-            return this as GMUIMapPropertyMap;
+            return this ;
         }
     }
 

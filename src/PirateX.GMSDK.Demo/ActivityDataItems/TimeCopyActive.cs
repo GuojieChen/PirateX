@@ -29,7 +29,7 @@ namespace PirateX.GMSDK.Demo.ActivityDataItems
         /// <summary> 主打精灵2 每次捕捉失败增加概率 </summary>
         public double AddRate2 { get; set; }
 
-        public IList<TimeCopyStageCfg> StageCfgs { get; set; }
+        public TimeCopyStageCfg[] StageCfgs { get; set; }
 
         /// <summary> 进入条件类型 1：要求精灵属性；2：要求精灵职业 Define.TimeCopyConType </summary>
         public int ConType { get; set; }
@@ -38,7 +38,7 @@ namespace PirateX.GMSDK.Demo.ActivityDataItems
         public int ConValue { get; set; }
 
         /// <summary> 兑换项目 </summary>
-        public IList<ExItem> ExItems { get; set; }
+        public ExItem[] ExItems { get; set; }
     }
 
     public class GMUITimeCopyActivePropertyMap : GMUIItemMap<TimeCopyActive>
