@@ -105,12 +105,22 @@ namespace PirateX.GM.Controllers
                     }
                     else
                     {
-                        var value = Request.Form[propertyMap.Name];
-                        propertyMap?.ValidateAction(value);
+                        if(propertyMap.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
+                        {
+                            //TODO 对象数组需要筛选出来。例如 A[0].Id=1&A[0].Name=xx&A[1].Id=2&A[2].Name=xxx
+                            //var objValue = new Dictionary<string,object>();
+                            //foreach(var key in Request.Form.AllKeys)
+                            //{
+                            //    if (key.StartsWith(propertyMap.Name)) ;
 
-                        //TODO 对象数组需要筛选出来。例如 A[0].Id=1&A[0].Name=xx&A[1].Id=2&A[2].Name=xxx
-
-                        values.Add(propertyMap.Name, value);
+                            //}
+                        }
+                        else
+                        {
+                            var value = Request.Form[propertyMap.Name];
+                            propertyMap?.ValidateAction(value);
+                            values.Add(propertyMap.Name, value);
+                        }
                     }
                     
                 }
