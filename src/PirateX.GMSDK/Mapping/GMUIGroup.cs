@@ -8,6 +8,8 @@ namespace PirateX.GMSDK.Mapping
 {
     public class GMUIGroup
     {
+        public string ObjectName { get; set; }
+
         public string DisplayName { get; set; }
 
         public IEnumerable<IGMUIPropertyMap> Maps { get; set; }

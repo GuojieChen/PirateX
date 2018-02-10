@@ -14,7 +14,6 @@
 </h3>
 
 <div class="row">
-
     <div class="col-md-9">
         @using (Html.BeginForm("SaveNew", "Activity", new { name = Request.QueryString["name"] }, FormMethod.Post, new { @class = "form" }))
         {
@@ -26,7 +25,7 @@
             </div>
             {
                 List<GMUIGroup> groups = ViewBag.Groups;
-                <div class="row">
+                <div class="row" id="cards">
                     @foreach (var item in groups)
                     {
                         @UIHelper.ConvertToCard(item, ViewBag.ColClass)
@@ -60,8 +59,40 @@
         $(document).ready(function () {
             $(".copybtn").click(function () {
 
-                alert($(this).parents(".card").child(".card-body").html());
+                var card = $(this).parents(".col-card").clone();
+                card.find('.card-actions').children().replaceWith('<span class="btn closebtn"><i class="icon-close"></i></span>');
+                card.hide().appendTo("#cards").fadeIn(500);
+
+                resetname($(this).parents(".col-card"));
             });
+
+            $("#cards").delegate(".closebtn", "click", function () {
+                var e = $(this);
+
+                e.parents(".col-card").fadeOut(500, function () {
+                    $(this).remove();
+
+                    var key = e.parents(".col-card").attr("key");
+                    $("#cards").find(".col-card[key='" + key + "']").each(function () {
+                        resetname($(this));
+                    });
+                });
+            });
+            
+            function resetname(d) {
+                console.log("-------------resetname---------------");
+
+                d.find(".form-control").each(function () {
+                    var objectname = $(this).attr("tag");
+                    console.log(objectname);
+                    $("#cards").find(".form-control[tag='" + objectname + "']").each(function (index) {
+                        var newname = $(this).attr("tag").replace("[]", "[" + index + "]");
+                        console.log(index + ":" + $(this).prop("name") + "--->" + newname);
+                        $(this).prop("name", newname);
+                    });
+                });
+            };
         });
+
     </script>
 }

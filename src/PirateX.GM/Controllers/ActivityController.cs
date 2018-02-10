@@ -58,6 +58,7 @@ namespace PirateX.GM.Controllers
                 .Select(item => new GMUIGroup()
                 {
                     Id = $"uigroup_{groupid++}",
+                    ObjectName = item.Name,
                     DisplayName = item.GroupName,
                     Maps = (item as GMUIMapPropertyMap).Map.PropertyMaps,
                     CanMulti = item.PropertyInfo.PropertyType.IsArray
@@ -106,6 +107,9 @@ namespace PirateX.GM.Controllers
                     {
                         var value = Request.Form[propertyMap.Name];
                         propertyMap?.ValidateAction(value);
+
+                        //TODO 对象数组需要筛选出来。例如 A[0].Id=1&A[0].Name=xx&A[1].Id=2&A[2].Name=xxx
+
                         values.Add(propertyMap.Name, value);
                     }
                     
@@ -167,8 +171,6 @@ namespace PirateX.GM.Controllers
         [HttpPost]
         public ActionResult SaveAttachment()
         {
-            
-
 
             return View();
         }

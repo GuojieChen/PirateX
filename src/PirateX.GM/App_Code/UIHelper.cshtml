@@ -4,16 +4,17 @@
 
 @helper ConvertToCard(GMUIGroup item, string colClass)
     {
-        <div class="col-md-4" id="@item.Id">
+        <div class="@colClass col-card" key="@item.ObjectName">
             <div class="card">
                 <div class="card-header bg-light">
                     @(item.DisplayName ?? "基础配置")
 
                     @if (item.CanMulti)
-                    {<div class="card-actions">
-                            <a href="#@item.Id" class="btn copybtn">
+                    {
+                        <div class="card-actions">
+                            <span class="btn copybtn">
                                 <i class="fa fa-copy"></i>
-                            </a>
+                            </span>
                         </div>
                     }
                 </div>
@@ -21,47 +22,43 @@
                 <div class="card-body">
                     @foreach (var subItem in item.Maps.OrderBy(x => x.OrderId))
                     {
-                        @ConvertToGMUI(subItem, true)
+                        @ConvertToGMUI(subItem, item.ObjectName)
                     }
                 </div>
             </div>
         </div>
 }
 
-@helper ConvertToGMUI(IGMUIPropertyMap info, bool showlable = false)
+@helper ConvertToGMUI(IGMUIPropertyMap info, string objectName = "")
     {
+        var name = info.Name;
+        var classattr = "";
+        if (!string.IsNullOrEmpty(objectName))
+        {
+            name = objectName + "[0]." + info.Name;
+            classattr = objectName + "[]." + info.Name;
+        }
+
         if (info is GMUITextBoxPropertyMap)
         {
             <div class="form-group">
-                @if (showlable)
-                {
-                    <label class="form-control-label">@info.DisplayName</label>
-                }
-                <input type="text" class="form-control" name="@info.Name" value="@info.DevaultValue" />
+                <label class="form-control-label">@info.DisplayName</label>
+
+                <input type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
             </div>
         }
         else if (info is GMUIDropdownPropertyMap)
         {
             <div class="form-group">
-                @if (showlable)
-                {
-                    <label class="form-control-label">@info.DisplayName</label>
-                }
+                <label class="form-control-label">@info.DisplayName</label>
 
-                <select name="@info.Name" class="form-control">
+                <select name="@info.Name" class="form-control" tag="@classattr">
                     @foreach (var item in ((GMUIDropdownPropertyMap)info).ListDataProvider.GetListItems())
                     {
                         <option value="@item.Value" selected="@Equals(item.Value,info.DevaultValue)">@item.Text</option>
                     }
                 </select>
             </div>
-        }
-        else if (info is GMUIMapPropertyMap)
-        {
-            foreach (var subItem in (info as GMUIMapPropertyMap).Map.PropertyMaps)
-            {
-                @ConvertToGMUI(subItem, true)
-            }
         }
         else if (info is GMUICheckBoxPropertyMap)
         {
@@ -71,7 +68,7 @@
                 <div>
                     @foreach (var subitem in (info as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
                     {
-                        <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name"> @subitem.Text
+                        <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name" tag="@classattr"> @subitem.Text
                     }
                 </div>
             </div>
