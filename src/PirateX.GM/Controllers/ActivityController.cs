@@ -41,9 +41,28 @@ namespace PirateX.GM.Controllers
             var map = AutofacConfig.GmsdkService.GetActivityMaps()
                 .FirstOrDefault(item => Equals(item.Name, name));
 
+            int groupid = 1 ; 
             var maps = new List<IGMUIPropertyMap>(map.PropertyMaps);
             maps.AddRange(new GMUIActivityBasicMap().PropertyMaps);
-            var groups = maps.GroupBy(item => item.GroupName).OrderBy(item => item.Key);
+            //普通类型
+            var groups = maps.Where(item=> !item.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
+                .GroupBy(item => item.GroupName).OrderBy(item => item.Key)
+                .Select(item=>new GMUIGroup()
+                {
+                    Id = $"uigroup_{groupid++}",
+                    DisplayName = item.Key,
+                    Maps = item.AsEnumerable<IGMUIPropertyMap>()
+                }).ToList();
+            //自定义类型
+            groups.AddRange(maps.Where(item => item.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
+                .Select(item => new GMUIGroup()
+                {
+                    Id = $"uigroup_{groupid++}",
+                    ObjectName = item.Name,
+                    DisplayName = item.GroupName,
+                    Maps = (item as GMUIMapPropertyMap).Map.PropertyMaps,
+                    CanMulti = item.PropertyInfo.PropertyType.IsArray
+                }));
 
             var colclass = "col-md-4";//默认横向放三个
             if (groups.Count() < 3)//一个card占满一行
@@ -71,7 +90,7 @@ namespace PirateX.GM.Controllers
             var map = AutofacConfig.GmsdkService.GetActivityMaps()
                 .FirstOrDefault(item => Equals(item.Name, name));
 
-            Dictionary<string,string> values = new Dictionary<string, string>();
+            Dictionary<string,object> values = new Dictionary<string, object>();
             try
             {
                 if(string.IsNullOrEmpty(Request.Form["Remark"]))
@@ -79,11 +98,21 @@ namespace PirateX.GM.Controllers
 
                 foreach (var propertyMap in map.PropertyMaps)
                 {
-                    var value = Request.Form[propertyMap.Name];
+                    if (propertyMap.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
+                    {//对象
+                        //var item = propertyMap as GMUIMapPropertyMap;
+                        
+                    }
+                    else
+                    {
+                        var value = Request.Form[propertyMap.Name];
+                        propertyMap?.ValidateAction(value);
 
-                    propertyMap?.ValidateAction(value);
+                        //TODO 对象数组需要筛选出来。例如 A[0].Id=1&A[0].Name=xx&A[1].Id=2&A[2].Name=xxx
 
-                    values.Add(propertyMap.Name, value);
+                        values.Add(propertyMap.Name, value);
+                    }
+                    
                 }
 
                 Session["Activity.New.ShowSuccess"] = true;
@@ -100,6 +129,7 @@ namespace PirateX.GM.Controllers
             activity.Days = Request.Form[nameof(ActivityBasicEmpty.Days)].Split(new char[] { ',' }).Select(int.Parse).ToArray();
             activity.Name = map.Name;
             activity.Remark = Request.Form["Remark"];
+            activity.Args = ""; 
             AutofacConfig.GmsdkService.GetGmRepository().AddActivity(activity);
 
             //保存活动
@@ -141,8 +171,6 @@ namespace PirateX.GM.Controllers
         [HttpPost]
         public ActionResult SaveAttachment()
         {
-            
-
 
             return View();
         }

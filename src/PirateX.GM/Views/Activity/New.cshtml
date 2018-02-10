@@ -9,35 +9,31 @@
     IGMUIItemMap map = ViewBag.ItemMap;
 }
 
-<div class="row">
+<h3>
+    添加新的活动 - @map.Name
+</h3>
 
+<div class="row">
     <div class="col-md-9">
         @using (Html.BeginForm("SaveNew", "Activity", new { name = Request.QueryString["name"] }, FormMethod.Post, new { @class = "form" }))
         {
-           
+
 
             <div class="form-group">
                 <label>备注名（必须唯一）</label>
                 @Html.TextBox("Remark", null, new { @class = "form-control" })
             </div>
             {
-                IEnumerable<IGrouping<string, IGMUIPropertyMap>> groups = ViewBag.Groups;
-                var length = groups.Count();
-                var rowcount = (length % 3 == 0) ? length / 3 : (length / 3) + 1;
-
-                for (var i = 0; i < rowcount; i++)
-                {
-                    var list = groups.Skip(i * 3).Take(3);
-                    <div class="row">
-                        @foreach (var item in list)
-                        {
-                            @UIHelper.ConvertToCard(item.Key ?? "基础配置", ViewBag.ColClass, item.AsEnumerable<IGMUIPropertyMap>())
-                        }
-                    </div>
-                }
+                List<GMUIGroup> groups = ViewBag.Groups;
+                <div class="row" id="cards">
+                    @foreach (var item in groups)
+                    {
+                        @UIHelper.ConvertToCard(item, ViewBag.ColClass)
+                    }
+                </div>
             }
 
-            <button type="submit" class="btn btn-block btn-primary">提交并保存</button>
+            <button type="submit" class="btn btn-block btn-primary btn-lg">提交并保存</button>
         }
     </div>
 
@@ -55,3 +51,48 @@
         </div>
     </div>
 </div>
+
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $(".copybtn").click(function () {
+
+                var card = $(this).parents(".col-card").clone();
+                card.find('.card-actions').children().replaceWith('<span class="btn closebtn"><i class="icon-close"></i></span>');
+                card.hide().appendTo("#cards").fadeIn(500);
+
+                resetname($(this).parents(".col-card"));
+            });
+
+            $("#cards").delegate(".closebtn", "click", function () {
+                var e = $(this);
+
+                e.parents(".col-card").fadeOut(500, function () {
+                    $(this).remove();
+
+                    var key = e.parents(".col-card").attr("key");
+                    $("#cards").find(".col-card[key='" + key + "']").each(function () {
+                        resetname($(this));
+                    });
+                });
+            });
+            
+            function resetname(d) {
+                console.log("-------------resetname---------------");
+
+                d.find(".form-control").each(function () {
+                    var objectname = $(this).attr("tag");
+                    console.log(objectname);
+                    $("#cards").find(".form-control[tag='" + objectname + "']").each(function (index) {
+                        var newname = $(this).attr("tag").replace("[]", "[" + index + "]");
+                        console.log(index + ":" + $(this).prop("name") + "--->" + newname);
+                        $(this).prop("name", newname);
+                    });
+                });
+            };
+        });
+
+    </script>
+}
