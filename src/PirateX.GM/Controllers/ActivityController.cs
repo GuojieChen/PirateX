@@ -50,7 +50,7 @@ namespace PirateX.GM.Controllers
 
             //普通类型
             var groups = ConvertToGMUIGroupList(maps);
-            var colclass = "col-md-4";//默认横向放三个
+            var colclass = "col-lg-4 col-md-6 col-sm-12";//默认横向放三个
             if (groups.Count() < 3)//一个card占满一行
             {
                 colclass = "col-md-12";
@@ -163,7 +163,7 @@ namespace PirateX.GM.Controllers
 
             var groups = ConvertToGMUIGroupList(maps);
 
-            var colclass = "col-md-4";
+            var colclass = "col-md-4 col-sm-6";
             if (groups.Count() < 3)
             {
                 colclass = "col-md-12";
