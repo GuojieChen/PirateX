@@ -7,17 +7,26 @@ using PirateX.Middleware;
 
 namespace PirateX.GMSDK
 {
+    public class Attachment
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public IReward Rewards { get; set; }
+    }
+
     /// <summary>
     /// 奖励附件
     /// </summary>
     /// <typeparam name="TReward"></typeparam>
-    public interface IAttachment<TReward>
+    public class Attachment<TReward>: Attachment
         where TReward : IReward
     {
-        int Id { get; set; }
+        public int Id { get; set; }
 
-        string Name { get; set; }
+        public string Name { get; set; }
 
-        TReward Rewards { get; set; }
+        public TReward Rewards { get; set; }
     }
 }

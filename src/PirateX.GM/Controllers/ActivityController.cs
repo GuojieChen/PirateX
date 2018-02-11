@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
+using Newtonsoft.Json;
 using PirateX.Core;
 using PirateX.GM.App_Start;
 using PirateX.GMSDK;
 using PirateX.GMSDK.Mapping;
+using PirateX.Middleware;
 
 namespace PirateX.GM.Controllers
 {
@@ -41,13 +45,30 @@ namespace PirateX.GM.Controllers
             var map = AutofacConfig.GmsdkService.GetActivityMaps()
                 .FirstOrDefault(item => Equals(item.Name, name));
 
-            int groupid = 1 ; 
             var maps = new List<IGMUIPropertyMap>(map.PropertyMaps);
             maps.AddRange(new GMUIActivityBasicMap().PropertyMaps);
+
             //普通类型
-            var groups = maps.Where(item=> !item.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
+            var groups = ConvertToGMUIGroupList(maps);
+            var colclass = "col-md-4";//默认横向放三个
+            if (groups.Count() < 3)//一个card占满一行
+            {
+                colclass = "col-md-12";
+            }
+
+            ViewBag.ItemMap = map;
+            ViewBag.Groups = groups;
+            ViewBag.ColClass = colclass;
+
+            return View();
+        }
+
+        private List<GMUIGroup> ConvertToGMUIGroupList(IEnumerable<IGMUIPropertyMap> maps)
+        {
+            int groupid = 1;
+            var groups = maps.Where(item => !item.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
                 .GroupBy(item => item.GroupName).OrderBy(item => item.Key)
-                .Select(item=>new GMUIGroup()
+                .Select(item => new GMUIGroup()
                 {
                     Id = $"uigroup_{groupid++}",
                     DisplayName = item.Key,
@@ -64,17 +85,7 @@ namespace PirateX.GM.Controllers
                     CanMulti = item.PropertyInfo.PropertyType.IsArray
                 }));
 
-            var colclass = "col-md-4";//默认横向放三个
-            if (groups.Count() < 3)//一个card占满一行
-            {
-                colclass = "col-md-12";
-            }
-
-            ViewBag.ItemMap = map;
-            ViewBag.Groups = groups;
-            ViewBag.ColClass = colclass;
-
-            return View();
+            return groups;
         }
 
         private ActivityBasic ActivityBasicEmpty = new ActivityBasic();
@@ -90,57 +101,43 @@ namespace PirateX.GM.Controllers
             var map = AutofacConfig.GmsdkService.GetActivityMaps()
                 .FirstOrDefault(item => Equals(item.Name, name));
 
-            Dictionary<string,object> values = new Dictionary<string, object>();
+            GMUIGroupBuilder builder = new GMUIGroupBuilder(map.PropertyMaps,Request.Form);
+
+
             try
             {
-                if(string.IsNullOrEmpty(Request.Form["Remark"]))
-                    throw new Exception("备注不能为空");
 
-                foreach (var propertyMap in map.PropertyMaps)
+                if (string.IsNullOrEmpty(Request.Form["Remark"]))
+                    builder.Errors.Add("备注不能为空");
+
+                builder.Build();
+
+                if (!builder.Errors.Any())
                 {
-                    if (propertyMap.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
-                    {//对象
-                        //var item = propertyMap as GMUIMapPropertyMap;
-                        
-                    }
-                    else
-                    {
-                        if(propertyMap.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
-                        {
-                            //TODO 对象数组需要筛选出来。例如 A[0].Id=1&A[0].Name=xx&A[1].Id=2&A[2].Name=xxx
-                            //var objValue = new Dictionary<string,object>();
-                            //foreach(var key in Request.Form.AllKeys)
-                            //{
-                            //    if (key.StartsWith(propertyMap.Name)) ;
+                    var activity = AutofacConfig.GmsdkService.GetActivityInstance();
+                    activity.StartAt = DateTime.Parse(Request.Form[nameof(ActivityBasicEmpty.StartAt)]);
+                    activity.EndAt = DateTime.Parse(Request.Form[nameof(ActivityBasicEmpty.EndAt)]);
+                    activity.Days = Request.Form[nameof(ActivityBasicEmpty.Days)].Split(new char[] { ',' }).Select(int.Parse).ToArray();
+                    activity.Name = map.Name;
+                    activity.Remark = Request.Form["Remark"];
+                    activity.Args = JsonConvert.SerializeObject(builder.Values);
+                    AutofacConfig.GmsdkService.GetGmRepository().AddActivity(activity);
 
-                            //}
-                        }
-                        else
-                        {
-                            var value = Request.Form[propertyMap.Name];
-                            propertyMap?.ValidateAction(value);
-                            values.Add(propertyMap.Name, value);
-                        }
-                    }
-                    
+                    Session["Activity.New.ShowSuccess"] = true;
                 }
-
-                Session["Activity.New.ShowSuccess"] = true;
+                else
+                {
+                    Session["Activity.New.ShowError"] = true;
+                    Session["Activity.New.Errors"] = builder.Errors;
+                }
             }
             catch (Exception e)
             {
+                builder.Errors.Add(e.Message);
+                builder.Errors.Add(e.StackTrace);
                 Session["Activity.New.ShowError"] = true;
-                Session["Activity.New.ErrorMsg"] = e.Message;
+                Session["Activity.New.Errors"] = builder.Errors;
             }
-
-            var activity = AutofacConfig.GmsdkService.GetActivityInstance();
-            activity.StartAt = DateTime.Parse(Request.Form[nameof(ActivityBasicEmpty.StartAt)]);
-            activity.EndAt = DateTime.Parse(Request.Form[nameof(ActivityBasicEmpty.EndAt)]);
-            activity.Days = Request.Form[nameof(ActivityBasicEmpty.Days)].Split(new char[] { ',' }).Select(int.Parse).ToArray();
-            activity.Name = map.Name;
-            activity.Remark = Request.Form["Remark"];
-            activity.Args = ""; 
-            AutofacConfig.GmsdkService.GetGmRepository().AddActivity(activity);
 
             //保存活动
             return RedirectToAction("New", new { name });
@@ -164,7 +161,8 @@ namespace PirateX.GM.Controllers
             var map = AutofacConfig.GmsdkService.GetRewardItemMap();
             var maps = new List<IGMUIPropertyMap>(map.PropertyMaps);
 
-            var groups = maps.GroupBy(item => item.GroupName).OrderBy(item => item.Key);
+            var groups = ConvertToGMUIGroupList(maps);
+
             var colclass = "col-md-4";
             if (groups.Count() < 3)
             {
@@ -181,6 +179,41 @@ namespace PirateX.GM.Controllers
         [HttpPost]
         public ActionResult SaveAttachment()
         {
+            var map = AutofacConfig.GmsdkService.GetRewardItemMap();
+
+            GMUIGroupBuilder builder = new GMUIGroupBuilder(map.PropertyMaps, Request.Form);
+
+            try
+            {
+                if (string.IsNullOrEmpty(Request.Form["Name"]))
+                    builder.Errors.Add("描述不能为空");
+
+                builder.Build();
+
+                if (!builder.Errors.Any())
+                {
+                    var attachment = new Attachment();
+                    var rewardtype = AutofacConfig.GmsdkService.GetRewardType();
+
+                    attachment.Name = Request.Form["Name"];
+                    //attachment.Rewards
+                    var json = JsonConvert.SerializeObject(builder.Values);
+                    attachment.Rewards = (IReward)JsonConvert.DeserializeObject(json, rewardtype);
+                    
+                    AutofacConfig.GmsdkService.GetGmRepository().AddAttachment(attachment);
+
+                    Session["Activity.New.ShowSuccess"] = true;
+                }
+                else
+                {
+                    Session["Activity.New.ShowError"] = true;
+                    Session["Activity.New.Errors"] = builder.Errors;
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
 
             return View();
         }

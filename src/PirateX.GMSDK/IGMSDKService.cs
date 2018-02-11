@@ -39,5 +39,10 @@ namespace PirateX.GMSDK
         /// </summary>
         /// <returns></returns>
         IActivity GetActivityInstance();
+        /// <summary>
+        /// 获取奖励类型
+        /// </summary>
+        /// <returns></returns>
+        Type GetRewardType();
     }
 }

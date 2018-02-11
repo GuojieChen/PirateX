@@ -57,6 +57,8 @@ namespace PirateX.GMSDK.Demo.ActivityDataItems
                 .ToGroupName("主打精灵1");
             Map<GMUITextBoxPropertyMap>(item => item.AddRate1)
                 .ToDisplayName("递增概率")
+                .ToDevaultValue("50")
+                .ToTips("xxxxxxxx")
                 .ToGroupName("主打精灵1");
 
             Map<GMUIDropdownPropertyMap>(item => item.PetId2)

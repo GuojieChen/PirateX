@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PirateX.GMSDK.Demo.GMUIListDataProviders;
+using PirateX.Middleware;
 
 namespace PirateX.GMSDK.Demo
 {
-    public class Reward
+    public class Reward:IReward
     {
         public int Coin { get; set; }
 

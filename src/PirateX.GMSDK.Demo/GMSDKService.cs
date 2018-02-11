@@ -112,5 +112,10 @@ namespace PirateX.GMSDK.Demo
         {
             return new Activity();
         }
+
+        public Type GetRewardType()
+        {
+            return typeof(Reward);
+        }
     }
 }

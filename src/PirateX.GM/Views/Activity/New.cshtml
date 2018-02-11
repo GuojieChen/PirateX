@@ -9,6 +9,40 @@
     IGMUIItemMap map = ViewBag.ItemMap;
 }
 
+@if (Convert.ToBoolean(Session["Activity.New.ShowSuccess"] ?? "false"))
+{
+    <div class="alert alert-dismissible alert-success">
+        @Html.Raw("活动添加成功!")
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+
+    Session.Remove("Activity.New.ShowSuccess");
+}
+else if (Convert.ToBoolean(Session["Activity.New.ShowError"] ?? "false"))
+{
+    <div class="alert alert-dismissible alert-warning">
+        @{
+            var errors = Session["Activity.New.Errors"] as List<string>;
+        }
+        <ul>
+            @foreach (var error in errors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+
+    Session.Remove("Activity.New.ShowError");
+    Session.Remove("Activity.New.Errors");
+}
+
 <h3>
     添加新的活动 - @map.Name
 </h3>
@@ -78,7 +112,7 @@
                     });
                 });
             });
-            
+
             function resetname(d) {
                 console.log("-------------resetname---------------");
 

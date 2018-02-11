@@ -28,8 +28,10 @@ namespace PirateX.GMSDK.Demo.ActivityDataItems
                 .ToListDataProvider(GMUIDoctoerTypeListProvider.Instance)
                 .Validate(s =>
                 {
-                    if(Equals(s,"0"))
-                        throw new Exception("请选择");
+                    if (Equals(s, "0"))
+                        return "请选择";
+
+                    return string.Empty;
                 });
 
             Map<GMUITextBoxPropertyMap>(item=>item.Cnt)

@@ -22,9 +22,9 @@ namespace PirateX.GMSDK.Mapping
 
         int OrderId { get; }
 
-        Action<string> ValidateAction { get; }
+        Func<string, string> ValidateFunc { get; }
 
-        void Validate(Action<string> actions);
+        void Validate(Func<string, string> func);
     }
     
     /// <summary>
@@ -86,11 +86,11 @@ namespace PirateX.GMSDK.Mapping
             return this as TGMUIPropertyMap;
         }
 
-        public Action<string> ValidateAction { get; set; }
+        public Func<string, string> ValidateFunc { get; set; }
 
-        public void Validate(Action<string> action)
+        public void Validate(Func<string, string> func)
         {
-            ValidateAction = action;
+            ValidateFunc = func;
         }
 
         public string DevaultValue { get; private set; }

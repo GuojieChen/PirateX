@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivityBasic.cs" />
+    <Compile Include="GMUIGroupBuilder.cs" />
     <Compile Include="IAttachment.cs" />
     <Compile Include="IGMUICheckedDataProvider.cs" />
     <Compile Include="Mapping\GMUIGroup.cs" />
