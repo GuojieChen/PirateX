@@ -51,9 +51,19 @@ namespace PirateX.Middleware
         /// <param name="rid"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public int Delete(long rid, int id)
+        public int Delete<TLetter>(long rid, int id)
         {
-            return base.Resolver.Resolve<MidLetterRepository>().Delete(rid, id);
+            return base.Resolver.Resolve<MidLetterRepository>().Delete<TLetter>(rid, id);
+        }
+
+        /// <summary>
+        /// 标记信件为已查看
+        /// </summary>
+        /// <typeparam name="TLetter"></typeparam>
+        /// <param name="id"></param>
+        public void Read<TLetter>(int id)
+        {
+            base.Resolver.Resolve<MidLetterRepository>().SetRead<TLetter>(id);
         }
     }
 }

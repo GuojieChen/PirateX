@@ -26,14 +26,22 @@ namespace PirateX.Middleware
             }
         }
 
-        public virtual int Delete(long rid,int id)
+        public virtual int Delete<TLetter>(long rid,int id)
         {
             using (var db = Resolver.Resolve<IDbConnection>())
             {
-                return db.Execute($"delete from letter where rid = {rid} and Id = {id}");
+                return db.Execute($"delete from `{typeof(TLetter).Name}` where rid = {rid} and Id = {id}");
             }
 
             //TODO 这里可以根据情况做下归档
+        }
+
+        public virtual void SetRead<TLetter>(int id)
+        {
+            using (var db = Resolver.Resolve<IDbConnection>())
+            {
+                db.Execute($"update `{typeof(TLetter).Name}` set IsRead = @IsRead where Id=@Id",new { IsRead  =true,Id = id});
+            }
         }
 
         public virtual List<TLetter> GetList<TLetter>(long rid, int page, int size = 50) where TLetter : ILetter

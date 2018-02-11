@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.GMSDK.Demo", "Pirat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.Middleware", "PirateX.Middleware\PirateX.Middleware.csproj", "{5CE28119-A0F9-4EED-8624-BEC2DA406E4D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PirateX.Protocol", "PirateX.Protocol\PirateX.Protocol.csproj", "{EBDE20EE-7293-4B51-99F4-6688EBDD3D2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{5CE28119-A0F9-4EED-8624-BEC2DA406E4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CE28119-A0F9-4EED-8624-BEC2DA406E4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CE28119-A0F9-4EED-8624-BEC2DA406E4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBDE20EE-7293-4B51-99F4-6688EBDD3D2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBDE20EE-7293-4B51-99F4-6688EBDD3D2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBDE20EE-7293-4B51-99F4-6688EBDD3D2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBDE20EE-7293-4B51-99F4-6688EBDD3D2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

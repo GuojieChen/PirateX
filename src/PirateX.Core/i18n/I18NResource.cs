@@ -5,7 +5,7 @@ using System.IO;
 namespace PirateX.Core
 {
     //http://www.codeproject.com/Articles/16068/Zeta-Resource-Editor
-    public static class I18N
+    public static class I18NResource
     {
 
         private static string _defaultLocal = "zh-CN";

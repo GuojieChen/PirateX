@@ -8,8 +8,6 @@ using PirateX.Middleware;
 
 namespace PirateX.GMSDK.Mapping
 {
-
-    
     public interface IGMUIItemMap
     {
         string Name { get; }

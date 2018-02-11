@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace PirateX.GMSDK.Mapping
 {
+    /// <summary>
+    /// 单选框
+    /// </summary>
     public class GMUICheckBoxPropertyMap : GMUIPropertyMap<GMUICheckBoxPropertyMap>
     {
         public IGMUICheckedDataProvider CheckedDataProvider { get; private set; }

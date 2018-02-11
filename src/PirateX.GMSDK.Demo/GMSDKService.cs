@@ -17,65 +17,12 @@ namespace PirateX.GMSDK.Demo
 
         public GMUINav[] GmuiNavs => new GMUINav[]
         {
-            new GMUINav()
-            {
-                ControllerName = "Search",
-                DisplayName = "综合查询",
-                SubNavs = new GMUINav[]
-                {
-                    new GMUINav()
-                    {
-                        ActionName = "search-role",
-                        DisplayName = "角色查询",
-                    },
-                    new GMUINav()
-                    {
-                        ActionName = "search-activity",
-                        DisplayName = "活动查询",
-                    },
-                }
-            },
-            new GMUINav()
+            new GMUICommonFormNav()
             {
                 ControllerName = "Letter",
-                DisplayName = "信件管理",
-                SubNavs = new GMUINav[]
-                {
-                    new GMUINav()
-                    {
-                        ActionName = "letter-attachment",
-                        DisplayName = "附件管理",
-                    },
-                    new GMUINav()
-                    {
-                        ActionName = "letter-all",
-                        DisplayName = "全服信件",
-                    },
-                    new GMUINav()
-                    {
-                        ActionName = "letter-part",
-                        DisplayName = "部分信件",
-                    },
-                }
-            },
-
-            new GMUINav()
-            {
-                ControllerName = "Activity",
-                DisplayName = "活动管理",
-                SubNavs = new GMUINav[]
-                {
-                    new GMUINav()
-                    {
-                        ActionName = "Index",
-                        DisplayName = "活动配置",
-                    },
-                    new GMUINav()
-                    {
-                        ActionName = "Index",
-                        DisplayName = "配置附件",
-                    },
-                }
+                ActionName = "GuildLetter",
+                DisplayName = "公会信件", 
+                Map = new GMUIGuildLetterMap()
             }
         };
 

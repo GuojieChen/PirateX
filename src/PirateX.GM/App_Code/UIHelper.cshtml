@@ -4,6 +4,9 @@
 
 @helper ConvertToCard(GMUIGroup item, string colClass)
     {
+        /**/
+
+        /**/
         <div class="@colClass col-card" key="@item.ObjectName">
             <div class="card">
                 <div class="card-header bg-light">
@@ -31,6 +34,10 @@
 
 @helper ConvertToGMUI(IGMUIPropertyMap info, string objectName = "")
     {
+        /**/
+
+        /**/
+
         var name = info.Name;
         var classattr = "";
         if (!string.IsNullOrEmpty(objectName))
@@ -60,7 +67,7 @@
                 <select name="@info.Name" class="form-control" tag="@classattr">
                     @foreach (var item in ((GMUIDropdownPropertyMap)info).ListDataProvider.GetListItems())
                     {
-                        <option value="@item.Value" selected="@Equals(item.Value,info.DevaultValue)">@item.Text</option>
+                        <option value="@item.Value" selected="@Equals(item.Value, info.DevaultValue)">@item.Text</option>
                     }
                 </select>
 
@@ -81,6 +88,85 @@
                         <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name" tag="@classattr"> @subitem.Text
                     }
                 </div>
+
+                @if (!string.IsNullOrEmpty(info.Tips))
+                {
+                    <small class="form-text">@info.Tips</small>
+                }
+            </div>
+        }
+        else if (info is GMUICheckBoxPropertyMap)
+        {
+            //TODO 需要修改的
+
+            <div class="form-group">
+                <label class="form-control-label">@info.DisplayName</label>
+
+                <div>
+                    @foreach (var subitem in (info as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
+                    {
+                        <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name" tag="@classattr"> @subitem.Text
+                    }
+                </div>
+
+                @if (!string.IsNullOrEmpty(info.Tips))
+                {
+                    <small class="form-text">@info.Tips</small>
+                }
+            </div>
+        }
+
+        else if (info is GMUITextAreaPropertyMap)
+        {
+            <div class="form-group">
+                <label class="form-control-label">@info.DisplayName</label>
+
+                <textarea type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
+
+                @if (!string.IsNullOrEmpty(info.Tips))
+                {
+                    <small class="form-text">@info.Tips</small>
+                }
+            </div>
+        }
+        else if (info is GMUIRichAreaPropertyMap)
+        {
+            //TODO 需要修改的
+
+            <div class="form-group">
+                <label class="form-control-label">@info.DisplayName</label>
+
+                <textarea type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
+
+                @if (!string.IsNullOrEmpty(info.Tips))
+                {
+                    <small class="form-text">@info.Tips</small>
+                }
+            </div>
+        }
+        else if (info is GMUITagsInputPropertyMap)
+        {
+            //TODO 需要修改的
+
+            <div class="form-group">
+                <label class="form-control-label">@info.DisplayName</label>
+
+                <input type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
+
+                @if (!string.IsNullOrEmpty(info.Tips))
+                {
+                    <small class="form-text">@info.Tips</small>
+                }
+            </div>
+        }
+        else if (info is GMUIFileUploadPropertyMap)
+        {
+            //TODO 需要修改的
+
+            <div class="form-group">
+                <label class="form-control-label">@info.DisplayName</label>
+
+                <input type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
 
                 @if (!string.IsNullOrEmpty(info.Tips))
                 {

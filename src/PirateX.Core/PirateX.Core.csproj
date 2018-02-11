@@ -106,6 +106,7 @@
     <Compile Include="Container\ServerSettingRegister\RedisServerSettingRegister.cs" />
     <Compile Include="DapperMapper\ArrayJsonMapper.cs" />
     <Compile Include="DapperMapper\DictionaryMapper.cs" />
+    <Compile Include="DapperMapper\ObjectMapper.cs" />
     <Compile Include="DapperMapper\SqlinList.cs" />
     <Compile Include="DataSync\IDataSync.cs" />
     <Compile Include="DefaultServerSetting.cs" />
@@ -119,7 +120,8 @@
     <Compile Include="Domain\Repository\IPublicRepository.cs" />
     <Compile Include="Domain\Repository\IRepository.cs" />
     <Compile Include="Domain\Repository\RepositoryBase.cs" />
-    <Compile Include="i18n\I18N.cs" />
+    <Compile Include="i18n.cs" />
+    <Compile Include="i18n\I18NResource.cs" />
     <Compile Include="Container\IDatabaseInitializer.cs" />
     <Compile Include="IDataSync.cs" />
     <Compile Include="ISyncList.cs" />

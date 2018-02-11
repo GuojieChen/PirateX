@@ -58,6 +58,7 @@
     <Compile Include="GMUIListDataProviders\GMUIDoctoerTypeListProvider.cs" />
     <Compile Include="GMUIListDataProviders\GMUIPetListProvider.cs" />
     <Compile Include="ActivityDataItems\LuckyDrawActive.cs" />
+    <Compile Include="GuildLetter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reward.cs" />
   </ItemGroup>

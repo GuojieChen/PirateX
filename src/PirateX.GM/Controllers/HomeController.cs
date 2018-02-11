@@ -13,11 +13,18 @@ namespace PirateX.GM.Controllers
     /// </summary>
     public class HomeController : Controller
     {
+        private static GMUINav Datas = new GMUINav()
+        {
+            ControllerName = "Datas",
+            DisplayName = "游戏数据",
+            SubNavs = new List<GMUINav>()
+        };
+
         private static GMUINav activityNavs = new GMUINav()
         {
             ControllerName = "Activity",
             DisplayName = "活动管理",
-            SubNavs = new GMUINav[]
+            SubNavs = new List<GMUINav>()
                 {
                     new GMUINav()
                     {
@@ -46,7 +53,7 @@ namespace PirateX.GM.Controllers
         {
             ControllerName = "Attachment",
             DisplayName = "附件管理",
-            SubNavs = new GMUINav[]
+            SubNavs = new List<GMUINav>()
                 {
                     new GMUINav()
                     {
@@ -65,7 +72,7 @@ namespace PirateX.GM.Controllers
         {
             ControllerName = "Letter",
             DisplayName = "信件管理",
-            SubNavs = new GMUINav[]
+            SubNavs = new List<GMUINav>()
             {
                     new GMUINav()
                     {
@@ -78,6 +85,12 @@ namespace PirateX.GM.Controllers
                         DisplayName = "部分信件",
                     },
             }
+        };
+
+        private static GMUINav commonNavs = new GMUINav()
+        {
+            ControllerName = "CommonForm",
+            SubNavs = new List<GMUINav>()
         };
 
         public ActionResult Index()
@@ -99,19 +112,47 @@ namespace PirateX.GM.Controllers
             return View();
         }
 
+
+        private static List<GMUINav> Navs = new List<GMUINav>();
+        static HomeController()
+        {
+            foreach (var item in AutofacConfig.GmsdkService.GmuiNavs)
+            {
+                GMUINav nav = null;
+
+                switch (item.ControllerName)
+                {
+                    case "Activity": nav = activityNavs; break;
+                    case "Attachment": nav = attachments; break;
+                    case "Letter": nav = letterNavs; break;
+                    case "Datas": nav = Datas; break;
+                        //case "CommonForm": nav = commonNavs; break; //特殊，不加到呈现当中
+                }
+
+                if (item is GMUICommonFormNav)
+                {
+                    var cnav = item as GMUICommonFormNav;
+
+                    item.ControllerName = "CommonForm";
+                    cnav.Method = cnav.ActionName;
+                    cnav.ActionName =  "New/" + cnav.ActionName;
+                }
+
+                nav?.SubNavs.Add(item);
+            }
+
+            Navs.Add(attachments);
+            Navs.Add(activityNavs);
+            Navs.Add(letterNavs);
+        }
+
         /// <summary>
         /// 左侧导航
         /// </summary>
         /// <returns></returns>
         public ActionResult Nav()
         {
-            List<GMUINav> navs = new List<GMUINav>();
-
-            navs.Add(attachments);
-            navs.Add(activityNavs);
-            navs.Add(letterNavs);
-
-            ViewBag.Navs = navs;//AutofacConfig.GmsdkService.GmuiNavs;
+            ViewBag.Navs = Navs;
 
             return PartialView();
         }
