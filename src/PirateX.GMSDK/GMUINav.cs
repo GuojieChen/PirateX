@@ -23,6 +23,6 @@ namespace PirateX.GMSDK
         /// <summary>
         /// 子菜单
         /// </summary>
-        public GMUINav[] SubNavs { get; set; }
+        public GMUINav[] SubNavs { get; set; } = new GMUINav[0];
     }
 }

@@ -42,17 +42,31 @@ namespace PirateX.GM.Controllers
                 }
         };
 
+        private static GMUINav attachments = new GMUINav()
+        {
+            ControllerName = "Attachment",
+            DisplayName = "附件管理",
+            SubNavs = new GMUINav[]
+                {
+                    new GMUINav()
+                    {
+                        ActionName = "Index",
+                        DisplayName = "查看附件",
+                    },
+                    new GMUINav()
+                    {
+                        ActionName = "New",
+                        DisplayName = "新建附件",
+                    },
+                }
+        };
+
         private static GMUINav letterNavs = new GMUINav()
         {
             ControllerName = "Letter",
             DisplayName = "信件管理",
             SubNavs = new GMUINav[]
             {
-                    new GMUINav()
-                    {
-                        ActionName = "letter-attachment",
-                        DisplayName = "附件管理",
-                    },
                     new GMUINav()
                     {
                         ActionName = "letter-all",
@@ -93,6 +107,7 @@ namespace PirateX.GM.Controllers
         {
             List<GMUINav> navs = new List<GMUINav>();
 
+            navs.Add(attachments);
             navs.Add(activityNavs);
             navs.Add(letterNavs);
 

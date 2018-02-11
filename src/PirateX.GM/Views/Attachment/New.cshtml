@@ -2,14 +2,14 @@
 @{
 
 
-    ViewBag.Title = "NewRewards";
+    ViewBag.Title = "新建附件";
 
     IGMUIItemMap map = ViewBag.ItemMap;
 }
 
 <h2>添加奖励附件</h2>
 
-@using (Html.BeginForm("SaveAttachment", "Activity", new { }, FormMethod.Post, new { @class = "form" }))
+@using (Html.BeginForm("Save", "Attachment", new { }, FormMethod.Post, new { @class = "form" }))
 {
 
     <div class="form-group">

@@ -49,7 +49,7 @@ namespace PirateX.GM.Controllers
             maps.AddRange(new GMUIActivityBasicMap().PropertyMaps);
 
             //普通类型
-            var groups = ConvertToGMUIGroupList(maps);
+            var groups = GMUIGroup.ConvertToGMUIGroupList(maps);
             var colclass = "col-lg-4 col-md-6 col-sm-12";//默认横向放三个
             if (groups.Count() < 3)//一个card占满一行
             {
@@ -61,31 +61,6 @@ namespace PirateX.GM.Controllers
             ViewBag.ColClass = colclass;
 
             return View();
-        }
-
-        private List<GMUIGroup> ConvertToGMUIGroupList(IEnumerable<IGMUIPropertyMap> maps)
-        {
-            int groupid = 1;
-            var groups = maps.Where(item => !item.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
-                .GroupBy(item => item.GroupName).OrderBy(item => item.Key)
-                .Select(item => new GMUIGroup()
-                {
-                    Id = $"uigroup_{groupid++}",
-                    DisplayName = item.Key,
-                    Maps = item.AsEnumerable<IGMUIPropertyMap>()
-                }).ToList();
-            //自定义类型
-            groups.AddRange(maps.Where(item => item.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
-                .Select(item => new GMUIGroup()
-                {
-                    Id = $"uigroup_{groupid++}",
-                    ObjectName = item.Name,
-                    DisplayName = item.GroupName,
-                    Maps = (item as GMUIMapPropertyMap).Map.PropertyMaps,
-                    CanMulti = item.PropertyInfo.PropertyType.IsArray
-                }));
-
-            return groups;
         }
 
         private ActivityBasic ActivityBasicEmpty = new ActivityBasic();
@@ -152,70 +127,5 @@ namespace PirateX.GM.Controllers
             return View();
         }
 
-        /// <summary>
-        /// 配置奖励附件
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult NewAttachment()
-        {
-            var map = AutofacConfig.GmsdkService.GetRewardItemMap();
-            var maps = new List<IGMUIPropertyMap>(map.PropertyMaps);
-
-            var groups = ConvertToGMUIGroupList(maps);
-
-            var colclass = "col-md-4 col-sm-6";
-            if (groups.Count() < 3)
-            {
-                colclass = "col-md-12";
-            }
-
-            ViewBag.ItemMap = map;
-            ViewBag.Groups = groups;
-            ViewBag.ColClass = colclass;
-
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult SaveAttachment()
-        {
-            var map = AutofacConfig.GmsdkService.GetRewardItemMap();
-
-            GMUIGroupBuilder builder = new GMUIGroupBuilder(map.PropertyMaps, Request.Form);
-
-            try
-            {
-                if (string.IsNullOrEmpty(Request.Form["Name"]))
-                    builder.Errors.Add("描述不能为空");
-
-                builder.Build();
-
-                if (!builder.Errors.Any())
-                {
-                    var attachment = new Attachment();
-                    var rewardtype = AutofacConfig.GmsdkService.GetRewardType();
-
-                    attachment.Name = Request.Form["Name"];
-                    //attachment.Rewards
-                    var json = JsonConvert.SerializeObject(builder.Values);
-                    attachment.Rewards = (IReward)JsonConvert.DeserializeObject(json, rewardtype);
-                    
-                    AutofacConfig.GmsdkService.GetGmRepository().AddAttachment(attachment);
-
-                    Session["Activity.New.ShowSuccess"] = true;
-                }
-                else
-                {
-                    Session["Activity.New.ShowError"] = true;
-                    Session["Activity.New.Errors"] = builder.Errors;
-                }
-            }
-            catch(Exception ex)
-            {
-
-            }
-
-            return View();
-        }
     }
 }
