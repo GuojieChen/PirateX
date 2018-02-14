@@ -95,18 +95,22 @@
                 }
             </div>
         }
-        else if (info is GMUICheckBoxPropertyMap)
+        else if (info is GMUIListCheckBoxPropertyMap)
         {
             //TODO 需要修改的
 
             <div class="form-group">
                 <label class="form-control-label">@info.DisplayName</label>
 
-                <div>
-                    @foreach (var subitem in (info as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
-                    {
-                        <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name" tag="@classattr"> @subitem.Text
-                    }
+                <div class="well" style="max-height: 250px;overflow: auto;">
+                    <ul class="list-group checked-list-box">
+                        @foreach (var subitem in (info as GMUIListCheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
+                        {
+                        <li class="list-group-item" data-checked="@subitem.Checked">
+                            <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name" tag="@classattr"> @subitem.Text
+                        </li>
+                        }
+                    </ul>
                 </div>
 
                 @if (!string.IsNullOrEmpty(info.Tips))
@@ -121,7 +125,7 @@
             <div class="form-group">
                 <label class="form-control-label">@info.DisplayName</label>
 
-                <textarea type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
+                <textarea type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr"></textarea>
 
                 @if (!string.IsNullOrEmpty(info.Tips))
                 {

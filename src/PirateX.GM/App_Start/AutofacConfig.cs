@@ -24,7 +24,7 @@ namespace PirateX.GM.App_Start
             IGMSDKService service = null;//assembly.GetTypes().FirstOrDefault(item => typeof(IGMSDKService).IsAssignableFrom(item)) as IGMSDKService;
 
             if(service == null)
-                service = new GMSDKService();
+                service = GMSDKService.Instance;
 
             GmsdkService = service;
             // Set MVC DI resolver to use our Autofac container

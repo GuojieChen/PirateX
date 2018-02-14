@@ -1,4 +1,5 @@
-﻿using PirateX.GMSDK.Mapping;
+﻿using PirateX.Core;
+using PirateX.GMSDK.Mapping;
 using PirateX.Middleware;
 using System;
 using System.Collections.Generic;
@@ -8,20 +9,8 @@ using System.Threading.Tasks;
 
 namespace PirateX.GMSDK
 {
-    public class i18n
-    {
-        /// <summary>
-        /// 语言
-        /// </summary>
-        public string Language { get; set; }
-        /// <summary>
-        /// 内容
-        /// </summary>
-        public string Content { get; set; }
-    }
-
     public class GMUILetterMap<TGMLetter> : GMUIItemMap<TGMLetter>
-        where TGMLetter:ISystemLetter
+        where TGMLetter:ISystemLetter<IReward>
     {
         public GMUILetterMap()
         {
@@ -35,6 +24,14 @@ namespace PirateX.GMSDK
             Map<GMUIMapPropertyMap>(item => item.i18nContent)
                 .ToDisplayName("多语言标题")
                 .ToPropertyMap(new GMUIi18nMap());
+
+            Map<GMUITextAreaPropertyMap>(item => item.NameList)
+                .ToDisplayName("昵称列表")
+                .ToTips("一行一个");
+
+            Map<GMUITextAreaPropertyMap>(item => item.UIDList)
+                .ToDisplayName("UID列表")
+                .ToTips("一行一个");
         }
     }
 
@@ -45,7 +42,7 @@ namespace PirateX.GMSDK
             Map<GMUITextBoxPropertyMap>(item => item.Language)
                 .ToDisplayName("语言");
 
-            Map<GMUITextBoxPropertyMap>(item => item.Content)
+            Map<GMUITextAreaPropertyMap>(item => item.Content)
                 .ToDisplayName("内容");
         }
     }

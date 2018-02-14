@@ -5,7 +5,8 @@ using PirateX.Core;
 
 namespace PirateX.Middleware
 {
-    public class MidLetterService:ServiceBase
+    public class MidLetterService<TLetter>:ServiceBase
+        where TLetter : ILetter
     {
         public IEnumerable<IArchiveToLetter> ArchiveToLetters { get; set; }
 
@@ -30,7 +31,7 @@ namespace PirateX.Middleware
         /// <param name="page"></param>
         /// <param name="size"></param>
         /// <returns></returns>
-        public List<TLetter> GetLetters<TLetter>(int rid,int page, int size = 50) where TLetter : ILetter
+        public List<TLetter> GetLetters(int rid,int page, int size = 50)
         {
             //这里查看其他系统是否需要生成信件
             if (ArchiveToLetters.Any())
@@ -51,7 +52,7 @@ namespace PirateX.Middleware
         /// <param name="rid"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public int Delete<TLetter>(long rid, int id)
+        public int Delete(long rid, int id)
         {
             return base.Resolver.Resolve<MidLetterRepository>().Delete<TLetter>(rid, id);
         }
@@ -61,7 +62,7 @@ namespace PirateX.Middleware
         /// </summary>
         /// <typeparam name="TLetter"></typeparam>
         /// <param name="id"></param>
-        public void Read<TLetter>(int id)
+        public void Read(int id)
         {
             base.Resolver.Resolve<MidLetterRepository>().SetRead<TLetter>(id);
         }

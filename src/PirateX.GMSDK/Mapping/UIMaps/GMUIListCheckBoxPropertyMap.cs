@@ -11,6 +11,11 @@ namespace PirateX.GMSDK.Mapping
     /// </summary>
     public class GMUIListCheckBoxPropertyMap: GMUIPropertyMap<GMUIListCheckBoxPropertyMap>
     {
-
+        public IGMUICheckedDataProvider CheckedDataProvider { get; private set; }
+        public GMUIListCheckBoxPropertyMap ToCheckedDataProvider(IGMUICheckedDataProvider checkedDataProvider)
+        {
+            this.CheckedDataProvider = checkedDataProvider;
+            return this as GMUIListCheckBoxPropertyMap;
+        }
     }
 }

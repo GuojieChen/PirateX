@@ -170,9 +170,16 @@ namespace PirateX.Core
                 return new T[0];
 
             if (str.StartsWith("{"))
-                str = $"[{str.TrimStart('{').TrimEnd('}')}]";
+                str = str.TrimStart('{').TrimEnd('}');
+            else if(str.StartsWith("["))
+                str = str.TrimStart('[').TrimEnd(']');
 
-            return JsonConvert.DeserializeObject<T[]>(str);
+            if (string.IsNullOrEmpty(str))
+                return new T[0];
+
+            var list = str.Split(new char[] { ',' }).Select(item => (T)Convert.ChangeType(item, typeof(T)));
+
+            return list.ToArray();
         }
 
         public static string ArrayToString<T>(this IEnumerable<T> array)

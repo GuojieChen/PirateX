@@ -40,8 +40,6 @@ namespace PirateX.GM.Controllers
             return View();
         }
 
-
-
         public ActionResult Save(string id)
         {
             var nav = AutofacConfig.GmsdkService.GmuiNavs.FirstOrDefault<GMUINav>(item => Equals(item.ActionName, id));

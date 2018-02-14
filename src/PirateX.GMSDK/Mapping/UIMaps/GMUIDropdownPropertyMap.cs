@@ -1,4 +1,6 @@
-﻿namespace PirateX.GMSDK.Mapping
+﻿using System;
+
+namespace PirateX.GMSDK.Mapping
 {
     /// <summary>
     /// 下拉框
