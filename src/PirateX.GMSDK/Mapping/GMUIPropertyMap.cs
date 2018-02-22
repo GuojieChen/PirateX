@@ -16,7 +16,7 @@ namespace PirateX.GMSDK.Mapping
 
         string GroupName { get; }
 
-        string DevaultValue { get; }
+        string DevaultValue { get; set; }
 
         PropertyInfo PropertyInfo { get; set; }
 
@@ -93,7 +93,7 @@ namespace PirateX.GMSDK.Mapping
             ValidateFunc = func;
         }
 
-        public string DevaultValue { get; private set; }
+        public string DevaultValue { get; set; }
         public TGMUIPropertyMap ToDevaultValue(object value)
         {
             DevaultValue = Convert.ToString(value);

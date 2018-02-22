@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PirateX.GMSDK.Demo.GMUIListDataProviders
 {
-    public class GMUIDistrictListDataProvder : IGMUICheckedDataProvider
+    public class GMUIDistrictListDataProvder : IGMUICheckedDataProvider, IGMUIListDataProvider
     {
         public static GMUIDistrictListDataProvder Instance = new GMUIDistrictListDataProvder();
 
@@ -19,6 +19,12 @@ namespace PirateX.GMSDK.Demo.GMUIListDataProviders
         {
             return GMSDKService.Instance.DistrictContainer.GetDistrictConfigs().Select(item => 
             new GMUICheckedItem() { Text=$"{item.Id}-{(item as DistrictConfig).Name}",Value = item.Id.ToString()});
+        }
+
+        public IEnumerable<GMUIListItem> GetListItems()
+        {
+            return GMSDKService.Instance.DistrictContainer.GetDistrictConfigs().Select(item =>
+              new GMUICheckedItem() { Text = $"{item.Id}-{(item as DistrictConfig).Name}", Value = item.Id.ToString() });
         }
     }
 }

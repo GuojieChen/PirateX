@@ -1,6 +1,8 @@
 ﻿using PirateX.GMSDK.Mapping;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,11 +43,24 @@ namespace PirateX.GMSDK
         /// </summary>
         public IGMUIItemMap Map { get; set; }
 
-        public string Method { get; set; }
+        // public string Method { get; set; }
 
         /// <summary>
         /// 表单拿到数据
         /// </summary>
         public Action<Dictionary<string,object>> OnSave;
+    }
+
+    public class GMUIDatasNav : GMUINav
+    {
+        /// <summary>
+        /// 设置映射的查询对象
+        /// </summary>
+        public IGMUIItemMap SearchMap { get; set; }
+
+        /// <summary>
+        /// 表单拿到数据
+        /// </summary>
+        public Func<NameValueCollection,DataTable> Datas;
     }
 }

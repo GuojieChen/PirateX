@@ -10,10 +10,11 @@ using PirateX.GMSDK.Demo.Domain;
 using PirateX.GMSDK.Mapping;
 using PirateX.Middleware;
 using Newtonsoft.Json;
+using PirateX.GMSDK.Demo.Datas;
 
 namespace PirateX.GMSDK.Demo
 {
-    public class GMSDKService:IGMSDKService
+    public class GMSDKService : IGMSDKService
     {
         public IDistrictContainer DistrictContainer => new DemoDistrictContainer();
 
@@ -26,11 +27,38 @@ namespace PirateX.GMSDK.Demo
 
         public GMUINav[] GmuiNavs => new GMUINav[]
         {
+            new GMUIDatasNav()
+            {
+                ControllerName = "Datas",
+                ActionName = "Role" ,
+                DisplayName = "角色查询" ,
+                SearchMap = new GMUIRoleDatasMap(),
+                Datas =(s)=>{
+                    var table  = new System.Data.DataTable();
+                    table.Columns.Add("Id");
+                    table.Columns.Add("Name");
+                    table.Columns.Add("Lv");
+                    table.Columns.Add("UID");
+
+                    for(var i=100;i>0;i--)
+                    {
+                        var row = table.NewRow();
+                        row["Id"] = i;
+                        row["Name"] = $"TEST_{i}";
+                        row["Lv"] = RandomUtil.Random.Next(1,11);
+                        row["UID"] = Guid.NewGuid().ToString();
+                        table.Rows.Add(row);
+                    }
+
+                    return table;
+                }
+            },
+
             new GMUICommonFormNav()
             {
                 ControllerName = "Letter",
                 ActionName = "GuildLetter",
-                DisplayName = "公会信件", 
+                DisplayName = "公会信件",
                 Map = new GMUIGuildLetterMap()
             },
             new GMUICommonFormNav()
@@ -48,6 +76,11 @@ namespace PirateX.GMSDK.Demo
                 Map = new GMUIAllSystemLetterMap(),
                 OnSave =(s)=>
                 {
+                    s["Rewards"] = JsonConvert.DeserializeObject<Reward>(s["Rewards"].ToString().Replace("\\",""));
+                    s["UIDList"] = s["UIDList"].ToString().Split('\r','\n').ToArray();
+                    s["NameList"] = s["NameList"].ToString().Split('\r','\n').ToArray();
+                    s["TargetDidList"] = s["TargetDidList"].ToString().ToArray<int>();
+
                     var sysletter = JsonConvert.DeserializeObject<SystemLetter>(JsonConvert.SerializeObject(s));
 
                     Console.WriteLine(sysletter);
@@ -66,8 +99,8 @@ namespace PirateX.GMSDK.Demo
         {
             return new IGMUIItemMap[]
             {
-                new GMUIDoctorTaskActiveMap(), 
-                new GMUILuckyDrawActiveMap(), 
+                new GMUIDoctorTaskActiveMap(),
+                new GMUILuckyDrawActiveMap(),
                 new GMUITimeCopyActivePropertyMap(),
             };
         }

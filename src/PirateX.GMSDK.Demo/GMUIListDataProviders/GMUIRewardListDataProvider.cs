@@ -21,7 +21,7 @@ namespace PirateX.GMSDK.Demo.GMUIListDataProviders
             var list = GMSDKService.Instance.GetGmRepository().GetAttachments();
 
             return list.Select(item => new GMUIListItem() {
-                Text = item.Id.ToString(),
+                Text = item.Name,
                  Value = JsonConvert.SerializeObject(item.Rewards)
             });
 

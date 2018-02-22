@@ -167,6 +167,7 @@
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\AttachmentController.cs" />
     <Compile Include="Controllers\CommonFormController.cs" />
+    <Compile Include="Controllers\DatasController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LetterController.cs" />
     <Compile Include="Global.asax.cs">
@@ -257,6 +258,7 @@
     <Content Include="Views\Letter\Index.cshtml" />
     <Content Include="Views\Letter\NewToPart.cshtml" />
     <Content Include="Views\CommonForm\New.cshtml" />
+    <Content Include="Views\Datas\Go.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

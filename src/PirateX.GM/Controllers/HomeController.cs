@@ -134,13 +134,20 @@ namespace PirateX.GM.Controllers
                     var cnav = item as GMUICommonFormNav;
 
                     item.ControllerName = "CommonForm";
-                    cnav.Method = cnav.ActionName;
-                    cnav.ActionName =  "New/" + cnav.ActionName;
+                    // cnav.Method = cnav.ActionName;
+                    cnav.ActionName = "New/" + cnav.ActionName;
+                }
+                else if (item is GMUIDatasNav)
+                {
+                    var cnav = item as GMUIDatasNav;
+                    item.ControllerName = "Datas";
+                    cnav.ActionName = "Go/" + cnav.ActionName;
                 }
 
                 nav?.SubNavs.Add(item);
             }
 
+            Navs.Add(Datas);
             Navs.Add(attachments);
             Navs.Add(activityNavs);
             Navs.Add(letterNavs);

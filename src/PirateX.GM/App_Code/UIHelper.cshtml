@@ -106,9 +106,9 @@
                     <ul class="list-group checked-list-box">
                         @foreach (var subitem in (info as GMUIListCheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
                         {
-                        <li class="list-group-item" data-checked="@subitem.Checked">
-                            <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name" tag="@classattr"> @subitem.Text
-                        </li>
+                            <li class="list-group-item" data-checked="@subitem.Checked">
+                                <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name" tag="@classattr"> @subitem.Text
+                            </li>
                         }
                     </ul>
                 </div>
@@ -182,4 +182,70 @@
         {
             <span class="alert alert-warning">控件没有实现！！！</span>
         }
+}
+
+@helper ConvertToSearch(IEnumerable<IGMUIPropertyMap> infos)
+    {
+        <div class="card">
+            <div class="card-header bg-light">
+                查询条件
+            </div>
+
+            <div class="card-body">
+                @foreach (var info in infos)
+                {
+                    if (info is GMUITextBoxPropertyMap)
+                    {
+                        <div class="form-group">
+                            <label class="form-control-label">@info.DisplayName</label>
+
+                            <input type="text" class="form-control" name="@info.Name" value="@info.DevaultValue" />
+
+                            @if (!string.IsNullOrEmpty(info.Tips))
+                            {
+                                <small class="form-text">@info.Tips</small>
+                            }
+                        </div>
+                    }
+                    else if (info is GMUIDropdownPropertyMap)
+                    {
+                        <div class="form-group">
+                            <label class="form-control-label">@info.DisplayName</label>
+
+                            <select name="@info.Name" class="form-control">
+                                @foreach (var item in ((GMUIDropdownPropertyMap)info).ListDataProvider.GetListItems())
+                                {
+                                    <option value="@item.Value" selected="@Equals(item.Value, info.DevaultValue)">@item.Text</option>
+                                }
+                            </select>
+
+                            @if (!string.IsNullOrEmpty(info.Tips))
+                            {
+                                <small class="form-text">@info.Tips</small>
+                            }
+                        </div>
+                    }
+                    else if (info is GMUICheckBoxPropertyMap)
+                    {
+                        <div class="form-group">
+                            <label class="form-control-label">@info.DisplayName</label>
+
+                            <div>
+                                @foreach (var subitem in (info as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
+                                {
+                                    <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name"> @subitem.Text
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(info.Tips))
+                            {
+                                <small class="form-text">@info.Tips</small>
+                            }
+                        </div>
+                    }
+                }
+
+                <button type="submit" class="btn btn-block btn-primary">提交并保存</button>
+            </div>
+        </div>
 }

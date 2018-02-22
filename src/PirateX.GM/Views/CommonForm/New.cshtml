@@ -9,7 +9,7 @@
 
 <h2>@map.Name</h2>
 
-@using (Html.BeginForm($"Save", "CommonForm", new { id = ViewBag.Action }, FormMethod.Post, new { @class = "form" }))
+@using (Html.BeginForm("Save", "CommonForm", new { id = ViewBag.Action }, FormMethod.Post, new { @class = "form" }))
 {
     List<GMUIGroup> groups = ViewBag.Groups;
     <div class="row" id="cards">
