@@ -16,6 +16,10 @@ namespace PirateX.GMSDK
         /// 游戏列表
         /// </summary>
         IDistrictContainer DistrictContainer { get; }
+        /// <summary>
+        /// 重置
+        /// </summary>
+        void SetInstanceNull();
 
         /// <summary>
         /// 获取子菜单列表

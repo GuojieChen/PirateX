@@ -18,7 +18,26 @@ namespace PirateX.GMSDK.Demo
     {
         public IDistrictContainer DistrictContainer => new DemoDistrictContainer();
 
-        public static GMSDKService Instance = new GMSDKService();
+        private static GMSDKService _instance;
+        private static object _lockHelper = new object();
+        public static GMSDKService Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_lockHelper)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new GMSDKService();
+                        }
+                    }
+                }
+
+                return _instance;
+            }
+        }
 
         private GMSDKService()
         {
@@ -125,6 +144,11 @@ namespace PirateX.GMSDK.Demo
         public Type GetRewardType()
         {
             return typeof(Reward);
+        }
+
+        public void SetInstanceNull()
+        {
+            _instance = null; 
         }
     }
 }

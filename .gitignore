@@ -159,3 +159,4 @@ $RECYCLE.BIN/
 *.nuspec
 /src/.vs
 /src/PirateX.ApiHelper/App_Data
+/src/PirateX.GM/App_Data

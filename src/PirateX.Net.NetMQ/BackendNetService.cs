@@ -92,6 +92,8 @@ namespace PirateX.Net.NetMQ
             {
                 var msg = socket.ReceiveFrameBytes();
 
+                var sw = new Stopwatch();
+                sw.Start();
                 if (Logger.IsTraceEnabled)
                     Logger.Trace($"ProcessRequest, Thread[{Thread.CurrentThread.ManagedThreadId}] IsThreadPoolThread = {Thread.CurrentThread.IsThreadPoolThread}");
 
@@ -118,6 +120,8 @@ namespace PirateX.Net.NetMQ
                 };
 
                 response = _actorService.OnReceive(context);
+
+                Logger.Warn($"============={sw.ElapsedMilliseconds}=============");
             }
             catch (Exception exception)
             {

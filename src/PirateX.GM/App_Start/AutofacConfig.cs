@@ -19,9 +19,27 @@ namespace PirateX.GM.App_Start
 
         public static void ConfigureContainer()
         {
-            Assembly assembly = null; //Assembly.LoadFrom("");
+            //Assembly assembly = null; //Assembly.LoadFrom("");
 
-            IGMSDKService service = null;//assembly.GetTypes().FirstOrDefault(item => typeof(IGMSDKService).IsAssignableFrom(item)) as IGMSDKService;
+            IGMSDKService service = null;
+            //var list = new List<Assembly>();
+            foreach (var file in Directory.GetFiles($"{AppDomain.CurrentDomain.BaseDirectory}App_Data").Where(item => item.EndsWith(".dll")))
+            {
+                var systemExists = Directory.GetFiles($"{AppDomain.CurrentDomain.BaseDirectory}bin").Select(Path.GetFileName).ToArray();
+                var filename = Path.GetFileName(file);
+                if (systemExists.Contains(filename))
+                    continue;
+
+                //if (Path.GetFileName(file).StartsWith("PirateX."))
+                //    continue;
+
+                var assembly = Assembly.LoadFrom(file);
+                //list.Add(assembly);
+
+                var type = assembly.GetTypes().FirstOrDefault(item => typeof(IGMSDKService).IsAssignableFrom(item));
+                if (type != null)
+                    service = (IGMSDKService)Activator.CreateInstance(type);
+            }
 
             if(service == null)
                 service = GMSDKService.Instance;

@@ -15,7 +15,11 @@ namespace PirateX.Net.SuperSocket
     {
         public override void ExecuteCommand(ProxySession session, BinaryRequestInfo requestInfo)
         {
+            var sw = new Stopwatch();
+            sw.Start();
             var dout = session.AppServer.NetService.ProcessRequest(session, requestInfo.Body);
+
+            Console.WriteLine($"---------{sw.ElapsedMilliseconds}----------");
 
             if (dout == null)
                 return;
