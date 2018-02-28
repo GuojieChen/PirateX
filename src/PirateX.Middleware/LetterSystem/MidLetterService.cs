@@ -1,49 +1,106 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Autofac;
 using PirateX.Core;
 
 namespace PirateX.Middleware
 {
-    public class MidLetterService<TLetter>:ServiceBase
-        where TLetter : ILetter
+    public class MidLetterService<TMidLetterRepository,TLetter,TSystemLetter> : ServiceBase
+        where TLetter : class, ILetter
+        where TSystemLetter : class, ISystemLetter
+        where TMidLetterRepository: MidLetterRepository<TLetter, TSystemLetter>
     {
-        public IEnumerable<IArchiveToLetter> ArchiveToLetters { get; set; }
+        public virtual IEnumerable<IArchiveToLetter> ArchiveToLetters { get; set; }
 
         /// <summary>
         /// 发送信件
         /// </summary>
         /// <param name="letter"></param>
-        public int Send(ILetter letter)
+        public virtual int Send(TLetter letter)
         {
-            return base.Resolver.Resolve<MidLetterRepository>().Insert(letter);
+            return base.Resolver.Resolve<TMidLetterRepository>().Insert(letter);
         }
 
-        public void Send(IEnumerable<ILetter> letters)
+        public virtual void Send(IEnumerable<TLetter> letters)
         {
-            base.Resolver.Resolve<MidLetterRepository>().Insert(letters);
+            base.Resolver.Resolve<TMidLetterRepository>().Insert(letters);
         }
 
         /// <summary>
         /// 获取信件列表,默认50条
+        /// 如果需要多国语言的支持 需要在获取后调用 ConvertLetter
         /// </summary>
         /// <param name="rid"></param>
         /// <param name="page"></param>
         /// <param name="size"></param>
         /// <returns></returns>
-        public List<TLetter> GetLetters(int rid,int page, int size = 50)
+        public virtual IEnumerable<TLetter> GetLetters(int rid, int page, DateTime roleCreateAtUtc, int size = 50)
         {
-            //这里查看其他系统是否需要生成信件
-            if (ArchiveToLetters.Any())
+            var repo = base.Resolver.Resolve<TMidLetterRepository>();
+
+            List<TLetter> letters = new List<TLetter>();
+
+            //获取gm系统信件
+            //TODO 这边还需要考虑红点的问题
+
+            var sysletters = repo.GetSystemLetters().Where(item => item.OpenAt < roleCreateAtUtc);
+            if (sysletters.Any())
             {
-                if(Logger.IsDebugEnabled)
+                foreach (var letter in sysletters)
+                    letters.Add(letter.ToLetter<TLetter>(rid));
+            }
+
+            //这里查看其他系统是否需要生成信件
+            if (ArchiveToLetters != null && ArchiveToLetters.Any())
+            {
+                if (Logger.IsDebugEnabled)
                     Logger.Debug($"ArchiveToLetter ->{rid}");
 
                 foreach (var toLetter in ArchiveToLetters)
-                    toLetter.Builder(rid);
+                    letters.Add(toLetter.Builder<TLetter>(rid));
+            }
+            if (letters.Any())
+                repo.Insert(letters);
+
+            return repo.GetList(rid, page, size);
+        }
+
+
+        public virtual TLetter ConvertLetter(TLetter letter, string culture)
+        {
+            if (letter.FromRid > 0)
+                return letter;
+
+            if (letter.i18NTitle != null && letter.i18NTitle.Any())
+            {
+                var i18n = letter.i18NTitle.First(item => Equals(item.Language.ToLower(), culture.ToLower()));
+                if (i18n == null)
+                    i18n = letter.i18NTitle.First(item => Equals(item.Language.ToLower(), ""));
+
+                if (i18n != null)
+                    letter.Title = i18n.Content;
             }
 
-            return base.Resolver.Resolve<MidLetterRepository>().GetList<TLetter>(rid, page, size);
+            if (letter.i18nContent != null && letter.i18nContent.Any())
+            {
+                var i18n = letter.i18nContent.First(item => Equals(item.Language.ToLower(), culture.ToLower()));
+                if (i18n == null)
+                    i18n = letter.i18nContent.First(item => Equals(item.Language.ToLower(), ""));
+
+                if (i18n != null)
+                    letter.Content = i18n.Content;
+            }
+
+            return letter;
+        }
+
+        public virtual IEnumerable<TLetter> ConvertLetter(IEnumerable<TLetter> letters, string culture)
+        {
+            foreach (var letter in letters)
+                ConvertLetter(letter, culture);
+
+            return letters;
         }
 
         /// <summary>
@@ -52,9 +109,9 @@ namespace PirateX.Middleware
         /// <param name="rid"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public int Delete(long rid, int id)
+        public virtual int Delete(long rid, int id)
         {
-            return base.Resolver.Resolve<MidLetterRepository>().Delete<TLetter>(rid, id);
+            return base.Resolver.Resolve<TMidLetterRepository>().Delete(id);
         }
 
         /// <summary>
@@ -62,9 +119,9 @@ namespace PirateX.Middleware
         /// </summary>
         /// <typeparam name="TLetter"></typeparam>
         /// <param name="id"></param>
-        public void Read(int id)
+        public virtual void Read(int id)
         {
-            base.Resolver.Resolve<MidLetterRepository>().SetRead<TLetter>(id);
+            base.Resolver.Resolve<TMidLetterRepository>().SetRead(id);
         }
     }
 }

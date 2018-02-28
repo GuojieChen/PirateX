@@ -8,23 +8,9 @@ using System.Threading.Tasks;
 
 namespace PirateX.Middleware
 {
-    public interface ISystemLetter<TReward>
-    where TReward : IReward
+    public interface ISystemLetter:IEntity<int>
     {
         int Id { get; set; }
-        /// <summary>
-        /// 目标服列表
-        /// </summary>
-        List<int> TargetDidList { get; set; }
-        /// <summary>
-        /// 根据UID发放
-        /// </summary>
-        string[] UIDList { get; set; }
-        /// <summary>
-        /// 根据昵称发放
-        /// </summary>
-        string[] NameList { get; set; }
-
         /// <summary>
         /// 带有语言标识的标题 字典类型 KEY 为语言标识，Value为标题内容
         /// </summary>
@@ -33,11 +19,18 @@ namespace PirateX.Middleware
         /// 带有语言标识的内容 字典类型 KEY 为语言标识，Value为信件内容
         /// </summary>
         i18n[] i18nContent { get; set; }
-
-
         /// <summary>
-        /// 附件内容
+        /// 开始时间(UTC)
         /// </summary>
-        TReward Rewards { get; set; }
+        DateTime OpenAt { get; set; }
+        /// <summary>
+        /// 结束时间(UTC)
+        /// </summary>
+        DateTime EndAt { get; set; }
+        /// <summary>
+        /// 转成玩家信件
+        /// </summary>
+        /// <returns></returns>
+        TLetter ToLetter<TLetter>(int rid) where TLetter :ILetter;
     }
 }

@@ -84,6 +84,7 @@ namespace PirateX.Core
             SqlMapper.AddTypeHandler(typeof(List<byte>), new ListJsonMapper<byte>());
 
             SqlMapper.AddTypeHandler(typeof(i18n), new ObjectMapper<i18n>());
+            SqlMapper.AddTypeHandler(typeof(i18n[]), new ObjectMapper<i18n[]>());
 
             SqlMapper.AddTypeHandler(typeof(Dictionary<int,int>),new DictionaryMapper<int,int>());
             SqlMapper.AddTypeHandler(typeof(Dictionary<string, string>), new DictionaryMapper<string, string>());

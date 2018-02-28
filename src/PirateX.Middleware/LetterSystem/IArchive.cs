@@ -2,7 +2,7 @@
 
 namespace PirateX.Middleware
 {
-    public interface IArchive:IEntity<long>,IEntityPrivate,IEntityDistrict
+    public interface IArchive:IEntity<int>,IEntityPrivate,IEntityDistrict
     {
         /// <summary>
         /// 是否已经转成信件

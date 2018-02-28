@@ -30,9 +30,18 @@ namespace PirateX.Middleware
         /// 已读
         /// </summary>
         bool IsRead { get; set; }
+
+        string Title { get; set; }
+
         /// <summary>
         /// 玩家信件时候 具体的内容
         /// </summary>
         string Content { get; set; }
+
+        #region 多语言支持 后端程序用
+        i18n[] i18NTitle { get; set; }
+
+        i18n[] i18nContent { get; set; }
+        #endregion
     }
 }
