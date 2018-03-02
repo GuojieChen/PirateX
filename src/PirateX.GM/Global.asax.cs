@@ -16,21 +16,21 @@ namespace PirateX.GM
     {
         protected void Application_Start()
         {
-            //检查文件是否有变动
-            var dt = Directory.GetLastWriteTime(ConfigurationManager.AppSettings["App_Data_Dir"]);
+            ////检查文件是否有变动
+            //var dt = Directory.GetLastWriteTime(ConfigurationManager.AppSettings["App_Data_Dir"]);
 
-            if (!_lastWriteTime.HasValue)
-            {//第一次
-                AutofacConfig.GmsdkService?.SetInstanceNull();
-                WorkingCopy.CopySourceToTarget();
-                _lastWriteTime = dt;
-            }
-            else if (dt > _lastWriteTime.Value)
-            {//后续 需要重启website
-                File.SetLastWriteTimeUtc(Server.MapPath("~/Global.asax"), DateTime.UtcNow);
-            }
+            //if (!_lastWriteTime.HasValue)
+            //{//第一次
+            //    AutofacConfig.GmsdkService?.SetInstanceNull();
+            //    WorkingCopy.CopySourceToTarget();
+            //    _lastWriteTime = dt;
+            //}
+            //else if (dt > _lastWriteTime.Value)
+            //{//后续 需要重启website
+            //    File.SetLastWriteTimeUtc(Server.MapPath("~/Global.asax"), DateTime.UtcNow);
+            //}
 
-            AutofacConfig.ConfigureContainer();
+            //AutofacConfig.ConfigureContainer();
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);

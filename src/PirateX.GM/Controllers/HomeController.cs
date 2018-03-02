@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using PirateX.GM.App_Start;
-using PirateX.GMSDK;
+using PirateX.GM.Models;
 
 namespace PirateX.GM.Controllers
 {
@@ -13,86 +13,7 @@ namespace PirateX.GM.Controllers
     /// </summary>
     public class HomeController : Controller
     {
-        private static GMUINav Datas = new GMUINav()
-        {
-            ControllerName = "Datas",
-            DisplayName = "游戏数据",
-            SubNavs = new List<GMUINav>()
-        };
-
-        private static GMUINav activityNavs = new GMUINav()
-        {
-            ControllerName = "Activity",
-            DisplayName = "活动管理",
-            SubNavs = new List<GMUINav>()
-                {
-                    new GMUINav()
-                    {
-                        ActionName = "Index",
-                        DisplayName = "活动配置",
-                    },
-                    new GMUINav()
-                    {
-                        ActionName = "NewList",
-                        DisplayName = "添加活动",
-                    },
-                    new GMUINav()
-                    {
-                        ActionName = "NewAttachment",
-                        DisplayName = "配置奖励",
-                    },
-                    new GMUINav()
-                    {
-                        ActionName = "Publish",
-                        DisplayName = "活动发布",
-                    },
-                }
-        };
-
-        private static GMUINav attachments = new GMUINav()
-        {
-            ControllerName = "Attachment",
-            DisplayName = "附件管理",
-            SubNavs = new List<GMUINav>()
-                {
-                    new GMUINav()
-                    {
-                        ActionName = "Index",
-                        DisplayName = "查看附件",
-                    },
-                    new GMUINav()
-                    {
-                        ActionName = "New",
-                        DisplayName = "新建附件",
-                    },
-                }
-        };
-
-        private static GMUINav letterNavs = new GMUINav()
-        {
-            ControllerName = "Letter",
-            DisplayName = "信件管理",
-            SubNavs = new List<GMUINav>()
-            {
-                    new GMUINav()
-                    {
-                        ActionName = "letter-all",
-                        DisplayName = "全服信件",
-                    },
-                    new GMUINav()
-                    {
-                        ActionName = "letter-part",
-                        DisplayName = "部分信件",
-                    },
-            }
-        };
-
-        private static GMUINav commonNavs = new GMUINav()
-        {
-            ControllerName = "CommonForm",
-            SubNavs = new List<GMUINav>()
-        };
-
+        
         public ActionResult Index()
         {
             return View();
@@ -112,47 +33,8 @@ namespace PirateX.GM.Controllers
             return View();
         }
 
-
-        private static List<GMUINav> Navs = new List<GMUINav>();
-        static HomeController()
-        {
-            foreach (var item in AutofacConfig.GmsdkService.GmuiNavs)
-            {
-                GMUINav nav = null;
-
-                switch (item.ControllerName)
-                {
-                    case "Activity": nav = activityNavs; break;
-                    case "Attachment": nav = attachments; break;
-                    case "Letter": nav = letterNavs; break;
-                    case "Datas": nav = Datas; break;
-                        //case "CommonForm": nav = commonNavs; break; //特殊，不加到呈现当中
-                }
-
-                if (item is GMUICommonFormNav)
-                {
-                    var cnav = item as GMUICommonFormNav;
-
-                    item.ControllerName = "CommonForm";
-                    // cnav.Method = cnav.ActionName;
-                    cnav.ActionName = "New/" + cnav.ActionName;
-                }
-                else if (item is GMUIDatasNav)
-                {
-                    var cnav = item as GMUIDatasNav;
-                    item.ControllerName = "Datas";
-                    cnav.ActionName = "Go/" + cnav.ActionName;
-                }
-
-                nav?.SubNavs.Add(item);
-            }
-
-            Navs.Add(Datas);
-            Navs.Add(attachments);
-            Navs.Add(activityNavs);
-            Navs.Add(letterNavs);
-        }
-
+        private static List<GMUINav> Navs = RemoteApi.GetNavs();
+        
         /// <summary>
         /// 左侧导航
         /// </summary>
@@ -164,5 +46,38 @@ namespace PirateX.GM.Controllers
             return PartialView();
         }
 
+        public ActionResult ViewTemplate(string controllerName,string actionName)
+        {
+            var template = RemoteApi.GetViewTemplate(controllerName, actionName, Request.QueryString);
+            var colclass = "col-lg-4 col-md-6 col-sm-12";//默认横向放三个
+            if (template.ControlGroups.Count() < 3)//一个card占满一行
+            {
+                colclass = "col-md-12";
+            }
+
+
+            var builder = new GMUIGroupBuilder(template.ControlGroups, Request.QueryString);
+            builder.Build();
+
+            ViewBag.ControllerName = controllerName;
+            ViewBag.ActionName = actionName;
+            ViewBag.ShowForm = template.ControlGroups.Any();
+            ViewBag.ColClass = colclass;
+
+            return View(template);
+        }
+
+        public ActionResult Submit(string controllerName, string actionName)
+        {
+            var template = RemoteApi.GetViewTemplateFromLocalStore(controllerName, actionName);
+
+            var builder = new GMUIGroupBuilder(template.ControlGroups, Request.Form);
+
+            builder.Build();
+
+            var result = RemoteApi.Submit(controllerName, actionName, builder.Values);
+
+            return RedirectToAction("ViewTemplate", "Home",new { controllerName ,actionName});
+        }
     }
 }

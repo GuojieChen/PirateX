@@ -1,4 +1,5 @@
-﻿@using PirateX.GMSDK
+﻿@using PirateX.GM.Models;
+
 <div class="sidebar">
     <nav class="sidebar-nav">
         <ul class="nav">
@@ -9,7 +10,7 @@
                     <i class="icon icon-speedometer"></i> Dashboard
                 </a>
             </li>
-            
+
             @foreach (GMUINav item in ViewBag.Navs)
             {
                 <li class="nav-item nav-dropdown">
@@ -22,10 +23,8 @@
                         <ul class="nav-dropdown-items">
                             @foreach (GMUINav subItem in item.SubNavs)
                             {
-
-
                                 <li class="nav-item">
-                                    @Html.ActionLink(subItem.DisplayName, subItem.ActionName, (string.IsNullOrEmpty(subItem.ControllerName) ? item.ControllerName : subItem.ControllerName),new{},new{ @class = "nav-link" })
+                                    @Html.ActionLink(subItem.DisplayName, "ViewTemplate", "Home", new { item.ControllerName, subItem.ActionName }, new { @class = "nav-link" })
                                 </li>
                             }
                         </ul>
