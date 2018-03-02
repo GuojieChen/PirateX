@@ -1,5 +1,6 @@
 ﻿using PirateX.Core;
 using PirateX.GMSDK.Demo.GMUIListDataProviders;
+using PirateX.GMSDK.Demo.Domain;
 using PirateX.GMSDK.Mapping;
 using PirateX.Middleware;
 using System;
@@ -10,7 +11,24 @@ using System.Threading.Tasks;
 
 namespace PirateX.GMSDK.Demo.Domain
 {
-    public class SystemLetter : ISystemLetter<Reward>
+
+    public class Letter : ILetter
+    {
+        public int FromRid { get; set; }
+        public string FromName { get; set; }
+        public int TemplateId { get; set; }
+        public Dictionary<string, string> Values { get; set; }
+        public bool IsRead { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public i18n[] i18NTitle { get; set; }
+        public i18n[] i18nContent { get; set; }
+        public int Id { get; set; }
+        public int Rid { get; set; }
+        public string CreateAt { get; set; }
+    }
+
+    public class SystemLetter : ISystemLetter
     {
         public int Id { get; set; }
         public List<int> TargetDidList { get; set; }
@@ -19,6 +37,15 @@ namespace PirateX.GMSDK.Demo.Domain
         public Reward Rewards { get; set; }
         public i18n[] i18nTitle { get; set; }
         public i18n[] i18nContent { get; set; }
+        public DateTime OpenAt { get; set; }
+        public DateTime EndAt { get; set; }
+
+        public TLetter ToLetter<TLetter>(int rid) where TLetter : ILetter
+        {
+            return default(TLetter); 
+
+            //return new Letter();
+        }
     }
 
 

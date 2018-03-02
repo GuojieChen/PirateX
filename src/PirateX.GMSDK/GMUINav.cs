@@ -18,7 +18,7 @@ namespace PirateX.GMSDK
 
         public string ActionName { get; set; } = "Index" ; 
         /// <summary>
-        /// 显示的名称
+        /// 显示的名称 
         /// </summary>
         public string DisplayName { get; set; }
         /// <summary>

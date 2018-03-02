@@ -124,7 +124,6 @@ namespace PirateX.GMSDK.Demo
             };
         }
 
-
         private GMRepository _gmRepository = new GMRepository();
         public IGMRepository GetGmRepository()
         {

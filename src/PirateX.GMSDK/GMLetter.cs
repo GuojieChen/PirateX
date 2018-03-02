@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace PirateX.GMSDK
 {
     public class GMUILetterMap<TGMLetter> : GMUIItemMap<TGMLetter>
-        where TGMLetter:ISystemLetter<IReward>
+        where TGMLetter:ISystemLetter
     {
         public GMUILetterMap()
         {
@@ -25,13 +25,13 @@ namespace PirateX.GMSDK
                 .ToDisplayName("多语言标题")
                 .ToPropertyMap(new GMUIi18nMap());
 
-            Map<GMUITextAreaPropertyMap>(item => item.NameList)
-                .ToDisplayName("昵称列表")
-                .ToTips("一行一个");
+            //Map<GMUITextAreaPropertyMap>(item => item.NameList)
+            //    .ToDisplayName("昵称列表")
+            //    .ToTips("一行一个");
 
-            Map<GMUITextAreaPropertyMap>(item => item.UIDList)
-                .ToDisplayName("UID列表")
-                .ToTips("一行一个");
+            //Map<GMUITextAreaPropertyMap>(item => item.UIDList)
+            //    .ToDisplayName("UID列表")
+            //    .ToTips("一行一个");
         }
     }
 

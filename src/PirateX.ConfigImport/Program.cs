@@ -21,6 +21,9 @@ namespace PirateX.ConfigImport
 
         [Option('d', "dlldir", Required = true, HelpText = "模块目录")]
         public string DllDir { get; set; }
+
+        [Option('v', "version", Required = false, HelpText = "指定版本。1.老的方式：excel头部两行；2.新的方式：excel头部3行",DefaultValue = 1)]
+        public int Version { get; set; }
     }
 
     class Program
