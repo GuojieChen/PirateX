@@ -45,6 +45,10 @@
   <ItemGroup>
     <Compile Include="ActivityBasic.cs" />
     <Compile Include="GMLetter.cs" />
+    <Compile Include="GMUIControl.cs" />
+    <Compile Include="GMUIDataCheckbox.cs" />
+    <Compile Include="GMUIDataColumn.cs" />
+    <Compile Include="GMUIDataDropdown.cs" />
     <Compile Include="GMUIGroupBuilder.cs" />
     <Compile Include="IGMUICheckedDataProvider.cs" />
     <Compile Include="Mapping\GMUIGroup.cs" />
@@ -63,6 +67,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mapping\GMUIPropertyMap.cs" />
     <Compile Include="Mapping\ReflectionHelper.cs" />
+    <Compile Include="ViewTemplate.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PirateX.Core\PirateX.Core.csproj">

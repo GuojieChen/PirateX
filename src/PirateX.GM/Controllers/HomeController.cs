@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using PirateX.GM.App_Start;
 using PirateX.GM.Models;
+using PirateX.GMSDK;
 
 namespace PirateX.GM.Controllers
 {
@@ -33,7 +34,7 @@ namespace PirateX.GM.Controllers
             return View();
         }
 
-        private static List<GMUINav> Navs = RemoteApi.GetNavs();
+        private static List<GMUINav> Navs = null;
         
         /// <summary>
         /// 左侧导航
@@ -41,7 +42,7 @@ namespace PirateX.GM.Controllers
         /// <returns></returns>
         public ActionResult Nav()
         {
-            ViewBag.Navs = Navs;
+            ViewBag.Navs = RemoteApi.GetNavs();
 
             return PartialView();
         }

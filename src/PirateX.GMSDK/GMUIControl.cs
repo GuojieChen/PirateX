@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace PirateX.GM.Models
+namespace PirateX.GMSDK
 {
     /// <summary>
     /// 控件
@@ -24,9 +24,9 @@ namespace PirateX.GM.Models
 
         public int OrderId { get; set; }
 
-        public List<GMUIDataDropdown> Data_DropdownList { get; set; }
+        public GMUIDataDropdown[] Data_DropdownList { get; set; }
 
-        public List<GMUIDataCheckbox> Data_CheckboxList { get; set; }
+        public GMUIDataCheckbox[] Data_CheckboxList { get; set; }
     }
 
     public class GMUIControlGroup
@@ -40,6 +40,6 @@ namespace PirateX.GM.Models
 
         public bool CanMulti { get; set; }
 
-        public List<GMUIControl> Controls { get; set; }
+        public GMUIControl[] Controls { get; set; }
     }
 }

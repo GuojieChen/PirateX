@@ -1,5 +1,4 @@
-﻿using PirateX.GMSDK.Mapping;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -14,70 +13,69 @@ namespace PirateX.GMSDK
 
         public Dictionary<string, object> Values { get; private set; } = new Dictionary<string, object>();
 
-        private IEnumerable<IGMUIPropertyMap> _maps;
+        private IEnumerable<GMUIControlGroup> _groups;
         private NameValueCollection _form;
 
-        public GMUIGroupBuilder(IEnumerable<IGMUIPropertyMap> maps,NameValueCollection form)
+        public GMUIGroupBuilder(IEnumerable<GMUIControlGroup> groups, NameValueCollection form)
         {
-            _maps = maps;
+            _groups = groups;
             _form = form;
         }
 
         public void Build()
         {
-            foreach (var propertyMap in _maps)
+            foreach (var group in _groups)
             {
-                if (propertyMap is GMUIMapPropertyMap)
+                if (!string.IsNullOrEmpty(group.Name))
                 {//对象
-                    var item = propertyMap as GMUIMapPropertyMap;
+                    //var obj = Activator.CreateInstance(item.PropertyInfo.PropertyType.GetElementType());
+                    var list = new List<Dictionary<string, string>>();
 
-                    var obj = Activator.CreateInstance(item.PropertyInfo.PropertyType.GetElementType());
                     //TODO 对象数组需要筛选出来。例如 A[0].Id=1&A[0].Name=xx&A[1].Id=2&A[2].Name=xxx
                     //测试数组长度
-                    var len = _form.AllKeys.Count(key => key.StartsWith($"{item.Name}[") && key.EndsWith($"].{item.Map.PropertyMaps[0].Name}"));
-                    List<object> list = new List<object>(len);
 
+                    var len = _form.AllKeys.Count(key => key.StartsWith($"{group.Name}[") && key.EndsWith($"].{group.Controls[0].Name}"));
                     for (int i = 0; i < len; i++)
                     {
-                        //var objValue = new Dictionary<string, object>();
-                        foreach (var p in item.Map.PropertyMaps)
+                        var objValue = new Dictionary<string, string>();
+                        foreach (var p in group.Controls)
                         {
-                            var key = $"{item.Name}[{i}].{p.Name}";
+                            var key = $"{group.Name}[{i}].{p.Name}";
                             var value = _form[key];
+                            p.DevaultValue = value;
 
-                            var error = p.ValidateFunc?.Invoke(value);
-                            if (!string.IsNullOrEmpty(error))
-                                Errors.Add(error);
+                            //var error = p.ValidateFunc?.Invoke(value);
+                            //if (!string.IsNullOrEmpty(error))
+                            //    Errors.Add(error);
 
-
-                            if (string.IsNullOrEmpty(value))
-                                Errors.Add($"{item.DisplayName} 缺少值");
-                            else
-                            {
-                                //objValue.Add(p.Name, Convert.ChangeType(value, p.PropertyInfo.PropertyType));
-                                obj.GetType().GetProperty(p.Name).SetValue(obj, Convert.ChangeType(value, p.PropertyInfo.PropertyType));
-                            }
+                            objValue.Add(p.Name, value);
                         }
-
-                        list.Add(obj);
+                        list.Add(objValue);
                     }
 
-                    Values.Add(item.Name, list);
+                    Values.Add(group.Name, list);
                 }
                 else
                 {
-                    var value = _form[propertyMap.Name];
-                    var error = propertyMap?.ValidateFunc?.Invoke(value);
-                    if (!string.IsNullOrEmpty(error))
-                        Errors.Add(error);
+                    foreach (var c in group.Controls)
+                    {
+                        var value = _form[c.Name];
 
-                    if (string.IsNullOrEmpty(value))
-                        Errors.Add($"{propertyMap.DisplayName} 缺少值");
-                    else
-                        Values.Add(propertyMap.Name, value);
+                        if (string.IsNullOrEmpty(value))
+                            Errors.Add($"{c.DisplayName} 缺少值");
+                        else
+                        {
+                            if (Values.ContainsKey(c.Name))
+                                Values[c.Name] = value;
+                            else 
+                                Values.Add(c.Name, value);
+                        }
+
+                        c.DevaultValue = value;
+                    }
                 }
-
             }
         }
+
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace PirateX.GM.Models
+namespace PirateX.GMSDK
 {
     /// <summary>
     /// 页面模板
@@ -20,7 +20,7 @@ namespace PirateX.GM.Models
         /// <summary>
         /// 控件列表
         /// </summary>
-        public List<GMUIControlGroup> ControlGroups { get; set; }
+        public GMUIControlGroup[] ControlGroups { get; set; }
 
         public string FormMethod { get; set; }
 

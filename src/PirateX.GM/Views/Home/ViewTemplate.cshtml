@@ -1,4 +1,4 @@
-﻿@using PirateX.GM.Models
+﻿@using PirateX.GMSDK;
 @using System.Dynamic;
 @{
     /**/
@@ -70,7 +70,7 @@
                                             expando.Add(key, row[key].ToString());
                                         }
                                     }
-                                    <td>@Html.ActionLink(colum.DisplayName, "ViewTemplate", "Home", expando, new Dictionary<string, object>() { { "css", "button" } }) </td>
+                                    <td>@Html.ActionLink(colum.DisplayName, "ViewTemplate", "Home", expando, new Dictionary<string, object>() { { "css", "button" },{ "target","_blank"} }) </td>
                                 }
                                 else
                                 {
