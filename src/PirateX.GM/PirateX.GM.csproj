@@ -48,6 +48,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AustinHarris.JsonRpc, Version=1.1.70.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AustinHarris.JsonRpc.1.1.70\lib\net40\AustinHarris.JsonRpc.dll</HintPath>
+    </Reference>
     <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
     </Reference>
@@ -69,6 +72,21 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Reactive.Core, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Crush\packages\System.Reactive.Core.3.1.1\lib\net45\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Crush\packages\System.Reactive.Interfaces.3.1.1\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Crush\packages\System.Reactive.Linq.3.1.1\lib\net45\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Crush\packages\System.Reactive.PlatformServices.3.1.1\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Windows.Threading, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Crush\packages\System.Reactive.Windows.Threading.3.1.1\lib\net45\System.Reactive.Windows.Threading.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -82,6 +100,7 @@
     <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -134,23 +153,20 @@
       <Private>True</Private>
       <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\AutofacConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="App_Start\WorkingCopy.cs" />
-    <Compile Include="Controllers\ActivityController.cs" />
-    <Compile Include="Controllers\AttachmentController.cs" />
-    <Compile Include="Controllers\CommonFormController.cs" />
-    <Compile Include="Controllers\DatasController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\LetterController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\JsonRpcClient.cs" />
+    <Compile Include="Models\RemoteApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -216,29 +232,15 @@
     <Content Include="Content\simple-line-icons\fonts\Simple-Line-Icons.ttf" />
     <Content Include="Content\simple-line-icons\fonts\Simple-Line-Icons.woff" />
     <Content Include="Content\simple-line-icons\fonts\Simple-Line-Icons.woff2" />
-    <Content Include="Views\Activity\Index.cshtml" />
-    <Content Include="Views\Activity\New.cshtml" />
     <Content Include="Views\Home\Nav.cshtml" />
-    <Content Include="Views\Activity\NewList.cshtml" />
-    <Content Include="Views\Activity\_ButtonAdd.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
-    <Folder Include="Views\Reward\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Code\UIHelper.cshtml" />
     <None Include="packages.config" />
-    <Content Include="Views\Attachment\New.cshtml" />
-    <Content Include="Views\Activity\Publish.cshtml" />
-    <Content Include="Views\Activity\_GMUI.cshtml" />
-    <Content Include="Views\Activity\_ButtonSelectAll.cshtml" />
-    <Content Include="Views\Attachment\Index.cshtml" />
-    <Content Include="Views\Letter\Index.cshtml" />
-    <Content Include="Views\Letter\NewToPart.cshtml" />
-    <Content Include="Views\CommonForm\New.cshtml" />
-    <Content Include="Views\Datas\Go.cshtml" />
+    <Content Include="Views\Home\ViewTemplate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
@@ -247,10 +249,6 @@
     <ProjectReference Include="..\PirateX.Core\PirateX.Core.csproj">
       <Project>{af6f5077-f2f6-4293-afd2-21c9e1ebc296}</Project>
       <Name>PirateX.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PirateX.GMSDK.Demo\PirateX.GMSDK.Demo.csproj">
-      <Project>{e1b5f681-e8ef-4e00-92da-90d742fe9ef8}</Project>
-      <Name>PirateX.GMSDK.Demo</Name>
     </ProjectReference>
     <ProjectReference Include="..\PirateX.GMSDK\PirateX.GMSDK.csproj">
       <Project>{49e1e040-33a5-48c7-80dd-dad7fb863277}</Project>

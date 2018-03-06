@@ -31,36 +31,4 @@ namespace PirateX.GMSDK
         /// </summary>
         public List<GMUINav> SubNavs { get; set; } = new List<GMUINav>();
     }
-
-    /// <summary>
-    /// 通用表单
-    /// Action作为参数传递
-    /// </summary>
-    public class GMUICommonFormNav:GMUINav
-    {
-        /// <summary>
-        /// 设置映射的对象
-        /// </summary>
-        public IGMUIItemMap Map { get; set; }
-
-        // public string Method { get; set; }
-
-        /// <summary>
-        /// 表单拿到数据
-        /// </summary>
-        public Action<Dictionary<string,object>> OnSave;
-    }
-
-    public class GMUIDatasNav : GMUINav
-    {
-        /// <summary>
-        /// 设置映射的查询对象
-        /// </summary>
-        public IGMUIItemMap SearchMap { get; set; }
-
-        /// <summary>
-        /// 表单拿到数据
-        /// </summary>
-        public Func<NameValueCollection,DataTable> Datas;
-    }
 }

@@ -1,16 +1,11 @@
 ﻿
 @using PirateX.GMSDK;
-@using PirateX.GMSDK.Mapping;
-
-@helper ConvertToCard(GMUIGroup item, string colClass)
+@helper ConvertToCard(GMUIControlGroup item, string colClass)
     {
-        /**/
-
-        /**/
-        <div class="@colClass col-card" key="@item.ObjectName">
+        <div class="@colClass col-card" key="@item.Name">
             <div class="card">
                 <div class="card-header bg-light">
-                    @(item.DisplayName ?? "基础配置")
+                    @(item.DisplayName)
 
                     @if (item.CanMulti)
                     {
@@ -23,21 +18,17 @@
                 </div>
 
                 <div class="card-body">
-                    @foreach (var subItem in item.Maps.OrderBy(x => x.OrderId))
+                    @foreach (var subItem in item.Controls.OrderBy(x => x.OrderId))
                     {
-                        @ConvertToGMUI(subItem, item.ObjectName)
+                        @ConvertToGMUI(subItem, item.Name)
                     }
                 </div>
             </div>
         </div>
 }
 
-@helper ConvertToGMUI(IGMUIPropertyMap info, string objectName = "")
+@helper ConvertToGMUI(GMUIControl info, string objectName = "")
     {
-        /**/
-
-        /**/
-
         var name = info.Name;
         var classattr = "";
         if (!string.IsNullOrEmpty(objectName))
@@ -46,145 +37,159 @@
             classattr = objectName + "[]." + info.Name;
         }
 
-        if (info is GMUITextBoxPropertyMap)
+        switch (info.Control.ToLower())
         {
-            <div class="form-group">
-                <label class="form-control-label">@info.DisplayName</label>
-
-                <input type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
-
-                @if (!string.IsNullOrEmpty(info.Tips))
+            case "textbox":
                 {
-                    <small class="form-text">@info.Tips</small>
-                }
-            </div>
-        }
-        else if (info is GMUIDropdownPropertyMap)
-        {
-            <div class="form-group">
-                <label class="form-control-label">@info.DisplayName</label>
+                    <div class="form-group">
+                        <label class="form-control-label">@info.DisplayName</label>
 
-                <select name="@info.Name" class="form-control" tag="@classattr">
-                    @foreach (var item in ((GMUIDropdownPropertyMap)info).ListDataProvider.GetListItems())
-                    {
-                        <option value="@item.Value" selected="@Equals(item.Value, info.DevaultValue)">@item.Text</option>
-                    }
-                </select>
+                        <input type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
 
-                @if (!string.IsNullOrEmpty(info.Tips))
-                {
-                    <small class="form-text">@info.Tips</small>
-                }
-            </div>
-        }
-        else if (info is GMUICheckBoxPropertyMap)
-        {
-            <div class="form-group">
-                <label class="form-control-label">@info.DisplayName</label>
-
-                <div>
-                    @foreach (var subitem in (info as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
-                    {
-                        <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name" tag="@classattr"> @subitem.Text
-                    }
-                </div>
-
-                @if (!string.IsNullOrEmpty(info.Tips))
-                {
-                    <small class="form-text">@info.Tips</small>
-                }
-            </div>
-        }
-        else if (info is GMUIListCheckBoxPropertyMap)
-        {
-            //TODO 需要修改的
-
-            <div class="form-group">
-                <label class="form-control-label">@info.DisplayName</label>
-
-                <div class="well" style="max-height: 250px;overflow: auto;">
-                    <ul class="list-group checked-list-box">
-                        @foreach (var subitem in (info as GMUIListCheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
+                        @if (!string.IsNullOrEmpty(info.Tips))
                         {
-                            <li class="list-group-item" data-checked="@subitem.Checked">
-                                <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name" tag="@classattr"> @subitem.Text
-                            </li>
+                            <small class="form-text">@info.Tips</small>
                         }
-                    </ul>
-                </div>
-
-                @if (!string.IsNullOrEmpty(info.Tips))
-                {
-                    <small class="form-text">@info.Tips</small>
+                    </div>
                 }
-            </div>
-        }
-
-        else if (info is GMUITextAreaPropertyMap)
-        {
-            <div class="form-group">
-                <label class="form-control-label">@info.DisplayName</label>
-
-                <textarea type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr"></textarea>
-
-                @if (!string.IsNullOrEmpty(info.Tips))
+                break;
+            case "dropdown":
                 {
-                    <small class="form-text">@info.Tips</small>
+                    <div class="form-group">
+                        <label class="form-control-label">@info.DisplayName</label>
+
+                        <select name="@name" class="form-control" tag="@classattr">
+                            @foreach (GMUIDataDropdown item in info.Data_DropdownList)
+                            {
+                                <option value="@item.Value" selected="@Equals(item.Value, info.DevaultValue)">@item.Text</option>
+                            }
+                        </select>
+
+                        @if (!string.IsNullOrEmpty(info.Tips))
+                        {
+                            <small class="form-text">@info.Tips</small>
+                        }
+                    </div>
                 }
-            </div>
-        }
-        else if (info is GMUIRichAreaPropertyMap)
-        {
-            //TODO 需要修改的
+                break;
 
-            <div class="form-group">
-                <label class="form-control-label">@info.DisplayName</label>
-
-                <textarea type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
-
-                @if (!string.IsNullOrEmpty(info.Tips))
+            case "checkbox":
                 {
-                    <small class="form-text">@info.Tips</small>
+                    <div class="form-group">
+                        <label class="form-control-label">@info.DisplayName</label>
+
+                        <div>
+                            @foreach (GMUIDataCheckbox subitem in info.Data_CheckboxList)
+                            {
+                                <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@name" tag="@classattr"> @subitem.Text
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(info.Tips))
+                        {
+                            <small class="form-text">@info.Tips</small>
+                        }
+                    </div>
                 }
-            </div>
-        }
-        else if (info is GMUITagsInputPropertyMap)
-        {
-            //TODO 需要修改的
-
-            <div class="form-group">
-                <label class="form-control-label">@info.DisplayName</label>
-
-                <input type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
-
-                @if (!string.IsNullOrEmpty(info.Tips))
+                break;
+            case "listcheckbox":
                 {
-                    <small class="form-text">@info.Tips</small>
+                    //TODO 需要修改的
+
+                    <div class="form-group">
+                        <label class="form-control-label">@info.DisplayName</label>
+
+                        <div class="well" style="max-height: 250px;overflow: auto;">
+                            <ul class="list-group checked-list-box">
+                                @foreach (GMUIDataCheckbox subitem in info.Data_CheckboxList)
+                                {
+                                    <li class="list-group-item" data-checked="@subitem.Checked">
+                                        <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@name" tag="@classattr"> @subitem.Text
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(info.Tips))
+                        {
+                            <small class="form-text">@info.Tips</small>
+                        }
+                    </div>
                 }
-            </div>
-        }
-        else if (info is GMUIFileUploadPropertyMap)
-        {
-            //TODO 需要修改的
-
-            <div class="form-group">
-                <label class="form-control-label">@info.DisplayName</label>
-
-                <input type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
-
-                @if (!string.IsNullOrEmpty(info.Tips))
+                break;
+            case "textarea":
                 {
-                    <small class="form-text">@info.Tips</small>
+                    <div class="form-group">
+                        <label class="form-control-label">@info.DisplayName</label>
+
+<textarea type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr"></textarea>
+
+                        @if (!string.IsNullOrEmpty(info.Tips))
+                        {
+                            <small class="form-text">@info.Tips</small>
+                        }
+                    </div>
                 }
-            </div>
-        }
-        else
-        {
-            <span class="alert alert-warning">控件没有实现！！！</span>
+                break;
+            case "richarea":
+                {
+                    //TODO 需要修改的
+
+                    <div class="form-group">
+                        <label class="form-control-label">@info.DisplayName</label>
+
+                        <textarea type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
+
+                        @if (!string.IsNullOrEmpty(info.Tips))
+                        {
+                            <small class="form-text">@info.Tips</small>
+                        }
+                    </div>
+                }
+                break;
+
+            case "tagsinput":
+                {
+                    //TODO 需要修改的
+
+                    <div class="form-group">
+                        <label class="form-control-label">@info.DisplayName</label>
+
+                        <input type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
+
+                        @if (!string.IsNullOrEmpty(info.Tips))
+                        {
+                            <small class="form-text">@info.Tips</small>
+                        }
+                    </div>
+                }
+                break;
+
+            case "fileupload":
+                {
+                    //TODO 需要修改的
+                    <div class="form-group">
+                        <label class="form-control-label">@info.DisplayName</label>
+
+                        <input type="text" class="form-control" name="@name" value="@info.DevaultValue" tag="@classattr" />
+
+                        @if (!string.IsNullOrEmpty(info.Tips))
+                        {
+                            <small class="form-text">@info.Tips</small>
+                        }
+                    </div>
+                }
+                break;
+
+            default:
+                {
+                    <span class="alert alert-warning">控件没有实现！！！</span>
+                }
+                break;
         }
 }
 
-@helper ConvertToSearch(IEnumerable<IGMUIPropertyMap> infos)
+@helper ConvertToSearch(IEnumerable<GMUIControl> infos)
     {
         <div class="card">
             <div class="card-header bg-light">
@@ -194,7 +199,7 @@
             <div class="card-body">
                 @foreach (var info in infos)
                 {
-                    if (info is GMUITextBoxPropertyMap)
+                    if (Equals(info.Control, "textbox"))
                     {
                         <div class="form-group">
                             <label class="form-control-label">@info.DisplayName</label>
@@ -207,13 +212,13 @@
                             }
                         </div>
                     }
-                    else if (info is GMUIDropdownPropertyMap)
+                    else if (Equals(info.Control, "dropdown"))
                     {
                         <div class="form-group">
                             <label class="form-control-label">@info.DisplayName</label>
 
                             <select name="@info.Name" class="form-control">
-                                @foreach (var item in ((GMUIDropdownPropertyMap)info).ListDataProvider.GetListItems())
+                                @foreach (GMUIDataDropdown item in info.Data_DropdownList)
                                 {
                                     <option value="@item.Value" selected="@Equals(item.Value, info.DevaultValue)">@item.Text</option>
                                 }
@@ -225,13 +230,13 @@
                             }
                         </div>
                     }
-                    else if (info is GMUICheckBoxPropertyMap)
+                    else if (Equals(info.Control, "checkbox"))
                     {
                         <div class="form-group">
                             <label class="form-control-label">@info.DisplayName</label>
 
                             <div>
-                                @foreach (var subitem in (info as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems())
+                                @foreach (GMUIDataCheckbox subitem in info.Data_CheckboxList)
                                 {
                                     <input type="checkbox" value="@subitem.Value" checked="@subitem.Checked" name="@info.Name"> @subitem.Text
                                 }

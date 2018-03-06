@@ -1,0 +1,87 @@
+﻿@using PirateX.GMSDK;
+@using System.Dynamic;
+@{
+    /**/
+
+    ViewBag.Title = "ViewTempate";
+}
+
+<h2>@Model.Title</h2>
+
+
+@if (ViewBag.ShowForm)
+{
+    var action = "Submit";
+    var formMethod = FormMethod.Post;
+    if (!Equals(Model.FormMethod.ToUpper(), "POST"))
+    {
+        action = "ViewTemplate";
+        formMethod = FormMethod.Get;
+    }
+
+    using (Html.BeginForm(action, "Home", new { controllerName = ViewBag.ControllerName, actionName = ViewBag.ActionName }, formMethod, new { @class = "form" }))
+    {
+        <input type="hidden" name="controllerName" value="@ViewBag.ControllerName" />
+        <input type="hidden" name="actionName" value="@ViewBag.ActionName" />
+
+        <div class="row" id="cards">
+            @foreach (GMUIControlGroup item in Model.ControlGroups)
+            {
+                @UIHelper.ConvertToCard(item, ViewBag.ColClass)
+            }
+        </div>
+
+        <button type="submit" class="btn btn-block btn-primary">@Model.SubmitBottenText</button>
+    }
+}
+
+@if (Model.Columns != null)
+{
+    <div class="card">
+        <div class="card-header bg-light">
+            查询结果
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        @foreach (GMUIDataColumn colum in Model.Columns)
+                        {
+                            <th>@colum.DisplayName</th>
+                        }
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (Dictionary<string, object> row in Model.Rows)
+                    {
+                        <tr>
+                            @foreach (GMUIDataColumn colum in Model.Columns)
+                            {
+                                if (colum.Link != null)
+                                {
+                                    var expando = new RouteValueDictionary();
+                                    expando.Add("ControllerName", colum.Link.Controller);
+                                    expando.Add("ActionName", colum.Link.Action);
+                                    if (colum.Link.Keys != null)
+                                    {
+                                        foreach (string key in colum.Link.Keys)
+                                        {
+                                            expando.Add(key, row[key].ToString());
+                                        }
+                                    }
+                                    <td>@Html.ActionLink(colum.DisplayName, "ViewTemplate", "Home", expando, new Dictionary<string, object>() { { "css", "button" },{ "target","_blank"} }) </td>
+                                }
+                                else
+                                {
+                                    <td>@row[colum.Name]</td>
+                                }
+
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
