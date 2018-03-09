@@ -11,6 +11,7 @@ namespace PirateX.GMSDK.Mapping
     /// </summary>
     public class GMUIListCheckBoxPropertyMap: GMUIPropertyMap<GMUIListCheckBoxPropertyMap>
     {
+        public override string Control => "listcheckbox";
         public IGMUICheckedDataProvider CheckedDataProvider { get; private set; }
         public GMUIListCheckBoxPropertyMap ToCheckedDataProvider(IGMUICheckedDataProvider checkedDataProvider)
         {

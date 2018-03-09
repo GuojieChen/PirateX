@@ -15,12 +15,12 @@ namespace PirateX.GMSDK.Demo.GMUIListDataProviders
 
         public static GMUIConTypeListDataProvider Instance = new GMUIConTypeListDataProvider();
 
-        public IEnumerable<GMUIListItem> GetListItems()
+        public IEnumerable<GMUIDataDropdown> GetListItems()
         {
-            return new GMUIListItem[] 
+            return new GMUIDataDropdown[] 
             {
-                new GMUIListItem(){ Text = "要求精灵属性" ,Value = "1" },
-                new GMUIListItem(){ Text = "要求精灵职业" ,Value = "2" },
+                new GMUIDataDropdown(){ Text = "要求精灵属性" ,Value = "1" },
+                new GMUIDataDropdown(){ Text = "要求精灵职业" ,Value = "2" },
             };
         }
     }

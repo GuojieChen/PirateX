@@ -7,6 +7,7 @@ namespace PirateX.GMSDK.Mapping
     /// </summary>
     public class GMUIDropdownPropertyMap:GMUIPropertyMap<GMUIDropdownPropertyMap>
     {
+        public override string Control => "dropdown";
         public IGMUIListDataProvider ListDataProvider { get; private set; }
 
         public GMUIDropdownPropertyMap ToListDataProvider(IGMUIListDataProvider listDataProvider)

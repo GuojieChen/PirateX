@@ -39,9 +39,8 @@ namespace PirateX.Middleware
         string Content { get; set; }
 
         #region 多语言支持 后端程序用
-        i18n[] i18NTitle { get; set; }
+        i18nLetter[] i18n { get; set; }
 
-        i18n[] i18nContent { get; set; }
         #endregion
     }
 }

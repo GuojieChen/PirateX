@@ -28,13 +28,8 @@ namespace PirateX.GMSDK
             {
                 if (!string.IsNullOrEmpty(group.Name))
                 {//对象
-                    //var obj = Activator.CreateInstance(item.PropertyInfo.PropertyType.GetElementType());
                     var list = new List<Dictionary<string, string>>();
-
-                    //TODO 对象数组需要筛选出来。例如 A[0].Id=1&A[0].Name=xx&A[1].Id=2&A[2].Name=xxx
-                    //测试数组长度
-
-                    var len = _form.AllKeys.Count(key => key.StartsWith($"{group.Name}[") && key.EndsWith($"].{group.Controls[0].Name}"));
+                    var len = _form.AllKeys.Count(key => key.StartsWith($"{group.Name}[") && key.EndsWith($"].{group.Controls.First<GMUIControl>().Name}"));
                     for (int i = 0; i < len; i++)
                     {
                         var objValue = new Dictionary<string, string>();
@@ -53,7 +48,13 @@ namespace PirateX.GMSDK
                         list.Add(objValue);
                     }
 
-                    Values.Add(group.Name, list);
+                    if (group.CanMulti)
+                        Values.Add(group.Name, list);
+                    else
+                    {
+                        if(list.Any())
+                            Values.Add(group.Name, list[0]);
+                    }
                 }
                 else
                 {
@@ -67,7 +68,7 @@ namespace PirateX.GMSDK
                         {
                             if (Values.ContainsKey(c.Name))
                                 Values[c.Name] = value;
-                            else 
+                            else
                                 Values.Add(c.Name, value);
                         }
 

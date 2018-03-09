@@ -44,17 +44,17 @@ namespace PirateX.GMSDK
 
         public static GMUIDaysListDataProvider Instance = new GMUIDaysListDataProvider();
 
-        public IEnumerable<GMUICheckedItem> GetCheckedItems()
+        public IEnumerable<GMUIDataCheckbox> GetCheckedItems()
         {
-            return new GMUICheckedItem[] 
+            return new GMUIDataCheckbox[] 
             {
-                new GMUICheckedItem(){Text = "周一" ,Value = "1",Checked = true},
-                new GMUICheckedItem(){Text = "周二" ,Value = "2",Checked = true},
-                new GMUICheckedItem(){Text = "周三" ,Value = "3",Checked = true},
-                new GMUICheckedItem(){Text = "周四" ,Value = "4",Checked = true},
-                new GMUICheckedItem(){Text = "周五" ,Value = "5",Checked = true},
-                new GMUICheckedItem(){Text = "周六" ,Value = "6",Checked = true},
-                new GMUICheckedItem(){Text = "周七" ,Value = "7",Checked = true},
+                new GMUIDataCheckbox(){Text = "周一" ,Value = "1",Checked = true},
+                new GMUIDataCheckbox(){Text = "周二" ,Value = "2",Checked = true},
+                new GMUIDataCheckbox(){Text = "周三" ,Value = "3",Checked = true},
+                new GMUIDataCheckbox(){Text = "周四" ,Value = "4",Checked = true},
+                new GMUIDataCheckbox(){Text = "周五" ,Value = "5",Checked = true},
+                new GMUIDataCheckbox(){Text = "周六" ,Value = "6",Checked = true},
+                new GMUIDataCheckbox(){Text = "周七" ,Value = "7",Checked = true},
             };
         }
     }

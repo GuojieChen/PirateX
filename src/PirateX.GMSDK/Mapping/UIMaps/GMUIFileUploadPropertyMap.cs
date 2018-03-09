@@ -11,6 +11,7 @@ namespace PirateX.GMSDK.Mapping
     /// </summary>
     public class GMUIFileUploadPropertyMap : GMUIPropertyMap<GMUIFileUploadPropertyMap>
     {
+        public override string Control => "fileupload";
 
     }
 }

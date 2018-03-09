@@ -6,6 +6,8 @@ namespace PirateX.GMSDK.Mapping
 {
     public interface IGMUIPropertyMap
     {
+        string Control { get; }
+
         string Name { get;  }
 
         string DisplayName { get;  }
@@ -33,6 +35,8 @@ namespace PirateX.GMSDK.Mapping
     public abstract class GMUIPropertyMap<TGMUIPropertyMap> : IGMUIPropertyMap
     where TGMUIPropertyMap : class, IGMUIPropertyMap 
     {
+        public abstract string Control { get; }
+
         public PropertyInfo PropertyInfo { get; set; }
 
         private string _name;

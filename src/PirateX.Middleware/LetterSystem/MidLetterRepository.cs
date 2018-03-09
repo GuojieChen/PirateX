@@ -8,11 +8,10 @@ using PirateX.Core;
 
 namespace PirateX.Middleware
 {
-    public class MidLetterRepository<TLetter,TSystemLetter>:RepositoryBase
+    public class MidLetterRepository<TLetter>:RepositoryBase
         where TLetter :class,ILetter
-        where TSystemLetter : class,ISystemLetter
     {
-        public virtual int Insert(TLetter letter)
+        public virtual int Insert(ILetter letter)
         {
             using (var db = Resolver.Resolve<IDbConnection>())
             {
@@ -20,7 +19,7 @@ namespace PirateX.Middleware
             }
         }
 
-        public virtual void Insert(IEnumerable<TLetter> letters)
+        public virtual void Insert(IEnumerable<ILetter> letters)
         {
             using (var db = Resolver.Resolve<IDbConnection>())
             {
@@ -46,7 +45,7 @@ namespace PirateX.Middleware
             }
         }
 
-        public virtual IEnumerable<TLetter> GetList(long rid, int page, int size = 50) 
+        public virtual IEnumerable<TLetter> GetList(int rid, int page, int size = 50) 
         {
             using (var db = Resolver.Resolve<IDbConnection>())
             {
@@ -55,24 +54,5 @@ namespace PirateX.Middleware
         }
 
 
-        #region SystemLetter
-
-        public virtual void SendSystemLetter(ISystemLetter letter)
-        {
-            using (var db = Resolver.Resolve<IDbConnection>())
-            {
-                db.Insert(letter);
-            }
-        }
-
-        public IEnumerable<TSystemLetter> GetSystemLetters()
-        {
-            using (var db = Resolver.Resolve<IDbConnection>())
-            {
-                return db.Query<TSystemLetter>($"select * from {typeof(TSystemLetter).Name} where OpenAt>=@Now and EndAt<@Now",new { now=DateTime.UtcNow });
-            }
-        }
-
-        #endregion
     }
 }

@@ -17,14 +17,6 @@ namespace PirateX.GMSDK
             base.Name = "编辑信件";
             base.Des = "";
 
-            Map<GMUIMapPropertyMap>(item => item.i18nTitle)
-                .ToDisplayName("多语言标题")
-                .ToPropertyMap(new GMUIi18nMap());
-
-            Map<GMUIMapPropertyMap>(item => item.i18nContent)
-                .ToDisplayName("多语言标题")
-                .ToPropertyMap(new GMUIi18nMap());
-
             //Map<GMUITextAreaPropertyMap>(item => item.NameList)
             //    .ToDisplayName("昵称列表")
             //    .ToTips("一行一个");

@@ -8,6 +8,21 @@
 
 <h2>@Model.Title</h2>
 
+@if (ViewBag.Buttons != null)
+{
+    <div class="card">
+        <div class="card-header bg-light">
+            操作
+        </div>
+        <div class="card-body">
+            @foreach (GMUIButton button in ViewBag.Buttons)
+            {
+                <button class="btn btn-outline-success" data-toggle="modal" data-remote="~/Action/NewList" data-target="#modal-5">@button.Text</button>
+            }
+        </div>
+    </div>
+}
+
 
 @if (ViewBag.ShowForm)
 {
@@ -19,7 +34,7 @@
         formMethod = FormMethod.Get;
     }
 
-    using (Html.BeginForm(action, "Home", new { controllerName = ViewBag.ControllerName, actionName = ViewBag.ActionName }, formMethod, new { @class = "form" }))
+    using (Html.BeginForm(action, "Home", new { method = ViewBag.Method, }, formMethod, new { @class = "form" }))
     {
         <input type="hidden" name="controllerName" value="@ViewBag.ControllerName" />
         <input type="hidden" name="actionName" value="@ViewBag.ActionName" />
@@ -58,23 +73,41 @@
                         <tr>
                             @foreach (GMUIDataColumn colum in Model.Columns)
                             {
-                                if (colum.Link != null)
+                                if (colum.Links != null)
                                 {
-                                    var expando = new RouteValueDictionary();
-                                    expando.Add("ControllerName", colum.Link.Controller);
-                                    expando.Add("ActionName", colum.Link.Action);
-                                    if (colum.Link.Keys != null)
+                                    foreach (var link in colum.Links)
                                     {
-                                        foreach (string key in colum.Link.Keys)
+                                        var expando = new RouteValueDictionary();
+                                        expando.Add("method", link.Method);
+                                        if (link.Keys != null)
                                         {
-                                            expando.Add(key, row[key].ToString());
+                                            foreach (string key in link.Keys)
+                                            {
+                                                expando.Add(key, row[key].ToString());
+                                            }
                                         }
+                                        <td>@Html.ActionLink(colum.DisplayName, "ViewTemplate", "Home", expando, new Dictionary<string, object>() { { "css", "button" }, { "target", "_blank" } }) </td>
                                     }
-                                    <td>@Html.ActionLink(colum.DisplayName, "ViewTemplate", "Home", expando, new Dictionary<string, object>() { { "css", "button" },{ "target","_blank"} }) </td>
+                                }
+                                else if (colum.RemoveButtons != null)
+                                {
+                                    foreach (var link in colum.RemoveButtons)
+                                    {
+                                        var expando = new RouteValueDictionary();
+                                        expando.Add("method", link.Method);
+                                        if (link.Keys != null)
+                                        {
+                                            foreach (string key in link.Keys)
+                                            {
+                                                expando.Add(key, row[key].ToString());
+                                            }
+                                        }
+                                        <td>@Html.ActionLink(colum.DisplayName, "ViewTemplate", "Home", expando, new Dictionary<string, object>() { { "css", "button" }, { "target", "_blank" } }) </td>
+                                    }
                                 }
                                 else
                                 {
-                                    <td>@row[colum.Name]</td>
+                                    <td> @row[colum.Name] </td>
                                 }
 
                             }

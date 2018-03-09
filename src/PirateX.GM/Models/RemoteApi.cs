@@ -36,31 +36,22 @@ namespace PirateX.GM.Models
         /// <summary>
         /// 获取页面模板
         /// </summary>
-        /// <param name="controller"></param>
-        /// <param name="action"></param>
+        /// <param name="method"></param>
         /// <returns></returns>
-        public static ViewTemplate GetViewTemplate(string controller, string action, NameValueCollection queryString)
+        public static ViewTemplate GetViewTemplate(string method, NameValueCollection queryString)
         {
             var client = new JsonRpcClient(remoteUri);
-            return client.Invoke<ViewTemplate>($"viewtemplate/{controller}/{action}", queryString.ToString());
+            var viewtemplate = client.Invoke<ViewTemplate>($"viewtemplate/{method}", queryString.ToString());
 
-            //var file  = $"{AppDomain.CurrentDomain.BaseDirectory}App_Data{Path.DirectorySeparatorChar}{controller}_{action}.json";
+            if (!Templates.ContainsKey(method))
+                Templates.Add(method, viewtemplate);
 
-            //var json = File.ReadAllText(file);
-
-            //var  template = JsonConvert.DeserializeObject<ViewTemplate>(json);
-
-            //var key = $"{controller}{action}";
-
-            //if (!Templates.ContainsKey(key))
-            //    Templates.Add(key,template);
-
-            //return template;
+            return viewtemplate;
         }
 
-        public static ViewTemplate GetViewTemplateFromLocalStore(string controller, string action)
+        public static ViewTemplate GetViewTemplateFromLocalStore(string method)
         {
-            var key = $"{controller}{action}";
+            var key = method;
 
             if (Templates.ContainsKey(key))
                 return Templates[key];
@@ -71,13 +62,12 @@ namespace PirateX.GM.Models
         /// <summary>
         /// 提交数据
         /// </summary>
-        /// <param name="controller"></param>
-        /// <param name="action"></param>
+        /// <param name="method"></param>
         /// <param name="args"></param>
-        public static SubmitResult Submit(string controller, string action, Dictionary<string, object> args)
+        public static SubmitResult Submit(string method, Dictionary<string, object> args)
         {
             var client = new JsonRpcClient(remoteUri);
-            var result = client.Invoke<ViewTemplate>($"viewtemplate/{controller}/{action}", args);
+            var result = client.Invoke<ViewTemplate>($"submit/{method}", args);
 
             return new SubmitResult() { Success = true };
         }

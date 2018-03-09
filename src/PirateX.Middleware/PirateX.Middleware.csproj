@@ -83,6 +83,7 @@
     <Compile Include="LetterSystem\IReward.cs" />
     <Compile Include="LetterSystem\MidLetterRepository.cs" />
     <Compile Include="LetterSystem\MidLetterService.cs" />
+    <Compile Include="LetterSystem\MidSystemLetterRepository.cs" />
     <Compile Include="RankingSystem\IRanking.cs" />
     <Compile Include="RankingSystem\MidRankingRepository.cs" />
     <Compile Include="TaskSystem\V1\ITaskConditionDetectStrategy.cs" />

@@ -11,6 +11,6 @@ namespace PirateX.GMSDK.Mapping
     /// </summary>
     public class GMUITextAreaPropertyMap : GMUIPropertyMap<GMUITextAreaPropertyMap>
     {
-
+        public override string Control => "textarea";
     }
 }

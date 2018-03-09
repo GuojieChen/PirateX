@@ -12,6 +12,7 @@ namespace PirateX.GMSDK.Mapping
     //https://bootstrap-tagsinput.github.io/bootstrap-tagsinput/examples/
     public class GMUITagsInputPropertyMap: GMUIPropertyMap<GMUITagsInputPropertyMap>
     {
+        public override string Control => "tagsinput";
 
     }
 }

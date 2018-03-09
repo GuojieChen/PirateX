@@ -59,9 +59,12 @@
                         <label class="form-control-label">@info.DisplayName</label>
 
                         <select name="@name" class="form-control" tag="@classattr">
-                            @foreach (GMUIDataDropdown item in info.Data_DropdownList)
+                            @if (info.Data_DropdownList != null)
                             {
-                                <option value="@item.Value" selected="@Equals(item.Value, info.DevaultValue)">@item.Text</option>
+                                foreach (GMUIDataDropdown item in info.Data_DropdownList)
+                                {
+                                    <option value="@item.Value" selected="@Equals(item.Value, info.DevaultValue)">@item.Text</option>
+                                }
                             }
                         </select>
 

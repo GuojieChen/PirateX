@@ -11,6 +11,7 @@ namespace PirateX.GMSDK.Mapping
     /// </summary>
     public class GMUIRichAreaPropertyMap : GMUIPropertyMap<GMUIRichAreaPropertyMap>
     {
+        public override string Control => "richarea";
 
     }
 }

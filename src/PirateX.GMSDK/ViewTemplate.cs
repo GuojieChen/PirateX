@@ -16,11 +16,15 @@ namespace PirateX.GMSDK
         public string Title { get; set; }
 
         public string SubmitBottenText { get; set; }
+        /// <summary>
+        /// 普通按钮
+        /// </summary>
+        public GMUIButton Buttons { get; set; }
 
         /// <summary>
         /// 控件列表
         /// </summary>
-        public GMUIControlGroup[] ControlGroups { get; set; }
+        public IEnumerable<GMUIControlGroup> ControlGroups { get; set; }
 
         public string FormMethod { get; set; }
 

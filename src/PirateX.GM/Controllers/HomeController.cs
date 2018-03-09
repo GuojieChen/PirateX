@@ -47,9 +47,9 @@ namespace PirateX.GM.Controllers
             return PartialView();
         }
 
-        public ActionResult ViewTemplate(string controllerName,string actionName)
+        public ActionResult ViewTemplate(string method)
         {
-            var template = RemoteApi.GetViewTemplate(controllerName, actionName, Request.QueryString);
+            var template = RemoteApi.GetViewTemplate(method, Request.QueryString);
             var colclass = "col-lg-4 col-md-6 col-sm-12";//默认横向放三个
             if (template.ControlGroups.Count() < 3)//一个card占满一行
             {
@@ -60,25 +60,24 @@ namespace PirateX.GM.Controllers
             var builder = new GMUIGroupBuilder(template.ControlGroups, Request.QueryString);
             builder.Build();
 
-            ViewBag.ControllerName = controllerName;
-            ViewBag.ActionName = actionName;
+            ViewBag.Method = method;
             ViewBag.ShowForm = template.ControlGroups.Any();
             ViewBag.ColClass = colclass;
 
             return View(template);
         }
 
-        public ActionResult Submit(string controllerName, string actionName)
+        public ActionResult Submit(string method)
         {
-            var template = RemoteApi.GetViewTemplateFromLocalStore(controllerName, actionName);
+            var template = RemoteApi.GetViewTemplateFromLocalStore(method);
 
             var builder = new GMUIGroupBuilder(template.ControlGroups, Request.Form);
 
             builder.Build();
 
-            var result = RemoteApi.Submit(controllerName, actionName, builder.Values);
+            var result = RemoteApi.Submit(method, builder.Values);
 
-            return RedirectToAction("ViewTemplate", "Home",new { controllerName ,actionName});
+            return RedirectToAction("ViewTemplate", "Home",new { method });
         }
     }
 }

@@ -7,6 +7,8 @@
     {
         public IGMUIItemMap Map { get; private set; }
 
+        public override string Control => "textbox";
+
         public GMUIMapPropertyMap ToPropertyMap(IGMUIItemMap propertyMap)
         {
             ToGroupName(this.DisplayName);

@@ -12,13 +12,13 @@ namespace PirateX.Middleware
     {
         int Id { get; set; }
         /// <summary>
-        /// 带有语言标识的标题 字典类型 KEY 为语言标识，Value为标题内容
+        /// 目标服列表，空的情况下标识全服发放
         /// </summary>
-        i18n[] i18nTitle { get; set; }
+        int[] TargetDidList { get; set; }
         /// <summary>
         /// 带有语言标识的内容 字典类型 KEY 为语言标识，Value为信件内容
         /// </summary>
-        i18n[] i18nContent { get; set; }
+        i18nLetter[] i18n { get; set; }
         /// <summary>
         /// 开始时间(UTC)
         /// </summary>
@@ -31,6 +31,6 @@ namespace PirateX.Middleware
         /// 转成玩家信件
         /// </summary>
         /// <returns></returns>
-        TLetter ToLetter<TLetter>(int rid) where TLetter :ILetter;
+        ILetter ToLetter(int rid);
     }
 }

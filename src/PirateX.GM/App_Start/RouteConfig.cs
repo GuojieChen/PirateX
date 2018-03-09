@@ -15,8 +15,8 @@ namespace PirateX.GM
 
             routes.MapRoute(
                 name: "Default",
-                url: "{controller}/{action}",
-                defaults: new { controller = "Home", action = "Index", }
+                url: "{controller}/{action}/{method}",
+                defaults: new { controller = "Home", action = "Index", method = UrlParameter.Optional }
             );
         }
     }

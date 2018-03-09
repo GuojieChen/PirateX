@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PirateX.GMSDK.Mapping;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -24,9 +25,9 @@ namespace PirateX.GMSDK
 
         public int OrderId { get; set; }
 
-        public GMUIDataDropdown[] Data_DropdownList { get; set; }
+        public IEnumerable<GMUIDataDropdown> Data_DropdownList { get; set; }
 
-        public GMUIDataCheckbox[] Data_CheckboxList { get; set; }
+        public IEnumerable<GMUIDataCheckbox> Data_CheckboxList { get; set; }
     }
 
     public class GMUIControlGroup
@@ -40,6 +41,84 @@ namespace PirateX.GMSDK
 
         public bool CanMulti { get; set; }
 
-        public GMUIControl[] Controls { get; set; }
+        public IEnumerable<GMUIControl> Controls { get; set; }
+
+
+        public static IEnumerable<GMUIControlGroup>  ConvertToGroups(IGMUIItemMap map)
+        {
+            List<GMUIControlGroup> list = new List<GMUIControlGroup>();
+
+            list.AddRange(map.PropertyMaps.Where(item => !item.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
+                .GroupBy(item => item.GroupName).OrderBy(item => item.Key).Select(item => new GMUIControlGroup()
+            {
+                DisplayName = item.Key,
+                Controls = item.Select(x=>
+                {
+                    var r = new GMUIControl()
+                    {
+                        Control = x.Control,
+                        Name = x.Name,
+                        DisplayName = x.DisplayName,
+                        Tips = x.Tips,
+                        IsRequired = x.IsRequired,
+                        DevaultValue = x.DevaultValue,
+                        OrderId = x.OrderId,
+                    };
+
+
+                    if (x is GMUIDropdownPropertyMap)
+                    {
+                        r.Data_DropdownList = (x as GMUIDropdownPropertyMap).ListDataProvider.GetListItems();
+                    }
+                    else if (x is GMUICheckBoxPropertyMap)
+                    {
+                        r.Data_CheckboxList = (x as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems();
+                    }
+                    else if (x is GMUIListCheckBoxPropertyMap)
+                    {
+                        r.Data_CheckboxList = (x as GMUIListCheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems();
+                    }
+                    return r;
+                })
+            }));
+
+            list.AddRange(map.PropertyMaps.Where(item => item.GetType().IsAssignableFrom(typeof(GMUIMapPropertyMap)))
+                .Select(item=>new GMUIControlGroup()
+                {
+                    Name = item.Name,
+                    DisplayName = item.DisplayName,
+                    Controls = (item as GMUIMapPropertyMap).Map.PropertyMaps.Select(x=> 
+                    {
+                        var r = new GMUIControl()
+                        {
+                            Control = x.Control,
+                            Name = x.Name,
+                            DisplayName = x.DisplayName,
+                            Tips = x.Tips,
+                            IsRequired = x.IsRequired,
+                            DevaultValue = x.DevaultValue,
+                            OrderId = x.OrderId,
+                        };
+
+                        if (x is GMUIDropdownPropertyMap)
+                        {
+                            r.Data_DropdownList = (x as GMUIDropdownPropertyMap).ListDataProvider.GetListItems();
+                        }
+                        else if (x is GMUICheckBoxPropertyMap)
+                        {
+                            r.Data_CheckboxList = (x as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems();
+                        }
+                        else if (x is GMUIListCheckBoxPropertyMap)
+                        {
+                            r.Data_CheckboxList = (x as GMUICheckBoxPropertyMap).CheckedDataProvider.GetCheckedItems();
+                        }
+
+                        return r; 
+                    }),
+                    CanMulti = item.PropertyInfo.PropertyType.IsArray
+                }));
+
+            return list; 
+        }
     }
 }
