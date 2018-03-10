@@ -86,6 +86,9 @@ namespace PirateX.Core
             SqlMapper.AddTypeHandler(typeof(i18n), new ObjectMapper<i18n>());
             SqlMapper.AddTypeHandler(typeof(i18n[]), new ObjectMapper<i18n[]>());
 
+            SqlMapper.AddTypeHandler(typeof(i18nLetter), new ObjectMapper<i18nLetter>());
+            SqlMapper.AddTypeHandler(typeof(i18nLetter[]), new ObjectMapper<i18nLetter[]>());
+
             SqlMapper.AddTypeHandler(typeof(Dictionary<int,int>),new DictionaryMapper<int,int>());
             SqlMapper.AddTypeHandler(typeof(Dictionary<string, string>), new DictionaryMapper<string, string>());
 
@@ -397,6 +400,7 @@ namespace PirateX.Core
                         if (type.IsInterface || type.IsAbstract || !typeof(IRepository).IsAssignableFrom(type) || type.GetCustomAttribute<PublicDbAttribute>() != null)
                             continue;
                         builder.RegisterType(type)
+                        .WithProperty("ConfigReader",ServerIoc.Resolve<IConfigReader>())
                             .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
                             .SingleInstance();
                     }

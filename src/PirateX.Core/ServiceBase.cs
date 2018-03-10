@@ -28,7 +28,7 @@ namespace PirateX.Core
 
         /// <summary> 配置读取
         /// </summary>
-        protected IConfigReader ConfigReader => Resolver.Resolve<IConfigReader>();
+        protected IConfigReader ConfigReader => Container.ServerIoc.Resolve<IConfigReader>();
 
         /// <summary> 消息广播
         /// </summary>

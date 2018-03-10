@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace PirateX.Core
 {
     public class ObjectMapper<TObject> : SqlMapper.TypeHandler<TObject>
@@ -15,7 +16,6 @@ namespace PirateX.Core
         {
             if (value == null)
                 return default(TObject);
-
 
             return JsonConvert.DeserializeObject<TObject>(Convert.ToString(value));
         }

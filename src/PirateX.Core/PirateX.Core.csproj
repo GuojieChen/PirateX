@@ -103,6 +103,7 @@
     <Compile Include="Container\Register\ConfigConnectionRegister.cs" />
     <Compile Include="Container\Register\ConnectionRegister.cs" />
     <Compile Include="Container\Register\RedisRegister.cs" />
+    <Compile Include="Container\ServerSettingRegister\ConfigConnectionRegister.cs" />
     <Compile Include="Container\ServerSettingRegister\RedisServerSettingRegister.cs" />
     <Compile Include="DapperMapper\ArrayJsonMapper.cs" />
     <Compile Include="DapperMapper\DictionaryMapper.cs" />
@@ -167,6 +168,7 @@
       <Name>PirateX.Protocol</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

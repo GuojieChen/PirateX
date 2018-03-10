@@ -17,11 +17,11 @@ namespace PirateX.Middleware
 
         #region SystemLetter
 
-        public virtual void SendSystemLetter(ISystemLetter letter)
+        public virtual void SendSystemLetter(TSystemLetter letter)
         {
             using (var db = DbConnection())
             {
-                db.Insert(letter);
+                db.Insert<TSystemLetter>(letter);
             }
         }
 

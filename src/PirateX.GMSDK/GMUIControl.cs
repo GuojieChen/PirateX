@@ -1,5 +1,6 @@
 ﻿using PirateX.GMSDK.Mapping;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -115,7 +116,7 @@ namespace PirateX.GMSDK
 
                         return r; 
                     }),
-                    CanMulti = item.PropertyInfo.PropertyType.IsArray
+                    CanMulti = item.PropertyInfo.PropertyType.IsArray || typeof(IEnumerable).IsAssignableFrom(item.PropertyInfo.PropertyType)
                 }));
 
             return list; 
