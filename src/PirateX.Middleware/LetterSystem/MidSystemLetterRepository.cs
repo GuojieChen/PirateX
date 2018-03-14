@@ -29,7 +29,7 @@ namespace PirateX.Middleware
         {
             using (var db = DbConnection())
             {
-                return db.Query<TSystemLetter>($"select * from {typeof(TSystemLetter).Name} where OpenAt>=@Now and EndAt<@Now", new { now = DateTime.UtcNow });
+                return db.Query<TSystemLetter>($"select * from {typeof(TSystemLetter).Name} where OpenAt>=@Now or EndAt<@Now", new { now = DateTime.UtcNow });
             }
         }
 

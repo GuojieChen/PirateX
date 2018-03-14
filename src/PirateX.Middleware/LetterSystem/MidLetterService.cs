@@ -14,6 +14,8 @@ namespace PirateX.Middleware
     {
         public virtual IEnumerable<IArchiveToLetter> ArchiveToLetters { get; set; }
 
+        protected virtual TMidLetterRepository LetterRepo => base.Resolver.Resolve<TMidLetterRepository>();
+
         /// <summary>
         /// 发送信件
         /// </summary>
@@ -30,6 +32,41 @@ namespace PirateX.Middleware
         {
             base.Resolver.Resolve<TMidLetterRepository>().Insert(letters);
         }
+       
+        /// <summary>
+        /// 迁移系统信件
+        /// </summary>
+        /// <param name="rid"></param>
+        /// <param name="maxid"></param>
+        /// <param name="roleCreateAtUtc"></param>
+        /// <returns></returns>
+        public virtual int TransformNewSystemLetters(int rid,int maxid,DateTime roleCreateAtUtc)
+        {
+            var config = base.Resolver.Resolve<IDistrictConfig>();
+            var sysletters = base.Container.ServerIoc.Resolve<TMidSystemLetterRepository>().GetSystemLetters()
+               .Where(item => item.OpenAt < roleCreateAtUtc
+               && (item.TargetDidList == null || item.TargetDidList.Contains(config.Id))
+               && item.Id > maxid);
+
+            List<TLetter> letters = new List<TLetter>();
+
+            if (sysletters.Any())
+            {
+                foreach (var letter in sysletters)
+                {
+                    if (letter.Id > maxid)
+                        maxid = letter.Id;
+
+                    letters.Add((TLetter)letter.ToLetter(rid));
+                }
+            }
+
+            if (letters.Any())
+                LetterRepo.Insert(letters);
+
+            return maxid;
+        }
+
 
         /// <summary>
         /// 获取信件列表,默认50条
@@ -39,28 +76,11 @@ namespace PirateX.Middleware
         /// <param name="page"></param>
         /// <param name="size"></param>
         /// <returns></returns>
-        public virtual IEnumerable<TLetter> GetLetters(int rid, int page, DateTime roleCreateAtUtc,int size = 50)
+        public virtual IEnumerable<TLetter> GetLetters(int rid, int page,int size = 50)
         {
-            var repo = base.Resolver.Resolve<TMidLetterRepository>();
-
-            int maxSystemId = 0;
-
-            List<ILetter> letters = new List<ILetter>();
+            List<TLetter> letters = new List<TLetter>();
 
             //TODO 这边还需要考虑红点的问题
-
-            var config = base.Resolver.Resolve<IDistrictConfig>();
-
-            var sysletters = base.Container.ServerIoc.Resolve<TMidSystemLetterRepository>().GetSystemLetters()
-                .Where(item => item.OpenAt < roleCreateAtUtc 
-                && (item.TargetDidList == null || item.TargetDidList.Contains(config.Id)) 
-                && item.Id>=maxSystemId);
-
-            if (sysletters.Any())
-            {
-                foreach (var letter in sysletters)
-                    letters.Add(letter.ToLetter(rid));
-            }
 
             //这里查看其他系统是否需要生成信件
             if (ArchiveToLetters != null && ArchiveToLetters.Any())
@@ -72,11 +92,11 @@ namespace PirateX.Middleware
                     letters.Add(toLetter.Builder<TLetter>(rid));
             }
             if (letters.Any())
-                repo.Insert(letters);
+                LetterRepo.Insert(letters);
 
             //TODO letter record
 
-            return repo.GetList(rid, page, size);
+            return LetterRepo.GetList(rid, page, size);
         }
         /// <summary>
         /// 获取玩家有的信件总数
@@ -101,9 +121,9 @@ namespace PirateX.Middleware
 
             if (letter.i18n != null && letter.i18n.Any())
             {
-                var i18n = letter.i18n.First(item => Equals(item.Language.ToLower(), culture.ToLower()));
+                var i18n = letter.i18n.FirstOrDefault(item => Equals(item.Language??"".ToLower(), culture.ToLower()));
                 if (i18n == null)
-                    i18n = letter.i18n.First(item => Equals(item.Language.ToLower(), ""));
+                    i18n = letter.i18n.FirstOrDefault(item => Equals(item.Language.ToLower(), ""));
 
                 if (i18n != null)
                 {

@@ -11,7 +11,7 @@ namespace PirateX.Middleware
     public class MidLetterRepository<TLetter>:RepositoryBase
         where TLetter :class,ILetter
     {
-        public virtual int Insert(ILetter letter)
+        public virtual int Insert(TLetter letter)
         {
             using (var db = Resolver.Resolve<IDbConnection>())
             {
@@ -19,7 +19,7 @@ namespace PirateX.Middleware
             }
         }
 
-        public virtual void Insert(IEnumerable<ILetter> letters)
+        public virtual void Insert(IEnumerable<TLetter> letters)
         {
             using (var db = Resolver.Resolve<IDbConnection>())
             {
