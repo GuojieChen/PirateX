@@ -78,6 +78,15 @@ namespace PirateX.Middleware
 
             return repo.GetList(rid, page, size);
         }
+        /// <summary>
+        /// 获取玩家有的信件总数
+        /// </summary>
+        /// <param name="rid"></param>
+        /// <returns></returns>
+        public virtual int GetCount(int rid)
+        {
+            return base.Resolver.Resolve<TMidLetterRepository>().GetCount(rid);
+        }
 
         /// <summary>
         /// 转换信件的多语言字段
@@ -120,24 +129,13 @@ namespace PirateX.Middleware
         }
 
         /// <summary>
-        /// 删除信件
-        /// </summary>
-        /// <param name="rid"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public virtual int Delete(long rid, int id)
-        {
-            return base.Resolver.Resolve<TMidLetterRepository>().Delete(id);
-        }
-
-        /// <summary>
-        /// 标记信件为已查看
+        /// 标记一批信件为已查看
         /// </summary>
         /// <typeparam name="TLetter"></typeparam>
         /// <param name="id"></param>
-        public virtual void Read(int id)
+        public virtual void Read(IEnumerable<int> ids)
         {
-            base.Resolver.Resolve<TMidLetterRepository>().SetRead(id);
+            base.Resolver.Resolve<TMidLetterRepository>().SetRead(ids);
         }
     }
 }

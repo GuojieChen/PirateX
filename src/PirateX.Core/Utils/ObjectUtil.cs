@@ -225,5 +225,19 @@ namespace PirateX.Core
 
             return max;
         }
+
+
+        public static void PrintBit(byte[] bytes)
+        {
+            for (var i = bytes.Length - 1; i >= 0; i--)
+            {
+                var b = bytes[i];
+                for (var j = 7; j >= 0; j--)
+                    Console.Write(b.GetBit(j) ? "1" : "0");
+
+                Console.Write(',');
+            }
+            Console.WriteLine();
+        }
     }
 }

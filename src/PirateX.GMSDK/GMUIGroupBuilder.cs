@@ -43,9 +43,12 @@ namespace PirateX.GMSDK
                             //if (!string.IsNullOrEmpty(error))
                             //    Errors.Add(error);
 
-                            objValue.Add(p.Name, value);
+                            if(!Equals(p.NullValue,value))
+                                objValue.Add(p.Name, value);
                         }
-                        list.Add(objValue);
+                        
+                        if(objValue.Count>0)
+                            list.Add(objValue);
                     }
 
                     if (group.CanMulti)
@@ -62,7 +65,12 @@ namespace PirateX.GMSDK
                     {
                         var value = _form[c.Name];
 
-                        if (string.IsNullOrEmpty(value))
+
+                        if (Equals(c.NullValue, value))
+                        {
+
+                        }
+                        else if (string.IsNullOrEmpty(value))
                             Errors.Add($"{c.DisplayName} 缺少值");
                         else
                         {

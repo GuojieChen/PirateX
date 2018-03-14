@@ -153,6 +153,7 @@
     <Compile Include="IService.cs" />
     <Compile Include="ServiceBase.cs" />
     <Compile Include="Utils\CsvFileReader.cs" />
+    <Compile Include="Utils\IdGenerator.cs" />
     <Compile Include="Utils\ObjectUtil.cs" />
     <Compile Include="Utils\RandomUtil.cs" />
     <Compile Include="Utils\TimeUtil.cs" />

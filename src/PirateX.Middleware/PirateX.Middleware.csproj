@@ -73,7 +73,7 @@
     <Compile Include="CalculateSystem\CalculateHandler.cs" />
     <Compile Include="CalculateSystem\ICalculateContext.cs" />
     <Compile Include="CalculateSystem\ICalculateHandler.cs" />
-    <Compile Include="ChatSystem\ChatRepository.cs" />
+    <Compile Include="ChatSystem\MidChatRepository.cs" />
     <Compile Include="ChatSystem\MidChatService.cs" />
     <Compile Include="ChatSystem\IChat.cs" />
     <Compile Include="LetterSystem\ISystemLetter.cs" />

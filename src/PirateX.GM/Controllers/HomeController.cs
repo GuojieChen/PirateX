@@ -75,9 +75,11 @@ namespace PirateX.GM.Controllers
 
             builder.Build();
 
-            var result = RemoteApi.Submit(method, builder.Values);
+            if (RemoteApi.Submit(method, builder.Values))
+                return RedirectToAction("ViewTemplate", "Home", new { method });
+            else
+                return RedirectToAction("VieTemplate", "Home", new { method });
 
-            return RedirectToAction("ViewTemplate", "Home",new { method });
         }
     }
 }

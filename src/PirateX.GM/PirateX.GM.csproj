@@ -180,7 +180,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Scripts\carbon.js" />
+    <Content Include="Scripts\carbon.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\demo.js" />
     <Content Include="Scripts\chart.min.js" />
     <Content Include="Content\font-awesome\css\fa-brands.css" />

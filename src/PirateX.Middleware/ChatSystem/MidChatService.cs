@@ -4,16 +4,17 @@ using PirateX.Core;
 
 namespace PirateX.Middleware
 {
-    public class ChatService:ServiceBase
+    public class ChatService<TMidChatRepository>:ServiceBase
+        where TMidChatRepository: MidChatRepository
     {
         public IChat Send(IChat chat)
         {
-            return base.Container.ServerIoc.Resolve<ChatRepository>().Insert(chat);
+            return base.Container.ServerIoc.Resolve<TMidChatRepository>().Insert(chat);
         }
 
         public IEnumerable<TChat> GetLatestChats<TChat>(int channelid) where TChat : IChat
         {
-            return base.Container.ServerIoc.Resolve<ChatRepository>().GetChats<TChat>(channelid);
+            return base.Container.ServerIoc.Resolve<TMidChatRepository>().GetChats<TChat>(channelid);
         }
     }
 }

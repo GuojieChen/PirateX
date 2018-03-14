@@ -5,7 +5,7 @@ using PirateX.Core;
 
 namespace PirateX.Middleware
 {
-    public class ChatRepository:PublicRepository
+    public class MidChatRepository:PublicRepository
     {
         /// <summary>
         /// 默认保存的聊天数
@@ -21,7 +21,9 @@ namespace PirateX.Middleware
         {
             var key = GetKey(chat.ChannelId);
 
-            chat.Id = DateTime.UtcNow.GetTimestamp();
+            var tsbytes = DateTime.UtcNow.GetTimestampAsSecond();
+
+            chat.Id = IdGenerator.GetPrimaryId();
             base.Redis.ListRightPush(key, base.RedisSerializer.Serilazer(chat));
 
             if (base.Redis.ListLength(key) > Size)

@@ -25,13 +25,13 @@ $(document).ready(function () {
         $('body').toggleClass('sidebar-mobile-show');
     });
 
-
+     
     $(".copybtn").click(function () {
         console.log("copybtn click");
 
         var card = $(this).parents(".col-card").clone();
         card.find('.card-actions').children().replaceWith('<span class="btn closebtn"><i class="icon-close"></i></span>');
-        card.hide().appendTo("#cards").fadeIn(500);
+        card.hide().insertAfter($(this).parents(".col-card")).fadeIn(500);
 
         resetname($(this).parents(".col-card"));
     });

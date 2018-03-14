@@ -29,6 +29,8 @@ namespace PirateX.GMSDK
         public IEnumerable<GMUIDataDropdown> Data_DropdownList { get; set; }
 
         public IEnumerable<GMUIDataCheckbox> Data_CheckboxList { get; set; }
+
+        public string NullValue { get; set; }
     }
 
     public class GMUIControlGroup
@@ -64,6 +66,7 @@ namespace PirateX.GMSDK
                         IsRequired = x.IsRequired,
                         DevaultValue = x.DevaultValue,
                         OrderId = x.OrderId,
+                        NullValue  = x.NullValue
                     };
 
 
@@ -99,6 +102,7 @@ namespace PirateX.GMSDK
                             IsRequired = x.IsRequired,
                             DevaultValue = x.DevaultValue,
                             OrderId = x.OrderId,
+                            NullValue= x.NullValue
                         };
 
                         if (x is GMUIDropdownPropertyMap)

@@ -24,6 +24,8 @@ namespace PirateX.GMSDK.Mapping
 
         int OrderId { get; }
 
+        string NullValue { get; }
+
         Func<string, string> ValidateFunc { get; }
 
         void Validate(Func<string, string> func);
@@ -37,7 +39,23 @@ namespace PirateX.GMSDK.Mapping
     {
         public abstract string Control { get; }
 
-        public PropertyInfo PropertyInfo { get; set; }
+        private PropertyInfo _propertyInfo;
+        public PropertyInfo PropertyInfo
+        {
+            get { return _propertyInfo; }
+            set
+            {
+                _propertyInfo = value;
+
+                if(_propertyInfo.PropertyType.IsPrimitive)
+                    this.NullValue = Activator.CreateInstance(_propertyInfo.PropertyType).ToString();
+
+                if (string.IsNullOrEmpty(DevaultValue))
+                {
+                    DevaultValue = NullValue;
+                }
+            }
+        }
 
         private string _name;
 
@@ -98,6 +116,9 @@ namespace PirateX.GMSDK.Mapping
         }
 
         public string DevaultValue { get; set; }
+
+        public string NullValue { get; private  set; }
+
         public TGMUIPropertyMap ToDevaultValue(object value)
         {
             DevaultValue = Convert.ToString(value);

@@ -64,12 +64,20 @@ namespace PirateX.GM.Models
         /// </summary>
         /// <param name="method"></param>
         /// <param name="args"></param>
-        public static SubmitResult Submit(string method, Dictionary<string, object> args)
+        public static bool Submit(string method, Dictionary<string, object> args)
         {
             var client = new JsonRpcClient(remoteUri);
             var result = client.Invoke<ViewTemplate>($"submit/{method}", args);
 
-            return new SubmitResult() { Success = true };
+            client.OnError += (e) => 
+            {
+                Console.WriteLine(e);
+            };
+
+            if (result == null)
+                return false;
+
+            return true;
         }
     }
 

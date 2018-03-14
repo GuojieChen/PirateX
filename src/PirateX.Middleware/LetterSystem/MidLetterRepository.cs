@@ -27,21 +27,11 @@ namespace PirateX.Middleware
             }
         }
 
-        public virtual int Delete(int id)
+        public virtual void SetRead(IEnumerable<int> ids)
         {
             using (var db = Resolver.Resolve<IDbConnection>())
             {
-                return db.Execute($"delete from `{typeof(TLetter).Name}` where Id = {id}");
-            }
-
-            //TODO 这里可以根据情况做下归档
-        }
-
-        public virtual void SetRead(int id)
-        {
-            using (var db = Resolver.Resolve<IDbConnection>())
-            {
-                db.Execute($"update `{typeof(TLetter).Name}` set IsRead = @IsRead where Id=@Id",new { IsRead  =true,Id = id});
+                db.Execute($"update `{typeof(TLetter).Name}` set IsRead = @IsRead where Id in @Ids",new { IsRead  = true,Ids = new SqlinList<int>(ids) });
             }
         }
 
@@ -53,6 +43,28 @@ namespace PirateX.Middleware
             }
         }
 
+        public virtual int GetCount(int rid)
+        {
+            using (var db = Resolver.Resolve<IDbConnection>())
+            {
+                return db.ExecuteScalar<int>($"select count(id) from `{typeof(TLetter).Name}` where rid = {rid};");
+            }
+        }
 
+        public IEnumerable<TLetter> GetAll(int rid)
+        {
+            using (var db = Resolver.Resolve<IDbConnection>())
+            {
+                return db.Query<TLetter>($"select * from `{typeof(TLetter).Name}` where rid = {rid};");
+            }
+        }
+
+        public TLetter GetById(int id)
+        {
+            using (var db = Resolver.Resolve<IDbConnection>())
+            {
+                return db.Get<TLetter>(id);
+            }
+        }
     }
 }
