@@ -8,7 +8,7 @@ namespace PirateX.Middleware
         , IEntityCreateAt
         , IEntityDistrict
     {
-        long Id { get; set; }
+        string Id { get; set; }
 
         /// <summary>
         /// 渠道，可以定义为私人，世界，公会等
