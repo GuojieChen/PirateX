@@ -21,7 +21,7 @@ namespace PirateX.Middleware
         /// <summary>
         /// 系统信件的数据
         /// </summary>
-        Dictionary<string,string> Args { get; set; }
+        Dictionary<string,string> Values { get; set; }
         /// <summary>
         /// 玩家发的信息
         /// </summary>
