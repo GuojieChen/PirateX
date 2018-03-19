@@ -15,15 +15,15 @@ namespace PirateX.GMSDK.Demo.GMUIListDataProviders
 
         public static GMUIConValueListDataProvider Instance = new GMUIConValueListDataProvider();
 
-        public IEnumerable<GMUIListItem> GetListItems()
+        public IEnumerable<GMUIDataDropdown> GetListItems()
         {
-            return new GMUIListItem[] 
+            return new GMUIDataDropdown[] 
             {
-                new GMUIListItem(){ Text= "草" , Value = "2"},
-                new GMUIListItem(){ Text= "电" , Value = "3"},
-                new GMUIListItem(){ Text= "水" , Value = "4"},
-                new GMUIListItem(){ Text= "岩" , Value = "5"},
-                new GMUIListItem(){ Text= "火" , Value = "6"},
+                new GMUIDataDropdown(){ Text= "草" , Value = "2"},
+                new GMUIDataDropdown(){ Text= "电" , Value = "3"},
+                new GMUIDataDropdown(){ Text= "水" , Value = "4"},
+                new GMUIDataDropdown(){ Text= "岩" , Value = "5"},
+                new GMUIDataDropdown(){ Text= "火" , Value = "6"},
             };
         }
     }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autofac;
 using Dapper;
+using Dapper.Contrib.Extensions;
 using GameServer.Console.SampleConfig;
 using GameServer.Console.SampleDomain;
 using PirateX.Core;
@@ -32,7 +33,7 @@ namespace GameServer.Console.SampleService
             using (var db = Resolver.Resolve<IDbConnection>())
             {
                 db.Open();
-
+                
                 Logger.Error(db.Query<Role>("select * from role").ToList());
                 //Logger.Error(db.Execute("insert into role(Id,CreateAt) values(@Id,@CreateAt);",new {Id=1 ,CreateAt = DateTime.Now}));
 

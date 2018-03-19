@@ -35,7 +35,7 @@
                     <span>@Html.ActionLink(item.TypeName, "TypeInfo", new { modelid = item.ModelId, id = item.TypeId })</span>
                 }
             </td>
-            <td>@Html.Raw(item.Commonts?.Summary?.InnerText)</td>
+            <td>@(item.Commonts?.Summary?.InnerText)</td>
             <td>@Html.Raw(item.ProtoMember.Value)</td>
         </tr>
     }

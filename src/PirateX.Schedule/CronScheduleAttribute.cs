@@ -10,7 +10,7 @@ namespace PirateX.Schedule
         public CronScheduleAttribute( string cronSchedule)
         {
             if(string.IsNullOrEmpty(cronSchedule))
-                throw new ArgumentNullException("cronSchedule");
+                throw new ArgumentNullException(nameof(cronSchedule));
             
             this.CronSchedule = cronSchedule;
         }

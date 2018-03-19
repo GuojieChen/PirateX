@@ -1,6 +1,7 @@
 ﻿using PirateX.GMSDK.Mapping;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,9 +23,11 @@ namespace PirateX.GMSDK
         {
             Map<GMUITextBoxPropertyMap>(item=>item.StartAt)
                 .ToDisplayName("开始时间")
+                .ToDevaultValue(DateTime.Now)
                 .ToOrderId(-3);
             Map<GMUITextBoxPropertyMap>(item => item.EndAt)
                 .ToDisplayName("结束时间")
+                .ToDevaultValue(DateTime.Now)
                 .ToOrderId(-2);
             Map<GMUICheckBoxPropertyMap>(item => item.Days)
                 .ToDisplayName("周期")
@@ -41,17 +44,17 @@ namespace PirateX.GMSDK
 
         public static GMUIDaysListDataProvider Instance = new GMUIDaysListDataProvider();
 
-        public IEnumerable<GMUICheckedItem> GetCheckedItems()
+        public IEnumerable<GMUIDataCheckbox> GetCheckedItems()
         {
-            return new GMUICheckedItem[] 
+            return new GMUIDataCheckbox[] 
             {
-                new GMUICheckedItem(){Text = "周一" ,Value = "1",Checked = true},
-                new GMUICheckedItem(){Text = "周二" ,Value = "2",Checked = true},
-                new GMUICheckedItem(){Text = "周三" ,Value = "3",Checked = true},
-                new GMUICheckedItem(){Text = "周四" ,Value = "4",Checked = true},
-                new GMUICheckedItem(){Text = "周五" ,Value = "5",Checked = true},
-                new GMUICheckedItem(){Text = "周六" ,Value = "6",Checked = true},
-                new GMUICheckedItem(){Text = "周七" ,Value = "7",Checked = true},
+                new GMUIDataCheckbox(){Text = "周一" ,Value = "1",Checked = true},
+                new GMUIDataCheckbox(){Text = "周二" ,Value = "2",Checked = true},
+                new GMUIDataCheckbox(){Text = "周三" ,Value = "3",Checked = true},
+                new GMUIDataCheckbox(){Text = "周四" ,Value = "4",Checked = true},
+                new GMUIDataCheckbox(){Text = "周五" ,Value = "5",Checked = true},
+                new GMUIDataCheckbox(){Text = "周六" ,Value = "6",Checked = true},
+                new GMUIDataCheckbox(){Text = "周七" ,Value = "7",Checked = true},
             };
         }
     }

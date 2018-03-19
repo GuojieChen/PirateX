@@ -34,8 +34,8 @@ namespace PirateX.Net.SuperSocket
         protected override BinaryRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
         {
             //原始数据
-
             var datas = bodyBuffer.CloneRange(offset, length);
+
             return new BinaryRequestInfo("ReqRep", datas);
         }
     }

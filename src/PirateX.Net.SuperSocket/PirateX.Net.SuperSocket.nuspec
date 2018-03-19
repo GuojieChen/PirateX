@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>PirateX.Net.SuperSocket</id>
+    <version>$version$</version>
+    <title>PirateX.Net.SuperSocket</title>
+    <authors>GuojieChen</authors>
+    <owners>GuojieChen</owners>
+    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
+    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
+    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>PirateX.Net.SuperSocket</description>
+    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>Tag1 Tag2</tags>
+    <dependencies>
+      <group targetFramework="net452">
+        <dependency id="NLog" version="[4.4.9,)" />
+        <dependency id="SuperSocket" version="[1.6.6.1,)" />
+        <dependency id="SuperSocket.Engine" version="1.6.6.1" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

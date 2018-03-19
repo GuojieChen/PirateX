@@ -8,11 +8,6 @@ namespace PirateX.GMSDK
 {
     public interface IGMUICheckedDataProvider
     {
-        IEnumerable<GMUICheckedItem> GetCheckedItems();
-    }
-
-    public class GMUICheckedItem : GMUIListItem
-    {
-        public bool Checked { get; set; }
+        IEnumerable<GMUIDataCheckbox> GetCheckedItems();
     }
 }

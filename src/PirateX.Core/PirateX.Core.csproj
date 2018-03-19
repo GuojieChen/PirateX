@@ -83,6 +83,8 @@
     <Compile Include="Actor\RepAction.cs" />
     <Compile Include="Actor\RequestDocAttribute.cs" />
     <Compile Include="Actor\StatusCode.cs" />
+    <Compile Include="Actor\System\CommandArgs.cs" />
+    <Compile Include="Actor\System\CommandList.cs" />
     <Compile Include="Actor\System\ProtoSync.cs" />
     <Compile Include="Actor\System\SysInfo.cs" />
     <Compile Include="Broadcas\IMessageBroadcast.cs" />
@@ -101,8 +103,12 @@
     <Compile Include="Container\Register\ConfigConnectionRegister.cs" />
     <Compile Include="Container\Register\ConnectionRegister.cs" />
     <Compile Include="Container\Register\RedisRegister.cs" />
+    <Compile Include="Container\ServerSettingRegister\ConfigConnectionRegister.cs" />
     <Compile Include="Container\ServerSettingRegister\RedisServerSettingRegister.cs" />
     <Compile Include="DapperMapper\ArrayJsonMapper.cs" />
+    <Compile Include="DapperMapper\DictionaryMapper.cs" />
+    <Compile Include="DapperMapper\ObjectMapper.cs" />
+    <Compile Include="DapperMapper\SqlinList.cs" />
     <Compile Include="DataSync\IDataSync.cs" />
     <Compile Include="DefaultServerSetting.cs" />
     <Compile Include="Domain\Entity\IEntityCreateAt.cs" />
@@ -115,7 +121,8 @@
     <Compile Include="Domain\Repository\IPublicRepository.cs" />
     <Compile Include="Domain\Repository\IRepository.cs" />
     <Compile Include="Domain\Repository\RepositoryBase.cs" />
-    <Compile Include="i18n\I18N.cs" />
+    <Compile Include="i18n.cs" />
+    <Compile Include="i18n\I18NResource.cs" />
     <Compile Include="Container\IDatabaseInitializer.cs" />
     <Compile Include="IDataSync.cs" />
     <Compile Include="ISyncList.cs" />
@@ -146,12 +153,16 @@
     <Compile Include="IService.cs" />
     <Compile Include="ServiceBase.cs" />
     <Compile Include="Utils\CsvFileReader.cs" />
+    <Compile Include="Utils\IdGenerator.cs" />
     <Compile Include="Utils\ObjectUtil.cs" />
     <Compile Include="Utils\RandomUtil.cs" />
     <Compile Include="Utils\TimeUtil.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="PirateX.Core.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PirateX.Protocol\PirateX.Protocol.csproj">
@@ -159,6 +170,7 @@
       <Name>PirateX.Protocol</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>PirateX.Middleware</id>
+    <version>$version$</version>
+    <title>PirateX.Middleware</title>
+    <authors>GuojieChen</authors>
+    <owners>GuojieChen</owners>
+    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
+    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
+    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>PirateX.Middleware</description>
+    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>Tag1 Tag2</tags>
+    <dependencies>
+      <group targetFramework="net452">
+        <dependency id="Autofac" version="[4.5.0,)" />
+        <dependency id="Dapper" version="[1.50.2,)" />
+        <dependency id="Dapper.Contrib" version="[1.50.0,)" />
+        <dependency id="NLog" version="[4.4.9,)" />
+        <dependency id="StackExchange.Redis" version="[1.2.3,)" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

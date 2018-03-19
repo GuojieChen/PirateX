@@ -10,7 +10,7 @@ namespace PirateX.Core
 
         public short Code { get; set; }
 
-        public PirateXException(string errorCode, string errorMsg)
+        public PirateXException(string errorCode, string errorMsg):base(errorMsg)
         {
             Code = StatusCode.Exception;
             this.ErrorCode = errorCode;

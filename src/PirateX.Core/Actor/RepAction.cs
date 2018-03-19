@@ -50,7 +50,7 @@ namespace PirateX.Core
         //TODO 抽象到  IReqCache 中
         protected virtual TResponse GetFromCache(string key)
         {
-            if (!base.Reslover.IsRegistered<IDatabase>())
+            if (!base.Resolver.IsRegistered<IDatabase>())
                 return default(TResponse) ;
 
             var data = Redis.StringGet(key);
@@ -59,7 +59,7 @@ namespace PirateX.Core
 
         protected virtual void SetToCache(string key, TResponse response)
         {
-            if (!base.Reslover.IsRegistered<IDatabase>())
+            if (!base.Resolver.IsRegistered<IDatabase>())
                 return ;
 
             var listurn = GetResponseListUrn();

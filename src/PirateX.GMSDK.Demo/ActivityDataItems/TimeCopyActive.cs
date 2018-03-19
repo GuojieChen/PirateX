@@ -2,6 +2,7 @@
 using PirateX.GMSDK.Mapping;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace PirateX.GMSDK.Demo.ActivityDataItems
         /// <summary> 主打精灵2 每次捕捉失败增加概率 </summary>
         public double AddRate2 { get; set; }
 
-        public IList<TimeCopyStageCfg> StageCfgs { get; set; }
+        public TimeCopyStageCfg[] StageCfgs { get; set; }
 
         /// <summary> 进入条件类型 1：要求精灵属性；2：要求精灵职业 Define.TimeCopyConType </summary>
         public int ConType { get; set; }
@@ -37,7 +38,7 @@ namespace PirateX.GMSDK.Demo.ActivityDataItems
         public int ConValue { get; set; }
 
         /// <summary> 兑换项目 </summary>
-        public IList<ExItem> ExItems { get; set; }
+        public ExItem[] ExItems { get; set; }
     }
 
     public class GMUITimeCopyActivePropertyMap : GMUIItemMap<TimeCopyActive>
@@ -56,6 +57,8 @@ namespace PirateX.GMSDK.Demo.ActivityDataItems
                 .ToGroupName("主打精灵1");
             Map<GMUITextBoxPropertyMap>(item => item.AddRate1)
                 .ToDisplayName("递增概率")
+                .ToDevaultValue("50")
+                .ToTips("xxxxxxxx")
                 .ToGroupName("主打精灵1");
 
             Map<GMUIDropdownPropertyMap>(item => item.PetId2)
@@ -86,7 +89,6 @@ namespace PirateX.GMSDK.Demo.ActivityDataItems
                 .ToDisplayName("兑换项目")
                 .ToPropertyMap(new GMUIExItemMap());
         }
-        
     }
 
     public class TimeCopyStageCfg
@@ -113,7 +115,6 @@ namespace PirateX.GMSDK.Demo.ActivityDataItems
         {
             Map<GMUITextBoxPropertyMap>(item=>item.StageName)
                 .ToDisplayName("关卡名称");
-
             Map<GMUITextBoxPropertyMap>(item => item.Hp)
                 .ToDisplayName("NPC生命");
             Map<GMUITextBoxPropertyMap>(item => item.Atk)

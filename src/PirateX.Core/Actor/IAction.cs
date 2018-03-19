@@ -9,10 +9,9 @@ namespace PirateX.Core
         ILifetimeScope ServerReslover { get; set; }
         IMessageSender MessageSender { get; set; }
         Logger Logger { get; set; }
-        ILifetimeScope Reslover { get; set; }
-        /// <summary>
-        /// 动作名称
-        /// </summary>
+        ILifetimeScope Resolver { get; set; }
+
+        /// <summary> 动作名称 </summary>
         string Name { get; set; }
 
         //PirateSession Session { get; set; }

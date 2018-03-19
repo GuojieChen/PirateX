@@ -38,6 +38,6 @@ namespace PirateX.Core
         /// <summary>
         /// 内部网络地址
         /// </summary>
-        public string SocketAddress { get; set; }
+        public string FrontendID { get; set; }
     }
 }

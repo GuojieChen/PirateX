@@ -61,9 +61,9 @@ namespace PirateX.Core
         [ProtoMember(14)]
         public string ServerName { get; set; }
         /// <summary>
-        /// 内部网络地址，用以服务器推送快速定位
+        /// Frontend地址，用以服务器推送快速定位
         /// </summary>
         [ProtoMember(15)]
-        public string SocketAddress { get; set; }
+        public string FrontendID { get; set; }
     }
 }

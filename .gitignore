@@ -48,6 +48,7 @@ build/
 *.pidb
 *.log
 *.scc
+*.nupkg
 
 # Visual C++ cache files
 ipch/
@@ -155,7 +156,6 @@ $RECYCLE.BIN/
 /TimeTravel.DB/Mcmurphy.TimeTravel.mdf
 /TimeTravel.DB/Mcmurphy.TimeTravel_log.ldf
 /TimeTravel.DB
-
-*.nuspec
 /src/.vs
 /src/PirateX.ApiHelper/App_Data
+/src/PirateX.GM/App_Data

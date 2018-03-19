@@ -8,9 +8,10 @@ using PirateX.Core;
 
 namespace PirateX.Middleware
 {
-    public class MidLetterRepository:RepositoryBase
+    public class MidLetterRepository<TLetter>:RepositoryBase
+        where TLetter :class,ILetter
     {
-        public virtual int Insert(ILetter letter)
+        public virtual int Insert(TLetter letter)
         {
             using (var db = Resolver.Resolve<IDbConnection>())
             {
@@ -18,7 +19,7 @@ namespace PirateX.Middleware
             }
         }
 
-        public virtual void Insert(IEnumerable<ILetter> letters)
+        public virtual void Insert(IEnumerable<TLetter> letters)
         {
             using (var db = Resolver.Resolve<IDbConnection>())
             {
@@ -26,19 +27,44 @@ namespace PirateX.Middleware
             }
         }
 
-        public virtual int Delete(long rid,int id)
+        public virtual void SetRead(IEnumerable<int> ids)
         {
             using (var db = Resolver.Resolve<IDbConnection>())
             {
-                return db.Execute($"delete from letter where rid = {rid} and Id = {id}");
+                db.Execute($"update `{typeof(TLetter).Name}` set IsRead = @IsRead where Id in @Ids",new { IsRead  = true,Ids = new SqlinList<int>(ids) });
             }
-
-            //TODO 这里可以根据情况做下归档
         }
 
-        public virtual List<TLetter> GetList<TLetter>(long rid, int page, int size = 50) where TLetter : ILetter
+        public virtual IEnumerable<TLetter> GetList(int rid, int page, int size = 50) 
         {
-            throw new NotImplementedException();
+            using (var db = Resolver.Resolve<IDbConnection>())
+            {
+                return db.Query<TLetter>($"select * from `{typeof(TLetter).Name}` where Rid = {rid} limit {(page - 1)*size},{page*size}");
+            }
+        }
+
+        public virtual int GetCount(int rid)
+        {
+            using (var db = Resolver.Resolve<IDbConnection>())
+            {
+                return db.ExecuteScalar<int>($"select count(id) from `{typeof(TLetter).Name}` where rid = {rid};");
+            }
+        }
+
+        public IEnumerable<TLetter> GetAll(int rid)
+        {
+            using (var db = Resolver.Resolve<IDbConnection>())
+            {
+                return db.Query<TLetter>($"select * from `{typeof(TLetter).Name}` where rid = {rid};");
+            }
+        }
+
+        public TLetter GetById(int id)
+        {
+            using (var db = Resolver.Resolve<IDbConnection>())
+            {
+                return db.Get<TLetter>(id);
+            }
         }
     }
 }

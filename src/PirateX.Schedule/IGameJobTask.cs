@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using NLog;
-using PirateX.Core.Container;
+using PirateX.Core;
 
 namespace PirateX.Schedule
 {
@@ -24,12 +24,12 @@ namespace PirateX.Schedule
         public void Execute(IDistrictContainer container, IDistrictConfig config)
         {
             if (Logger.IsDebugEnabled)
-                Logger.Debug(string.Format("{0} START!", typeof(T).Name));
+                Logger.Debug($"TASK [{typeof(T).Name}] START!");
 
             if (!Continue())
             {
                 if (Logger.IsDebugEnabled)
-                    Logger.Debug(string.Format("{0} NOT Continue!", typeof(T).Name));
+                    Logger.Debug($"{typeof(T).Name} NOT Continue!");
 
                 return;
             }
@@ -37,7 +37,7 @@ namespace PirateX.Schedule
             SubJob(container, config);
 
             if (Logger.IsDebugEnabled)
-                Logger.Debug(string.Format("{0} DONE!", typeof(T).Name));
+                Logger.Debug($"TASK [{typeof(T).Name}] DONE!");
         }
 
         protected virtual bool Continue()

@@ -62,6 +62,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="PirateX.ProtobufInitialize.nuspec" />
     <None Include="protoc.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

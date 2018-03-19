@@ -14,6 +14,6 @@
         /// 生成信件
         /// </summary>
         /// <param name="rid"></param>
-        void Builder(int rid);
+        TLetter Builder<TLetter>(int rid);
     }
 }

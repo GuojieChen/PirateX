@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using PirateX.Middleware;
 
 namespace PirateX.GMSDK.Mapping
 {
-
-    
     public interface IGMUIItemMap
     {
         string Name { get; }
@@ -20,12 +20,19 @@ namespace PirateX.GMSDK.Mapping
     public interface IGMUIItemMap<TGMUIItem> : IGMUIItemMap
     {
     }
-
-    public class GMUIItemMap<TGMUIItem> : IGMUIItemMap<TGMUIItem>
+    /// <summary>
+    /// 对应了一个类，比如活动奖励
+    /// </summary>
+    /// <typeparam name="TGMUIItem"></typeparam>
+    public  abstract class GMUIItemMap<TGMUIItem> : IGMUIItemMap<TGMUIItem>
     {
-
+        /// <summary>
+        /// 名称
+        /// </summary>
         public string Name { get; protected set; }
-
+        /// <summary>
+        /// 描述
+        /// </summary>
         public string Des { get; protected set; }
         
         protected GMUIItemMap()
@@ -35,8 +42,8 @@ namespace PirateX.GMSDK.Mapping
 
         public IList<IGMUIPropertyMap> PropertyMaps { get; }
 
-        protected TPropertyMap Map<TPropertyMap>(Expression<Func<TGMUIItem, object>> expression)
-        where TPropertyMap :IGMUIPropertyMap
+        protected TPropertyMap Map<TPropertyMap>(string groupname,Expression<Func<TGMUIItem, object>> expression)
+            where TPropertyMap : IGMUIPropertyMap
         {
             var info = (PropertyInfo)ReflectionHelper.GetMemberInfo(expression);
             var propertyMap = Activator.CreateInstance<TPropertyMap>();
@@ -47,6 +54,12 @@ namespace PirateX.GMSDK.Mapping
             ThrowIfDuplicateMapping(propertyMap);
             PropertyMaps.Add(propertyMap);
             return propertyMap;
+        }
+
+        protected TPropertyMap Map<TPropertyMap>(Expression<Func<TGMUIItem, object>> expression)
+        where TPropertyMap :IGMUIPropertyMap
+        {
+            return Map<TPropertyMap>(string.Empty, expression);
         }
 
         private void ThrowIfDuplicateMapping(IGMUIPropertyMap map)

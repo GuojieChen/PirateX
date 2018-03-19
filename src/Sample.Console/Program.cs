@@ -21,25 +21,35 @@ namespace GameServer.Console
     {
         private static void Main(string[] args)
         {
-            ProtoBuf.Serializer.PrepareSerializer<Token>();
-            ProtoBuf.Serializer.PrepareSerializer<In>();
-            ProtoBuf.Serializer.PrepareSerializer<Out>();
-            System.Console.WriteLine(ProtoBuf.Serializer.GetProto<ProtoSyncResponse>());
-            var host = HostFactory.New(c =>
-            {
-                c.UseNLog();
+            var a = new A();
+            var b = new B();
+            var t = new T1();
 
-                c.Service<AllServices>(s =>
-                {
-                    s.ConstructUsing(name => new AllServices()); 
+            System.Console.WriteLine(A.V);
+            t.V = 10;
+            b.Do(t);
+            System.Console.WriteLine(t.V++);
+            System.Console.Read();
 
-                    s.WhenStarted(t => t.Start());
+            //ProtoBuf.Serializer.PrepareSerializer<Token>();
+            //ProtoBuf.Serializer.PrepareSerializer<In>();
+            //ProtoBuf.Serializer.PrepareSerializer<Out>();
+            //System.Console.WriteLine(ProtoBuf.Serializer.GetProto<ProtoSyncResponse>());
+            //var host = HostFactory.New(c =>
+            //{
+            //    c.UseNLog();
 
-                    s.WhenStopped(t => t.Stop());
-                });
-            });
+            //    c.Service<AllServices>(s =>
+            //    {
+            //        s.ConstructUsing(name => new AllServices()); 
 
-            host.Run();
+            //        s.WhenStarted(t => t.Start());
+
+            //        s.WhenStopped(t => t.Stop());
+            //    });
+            //});
+
+            //host.Run();
         }
     }
 }

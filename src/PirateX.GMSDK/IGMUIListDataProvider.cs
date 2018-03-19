@@ -11,13 +11,6 @@ namespace PirateX.GMSDK
     /// </summary>
     public interface IGMUIListDataProvider
     {
-        IEnumerable<GMUIListItem> GetListItems();
-    }
-
-    public class GMUIListItem
-    {
-        public string Value { get; set; }
-
-        public string Text { get; set; }
+        IEnumerable<GMUIDataDropdown> GetListItems();
     }
 }

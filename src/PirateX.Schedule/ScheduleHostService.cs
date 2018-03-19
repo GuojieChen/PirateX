@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
+using PirateX.Core;
 using Quartz;
 using Quartz.Impl;
 
@@ -14,42 +17,39 @@ namespace PirateX.Schedule
     {
         private static readonly IScheduler Scheduler = new StdSchedulerFactory().GetScheduler();
         private static Logger Logger = LogManager.GetCurrentClassLogger();
-        private static NetMQQueue<string> NetMqQueue = new NetMQQueue<string>();
 
-        /// <summary>
-        /// 下发任务
-        /// </summary>
-        private static PushSocket sender = new PushSocket(System.Configuration.ConfigurationManager.AppSettings["PushConnectionString"]);//"@tcp://*:5557"
         /// <summary>
         /// 上报配置和结果
         /// </summary>
-        private static ResponseSocket responseSocket = new ResponseSocket(System.Configuration.ConfigurationManager.AppSettings["ResponseConnectionString"]);//"@tcp://*:5558"
+        private static ResponseSocket responseSocket;
 
-        private NetMQPoller Poller = new NetMQPoller()
+        private Proxy _proxy;
+        private NetMQPoller Poller = null; 
+
+        public static IEnumerable<ScheduleDistrictConfig> Configs = null;
+
+        private string _frontendConnect = "inproc://host";
+
+        private string _configString = string.Empty;
+
+        public ScheduleHost(string backendConnect,string responseConnectionString,string configString)
         {
-            sender,
-            responseSocket,
-            NetMqQueue
-        };
+            _configString = configString;
+            _proxy = new Proxy(new RouterSocket($"@{_frontendConnect}"),new DealerSocket(backendConnect) );
+            responseSocket = new ResponseSocket(responseConnectionString);
+            responseSocket.ReceiveReady += ProcessRequest;
+            Poller = new NetMQPoller()
+            {
+                responseSocket
+            };
+        }
+
 
         public void Start()
         {
-            Scheduler.Start();
-
-            responseSocket.ReceiveReady += ProcessRequest;
-            NetMqQueue.ReceiveReady += (o, args) =>
-            {
-                var msg = NetMqQueue.Dequeue();
-                sender.SendFrame(msg);
-            };
-
+            Task.Factory.StartNew(_proxy.Start);
             Poller.RunAsync();
-
-            //pull tasksconfig
-            NetMqQueue.Enqueue(JsonConvert.SerializeObject(new
-            {
-                Cmd = "tasksconfig"
-            }));
+            Scheduler.Start();
 
             Logger.Debug("start ok");
         }
@@ -57,15 +57,19 @@ namespace PirateX.Schedule
         private void ProcessRequest(object o, NetMQSocketEventArgs e)
         {
             //接收配置
-            var msgstr = responseSocket.ReceiveFrameString();
+            var msgstr = e.Socket.ReceiveFrameString();
             var jsonMsg = JObject.Parse(msgstr);
-            if (Logger.IsInfoEnabled) Logger.Info(msgstr);
+            if (Logger.IsInfoEnabled)
+                Logger.Info(msgstr);
 
             var result = string.Empty;
             try
             {
                 switch (jsonMsg["Cmd"].ToString().ToLower())
                 {
+                    case "configs":
+                        Configs = jsonMsg["List"].ToObject<IEnumerable<ScheduleDistrictConfig>>();// .Children().ToList();// [].Values<>().AsEnumerable();
+                        break;
                     case "schedule":
                         var identity = jsonMsg.Value<string>("Identity");
                         var name = jsonMsg.Value<string>("Name");
@@ -76,14 +80,14 @@ namespace PirateX.Schedule
 
                         var jobDetail = JobBuilder.Create()
                             .StoreDurably()
-                            .OfType<TaskSender>()
+                            .OfType<TaskDistributionJob>()
                             .WithIdentity(identity)
                             .Build();
 
                         jobDetail.JobDataMap.Add("identity", identity);
-                        jobDetail.JobDataMap.Add("queue", NetMqQueue);
+                        jobDetail.JobDataMap.Add("requestConnectionString", _frontendConnect);
                         jobDetail.JobDataMap.Add("name", name);
-                        jobDetail.JobDataMap.Add("container", gameContainer2);
+                        jobDetail.JobDataMap.Add("configs", Configs);
 
                         var trigger = TriggerBuilder.Create()
                             .WithIdentity(identity)
@@ -94,20 +98,16 @@ namespace PirateX.Schedule
                         Scheduler.ScheduleJob(jobDetail, trigger);
 
                         if (Logger.IsInfoEnabled)
-                            Logger.Info($"add task {identity} with {cronschedule}");
+                            Logger.Info($"TASK ADD Name:[{identity}] with {cronschedule}");
 
                         break;
                     case "getconfig": //启动
-                        //result = JsonConvert.SerializeObject(new
-                        //{
-                        //    Cmd = "getconfig",
-                        //    ShareDb = shareDb,
-                        //    MongoHost = System.Configuration.ConfigurationManager.AppSettings["MongoHost"] ?? "",
-                        //    MongoDatabase = System.Configuration.ConfigurationManager.AppSettings["MongoDatabase"],
-                        //});
-                        break;
-                    case "taskinfo":
-
+                        result = JsonConvert.SerializeObject(new
+                        {
+                            Cmd = "getconfig",
+                            ConfigString = _configString,
+                            Configs = Configs
+                        });
                         break;
 
                 }
@@ -127,14 +127,18 @@ namespace PirateX.Schedule
         {
             Scheduler.Shutdown();
 
-            sender?.Close();
-            sender?.Dispose();
-
             responseSocket?.Close();
             responseSocket?.Dispose();
 
             Poller.Stop();
         }
 
+
+        public class ScheduleDistrictConfig : IDistrictConfig
+        {
+            public int Id { get; set; }
+            public string SecretKey { get; set; }
+            public int TargetId { get; set; }
+        }
     }
 }

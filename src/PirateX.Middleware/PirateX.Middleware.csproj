@@ -73,14 +73,17 @@
     <Compile Include="CalculateSystem\CalculateHandler.cs" />
     <Compile Include="CalculateSystem\ICalculateContext.cs" />
     <Compile Include="CalculateSystem\ICalculateHandler.cs" />
-    <Compile Include="ChatSystem\ChatRepository.cs" />
+    <Compile Include="ChatSystem\MidChatRepository.cs" />
     <Compile Include="ChatSystem\MidChatService.cs" />
     <Compile Include="ChatSystem\IChat.cs" />
+    <Compile Include="LetterSystem\ISystemLetter.cs" />
     <Compile Include="LetterSystem\IArchive.cs" />
     <Compile Include="LetterSystem\IArchiveToLetter.cs" />
     <Compile Include="LetterSystem\ILetter.cs" />
+    <Compile Include="LetterSystem\IReward.cs" />
     <Compile Include="LetterSystem\MidLetterRepository.cs" />
     <Compile Include="LetterSystem\MidLetterService.cs" />
+    <Compile Include="LetterSystem\MidSystemLetterRepository.cs" />
     <Compile Include="RankingSystem\IRanking.cs" />
     <Compile Include="RankingSystem\MidRankingRepository.cs" />
     <Compile Include="TaskSystem\V1\ITaskConditionDetectStrategy.cs" />
@@ -101,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="PirateX.Middleware.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

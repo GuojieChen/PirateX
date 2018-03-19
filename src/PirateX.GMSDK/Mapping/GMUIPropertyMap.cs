@@ -6,6 +6,8 @@ namespace PirateX.GMSDK.Mapping
 {
     public interface IGMUIPropertyMap
     {
+        string Control { get; }
+
         string Name { get;  }
 
         string DisplayName { get;  }
@@ -14,13 +16,19 @@ namespace PirateX.GMSDK.Mapping
 
         bool IsRequired { get;  }
 
-        bool CanMulti { get; }
-
         string GroupName { get; }
+
+        string DevaultValue { get; set; }
 
         PropertyInfo PropertyInfo { get; set; }
 
         int OrderId { get; }
+
+        string NullValue { get; }
+
+        Func<string, string> ValidateFunc { get; }
+
+        void Validate(Func<string, string> func);
     }
     
     /// <summary>
@@ -29,7 +37,25 @@ namespace PirateX.GMSDK.Mapping
     public abstract class GMUIPropertyMap<TGMUIPropertyMap> : IGMUIPropertyMap
     where TGMUIPropertyMap : class, IGMUIPropertyMap 
     {
-        public PropertyInfo PropertyInfo { get; set; }
+        public abstract string Control { get; }
+
+        private PropertyInfo _propertyInfo;
+        public PropertyInfo PropertyInfo
+        {
+            get { return _propertyInfo; }
+            set
+            {
+                _propertyInfo = value;
+
+                if(_propertyInfo.PropertyType.IsPrimitive)
+                    this.NullValue = Activator.CreateInstance(_propertyInfo.PropertyType).ToString();
+
+                if (string.IsNullOrEmpty(DevaultValue))
+                {
+                    DevaultValue = NullValue;
+                }
+            }
+        }
 
         private string _name;
 
@@ -68,26 +94,10 @@ namespace PirateX.GMSDK.Mapping
             return this as TGMUIPropertyMap;
         }
 
-        private bool? canMulti; 
-        public bool CanMulti {
-            get {
-                if (canMulti.HasValue)
-                    return canMulti.Value;
-
-                return !PropertyInfo.PropertyType.IsPrimitive;
-            } }
-
         public string GroupName { get; private set; }
-
         public TGMUIPropertyMap ToGroupName(string name)
         {
             this.GroupName = name;
-            return this as TGMUIPropertyMap;
-        }
-
-        public IGMUIPropertyMap Multi(bool multi)
-        {
-            canMulti = multi;
             return this as TGMUIPropertyMap;
         }
 
@@ -95,6 +105,23 @@ namespace PirateX.GMSDK.Mapping
         public TGMUIPropertyMap ToOrderId(int orderid)
         {
             OrderId = orderid;
+            return this as TGMUIPropertyMap;
+        }
+
+        public Func<string, string> ValidateFunc { get; set; }
+
+        public void Validate(Func<string, string> func)
+        {
+            ValidateFunc = func;
+        }
+
+        public string DevaultValue { get; set; }
+
+        public string NullValue { get; private  set; }
+
+        public TGMUIPropertyMap ToDevaultValue(object value)
+        {
+            DevaultValue = Convert.ToString(value);
             return this as TGMUIPropertyMap;
         }
 

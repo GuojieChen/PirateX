@@ -11,10 +11,13 @@ namespace PirateX.Core
         public Logger Logger { get; set; }
 
         public IRedisSerializer RedisSerializer => ServerReslover.Resolve<IRedisSerializer>();
-        public virtual IDatabase Redis => Reslover.Resolve<IDatabase>();
-        public IDbConnection DbConnection => Reslover.Resolve<IDbConnection>();
+        public virtual IDatabase Redis => Resolver.Resolve<IDatabase>();
+        public IDbConnection DbConnection => Resolver.Resolve<IDbConnection>();
+
+        public ISessionManager SessionManager => ServerReslover.Resolve<ISessionManager>();
+
         public ILifetimeScope ServerReslover { get; set; }
-        public ILifetimeScope Reslover { get; set; }
+        public ILifetimeScope Resolver { get; set; }
         public virtual string Name { get; set; }
         //public PirateSession Session { get; set; }
         public ActorContext Context { get; set; }

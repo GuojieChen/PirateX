@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using PirateX.Core.Container;
-using PirateX.Core.Container.Register;
-using PirateX.Core.Domain.Entity;
+using PirateX.Core;
 using PirateX.ServiceStackV3;
 
 namespace PirateX.GameServerTest

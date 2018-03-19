@@ -19,6 +19,8 @@ namespace PirateX.Net.SuperSocket
             sw.Start();
             var dout = session.AppServer.NetService.ProcessRequest(session, requestInfo.Body);
 
+            Console.WriteLine($"---------{sw.ElapsedMilliseconds}----------");
+
             if (dout == null)
                 return;
 
@@ -51,10 +53,6 @@ namespace PirateX.Net.SuperSocket
                 session.UnPackKeys = clientkey;
                 session.CryptoByte = crypto;
             }
-
-            var r = new PirateXResponseInfo(response);
         }
-
-
     }
 }

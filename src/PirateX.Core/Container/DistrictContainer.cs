@@ -51,7 +51,18 @@ namespace PirateX.Core
         {
 
         }
+        /// <summary>
+        /// 容器初始化完成后
+        /// </summary>
+        protected virtual void OnInited()
+        {
 
+        }
+
+        /// <summary>
+        /// 初始化容器
+        /// </summary>
+        /// <param name="builder"></param>
         public void InitContainers(ContainerBuilder builder)
         {
             Init();
@@ -71,6 +82,14 @@ namespace PirateX.Core
             SqlMapper.AddTypeHandler(typeof(List<double>), new ListJsonMapper<double>());
             SqlMapper.AddTypeHandler(typeof(List<short>), new ListJsonMapper<short>());
             SqlMapper.AddTypeHandler(typeof(List<byte>), new ListJsonMapper<byte>());
+            SqlMapper.AddTypeHandler(typeof(i18n), new ObjectMapper<i18n>());
+            SqlMapper.AddTypeHandler(typeof(i18n[]), new ObjectMapper<i18n[]>());
+
+            SqlMapper.AddTypeHandler(typeof(i18nLetter), new ObjectMapper<i18nLetter>());
+            SqlMapper.AddTypeHandler(typeof(i18nLetter[]), new ObjectMapper<i18nLetter[]>());
+
+            SqlMapper.AddTypeHandler(typeof(Dictionary<int,int>),new DictionaryMapper<int,int>());
+            SqlMapper.AddTypeHandler(typeof(Dictionary<string, string>), new DictionaryMapper<string, string>());
 
             if (Log.IsTraceEnabled)
                 Log.Trace("~~~~~~~~~~ Init server containers ~~~~~~~~~~");
@@ -175,6 +194,46 @@ namespace PirateX.Core
 
                 _containers.Add(config.Id, c);
             }
+            GenerateAppCode();
+            OnInited();
+        }
+
+        /// <summary>
+        /// 生成程序标识
+        /// 先生成一个程序唯一码
+        /// 保存到全局redis中（redis有设置的情况下）
+        /// 获得该唯一码的标识
+        /// </summary>
+        private void GenerateAppCode()
+        {
+            if (!ServerIoc.IsRegistered<IDatabase>())
+                return;
+
+            var file = $"{AppDomain.CurrentDomain.BaseDirectory}{Path.DirectorySeparatorChar}appcode.txt";
+            string guid = string.Empty;
+            if (File.Exists(file))
+                guid = File.ReadAllText(file);
+            if(string.IsNullOrEmpty(guid))
+            {
+                guid = Guid.NewGuid().ToString("N");
+                File.Create(file).Close();
+                File.WriteAllText(file,guid);
+            }
+            var key = $"appcode:{guid}";
+            var redis = ServerIoc.Resolve<IDatabase>();
+            var value = redis.StringGet(key);
+            if (string.IsNullOrEmpty(value))
+            {
+                value = redis.StringIncrement("appcode");
+                redis.StringSet(key,value);
+            }
+
+            var appcode = Convert.ToInt16(value);
+
+            if(Log.IsTraceEnabled)
+                Log.Trace($"AppCode:{value}");
+
+            IdGenerator.AppCode = appcode;
         }
 
         protected static string ConnectionStringName = "ConnectionString";
@@ -319,8 +378,6 @@ namespace PirateX.Core
 
             InitDistrictRepository(builder);
 
-            BuildDistrictContainer(builder);
-
             var services = GetServiceAssemblyList();
 
             if (services.Any())
@@ -332,16 +389,18 @@ namespace PirateX.Core
                         if (type.IsInterface || type.IsAbstract || !typeof(IService).IsAssignableFrom(type))
                             continue;
                         builder.RegisterType(type)
-                        //.Where(item => typeof(IService).IsAssignableFrom(item))
-                        //.WithProperty("Test",123)
-                        .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
-                        //.WithProperty(new ResolvedParameter((pi, context) => pi.Name == "Resolver", (pi, ctx) => ctx))
-                        .AsSelf()
-                        .SingleInstance();
+                            //.Where(item => typeof(IService).IsAssignableFrom(item))
+                            //.WithProperty("Test",123)
+                            .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
+                            //.WithProperty(new ResolvedParameter((pi, context) => pi.Name == "Resolver", (pi, ctx) => ctx))
+                            .AsSelf()
+                            .SingleInstance();
                     }
                 });
             }
 
+            BuildDistrictContainer(builder);
+            
             var container = builder.Build();
 
             foreach (var type in configtypes)
@@ -361,6 +420,7 @@ namespace PirateX.Core
 
             if (Log.IsTraceEnabled)
                 Log.Trace("");
+
             return container.BeginLifetimeScope();
         }
 
@@ -377,6 +437,7 @@ namespace PirateX.Core
                         if (type.IsInterface || type.IsAbstract || !typeof(IRepository).IsAssignableFrom(type) || type.GetCustomAttribute<PublicDbAttribute>() != null)
                             continue;
                         builder.RegisterType(type)
+                        .WithProperty("ConfigReader",ServerIoc.Resolve<IConfigReader>())
                             .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies)
                             .SingleInstance();
                     }
@@ -425,7 +486,7 @@ namespace PirateX.Core
 
         public virtual List<Assembly> GetApiAssemblyList()
         {
-            return new List<Assembly>() { typeof(TDistrictContainer).Assembly};
+            return new List<Assembly>() { typeof(TDistrictContainer).Assembly,typeof(NewSeed).Assembly};
         }
 
         public virtual List<Assembly> GetRepositoryAssemblyList()
@@ -466,7 +527,6 @@ namespace PirateX.Core
         {
             return new Dictionary<string, string>();
         }
-
 
         public virtual IDictionary<string, IDatabaseInitializer> GetNamedDatabaseInitializers()
         {

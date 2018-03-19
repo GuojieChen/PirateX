@@ -29,10 +29,11 @@ namespace PirateX.ConfigImport
         private string _tempDir;
         private int _maxWorker;
         private bool isRunning = false;
+        private int _version = 1 ;
 
         private NameValueCollection _ignore; 
 
-        public ImportService(string inputDir, int maxWorker,NameValueCollection ignore,string connectionString)
+        public ImportService(string inputDir, int maxWorker,NameValueCollection ignore,string connectionString,int version = 1)
         {
             if(string.IsNullOrEmpty(connectionString))
                 _connectionString = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString; 
@@ -52,6 +53,7 @@ namespace PirateX.ConfigImport
                 _ignore = new NameValueCollection();
 
             _maxWorker = maxWorker;
+            _version = version;
         }
 
 
@@ -71,6 +73,9 @@ namespace PirateX.ConfigImport
 
             foreach (var file in files)
             {
+                if (!file.EndsWith(".dll") || file.EndsWith("PirateX.Core.dll"))
+                    continue;
+
                 Assembly assembly = Assembly.LoadFrom(file);
                 var list = assembly.GetTypes()
                 .Where(item =>
@@ -81,9 +86,12 @@ namespace PirateX.ConfigImport
                 );
 
                 types.AddRange(list);
+
+                Logger.Debug(string.Format("TEMP:{0}  {1}", file, list.Count()));
             }
 
             if (Logger.IsDebugEnabled)
+
                 Logger.Debug($"types.cuont:{types.Count}");
 
             progressBar1.Maximum = types.Count();
@@ -384,8 +392,12 @@ namespace PirateX.ConfigImport
 
                     for (int i = 0; i < table.Rows.Count; i++)
                     {
-                        if (i == 0)
+                        if (i == 0 || i==2) //名称描述
                             continue;
+
+                        if (_version == 2 && i == 2)//类型描述
+                            continue;
+
                         try
                         {
                             if (i == 1)
