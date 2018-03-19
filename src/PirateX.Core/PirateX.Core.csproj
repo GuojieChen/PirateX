@@ -162,6 +162,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="PirateX.Core.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PirateX.Protocol\PirateX.Protocol.csproj">

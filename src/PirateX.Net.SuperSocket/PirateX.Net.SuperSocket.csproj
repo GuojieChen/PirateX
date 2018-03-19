@@ -86,6 +86,7 @@
     <None Include="Config\log4net.config" />
     <None Include="Config\log4net.unix.config" />
     <None Include="packages.config" />
+    <None Include="PirateX.Net.SuperSocket.nuspec" />
     <None Include="supersocket.cmd" />
     <None Include="supersocket.sh" />
   </ItemGroup>

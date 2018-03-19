@@ -74,6 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="PirateX.ServiceStackV3.nuspec" />
     <Compile Include="PirateXMySqlDialectProvider.cs" />
     <Compile Include="PirateXSqlServerDialectProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
