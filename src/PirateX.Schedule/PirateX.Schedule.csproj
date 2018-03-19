@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="PirateX.Schedule.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PirateX.Core\PirateX.Core.csproj">
